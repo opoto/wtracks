@@ -1,0 +1,149 @@
+<html lang="en">
+<head>
+  <link rel="shortcut icon" href="img/favicon.ico" />
+  <meta charset='utf-8'>
+  <meta http-equiv="x-ua-compatible" content="IE=edge" >
+  <meta name="viewport" content="width=device-width,height=device-height, user-scalable=no" />
+  <META name="keywords" content="Leaflet, OpenStreetMap, GPX, GPS, Tracks, Trails, GIS, outdoor">
+  <title class="appname">WTracks</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.0/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/wtracks.css"/>
+
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/1.0.10/cookieconsent.min.js"></script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.0.0/dist/leaflet.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/htmlEncode.js"></script>
+
+
+  <script src="js/Leaflet.Editable.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCbJyaHj4aEeUpCoI2Ytdhc6lrHu12AyNk"></script>
+  <!--script src="http://maps.google.com/maps/api/js?v=3&key=AIzaSyCbJyaHj4aEeUpCoI2Ytdhc6lrHu12AyNk"></script-->
+
+  <!-- File upload -->
+  <script src="js/togeojson.js"></script>
+  <script src="js/leaflet.filelayer.js"></script>
+
+  <!-- FileSaver -->
+  <script src="js/FileSaver.js"></script>
+
+  <!-- Routing Machine -->
+  <link rel="stylesheet" href="css/leaflet-routing-machine.css" />
+  <script src="js/leaflet-routing-machine.js"></script>
+  <script src="js/lrm-graphhopper-1.1.2.min.js"></script>
+
+  <!-- Elevation -->
+  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <link rel="stylesheet" href="css/Leaflet.Elevation-0.0.2.css" />
+  <script type="text/javascript" src="js/Leaflet.Elevation-0.0.2.min.js"></script>
+
+  <!-- Geo search -->
+  <link rel="stylesheet" href="css/l.geosearch.css" />
+  <script src="js/l.control.geosearch.js"></script>
+  <script src="js/l.geosearch.provider.openstreetmap.js"></script>
+
+  <script src="js/leaflet.polyprune.js"></script>
+  <script src="js/leaflet.polytrim.js"></script>
+  <script src="js/leaflet.polystats.js"></script>
+
+  <script src="js/config.js"></script>
+</head>
+<body>
+  <div id="menu">
+    <div id="menu-header"><a id="menu-close" href="#" class="menu-close-button">×</a></div>
+    <table>
+      <tr><th colspan="2" id="menu-track">Track<span class="collapsable-track">-</span><span class="collapsable-track hidden">+</span></th></tr>
+      <tr class="collapsable-track">
+        <td><button id="track-new" title="Delete current track and start a new one">New</button></td><td>Delete current track and start a new one</td>
+      </tr><tr class="collapsable-track">
+        <td><label id="track-upload-label"><input type="file" name="track" id="track-upload" /><span>Upload</span></label></td><td>Open a file from your device</td>
+      </tr><tr class="collapsable-track">
+        <td>
+          <button id="track-get" title="Delete current track and loads a GPX file from the internet">Get from: </button></td><td><input id="track-get-url" placeholder="URL of GPX file on the internet" type="url"/></br>
+          <label><input type="radio" name="track-get-ext" value="auto" checked="checked"> Auto</label>
+          <label><input type="radio" name="track-get-ext" value="gpx"> GPX</label>
+          <label><input type="radio" name="track-get-ext" value="kml"> KML</label>
+          <label><input type="radio" name="track-get-ext" value="geojson"> GeoJson</label>
+        </td>
+      </tr><tr class="collapsable-track">
+        <td><button id="track-download" title="Download the track as a GPX file">Download</button></td><td>Download the track as a GPX file<br/><label><input type="checkbox" id="as-route"/>As route</label> | <label><input type="checkbox" id="nometadata"/>No metadata</label></td>
+      </tr><tr>
+        <tr><td colspan="2"  id="menu-separator"></tr>
+      </tr><tr class="collapsable-tools">
+      </tr><tr>
+        <tr><th colspan="2"  id="menu-tools">Tools<span class="collapsable-tools">-</span><span class="collapsable-tools hidden">+</span></th></tr>
+      </tr><tr class="collapsable-tools">
+        <td><button id="compress" class="no-trim">Compress</button></td><td>Remove track points within a  <input id="prunedist" type="text" size="2" value="5"/> meters band</td>
+      </tr><tr class="collapsable-tools">
+        <td> <button id="elevate" class="no-trim">Elevate</button></td><td>Add altitude information to some track points</td>
+      </tr><tr class="collapsable-tools">
+        <td><button id="flatten" class="no-trim">Flatten</button></td><td>Remove altitude information from all track points</td>
+      </tr><tr class="collapsable-tools">
+        <td>
+          <select id="trim-type">
+            <option>Trim start</option>
+            <option>Trim end</option>
+          </select>
+        </td>
+        <td>
+          <input type="range" id="trim-range" min="0" step="1" value="0"/>&nbsp;<span id="trim-txt"></span>
+        </td>
+      </tr>
+    </table>
+    <div class="credits"><span class="appname">WTracks</span> by <a id="email" href="#">Olivier Potonniée</a> - <a href="doc/" target="_blank">About</a></div>
+  </div>
+  <table id="tdisplay">
+    <tr id="menu-bar"><td colspan="7">
+      <a href="#" id="menu-button" class="button"><img src="img/menu-icon.png"/></a>
+      <span class="title" id="track-name"></span>
+      <span id="status">
+        <span id="spinner" class="spinner">
+          <div class="bounce1"></div>
+          <div class="bounce2"></div>
+          <div class="bounce3"></div>
+        </span>
+        <span id="status-msg"></span>
+      </span>
+    </td></tr>
+    <tr id="map-row"><td id='map'colspan="7"></td></tr>
+    <tr class="statistics">
+      <th><span class="hide-medium">Distance</span><span class="show-medium">&#x1f4cf;</span></th>
+      <td title='One Way'>
+        <span class="symbol">&#8594;</span> <span id="distow"></span>
+      </td>
+      <td title='Round Trip'>
+        <span class="symbol">&#8646;</span> <span id="distrt"></span>
+      </td>
+      <th><span class="hide-medium">Alt. Max</span><span class="show-medium">&#x2197;</span></th>
+      <td>
+        &#9650; <span id="altmax"></span>
+      </td>
+      <th class="hide-medium">Climbing</th>
+      <td id="climbing"></td>
+    </tr>
+    <tr class="statistics">
+      <th>
+        <span class="hide-medium">Duration</span><span class="show-medium">&#x1f550;</span>
+        <select name="speedprofile" id="speedprofile" size="1"></select>
+      </th>
+      <td title='One Way'>
+        <span id="timeow"></span>
+      </td>
+      <td title='Round Trip'>
+        <span id="timert"></span>
+      </td>
+      <th><span class="hide-medium">Alt. Min</span><span class="show-medium">&#x2198;</span></th>
+      <td>
+        &#9660;  <span id="altmin"></span>
+      </td>
+      <th class="hide-medium">Descent</th>
+      <td id="descent">
+      </td>
+    </tr>
+  </table>
+
+  <script src="js/wtracks.js"></script>
+</body>
+</html>
