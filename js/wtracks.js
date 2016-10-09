@@ -772,7 +772,7 @@ function elevateGoogle(points, cb) {
   });
 }
 var elevate = elevateGoogle;
-var elevatePoint = elevateDSTK;
+var elevatePoint = elevateGoogle;
 
 
 function flatten() {
