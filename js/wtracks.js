@@ -62,46 +62,60 @@ $("#track-name").click(function() {
   }
 });
 
-/*------------ SpeedProfile -----------*/
-
+/*------------ speed profiles and vehicles -----------*/
+// GraphHopper vehicles
 // speed profiles = pairs of <slope, meters per second>
-
-var speedProfiles = {
-  "Walk / Hike":
-  [ [-35, 0.4722], [-25, 0.555], [-20, 0.6944], [-14, 0.8333], [-12, 0.9722],
-    [-10, 1.1111], [-8, 1.1944], [-6, 1.25], [-5, 1.2638], [-3, 1.25],
-    [2, 1.1111], [6, 0.9722], [10, 0.8333], [15, 0.6944], [19, 0.5555],
-    [26, 0.4166], [38, 0.2777] ],
-  "Run":
-  [ [-16, (12.4/3.6)], [-14,(12.8/3.6)], [-11,(13.4/3.6)], [-8,(12.8/3.6)],
-    [-5,(12.4/3.6)], [0,(11.8/3.6)], [9,(9/3.6)], [15,(7.8/3.6)] ],
-  "Bike (road)":
-  [ [-6, 13.8888], [-4, 11.1111], [-2, 8.8888], [0, 7.5], [2, 6.1111],
-    [4, (16/3.6)], [6, (11/3.6)] ],
-  "Bike (mountain)":
-  [ [0, 3.33] ],
-  "Swim":
-  [ [0, 0.77] ],
+var activities = {
+  "Walk / Hike": {
+    vehicle: "foot",
+    speedprofile:
+      [ [-35, 0.4722], [-25, 0.555], [-20, 0.6944], [-14, 0.8333], [-12, 0.9722],
+        [-10, 1.1111], [-8, 1.1944], [-6, 1.25], [-5, 1.2638], [-3, 1.25],
+        [2, 1.1111], [6, 0.9722], [10, 0.8333], [15, 0.6944], [19, 0.5555],
+        [26, 0.4166], [38, 0.2777] ],
+  },
+  "Run":{
+    vehicle: "foot",
+    speedprofile:
+      [ [-16, (12.4/3.6)], [-14,(12.8/3.6)], [-11,(13.4/3.6)], [-8,(12.8/3.6)],
+        [-5,(12.4/3.6)], [0,(11.8/3.6)], [9,(9/3.6)], [15,(7.8/3.6)] ],
+  },
+  "Bike (road)":{
+    vehicle: "bike",
+    speedprofile:
+      [ [-6, 13.8888], [-4, 11.1111], [-2, 8.8888], [0, 7.5], [2, 6.1111],
+        [4, (16/3.6)], [6, (11/3.6)] ],
+  },
+  "Bike (mountain)":{
+    vehicle: "bike",
+    speedprofile:
+      [ [0, 3.33] ],
+  },
+  "Swim":{
+    vehicle: "foot",
+    speedprofile:
+      [ [0, 0.77] ],
+  },
 }
 
-var sprofiles = $("#speedprofile")[0];
-for (sp in speedProfiles) {
-  if (hasOwnProperty.call(speedProfiles, sp)) {
+var selectActivity = $("#activity")[0];
+for (var a in activities) {
+  if (hasOwnProperty.call(activities, a)) {
     var opt = document.createElement("option");
-    opt.innerHTML = sp
-    sprofiles.appendChild(opt);
+    opt.innerHTML = a;
+    selectActivity.appendChild(opt);
   }
 }
 
-function getCurrentSpeedProfile() {
-  var res = $("#speedprofile").children(':selected').val()
-  log("speedprofile: " + res);
-  savePref("speedProfile", res);
-  return speedProfiles[res];
-
+function getCurrentActivity() {
+  var res = $("#activity").children(':selected').val()
+  log("activity: " + res);
+  savePref("activity", res);
+  return activities[res];
 }
-$("#speedprofile").change(function() {
-  polystats.setSpeedProfile(getCurrentSpeedProfile());
+
+$("#activity").change(function() {
+  polystats.setSpeedProfile(getCurrentActivity().speedprofile);
 })
 
 /* ------------------------------------------------------------*/
@@ -131,16 +145,18 @@ function newTrack() {
   track.addTo(editLayer);
   polystats = L.Util.polyStats(track, {
     chrono: true,
-    speedProfile: getCurrentSpeedProfile(),
+    speedProfile:  getCurrentActivity().speedprofile,
     onUpdate: showStats,
   });
+  showStats();
 }
 
 function newWaypoint(latlng, name, desc) {
 
-  function deletMarker() {
+  function deletMarker(e) {
     marker.remove();
     map.closePopup();
+    e.preventDefault();
   }
 
   function getMarkerPopupContent(marker) {
@@ -1262,7 +1278,7 @@ map.on('click', function (e) {
         var fromPt = routeStart,
             toPt = e.latlng;
         route = L.Routing.control({
-          router: L.Routing.graphHopper(config.graphhopperkey(), {urlParameters: {vehicle:"hike"}}),
+          router: L.Routing.graphHopper(config.graphhopper.key(), {urlParameters: {vehicle: getCurrentActivity().vehicle}}),
           waypoints: [ fromPt, toPt ],
           routeWhileDragging: false,
           autoRoute: true,
@@ -1291,9 +1307,10 @@ map.on('click', function (e) {
 
 map.on('editable:vertex:click', function (e) {
 
-  function deleteTrackPoint() {
+  function deleteTrackPoint(event) {
     e.vertex.delete();
     map.closePopup(pop);
+    event.preventDefault();
   }
 
   track.editor.commitDrawing();

@@ -292,6 +292,9 @@ button:active, #track-upload-label:active {
 .show-medium {
    display: none;
 }
+#activity {
+  text-align: right;
+}
 
 /* for 480px or less */
 @media screen and (max-width: 680px) {
