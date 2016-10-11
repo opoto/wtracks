@@ -1057,6 +1057,13 @@ function newRouteWaypoint(i, waypoint, n) {
     // no start marker for routes that continue an existing track
     return undefined
   };
+  if (i==5) {
+    // we reached graphHopper limit for free package, merge and start a new route
+    mergeRouteToTrack();
+    restartRoute();
+    map.fireEvent("click", {latlng: waypoint.latLng});
+    return undefined;
+  }
   var marker = L.marker(waypoint.latLng, {
     draggable: true
   });
