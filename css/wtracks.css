@@ -1,5 +1,5 @@
-body { 
-  margin:0; 
+body {
+  margin:0;
   padding:0;
   font-family: sans-serif;
 }
@@ -83,7 +83,7 @@ body {
 }
 
 #menu-track span, #menu-tools span {
- position: absolute; 
+ position: absolute;
  right: 30px;
 }
 a.button {
@@ -162,6 +162,21 @@ a.button {
 .popupfield {
   width: 55px;
   display: inline-table;
+  vertical-align: top;
+}
+.popup-nameinput {
+  width: 22em;
+}
+.popup-descinput {
+  width: 22em;
+  height: 7em;
+}
+.popup-name {
+  font-weight: bold;
+}
+.popup-desc {
+  max-height: 10em;
+  overflow: auto;
 }
 
 #status {
@@ -211,10 +226,10 @@ a.button {
 }
 
 @keyframes sk-bouncedelay {
-  0%, 80%, 100% { 
+  0%, 80%, 100% {
     -webkit-transform: scale(0);
     transform: scale(0);
-  } 40% { 
+  } 40% {
     -webkit-transform: scale(1.0);
     transform: scale(1.0);
   }
@@ -298,7 +313,7 @@ button:active, #track-upload-label:active {
     background-position-x: -49px;
     background-position-y: 2px;
   }
-  
+
   .statistics tr {
     line-height: 18px;
   }
@@ -316,7 +331,7 @@ button:active, #track-upload-label:active {
     margin-left: 0px;
   }
   .statistics th {
-    display: none; 
+    display: none;
   }
   .hide-on-small-screen {
     display: none;

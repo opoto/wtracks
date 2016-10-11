@@ -134,5 +134,5 @@ function strencode(s, k) {
 }
 function strdecode(s1, s2) {
   var s = (window.location.toString().startsWith("file:")) ? s2: s1;
-  return strxor(decodeURIComponent(s), n10dLocation())
+  return s ? strxor(decodeURIComponent(s), n10dLocation()) : s;
 }

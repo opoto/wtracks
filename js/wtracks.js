@@ -1,12 +1,3 @@
-
-if (config.analytics && config.analytics.trackingid) {
-  initGoogleAnalytics(config.analytics.trackingid());
-}
-if (config.email) {
-  setEmailListener(config.email.selector, config.email.name,
-    config.email.domain, config.email.subject);
-}
-
 function setStatus(msg, options) {
   $("#status-msg").text(msg);
   var statusclass = options && options.class ? options.class : "status-info";
@@ -20,6 +11,7 @@ function setStatus(msg, options) {
     setTimeout(function(){ clearStatus() }, 1000*options.timeout);
   }
 }
+
 function clearStatus() {
   $("#status").fadeOut(800);
 }
@@ -155,27 +147,45 @@ function newWaypoint(latlng, name, desc) {
     var div = L.DomUtil.create('div', "popupdiv"),
       label, input;
 
-    label = L.DomUtil.create('div', "popupdiv", div);
-    label.innerHTML = "<span class='popupfield'>Name:</span> ";
-    var name = L.DomUtil.create('input', "", label);
-    name.type = "text";
-    name.size = "10";
-    name.value = marker.options.title ? marker.options.title : "";
-    name.onkeyup = function(){
-      marker.options.title = name.value;
-      var elt = marker.getElement();
-      elt.title = name.value;
-      elt.alt = name.value;
-    };
-    label = L.DomUtil.create('div', "popupdiv", div);
-    label.innerHTML = "<span class='popupfield'>Desc:</span> ";
-    var desc = L.DomUtil.create('textarea', "", label);
-    desc.rows = "2";
-    desc.cols = "30";
-    desc.value = marker.options.desc ? marker.options.desc : "";
-    desc.onkeyup = function(){
-      marker.options.desc = desc.value;
-    };
+    if (editMode === EDIT_MARKER) {
+
+      // name
+      label = L.DomUtil.create('div', "popupdiv", div);
+      label.innerHTML = "<span class='popupfield'>Name:</span> ";
+      var name = L.DomUtil.create('input', "popup-nameinput", label);
+      name.type = "text";
+      name.value = marker.options.title ? marker.options.title : "";
+      name.onkeyup = function(){
+        marker.options.title = name.value;
+        var elt = marker.getElement();
+        elt.title = name.value;
+        elt.alt = name.value;
+      };
+
+      // description
+      label = L.DomUtil.create('div', "popupdiv", div);
+      label.innerHTML = "<span class='popupfield'>Desc:</span> ";
+      var desc = L.DomUtil.create('textarea', "popup-descinput", label);
+      desc.value = marker.options.desc ? marker.options.desc : "";
+      desc.onkeyup = function(){
+        marker.options.desc = desc.value;
+      };
+
+    } else {
+
+      // name
+      if (marker.options.title) {
+        var name = L.DomUtil.create('div', "popup-name", div);
+        name.innerHTML = marker.options.title;
+      }
+
+      // description
+      if (marker.options.desc) {
+        var desc = L.DomUtil.create('div', "popup-desc", div);
+        desc.innerHTML = marker.options.desc;
+      }
+    }
+
 
 
     var latlng = marker.getLatLng();
@@ -483,97 +493,7 @@ $("#compress").click(function() {
       setStatus("Already optimized", {timeout:3});
     }
   }
-})
-
-function getProvider(name) {
-  var p = undefined;
-  if (name == "opentopomap") {
-    p =  L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-      maxZoom: 17,
-      attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
-    });
-  } else if (name == "osm:std") {
-    p = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    });
-  } else if (name == "osm:cycle") {
-    p = L.tileLayer('http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    });
-  } else if (name == "osm:hikebike") {
-    p = L.tileLayer('http://{s}.tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png', {
-      maxZoom: 17,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    });
-  } else if (name == "osm:hot") {
-    p = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    });
-  } else if (name == "tf:outdoors") {
-    p = L.tileLayer('https://{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    });
-  }  else if (name == "esri:worldtopomap") {
-    p = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-      attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
-    });
-  }  else if (name == "esri:worldstreetmap") {
-    p = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
-      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
-    });
-  }  else if (name == "mtbmap") {
-    p = L.tileLayer('http://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &amp; USGS'
-    });
-  } else if (name == 'google:roadmap') {
-    p = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
-        maxZoom: 20,
-        subdomains:['mt0','mt1','mt2','mt3']
-    });
-  } else if (name == 'google:terrain') {
-    p = L.tileLayer('https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',{
-        maxZoom: 20,
-        subdomains:['mt0','mt1','mt2','mt3']
-    });
-  } else if (name == 'google:satellite') {
-    p = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
-        maxZoom: 20,
-        subdomains:['mt0','mt1','mt2','mt3']
-    });
-  } else if (name == 'google:hybrid') {
-    p = L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
-        maxZoom: 20,
-        subdomains:['mt0','mt1','mt2','mt3']
-    });
-  } else if (name == 'hills') {
-    p = L.tileLayer('http://{s}.tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png',{
-      maxZoom: 17,
-      attribution: 'Hillshading: SRTM3 v2 (<a href="https://www2.jpl.nasa.gov/srtm/">NASA</a>)'
-    });
-  } else if (name == 'lv:hike') {
-    p = L.tileLayer('http://tile.lonvia.de/hiking/{z}/{x}/{y}.png',{
-        maxZoom: 17,
-      attribution: 'Hiking Routes: (<a href="http://hiking.lonvia.de">Lonvias Hiking Map</a>)'
-    });
-  } else if (name == 'lv:bike') {
-    p = L.tileLayer('http://tile.lonvia.de/cycling/{z}/{x}/{y}.png',{
-        maxZoom: 17,
-      attribution: 'Cycling Routes: (<a href="http://cycling.lonvia.de">Lonvias Cycling Map</a>)'
-    });
-  } else if (name == 'mtb:scale') {
-    p = L.tileLayer('https://toolserver.org/tiles/mtb-overlay/{z}/{x}/{y}.png',{
-      maxZoom: 17,
-      attribution: 'MTB Scale: (<a href="https://open-map.org/mtb/">OSM MTB Overlay</a>)'
-    });
-  }
-  if (!p) {
-    p = getProvider("osm:std");
-  }
-  return p;
-}
+});
 
 function getMyIpLocation(defpos) {
   log("Getting location from IP address");
@@ -631,33 +551,119 @@ function saveMapType() {
   savePref("maptype", map.getMapTypeId());
 }
 
+function getProvider(name) {
+  var p = undefined;
+  if (name == "opentopomap") {
+    p =  L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+      maxZoom: 17,
+      attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+    });
+  } else if (name == "osm:std") {
+    p = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    });
+  } else if (name == "osm:hot") {
+    p = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    });
+  } else if (name == "tf:cycle") {
+    p = L.tileLayer('https://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '&copy; <a href="https://www.thunderforest.com/">Thunderforest</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    });
+  } else if (name == "tf:outdoors") {
+    p = L.tileLayer('https://{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '&copy; <a href="https://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    });
+  } else if (name == "wmf:hikebike") {
+    //p = L.tileLayer('http://{s}.tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png', {
+    p = L.tileLayer('https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png', {
+      maxZoom: 17,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    });
+  }  else if (name == "esri:worldtopomap") {
+    p = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+    });
+  }  else if (name == "esri:worldstreetmap") {
+    p = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
+    });
+  }  else if (name == "mtbmap") {
+    p = L.tileLayer('http://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &amp; USGS'
+    });
+  } else if (name == 'google:roadmap') {
+    p = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+        maxZoom: 20,
+        subdomains:['mt0','mt1','mt2','mt3']
+    });
+  } else if (name == 'google:terrain') {
+    p = L.tileLayer('https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',{
+        maxZoom: 20,
+        subdomains:['mt0','mt1','mt2','mt3']
+    });
+  } else if (name == 'google:satellite') {
+    p = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+        maxZoom: 20,
+        subdomains:['mt0','mt1','mt2','mt3']
+    });
+  } else if (name == 'google:hybrid') {
+    p = L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+        maxZoom: 20,
+        subdomains:['mt0','mt1','mt2','mt3']
+    });
+  } else if (name == 'wmf:hills') {
+    //p = L.tileLayer('http://{s}.tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png',{
+    p = L.tileLayer('https://tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png',{
+      maxZoom: 17,
+      attribution: 'Hillshading: SRTM3 v2 (<a href="https://www2.jpl.nasa.gov/srtm/">NASA</a>)'
+    });
+  } else if (name == 'lv:hike') {
+    p = L.tileLayer('http://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png',{
+        maxZoom: 17,
+      attribution: 'Hiking Routes: (<a href="http://hiking.lonvia.de">Lonvias Hiking Map</a>)'
+    });
+  } else if (name == 'lv:bike') {
+    p = L.tileLayer('http://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png',{
+        maxZoom: 17,
+      attribution: 'Cycling Routes: (<a href="http://cycling.lonvia.de">Lonvias Cycling Map</a>)'
+    });
+  }
+  if (!p) {
+    p = getProvider("osm:std");
+  }
+  return p;
+}
+
 var baseLayers = {
   "Open Topo": getProvider("opentopomap"),
   "OpenStreetMap": getProvider("osm:std"),
-  "OpenCycleMap": getProvider("osm:cycle"),
+  "OpenCycleMap": getProvider("tf:cycle"),
+  "Outdoors": getProvider("tf:outdoors"),
   "OSM HOT": getProvider("osm:hot"),
-  "OSM HikeBike": getProvider("osm:hikebike"),
-  "TF Outdoors": getProvider("tf:outdoors"),
+  "OSM HikeBike": getProvider("wmf:hikebike"),
   "ESRI Topo": getProvider("esri:worldtopomap"),
   "ESRI Street": getProvider("esri:worldstreetmap"),
-  "MTB": getProvider("mtbmap"),
+  "MTB (*)": getProvider("mtbmap"),
   "Google roads": getProvider('google:roadmap'),
   "Google Terrain": getProvider('google:terrain'),
   "Google Satellite": getProvider('google:satellite'),
   "Google Hybrid": getProvider('google:hybrid')
 };
 var overlays = {
-  "Hillshading": getProvider("hills"),
-  "Lonvia's Hiking Routes": getProvider("lv:hike"),
-  "Lonvia's Cycling Routes": getProvider("lv:bike"),
-  //"Mountainbike Scale": getProvider("mtb:scale"),
+  "Hillshading": getProvider("wmf:hills"),
+  "Hiking Routes (*)": getProvider("lv:hike"),
+  "Cycling Routes (*)": getProvider("lv:bike"),
 };
 L.control.layers(baseLayers, overlays).addTo(map);
-map.addLayer(baseLayers[getVal("baseLayer", config.display.map)]);
+map.addLayer(baseLayers[getVal("baseLayer", config.display.map)] || baseLayers[config.display.map]);
 map.on("baselayerchange", function(e) {
   savePref("baseLayer", e.name);
 });
-
 function getOverlays() {
   var v = getVal("overlays");
   return v ? JSON.parse(v) : {};
@@ -675,7 +681,13 @@ if (JSON.parse && JSON.stringify) {
   var cfg = getOverlays();
   for (var name in cfg) {
     if (cfg.hasOwnProperty(name) && cfg[name]) {
-      map.addLayer(overlays[name]);
+      var ol = overlays[name];
+      if (ol) {
+        map.addLayer(overlays[name]);
+      } else {
+        // doesn't exist anymore, delete it
+        setOverlay(name, undefined);
+      }
     }
   }
 
@@ -691,6 +703,9 @@ if (JSON.parse && JSON.stringify) {
 
 var defpos = getSavedPosition(config.display.pos.lat, config.display.pos.lng);
 setLocation(defpos); // required to initialize map
+
+$(".leaflet-control-layers-list").append("<div class='leaflet-control-layers-separator'></div>");
+$(".leaflet-control-layers-list").append("<div>(*): no https</div>");
 
 // http://www.datasciencetoolkit.org/developerdocs#coordinates2statistics API - free
 function elevateDSTK(pt, cb) {
@@ -1070,32 +1085,42 @@ function getLatLngPopupContent(latlng, deletefn, toadd) {
   var p = L.DomUtil.create("div", "popupdiv", div);
   p.innerHTML = "<span class='popupfield'>Position:</span> " + latlng.lat + "," + latlng.lng;
 
-  p = L.DomUtil.create("div", "popupdiv", div);
-  p.innerHTML = "<span class='popupfield'>Altitude:</span> ";
-  var altinput = L.DomUtil.create('input', "", p);
-  altinput.type = "text";
-  altinput.size = "5";
-  altinput.value = isUndefined(latlng.alt) ? "" : latlng.alt;
-  altinput.onkeyup = function(){
-    try {
-      latlng.alt = $.isNumeric(altinput.value) ? Number(altinput.value) : undefined;
-    } catch (e) {
+  if (editMode != EDIT_NONE) {
+
+    p = L.DomUtil.create("div", "popupdiv", div);
+    p.innerHTML = "<span class='popupfield'>Altitude:</span> ";
+    var altinput = L.DomUtil.create('input', "", p);
+    altinput.type = "text";
+    altinput.size = "5";
+    altinput.value = isUndefined(latlng.alt) ? "" : latlng.alt;
+    altinput.onkeyup = function(){
+      try {
+        latlng.alt = $.isNumeric(altinput.value) ? Number(altinput.value) : undefined;
+      } catch (e) {
+      }
+    };
+    p = L.DomUtil.create("span", "", p);
+    p.innerHTML = "m";
+  } else {
+    if (!isUndefined(latlng.alt)) {
+      p = L.DomUtil.create("div", "popupdiv", div);
+      p.innerHTML = "<span class='popupfield'>Altitude:</span> " + latlng.alt + "m";
     }
-  };
-  p = L.DomUtil.create("span", "", p);
-  p.innerHTML = "m";
+  }
 
   if (toadd) {
     div.appendChild(toadd);
   }
 
-  p = L.DomUtil.create("div", "popupdiv", div);
-  var del = L.DomUtil.create('a', "", p);
-  del.class = "sympol red";
-  del.href = "#";
-  del.title = "Delete";
-  del.innerHTML = "<span class='popupfield'>DELETE</span>"
-  del.onclick = deletefn;
+  if (editMode != EDIT_NONE) {
+    p = L.DomUtil.create("div", "popupdiv", div);
+    var del = L.DomUtil.create('a', "", p);
+    del.class = "sympol red";
+    del.href = "#";
+    del.title = "Delete";
+    del.innerHTML = "<span class='popupfield'>DELETE</span>"
+    del.onclick = deletefn;
+  }
 
   return div;
 }
@@ -1314,6 +1339,14 @@ function toggleElevation(e) {
 $(".appname").text(config.appname);
 $("#prunedist").val(config.compressdefault);
 setStatus("Welcome to " + config.appname + "!", {timeout:3});
+
+if (config.google && config.google.analyticsid) {
+  initGoogleAnalytics(config.google.analyticsid());
+}
+if (config.email) {
+  setEmailListener(config.email.selector, config.email.name,
+    config.email.domain, config.email.subject);
+}
 
 var url = getParameterByName("url");
 if (url) {
