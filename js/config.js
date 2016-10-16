@@ -42,5 +42,14 @@ var config = {
       // Simple obfscuation below to avoid reuse by ommision
       return strdecode("znBAYM%5C%1AV%5EMEG", "zn%02r%0C%16fGTEJ%02%5D");
     }
-  }
+  },
+  corsproxy: {
+    url: function() {
+      // proxy for fetching remote track files
+      return strdecode("G%5B%1B%00%1CN%40%01%10%1D%06%09%16%09%5DG%0E_%07%07%02%0E%17E%10%40B%00%0C%1F%1D%07%1F%5C%08%11%0DF%1F%11%5E",
+        "G%5B%5B3I%15z%5C%12%06%01N%0C%1B%1CZ%0E%1E%1E%1A_%3F%26g5.9jL%2B%00%1C%00%10%00%00VY%1E%01%11");
+    },
+    query: "?url="
+  },
+
 }

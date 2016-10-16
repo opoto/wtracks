@@ -996,7 +996,7 @@ fileloader.on('data:error', function (e) {
 });
 
 function loadFromUrl(url, ext) {
-  $.get('https://jsonp.afeld.me/?url='+url, function(data){
+  $.get(config.corsproxy.url() + config.corsproxy.query + url, function(data){
     fileloader.loadData(data, url, ext);
   });
 }
