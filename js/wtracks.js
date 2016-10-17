@@ -1057,7 +1057,7 @@ function newRouteWaypoint(i, waypoint, n) {
     // no start marker for routes that continue an existing track
     return undefined
   };
-  if (i==5) {
+  if (i==4) {
     // we reached graphHopper limit for free package, merge and start a new route
     mergeRouteToTrack();
     restartRoute();
