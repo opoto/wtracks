@@ -54,13 +54,14 @@ function setTrackName(name) {
 function getTrackName() {
   return $("#track-name").text();
 }
-$("#track-name").click(function() {
-  var name = $("#track-name").text();
-  name = prompt("Track name:", name);
-  if (name) {
-    setTrackName(name);
-  }
-});
+function askTrackName() {
+    var name = $("#track-name").text();
+    name = prompt("Track name:", name);
+    if (name) {
+      setTrackName(name);
+    }
+}
+$("#track-name").click(askTrackName);
 
 /*------------ speed profiles and vehicles -----------*/
 // GraphHopper vehicles
@@ -379,6 +380,10 @@ $("#track-download").click(function() {
   var asroute = $("#as-route").is(":checked");
   var nometadata = $("#nometadata").is(":checked");
   var trackname =  getTrackName();
+  if (trackname === NEW_TRACK_NAME) {
+    askTrackName();
+    trackname =  getTrackName();
+  }
   var gpx = getGPX(trackname, /*savealt*/false, /*savetime*/false, asroute, nometadata);
   var blob = new Blob([gpx], {type: "application/gpx+xml;charset=utf-8"});
   saveAs(blob, trackname+".gpx");
