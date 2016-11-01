@@ -1348,20 +1348,24 @@ function hideElevation() {
   if (elevation) toggleElevation();
 }
 function toggleElevation(e) {
+  // is elevation currently displayed?
   if (!elevation) {
-    setEditMode(EDIT_NONE);
-    map.closePopup();
-    var el = L.control.elevation();
-    el.addTo(map);
-    var gjl = L.geoJson(track.toGeoJSON(),{
-                onEachFeature: el.addData.bind(el)
-            });
-    gjl.setStyle({opacity:0});
-    gjl.addTo(map);
-    elevation = {
-      el: el,
-      gjl: gjl
-    };
+    // ignore if track has less than 2 points
+    if (track && track.getLatLngs().length > 1) {
+      setEditMode(EDIT_NONE);
+      map.closePopup();
+      var el = L.control.elevation();
+      el.addTo(map);
+      var gjl = L.geoJson(track.toGeoJSON(),{
+                  onEachFeature: el.addData.bind(el)
+              });
+      gjl.setStyle({opacity:0});
+      gjl.addTo(map);
+      elevation = {
+        el: el,
+        gjl: gjl
+      };
+    }
   } else {
     elevation.gjl.remove();
     elevation.el.remove();
