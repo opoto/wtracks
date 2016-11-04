@@ -47,7 +47,7 @@ window.cookieconsent_options = {
 };
 
 function canValBeSaved() {
-  return window.hasCookieConsent || window.location.toString().startsWith("file:");
+  return window.hasCookieConsent || (window.location.toString().indexOf("file:") == 0);
 }
 
 function storeVal(name, val) {
@@ -133,6 +133,6 @@ function strencode(s, k) {
   return encodeURIComponent(strxor(s, k))
 }
 function strdecode(s1, s2) {
-  var s = (window.location.toString().startsWith("file:")) ? s2: s1;
+  var s = (window.location.toString().indexOf("file:") == 0) ? s2: s1;
   return s ? strxor(decodeURIComponent(s), n10dLocation()) : s;
 }

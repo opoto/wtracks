@@ -133,6 +133,9 @@ a.button {
   color: #444;
   border: solid 1px #444;
   background-color: white;
+  height: 26px;
+  width: 26px;
+  margin: 0 auto;
 }
 #edit-tools a:hover {
   background-color: #EEE;

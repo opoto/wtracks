@@ -493,7 +493,7 @@ $("#compress").click(function() {
   var input = prunedist.val().trim();
   var tolerance = undefined;
   if (input) {
-    tolerance = Number(input);
+    tolerance = parseFloat(input);
   }
   if ((tolerance === undefined) || isNaN(tolerance)) {
     alert("Enter distance in meters");
@@ -556,8 +556,8 @@ function getSavedPosition(_lat, _lng) {
   var vlat = getVal("poslat", _lat);
   var vlng = getVal("poslng", _lng);
   var pos = {
-    lat: Number.parseFloat(vlat),
-    lng: Number.parseFloat(vlng)
+    lat: parseFloat(vlat),
+    lng: parseFloat(vlng)
   };
   return pos;
 }
@@ -875,7 +875,7 @@ L.EditControl = L.Control.extend({
 L.EditorControl = L.EditControl.extend({
     options: {
         position: 'topleft',
-        title: 'Edit',
+        title: 'Toggle Edit',
         html: '&#x270e;',
         event: 'click'
     }
@@ -1127,7 +1127,7 @@ function getLatLngPopupContent(latlng, deletefn, toadd) {
     altinput.value = isUndefined(latlng.alt) ? "" : latlng.alt;
     altinput.onkeyup = function(){
       try {
-        latlng.alt = $.isNumeric(altinput.value) ? Number(altinput.value) : undefined;
+        latlng.alt = $.isNumeric(altinput.value) ? parseFloat(altinput.value) : undefined;
       } catch (e) {
       }
     };
@@ -1355,16 +1355,20 @@ function toggleElevation(e) {
       setEditMode(EDIT_NONE);
       map.closePopup();
       var el = L.control.elevation();
-      el.addTo(map);
       var gjl = L.geoJson(track.toGeoJSON(),{
                   onEachFeature: el.addData.bind(el)
               });
-      gjl.setStyle({opacity:0});
-      gjl.addTo(map);
-      elevation = {
-        el: el,
-        gjl: gjl
-      };
+      try {
+        el.addTo(map);
+        gjl.setStyle({opacity:0});
+        gjl.addTo(map);
+        elevation = {
+          el: el,
+          gjl: gjl
+        };
+      } catch (e) {
+        log('no elevation');
+      }
     }
   } else {
     elevation.gjl.remove();
@@ -1392,7 +1396,7 @@ if (url) {
 } else {
   newTrack();
   setEditMode(EDIT_MANUAL_TRACK);
-  if (window.location.toString().startsWith('http')) {
+  if (window.location.toString().indexOf('http') == 0) {
     gotoMyLocation(defpos);
   } else {
     getMyIpLocation(defpos);
