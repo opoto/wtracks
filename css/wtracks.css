@@ -299,7 +299,7 @@ button:active, #track-upload-label:active {
   text-align: right;
 }
 
-/* for 480px or less */
+/* for 680px or less */
 @media screen and (max-width: 680px) {
   .hide-medium {
      display: none;
@@ -324,8 +324,8 @@ button:active, #track-upload-label:active {
     line-height: 18px;
   }
   .elevation {
-    position: absolute;
-    top: 0;
+    position: fixed;
+    bottom: 75px;
     right: 0px;
   }
 }
