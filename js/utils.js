@@ -63,10 +63,21 @@ function storeVal(name, val) {
     }
   }
 }
+function storeJsonVal(name, val) {
+  if (JSON && JSON.stringify) {
+    v = JSON.stringify(val);
+    storeVal(name, v);
+  }
+}
 
 function getVal(name, defval) {
   var v = window.localStorage ? window.localStorage.getItem(name) : undefined;
   return isUnset(v) ? defval : v;
+}
+function getJsonVal(name, defval) {
+  var v = getVal(name);
+  var val = v && JSON && JSON.parse ? JSON.parse(v) : undefined;
+  return isUnset(v) ? defval : val;
 }
 
 /* ---------------------- GOOGLE ANALYTICS ------------------------- */

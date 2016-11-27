@@ -6,7 +6,9 @@ var config = {
     domain: "gmail.com",
     subject: "WTracks"
   },
-  saveprefs: true,
+  saveprefs: function() {
+    return true;
+  },
   display: {
     // default display settings
     zoom: 14,
@@ -51,5 +53,58 @@ var config = {
     },
     query: "?url="
   },
-
+  /*------------ activities  -----------*/
+  // GraphHopper vehicles
+  activities: {
+    defaults: {
+      "Walk / Hike": {
+        vehicle: "foot",
+        speedprofile: {
+          method: "refspeeds",
+          parameters : [ [-35, 0.4722], [-25, 0.555], [-20, 0.6944], [-14, 0.8333], [-12, 0.9722],
+            [-10, 1.1111], [-8, 1.1944], [-6, 1.25], [-5, 1.2638], [-3, 1.25],
+            [2, 1.1111], [6, 0.9722], [10, 0.8333], [15, 0.6944], [19, 0.5555],
+            [26, 0.4166], [38, 0.2777] ],
+        }
+      },
+      "Run":{
+        vehicle: "foot",
+        speedprofile: {
+          method: "refspeeds",
+          parameters : [ [-16, (12.4/3.6)], [-14,(12.8/3.6)], [-11,(13.4/3.6)], [-8,(12.8/3.6)],
+            [-5,(12.4/3.6)], [0,(11.8/3.6)], [9,(9/3.6)], [15,(7.8/3.6)] ],
+        }
+      },
+      "Bike (road)":{
+        vehicle: "bike",
+        speedprofile: {
+          method: "refspeeds",
+          parameters : [ [-6, 13.8888], [-4, 11.1111], [-2, 8.8888], [0, 7.5], [2, 6.1111],
+            [4, (16/3.6)], [6, (11/3.6)] ],
+        }
+      },
+      "Bike (mountain)":{
+        vehicle: "bike",
+        speedprofile: {
+          method: "refspeeds",
+          parameters : [ [0, 3.33] ],
+        }
+      },
+      "Swim":{
+        vehicle: "foot",
+        speedprofile: {
+          method: "refspeeds",
+          parameters : [ [0, 0.77] ],
+        }
+      },
+      "test":{
+        vehicle: "foot",
+        speedprofile: {
+          method: "polynomial",
+          parameters : [1.2713272837059157,-0.007871236406242573,-0.0006057225670160511],
+        }
+      }
+    },
+    vehicles: [ "foot" , "bike" ]
+  }
 }

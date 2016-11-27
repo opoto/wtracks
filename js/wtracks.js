@@ -16,9 +16,15 @@ function clearStatus() {
   $("#status").fadeOut(800);
 }
 
-function savePref(name, val) {
+function saveValOpt(name, val) {
  if (config.saveprefs) {
    storeVal(name, val);
+ }
+}
+
+function saveJsonValOpt(name, val) {
+ if (config.saveprefs) {
+   storeJsonVal(name, val);
  }
 }
 
@@ -63,68 +69,42 @@ function askTrackName() {
 }
 $("#track-name").click(askTrackName);
 
-/*------------ speed profiles and vehicles -----------*/
-// GraphHopper vehicles
-// speed profiles = pairs of <slope, meters per second>
-var activities = {
-  "Walk / Hike": {
-    vehicle: "foot",
-    speedprofile: {
-      method: "refspeeds",
-      parameters : [ [-35, 0.4722], [-25, 0.555], [-20, 0.6944], [-14, 0.8333], [-12, 0.9722],
-        [-10, 1.1111], [-8, 1.1944], [-6, 1.25], [-5, 1.2638], [-3, 1.25],
-        [2, 1.1111], [6, 0.9722], [10, 0.8333], [15, 0.6944], [19, 0.5555],
-        [26, 0.4166], [38, 0.2777] ],
-    }
-  },
-  "Run":{
-    vehicle: "foot",
-    speedprofile: {
-      method: "refspeeds",
-      parameters : [ [-16, (12.4/3.6)], [-14,(12.8/3.6)], [-11,(13.4/3.6)], [-8,(12.8/3.6)],
-        [-5,(12.4/3.6)], [0,(11.8/3.6)], [9,(9/3.6)], [15,(7.8/3.6)] ],
-    }
-  },
-  "Bike (road)":{
-    vehicle: "bike",
-    speedprofile: {
-      method: "refspeeds",
-      parameters : [ [-6, 13.8888], [-4, 11.1111], [-2, 8.8888], [0, 7.5], [2, 6.1111],
-        [4, (16/3.6)], [6, (11/3.6)] ],
-    }
-  },
-  "Bike (mountain)":{
-    vehicle: "bike",
-    speedprofile: {
-      method: "refspeeds",
-      parameters : [ [0, 3.33] ],
-    }
-  },
-  "Swim":{
-    vehicle: "foot",
-    speedprofile: {
-      method: "refspeeds",
-      parameters : [ [0, 0.77] ],
-    }
-  },
-}
-
 var selectActivity = $("#activity")[0];
-for (var a in activities) {
-  if (hasOwnProperty.call(activities, a)) {
-    var opt = document.createElement("option");
-    opt.innerHTML = a;
-    selectActivity.appendChild(opt);
+var activities;
+
+function loadActivities() {
+  activities = getJsonVal("activities");
+  if (!activities) {
+    activities = config.activities.defaults;
+    saveJsonValOpt("activities", activities);
   }
+  // append activities
+  for (var a in activities) {
+    if (hasOwnProperty.call(activities, a)) {
+      if (!selectActivity.options[a]) {
+        var opt = document.createElement("option");
+        opt.innerHTML = a;
+        opt.setAttribute("name", a);
+        selectActivity.appendChild(opt);
+      }
+    }
+  }
+  // remove deleted activites
+  $("#activity option").each(function(i,v) {
+    if (!activities[v.innerHTML]) {
+      v.remove();
+    }
+  })
 }
+loadActivities();
 
 function getCurrentActivity() {
   var res = $("#activity").children(':selected').val()
   log("activity: " + res);
-  savePref("activity", res);
+  saveValOpt("activity", res);
   return activities[res];
 }
-
+$("#activity").click(loadActivities);
 $("#activity").change(function() {
   polystats.setSpeedProfile(getCurrentActivity().speedprofile);
 })
@@ -574,12 +554,12 @@ function getSavedPosition(_lat, _lng) {
 
 function savePosition() {
   var pos = map.getCenter();
-  savePref("poslat",pos.lat);
-  savePref("poslng",pos.lng);
+  saveValOpt("poslat",pos.lat);
+  saveValOpt("poslng",pos.lng);
 }
 
 function saveMapType() {
-  savePref("maptype", map.getMapTypeId());
+  saveValOpt("maptype", map.getMapTypeId());
 }
 
 function getProvider(name) {
@@ -697,18 +677,17 @@ var overlays = {
 L.control.layers(baseLayers, overlays).addTo(map);
 map.addLayer(baseLayers[getVal("baseLayer", config.display.map)] || baseLayers[config.display.map]);
 map.on("baselayerchange", function(e) {
-  savePref("baseLayer", e.name);
+  saveValOpt("baseLayer", e.name);
 });
 function getOverlays() {
-  var v = getVal("overlays");
-  return v ? JSON.parse(v) : {};
+  var v = getJsonVal("overlays");
+  return v || {};
 }
 
 function setOverlay(name, yesno) {
   var cfg = getOverlays();
   cfg[name] = yesno;
-  v = JSON.stringify(cfg);
-  savePref("overlays", v);
+  saveJsonValOpt("overlays", v);
 }
 
 if (JSON.parse && JSON.stringify) {
@@ -786,7 +765,7 @@ function elevateGoogle(points, cb) {
   } else {
     setStatus("Elevating..", {spinner: true});
     inc = Math.round(Math.max(1, points.length/512))
-    if (inc = 1) {
+    if (inc == 1) {
       locations = points;
     } else {
       locations = [];

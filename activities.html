@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="shortcut icon" href="img/favicon.ico" />
+	  <meta charset='utf-8'>
+	  <meta http-equiv="x-ua-compatible" content="IE=edge" >
+	  <meta name="viewport" content="width=device-width,height=device-height, user-scalable=no" />
+	  <META name="keywords" content="Leaflet, OpenStreetMap, GPX, GPS, speed, regression, GIS, outdoor">
+		<title>Speed profile editor</title>
+		<!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script-->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.flot.min.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/1.0.10/cookieconsent.min.js"></script>
+		<script src="js/regression.js"></script>
+		<script src="js/dataset.js"></script>
+		<script src="js/config.js"></script>
+		<script src="js/utils.js"></script>
+
+		<script src="js/leaflet.js"></script>
+		<script src="js/leaflet.polystats.js"></script>
+		<!-- File upload -->
+	  <script src="js/togeojson.js"></script>
+	  <script src="js/leaflet.filelayer.js"></script>
+		<style>
+			html, body{
+				margin: 0;
+				padding: 0;
+				font-family: "Helvetica", sans-serif;
+				text-align: center;
+
+			}
+			.container{
+				margin: 0 auto;
+			}
+			.graph{
+				width: 360px;
+				height: 280px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h1>Activity Editor</h1>
+			<div id="listdiv">
+				<span class="label">Activities:</span>
+				<select id="activities">
+				</select>
+				<button id="activitydel">Delete</button>
+				<button id="activityreset">Reset Defaults</button>
+			</div>
+			<div id="editordiv">
+				<button id="activitynew">New</button>
+				<button id="activitysave">Save</button>
+				<span>Name: <input type="text" id="activityname" placeholder="Activity's name"/></span>
+				<span>Routing vehicule: <select id="activityvehicle"></select></span>
+				<span>Method: <select id="method">
+						<option value="refspeeds">refspeeds</option>
+						<option value="linear">linear</option>
+						<option value="power">power</option>
+						<option selected="selected" value="polynomial">polynomial</option>
+					</select>
+				</span>
+
+				<div id="spformula">
+					<div id="refspeeds">
+					</div>
+					<div id="linear">
+						speed = <input id="p1" type="text"/> * slope + <input id="p0" type="text"/>
+					</div>
+					<div id="power">
+						speed = <input id="p1" type="text"/> * slope + <input id="p0" type="text"/>
+					</div>
+					<div id="polynomial">
+						speed = <input id="p2" type="text"/> * slope&sup2; + <input id="p1" type="text"/> * slope + <input id="p0" type="text"/>
+					</div>
+				</div>
+
+				<div id="activityformula"></div>
+
+				<div id="datadiv">
+					Data:
+					<select id="data">
+					</select>
+					Track file:
+					<input type="file" id="trackfile">
+				</div>
+
+				<div id="computediv">
+					Polynomial degree:
+					<select id="degree">
+						<option>1</option>
+						<option selected="selected">2</option>
+						<option>3</option>
+						<option>4</option>
+						<option>5</option>
+						<option>6</option>
+						<option>7</option>
+						<option>8</option>
+						<option>9</option>
+						<option>10</option>
+					</select>
+					Iterations:
+					<select id="iterations">
+						<option>1</option>
+						<option selected="selected">2</option>
+						<option>3</option>
+						<option>4</option>
+						<option>5</option>
+						<option>6</option>
+						<option>7</option>
+						<option>8</option>
+						<option>9</option>
+						<option>10</option>
+					</select>
+					Pruning:
+					<select id="pruning">
+						<option>0</option>
+						<option>0.1</option>
+						<option>0.2</option>
+						<option selected="selected">0.3</option>
+						<option>0.4</option>
+						<option>0.5</option>
+						<option>0.6</option>
+						<option>0.7</option>
+						<option>0.8</option>
+						<option>0.9</option>
+						<option>1</option>
+					</select>
+					<button id="compute">Compute</button>
+  			</div>
+  		</div>
+			<div class="graph"></div>
+		</div>
+		<script src="js/activities.js"></script>
+	</body>
+</html>

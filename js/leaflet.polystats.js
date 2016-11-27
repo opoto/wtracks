@@ -50,12 +50,24 @@
         return (altdiff / dist) * 100;
     }
 
-    var MINSPEED = 0.001;
+    // utility function to sort speedRefs by increasing slope
+    function sortSpeedRefs(speedRefs) {
+        speedRefs.sort(function(a, b) {
+            return a[0] - b[0];
+        });
+    }
+
+    var MINSPEED = 0.1;
     var computeSpeedEngines = {
       'refspeeds': function(slope, params) {
         if (params.length == 0) {
           return 0;
         }
+
+        // clone and sort
+        params = params.slice(0);
+        sortSpeedRefs(params);
+
         if ((params.length == 1) || (slope <= params[0][0])) {
             return params[0][1];
         }
@@ -92,12 +104,25 @@
       },
     };
 
+    // speedprofile computation methods
+    var REFSPEEDS = "refspeeds";
+    var POWER = "power";
+    var LINEAR = "linear";
+    var POLYNOMIAL = "polynomial";
+
     var PolyStats = L.Class.extend({
+
+        statics: {
+            REFSPEEDS: REFSPEEDS,
+            POWER: POWER,
+            LINEAR: LINEAR,
+            POLYNOMIAL: POLYNOMIAL,
+        },
 
         options: {
             chrono: true,
             speedProfile: {
-              method: "refspeeds",
+              method: REFSPEEDS,
               parameters: [0, 1.25],
             },
             onUpdate: undefined
@@ -126,7 +151,7 @@
           }
           var engine = computeSpeedEngines[method];
           // only proceed if we have at least 2 refspeeds and engine found
-          if ((refspeeds.length > 1) && engine) {
+          if ((method !== REFSPEEDS) && (refspeeds.length > 1) && engine) {
 
             // compute speed profile using regression method
             var pruned = refspeeds.slice(0);
@@ -134,7 +159,7 @@
             for (var iter=0; iter < iterations; iter++) {
               var compreg = regression(method, pruned, polydeg);
               sp.parameters = compreg.equation;
-              sp.speedsamples = compreg.points;
+              //sp.speedsamples = compreg.points;
               for (var i = 0; i < pruned.length;) {
                 var slope = pruned[i][0];
                 var speed = pruned[i][1];
@@ -144,6 +169,24 @@
                   pruned.splice(i, 1);
                 } else {
                   i++;
+                }
+              }
+            }
+          } else {
+            // include at most 15 refspeeds
+            var inc = Math.round(Math.max(1, refspeeds.length/15))
+            if (inc == 1) {
+              sp.parameters = refspeeds.slice(0);
+            } else {
+              var dupinc = inc;
+              for (var i = 0; i < refspeeds.length; i+=dupinc) {
+                if ((i == 0) || (sp.parameters[sp.parameters.length-1][0] != refspeeds[i][0])) {
+                  sp.parameters.push(refspeeds[i]);
+                  // next step
+                  dupinc = inc;
+                } else {
+                  // try next
+                  dupinc = 1;
                 }
               }
             }
