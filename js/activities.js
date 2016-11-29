@@ -49,8 +49,8 @@ function sortSpeedRefs(speedRefs) {
 function saveActivity(name, a) {
   if (!activities[name]) {
     addSelectOption(selectActivity, name);
-    selectOption($("#activities"), name);
   }
+  selectOption($("#activities"), name);
 
   if (a.speedprofile.method == L.Util.PolyStats.REFSPEEDS) {
     sortSpeedRefs(a.speedprofile.parameters);
@@ -77,9 +77,9 @@ $("#activitydel").click(function() {
   var name = $("#activities").children(':selected').val()
   if (confirm("Delete " + name + "?")) {
     activities[name] = undefined;
+    storeJsonVal("activities", activities);
+    activityname = $("#activities").children(':selected').remove();
   }
-  storeJsonVal("activities", activities);
-  activityname = $("#activities").children(':selected').remove();
 });
 
 // activity save button
@@ -87,6 +87,7 @@ $("#activitysave").click(function() {
   var name = $("#activities").children(':selected').val()
   if (activity && activityname) {
     saveActivity(activityname, activity);
+    displaySelectedActivity();
   }
 });
 
@@ -117,9 +118,9 @@ $("#activitynew").click(function() {
 $("#activityreset").click(function() {
   if (confirm("Delete current activities and restore defaults?")) {
     activities = config.activities.defaults;
+    storeJsonVal("activities", activities);
+    window.location = window.location;
   }
-  storeJsonVal("activities", activities);
-  window.location = window.location;
 });
 
 function refSpeedInput(val, paramidx, col) {
@@ -134,31 +135,32 @@ function refSpeedInput(val, paramidx, col) {
 }
 function delRefSpeed(i) {
   activity.speedprofile.parameters.splice(i, 1);
-  $("#spformula #refspeeds table tr:nth-of-type(" + (i+2) + ")").remove();
+  $("#spformula #refspeeds table tr:nth-of-type(" + (i+1) + ")").remove();
   displaySpeedProfile(activity.speedprofile);
 }
 function addRefSpeedLine(i) {
   var p = activity.speedprofile.parameters[i];
-  $("#spformula #refspeeds table").append("<tr><td></td><td></td><td></td></tr>");
-  var tr = $("#spformula #refspeeds table tr:last-of-type()")[0];
+  $("#spformula #refspeeds table tbody").append("<tr><td></td><td></td></tr>");
+  var tr = $("#spformula #refspeeds table tbody tr:last-of-type()")[0];
   tr.children[0].append(refSpeedInput(p[0], i, 0));
   tr.children[1].append(refSpeedInput(p[1], i, 1));
   var delrs = document.createElement("a");
   delrs.setAttribute("href", "#");
-  delrs.innerHTML = "X";
-  delrs.addEventListener("click", function() {
+  delrs.setAttribute("class", "rs-link");
+  delrs.innerHTML = "×";
+  delrs.addEventListener("click", function(e) {
     // compute parameter index
     // (it may have changed since lines may have been deleted)
     var line = this.parentElement.parentElement;
-    var index = -1; // we'll skip header line
+    var index = 0;
     while (line.previousElementSibling) {
       line = line.previousElementSibling;
       index++;
     }
     delRefSpeed(index);
-    return false;
+    e.preventDefault();
   });
-  tr.children[2].append(delrs);
+  tr.children[1].append(delrs);
 }
 function addRefSpeed() {
   var p = activity.speedprofile.parameters;
@@ -189,7 +191,7 @@ var spFormula = {
   "refspeeds": function() {
     $("#spformula #refspeeds").empty();
     $("#spformula #refspeeds").append("<table></table>");
-    $("#spformula #refspeeds table").append("<tr><th>slope</th><th>speed</th></tr>");
+    $("#spformula #refspeeds table").append("<thead><tr><th>Slope (%)</th><th>Speed (m/s)</th></tr></thead><tbody></tbody>");
     if (activity.speedprofile.method !== L.Util.PolyStats.REFSPEEDS) {
       activity.speedprofile.method = L.Util.PolyStats.REFSPEEDS;
       activity.speedprofile.parameters = [ [-35, 0.4722], [-20, 0.6944], [-12, 0.9722],
@@ -199,8 +201,17 @@ var spFormula = {
     for (var i=0; i<activity.speedprofile.parameters.length; i++) {
       addRefSpeedLine(i);
     }
-    $("#spformula #refspeeds").append("<div><button id='addrefspeed'>Add</button></div>");
-    $("#addrefspeed").click(addRefSpeed);
+    var addrs = document.createElement("a");
+    addrs.setAttribute("href", "#");
+    addrs.setAttribute("class", "rs-link");
+    addrs.innerHTML = "+";
+    addrs.addEventListener("click", function(e) {
+      addRefSpeed();
+      $("#refspeeds table tbody").scrollTop($("#refspeeds table tbody")[0].scrollHeight);
+      e.preventDefault();
+    });
+    $("#spformula #refspeeds").append(addrs);
+    $("#refspeeds table tbody").scrollTop($("#refspeeds table tbody")[0].scrollHeight);
   },
   "linear": function() {
     genericSpFormula("linear", [4,0.2]);
@@ -236,9 +247,7 @@ displaySelectedActivity();
 
 var selectdata = $("#data")[0];
 forEachDataset(function(name) {
-  var opt = document.createElement("option");
-  opt.innerHTML = name;
-  selectdata.appendChild(opt);
+  addSelectOption(selectdata, name)
 });
 
 
@@ -316,6 +325,7 @@ var fileloader = L.Util.fileLoader(undefined, {
     formats: [ 'gpx', 'geojson', 'kml' ]
 });
 $("#trackfile").change(function() {
+  selectOption($("#data"), "none");
   var file = $("#trackfile")[0].files[0];
   fileloader.load(file);
 })
@@ -332,6 +342,17 @@ function changeData() {
 
 /********* init *********/
 
+function resetComputeParams() {
+  /*
+  selectOption($("#data"), "none");
+  $("#trackfile").val("");
+  */
+  selectOption($("#degree"), "2");
+  selectOption($("#iterations"), "2");
+  selectOption($("#pruning"), "0.3");
+}
+
 $("#data").change(changeData);
 $("#compute").click(computeSpeedProfile);
+$("#resetcompute").click(resetComputeParams);
 changeData();

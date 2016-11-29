@@ -1011,19 +1011,24 @@ $("#track-get").click(function() {
     ext = undefined
   }
   loadFromUrl(url, ext);
-})
+});
 $("#track-get-url").keypress(function(e) {
   if (e.which == 13) {
     $("#track-get").click();
   }
 });
 
+$("#track-upload").click(function() {
+  $("#track-upload").val("");
+});
 $("#track-upload").change(function() {
-  setEditMode(EDIT_NONE);
-  setStatus("Getting..", {spinner: true});
   var file = $("#track-upload")[0].files[0];
-  fileloader.load(file);
-})
+  if (file) {
+    setEditMode(EDIT_NONE);
+    setStatus("Getting..", {spinner: true});
+    fileloader.load(file);
+  }
+});
 
 function newRouteWaypoint(i, waypoint, n) {
 

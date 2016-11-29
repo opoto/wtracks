@@ -301,6 +301,7 @@ button:active, #track-upload-label:active {
 .statistics a:hover, a:visited, a:link, a:active
 {
     text-decoration: none;
+    color: black;
 }
 /* for 680px or less */
 @media screen and (max-width: 680px) {

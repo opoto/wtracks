@@ -57,7 +57,7 @@
         });
     }
 
-    var MINSPEED = 0.1;
+    var MINSPEED = 0.15;
     var computeSpeedEngines = {
       'refspeeds': function(slope, params) {
         if (params.length == 0) {
@@ -173,22 +173,40 @@
               }
             }
           } else {
-            // include at most 15 refspeeds
-            var inc = Math.round(Math.max(1, refspeeds.length/15))
-            if (inc == 1) {
-              sp.parameters = refspeeds.slice(0);
-            } else {
-              var dupinc = inc;
-              for (var i = 0; i < refspeeds.length; i+=dupinc) {
-                if ((i == 0) || (sp.parameters[sp.parameters.length-1][0] != refspeeds[i][0])) {
-                  sp.parameters.push(refspeeds[i]);
-                  // next step
-                  dupinc = inc;
-                } else {
-                  // try next
-                  dupinc = 1;
+            var i = 0;
+            var maxi = refspeeds.length-1;
+            var s = refspeeds[i][0];
+            var maxs = refspeeds[maxi][0];
+            // include at most 15 values
+            var inc = Math.round(Math.max(3, (maxs - s)/15));
+            // compute relative within interval of 'inc' slopes
+            var sum = 0;
+            var count = 0;
+            while (i < maxi) {
+              // considered slopes
+              var si = refspeeds[i][0];
+              // is si in current interval?
+              if (si <= s + inc) {
+                // relative slope weight inside current interval
+                var weight = (si - s / (inc/2));
+                if (weight > 1) {
+                  weight = 2 - weight;
                 }
+                sum += (refspeeds[i][1] * weight);
+                count += weight;
+              } else {
+                // we're leaving an interval
+                // check there was at least one value in this interval
+                if (count) {
+                  // add refspeed
+                  sp.parameters.push([s+(inc/2),sum/count]);
+                }
+                // advance to next interval
+                s = s + inc;
+                sum = 0;
+                count = 0;
               }
+              i++;
             }
           }
           return sp;

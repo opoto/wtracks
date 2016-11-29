@@ -97,11 +97,11 @@ var config = {
           parameters : [ [0, 0.77] ],
         }
       },
-      "test":{
+      "Walk (hills)":{
         vehicle: "foot",
         speedprofile: {
           method: "polynomial",
-          parameters : [1.2713272837059157,-0.007871236406242573,-0.0006057225670160511],
+          parameters : [1.2713272837059157,-0.0033651235698816703,-0.0006389082146566034],
         }
       }
     },

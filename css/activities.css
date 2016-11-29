@@ -1,0 +1,132 @@
+html, body{
+  margin: 0;
+  padding: 0;
+  font-family: "Helvetica", sans-serif;
+  text-align: left;
+  background-color: #FFF;
+}
+.container{
+  margin: 10px;
+}
+
+h2 {
+  background-color: grey;
+  color: white;
+  padding-left: 5px;
+}
+
+table.form {
+  border-collapse: collapse;
+}
+table.form tr {
+  border: solid 1px black;
+  border-bottom: solid 1px black;
+}
+table.form td {
+  padding: 5px;
+}
+table.form tr td:first-child {
+  background-color: #EEE;
+  text-align: right;
+}
+
+.text {
+  max-width: 50%;
+}
+#editordiv span {
+  display: block;
+  padding: 5px 0;
+  margin-left: 5px;
+}
+#editordiv span button {
+  margin-right: 5px;
+}
+#spformula {
+  margin: 10px;
+  font-style: italic;;
+  background-color: #EFEFEF;
+  width: auto;
+  display: inline-block;
+  padding: 10px;
+}
+#spformula > div {
+  display: inline-block;
+}
+
+#spformula input {
+  width: 8em;
+}
+
+#refspeeds {
+  text-align: left;
+  width: auto;
+}
+#refspeeds table {
+    width: 280px;
+    table-layout: fixed;
+    background-color: #EEE;
+}
+#refspeeds table thead {
+    width: 250px;
+    display: inherit;
+}
+#refspeeds table tbody {
+  display: block;
+  max-height: 150px;
+  overflow-y: scroll;
+  text-align: left;
+}
+
+.rs-link {
+  padding: 4px 7px 0 0;
+  border: none;
+  width: 18px;
+  height: 14px;
+  font: 16px/14px Tahoma, Verdana, sans-serif;
+  color: #c3c3c3;
+  text-decoration: none;
+  font-weight: bold;
+  background: transparent;
+  text-align: left;
+}
+.rs-link:hover {
+  color: #999;
+}
+
+.graphdiv{
+  position: fixed;
+  width: 400px;
+  height: 320px;
+  right: 2px;
+  top: 2px;
+  padding: 20px 0px 0 20px;
+  background: white;
+  border-radius: 10px;
+  border: solid 1px black;
+  box-shadow: -5px 5px 5px 0px rgba(187,187,187,1);
+}
+.graph {
+  width: 360px;
+  height: 280px;
+}
+
+#footer {
+  margin-top: 2em;
+}
+
+/* for 480px or less */
+@media screen and (max-width: 800px) {
+  .graphdiv {
+    position: relative;
+    width: 350px;
+    height: 290px;
+    padding: 0;
+  }
+  .graph {
+    width: 320px;
+    height: 270px;
+  }
+  .text {
+    max-width: 100%;
+  }
+}

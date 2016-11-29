@@ -21,45 +21,56 @@
 		<!-- File upload -->
 	  <script src="js/togeojson.js"></script>
 	  <script src="js/leaflet.filelayer.js"></script>
-		<style>
-			html, body{
-				margin: 0;
-				padding: 0;
-				font-family: "Helvetica", sans-serif;
-				text-align: center;
-
-			}
-			.container{
-				margin: 0 auto;
-			}
-			.graph{
-				width: 360px;
-				height: 280px;
-			}
-		</style>
+		<link rel="stylesheet" href="css/activities.css"/>
 	</head>
 	<body>
 		<div class="container">
-			<h1>Activity Editor</h1>
+			<div class="text">
+				<h1>Activity Editor</h1>
+				<p>Here you can edit the activities associated to your tracks.</p>
+				<p>Activities have two characteristics: the 'vehicle' configures the routing engine when editing tracks in this mode, while the 'speed profile' is used to evaluate the time you'll need to physically navigate thourgh your track. Speed is computed based on the track slope between each segment. It is either the result of a fomrula, or a lookup within a set of reference speeds for a selection of slope values.</p>
+			</div>
 			<div id="listdiv">
-				<span class="label">Activities:</span>
+				<h2>Saved activities:</h2>
 				<select id="activities">
 				</select>
 				<button id="activitydel">Delete</button>
 				<button id="activityreset">Reset Defaults</button>
 			</div>
 			<div id="editordiv">
-				<button id="activitynew">New</button>
-				<button id="activitysave">Save</button>
-				<span>Name: <input type="text" id="activityname" placeholder="Activity's name"/></span>
-				<span>Routing vehicule: <select id="activityvehicle"></select></span>
-				<span>Method: <select id="method">
-						<option value="refspeeds">refspeeds</option>
-						<option value="linear">linear</option>
-						<option value="power">power</option>
-						<option selected="selected" value="polynomial">polynomial</option>
-					</select>
+				<h2>Edit activity:</h2>
+				<span>
+					<button id="activitynew">New</button>
+					<button id="activitysave">Save</button>
 				</span>
+
+				<table class="form">
+					<tr>
+						<td>Name:</td>
+						<td><input type="text" id="activityname" placeholder="Activity's name"/></td>
+					</tr>
+					<tr>
+						<td>Routing vehicule:</td>
+						<td><select id="activityvehicle"></select></td>
+					</tr>
+					<tr>
+						<td>Speed profile:</td>
+						<td>
+							<select id="method">
+								<option value="refspeeds">refspeeds</option>
+								<option value="linear">linear</option>
+								<option value="power">power</option>
+								<option selected="selected" value="polynomial">polynomial</option>
+							</select>
+						</td>
+					</tr>
+				</table>
+
+				<div class="text">
+					<p>
+						Speed will be computed using the following formula:
+					</p>
+				</div>
 
 				<div id="spformula">
 					<div id="refspeeds">
@@ -75,62 +86,94 @@
 					</div>
 				</div>
 
-				<div id="activityformula"></div>
-
-				<div id="datadiv">
-					Data:
-					<select id="data">
-					</select>
-					Track file:
-					<input type="file" id="trackfile">
+				<div class="graphdiv">
+					<div class="graph"></div>
 				</div>
 
-				<div id="computediv">
-					Polynomial degree:
-					<select id="degree">
-						<option>1</option>
-						<option selected="selected">2</option>
-						<option>3</option>
-						<option>4</option>
-						<option>5</option>
-						<option>6</option>
-						<option>7</option>
-						<option>8</option>
-						<option>9</option>
-						<option>10</option>
-					</select>
-					Iterations:
-					<select id="iterations">
-						<option>1</option>
-						<option selected="selected">2</option>
-						<option>3</option>
-						<option>4</option>
-						<option>5</option>
-						<option>6</option>
-						<option>7</option>
-						<option>8</option>
-						<option>9</option>
-						<option>10</option>
-					</select>
-					Pruning:
-					<select id="pruning">
-						<option>0</option>
-						<option>0.1</option>
-						<option>0.2</option>
-						<option selected="selected">0.3</option>
-						<option>0.4</option>
-						<option>0.5</option>
-						<option>0.6</option>
-						<option>0.7</option>
-						<option>0.8</option>
-						<option>0.9</option>
-						<option>1</option>
-					</select>
-					<button id="compute">Compute</button>
-  			</div>
+				<h2>Compute speed profile:</h2>
+
+				<div class="text">
+					<p>
+						Use our engine to compute a speed profile based on a recorded GPS track. This track should have elevation and timing data. Select the activity's speed profile type in the activity edition form above, upload your track below, optionally change the engine parameters, and click "Compute" button. Don't forget to save your activity if you want to reuse it later.
+					</p>
+				</div>
+
+				<table class="form">
+					<tr>
+						<td>Input data:</td>
+						<td>
+							<p>Ref. speeds:
+							<select id="data">
+							</select></p>or<p>
+							Track file:
+							<input type="file" id="trackfile"></p>
+						</td>
+					</tr>
+					<tr>
+						<td>Polynomial degree:</td>
+						<td>
+							<select id="degree">
+								<option value="1">1</option>
+								<option value="2" selected="selected">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+								<option value="10">10</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>Iterations:</td>
+						<td>
+							<select id="iterations">
+								<option value="1">1</option>
+								<option value="2" selected="selected">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+								<option value="10">10</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>Pruning:</td>
+						<td>
+							<select id="pruning">
+								<option value="0">0</option>
+								<option value="0.1">0.1</option>
+								<option value="0.2">0.2</option>
+								<option value="0.3" selected="selected">0.3</option>
+								<option value="0.4">0.4</option>
+								<option value="0.5">0.5</option>
+								<option value="0.6">0.6</option>
+								<option value="0.7">0.7</option>
+								<option value="0.8">0.8</option>
+								<option value="0.9">0.9</option>
+								<option value="1">1</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td><button id="resetcompute">Reset parameters</button></td>
+					</tr>
+				</table>
+				<p>
+  				<button id="compute">Compute</button>
+				</p>
   		</div>
-			<div class="graph"></div>
-		</div>
+			<div id="footer">
+				<a href="." class="rs-link">&lt;&lt; Back to WTracks editor</a>
+			</div>
+	</div>
 		<script src="js/activities.js"></script>
 	</body>
 </html>
