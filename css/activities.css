@@ -110,6 +110,10 @@ table.form tr td:first-child {
   height: 280px;
 }
 
+.help-p {
+  display: none;
+}
+
 #footer {
   margin-top: 2em;
 }

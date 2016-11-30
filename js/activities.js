@@ -352,6 +352,11 @@ function resetComputeParams() {
   selectOption($("#pruning"), "0.3");
 }
 
+function toggleHelp(e) {
+  $("#" + this.id + "-help").toggle();
+}
+
+$(".help-b").click(toggleHelp)
 $("#data").change(changeData);
 $("#compute").click(computeSpeedProfile);
 $("#resetcompute").click(resetComputeParams);

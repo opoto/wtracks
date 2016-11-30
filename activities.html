@@ -27,8 +27,16 @@
 		<div class="container">
 			<div class="text">
 				<h1>Activity Editor</h1>
-				<p>Here you can edit the activities associated to your tracks.</p>
-				<p>Activities have two characteristics: the 'vehicle' configures the routing engine when editing tracks in this mode, while the 'speed profile' is used to evaluate the time you'll need to physically navigate thourgh your track. Speed is computed based on the track slope between each segment. It is either the result of a fomrula, or a lookup within a set of reference speeds for a selection of slope values.</p>
+				<p>
+					Here you can edit the activities associated to your tracks.
+					<img id="intro" class="help-b" src="img/help.png"/>
+				</p>
+				<div id="intro-help" class="help-p">Activities have two characteristics:
+					<ul>
+						<li>'vehicle' configures the routing engine when editing tracks in this mode, which ultimately will define which kind of road you can follow;</li>
+						<li>'speed profile' is used to evaluate the time you'll need to physically travel through your track. Speed is computed based on the track slope between each segment of the track. It is either the result of a formula (usually polynomial of 2nd degree), or a lookup within a set of reference speeds for a selection of slope values.</li>
+					</ul>
+				</div>
 			</div>
 			<div id="listdiv">
 				<h2>Saved activities:</h2>
@@ -36,6 +44,15 @@
 				</select>
 				<button id="activitydel">Delete</button>
 				<button id="activityreset">Reset Defaults</button>
+				<img id="savingtxt" class="help-b" src="img/help.png"/>
+				<div class="text">
+					<p id="savingtxt-help" class="help-p">
+						The activities modifications you save are stored in your browser's local storage.
+						This way you will find them every time you visit WTracks with that same browser.
+						If you visit WTracks from a different device it will not have access to this storage.
+					</p>
+				</div>
+
 			</div>
 			<div id="editordiv">
 				<h2>Edit activity:</h2>
@@ -94,6 +111,9 @@
 
 				<div class="text">
 					<p>
+						<img id="computetxt" class="help-b" src="img/help.png"/>
+					</p>
+					<p id="computetxt-help" class="help-p">
 						Use our engine to compute a speed profile based on a recorded GPS track. This track should have elevation and timing data. Select the activity's speed profile type in the activity edition form above, upload your track below, optionally change the engine parameters, and click "Compute" button. Don't forget to save your activity if you want to reuse it later.
 					</p>
 				</div>
