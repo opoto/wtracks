@@ -256,6 +256,7 @@ $("#trim-type").change(prepareTrim);
 $("#menu-button").click(function() {
   if (!$("#menu").is(":visible")) {
     setEditMode(EDIT_NONE);
+    menu("file");
     $("#menu").show();
     prepareTrim();
   } else {
@@ -815,6 +816,20 @@ function flatten() {
   clearStatus();
 }
 
+function revert() {
+  var points = track ? track.getLatLngs() : undefined;
+  if (points && (points.length > 0)) {
+    setStatus("Reverting..", {spinner: true});
+    var newpoints = [];
+    for (var i = points.length - 1; i >= 0 ; i--) {
+      newpoints.push(points[i]);
+    }
+    track.setLatLngs(newpoints);
+    polystats.updateStatsFrom(0);
+    clearStatus();
+  }
+}
+
 new L.Control.GeoSearch({
     provider: new L.GeoSearch.Provider.OpenStreetMap(),
     position: 'topleft',
@@ -907,6 +922,12 @@ $("#elevate").click(function (e) {
 $("#flatten").click(function (e) {
   $("#menu").hide();
   flatten();
+  return false;
+});
+
+$("#revert").click(function (e) {
+  $("#menu").hide();
+  revert();
   return false;
 });
 
@@ -1392,6 +1413,19 @@ if (config.email) {
   setEmailListener(config.email.selector, config.email.name,
     config.email.domain, config.email.subject);
 }
+
+function menu(item, event) {
+  $("#menu table").hide();
+  $(".tablinks").removeClass("active");
+  $("#tab"+item).addClass("active");
+  $("#menu #menu"+item).show();
+  if (event) {
+    event.preventDefault();
+  }
+}
+$(".tablinks").click(function(event) {
+  menu(event.target.id.replace("tab",""), event)
+});
 
 var url = getParameterByName("url");
 if (url) {

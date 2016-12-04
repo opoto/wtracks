@@ -348,7 +348,7 @@ function resetComputeParams() {
   $("#trackfile").val("");
   */
   selectOption($("#degree"), "2");
-  selectOption($("#iterations"), "2");
+  selectOption($("#iterations"), "1");
   selectOption($("#pruning"), "0.3");
 }
 

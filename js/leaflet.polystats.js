@@ -57,7 +57,6 @@
         });
     }
 
-    var MINSPEED = 0.15;
     var computeSpeedEngines = {
       'refspeeds': function(slope, params) {
         if (params.length == 0) {
@@ -125,7 +124,9 @@
               method: REFSPEEDS,
               parameters: [0, 1.25],
             },
-            onUpdate: undefined
+            onUpdate: undefined,
+            // speeds below this value will be floored to this value
+            minspeed: 0.05
         },
 
         initialize: function(polyline, options) {
@@ -137,10 +138,12 @@
         getSpeed: function(slope, sp) {
           var engine = computeSpeedEngines[sp.method];
           var speed = engine(slope, sp.parameters);
-          return Math.max(MINSPEED, speed);
+          return Math.max(this.options.minspeed, speed);
         },
 
-        computeSpeedProfileFromSpeeds: function(refspeeds, method, iterations, pruning, polydeg) {
+        computeSpeedProfileFromSpeeds: function(refspeeds, method,
+          iterations, pruning, polydeg, threshold) {
+
           refspeeds.sort(function(a, b) {
             return a[0] - b[0];
           });
@@ -149,13 +152,27 @@
             "parameters": [],
             "refspeeds": refspeeds,
           }
+
           var engine = computeSpeedEngines[method];
+
+          var pruned = refspeeds.slice(0);
+
+          if (threshold) {
+            // prune speeds below threshold
+            var i = 0;
+            while (i < pruned.length) {
+              if (pruned[i][1] < this.options.threshold) {
+                pruned.splice(i, 1);
+              } else {
+                i++;
+              }
+            }
+          }
+
           // only proceed if we have at least 2 refspeeds and engine found
           if ((method !== REFSPEEDS) && (refspeeds.length > 1) && engine) {
 
             // compute speed profile using regression method
-            var pruned = refspeeds.slice(0);
-
             for (var iter=0; iter < iterations; iter++) {
               var compreg = regression(method, pruned, polydeg);
               sp.parameters = compreg.equation;
@@ -174,9 +191,9 @@
             }
           } else {
             var i = 0;
-            var maxi = refspeeds.length-1;
-            var s = refspeeds[i][0];
-            var maxs = refspeeds[maxi][0];
+            var maxi = pruned.length-1;
+            var s = pruned[i][0];
+            var maxs = pruned[maxi][0];
             // include at most 15 values
             var inc = Math.round(Math.max(3, (maxs - s)/15));
             // compute relative within interval of 'inc' slopes
@@ -184,17 +201,9 @@
             var count = 0;
             while (i < maxi) {
               // considered slopes
-              var si = refspeeds[i][0];
+              var si = pruned[i][0];
               // is si in current interval?
-              if (si <= s + inc) {
-                // relative slope weight inside current interval
-                var weight = (si - s / (inc/2));
-                if (weight > 1) {
-                  weight = 2 - weight;
-                }
-                sum += (refspeeds[i][1] * weight);
-                count += weight;
-              } else {
+              if (si > s + inc) {
                 // we're leaving an interval
                 // check there was at least one value in this interval
                 if (count) {
@@ -206,13 +215,21 @@
                 sum = 0;
                 count = 0;
               }
+              // relative slope weight inside current interval
+              var weight = (si - s / (inc/2));
+              if (weight > 1) {
+                weight = 2 - weight;
+              }
+              sum += (refspeeds[i][1] * weight);
+              count += weight;
               i++;
             }
           }
           return sp;
         },
 
-        computeSpeedProfileFromTrack: function(geojson, method, iterations, pruning, polydeg) {
+        computeSpeedProfileFromTrack: function(geojson, method,
+          iterations, pruning, polydeg, threshold) {
 
           function newLatLng(coord) {
             var point = L.latLng(coord[1], coord[0]);
@@ -261,7 +278,8 @@
             }
           });
 
-          return this.computeSpeedProfileFromSpeeds(refspeeds, method, iterations, pruning, polydeg);
+          return this.computeSpeedProfileFromSpeeds(refspeeds, method,
+            iterations, pruning, polydeg, threshold);
         },
 
         setSpeedProfile: function(speedProfile) {

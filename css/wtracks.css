@@ -57,16 +57,18 @@ body {
   margin: 0 !important;
 }
 #menu table {
-  margin: 10px 0;
+  margin: 0 0 10px 0;
   width: 100%;
   border-collapse: collapse;
+}
+#menu tr {
+  border: 1px solid #CCC;
 }
 #menu th {
   background-color: #BBB;
   cursor: pointer;
 }
 #menu td {
-  border-top: 1px solid #CCC;
   padding: 5px;
 }
 #menu td label {
@@ -82,10 +84,39 @@ body {
   width:100%;
 }
 
-#menu-track span, #menu-tools span {
- position: absolute;
- right: 30px;
+
+/* Style the list */
+ul.menutab {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #f1f1f1;
 }
+
+/* Float the list items side by side */
+ul.menutab li {
+  float: left;
+  border: 1px solid #ccc;
+}
+
+/* Style the links inside the list items */
+ul.menutab li a {
+    display: inline-block;
+    color: black;
+    text-align: center;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: 0.3s;
+    font-size: 14px;
+}
+
+/* Change background color of links on hover */
+ul.menutab li a:hover {background-color: #ddd;}
+
+/* Create an active/current tablink class */
+ul.menutab li a:focus, .active {background-color: #ccc;}
+
 a.button {
   text-decoration: none;
   color: black;
@@ -276,6 +307,13 @@ button:active, #track-upload-label:active {
    z-index: -1;
 }
 
+.popupdiv a {
+  padding: 5px;
+}
+.popupdiv a:hover, .popupdiv a:active {
+  background-color: #DDD;
+}
+
 /* --------------------- Statistics ---------------------- */
 
 .statistics th, .statistics td {
@@ -298,7 +336,7 @@ button:active, #track-upload-label:active {
 #activity {
   text-align: right;
 }
-.statistics a:hover, a:visited, a:link, a:active
+.statistics a:hover, .statistics a:visited, .statistics a:link, .statistics a:active
 {
     text-decoration: none;
     color: black;

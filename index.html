@@ -57,13 +57,16 @@
 <body>
   <div id="menu">
     <div id="menu-header"><a id="menu-close" href="#" class="menu-close-button">×</a></div>
-    <table>
-      <tr><th colspan="2" id="menu-track">Track<span class="collapsable-track">-</span><span class="collapsable-track hidden">+</span></th></tr>
-      <tr class="collapsable-track">
+    <ul class="menutab">
+      <li><a href="#" class="tablinks" id="tabfile">File</a></li>
+      <li><a href="#" class="tablinks" id="tabtools">Tools</a></li>
+    </ul>
+    <table id="menufile">
+      <tr>
         <td><button id="track-new" title="Delete current track and start a new one">New</button></td><td>Delete current track and start a new one</td>
-      </tr><tr class="collapsable-track">
+      </tr><tr>
         <td><label id="track-upload-label"><input type="file" name="track" id="track-upload" /><span>Upload</span></label></td><td>Open a file from your device</td>
-      </tr><tr class="collapsable-track">
+      </tr><tr>
         <td>
           <button id="track-get" title="Delete current track and loads a GPX file from the internet">Get from: </button></td><td><input id="track-get-url" placeholder="URL of GPX file on the internet" type="url"/></br>
           <label><input type="radio" name="track-get-ext" value="auto" checked="checked"> Auto</label>
@@ -71,20 +74,20 @@
           <label><input type="radio" name="track-get-ext" value="kml"> KML</label>
           <label><input type="radio" name="track-get-ext" value="geojson"> GeoJson</label>
         </td>
-      </tr><tr class="collapsable-track">
+      </tr><tr>
         <td><button id="track-download" title="Download the track as a GPX file">Download</button></td><td>Download the track as a GPX file<br/><label><input type="checkbox" id="as-route"/>As route</label> | <label><input type="checkbox" id="nometadata"/>No metadata</label></td>
-      </tr><tr>
-        <tr><td colspan="2"  id="menu-separator"></tr>
-      </tr><tr class="collapsable-tools">
-      </tr><tr>
-        <tr><th colspan="2"  id="menu-tools">Tools<span class="collapsable-tools">-</span><span class="collapsable-tools hidden">+</span></th></tr>
-      </tr><tr class="collapsable-tools">
+      </tr>
+    </table>
+    <table id="menutools">
+      <tr>
         <td><button id="compress" class="no-trim">Compress</button></td><td>Remove track points within a  <input id="prunedist" type="text" size="2" value="5"/> meters band</td>
-      </tr><tr class="collapsable-tools">
+      </tr><tr>
         <td> <button id="elevate" class="no-trim">Elevate</button></td><td>Add altitude information to some track points</td>
-      </tr><tr class="collapsable-tools">
+      </tr><tr>
         <td><button id="flatten" class="no-trim">Flatten</button></td><td>Remove altitude information from all track points</td>
-      </tr><tr class="collapsable-tools">
+      </tr><tr>
+        <td><button id="revert" class="no-trim">Revert</button></td><td>Reverts direction of the track<br>(start becomes end)</td>
+      </tr><tr>
         <td>
           <select id="trim-type">
             <option>Trim start</option>
