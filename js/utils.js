@@ -147,3 +147,23 @@ function strdecode(s1, s2) {
   var s = (window.location.toString().indexOf("file:") == 0) ? s2: s1;
   return s ? strxor(decodeURIComponent(s), n10dLocation()) : s;
 }
+
+// Base 64 encoding / decoding
+
+function supportsBase64() {
+  return btoa && atob ? true : false;
+}
+function b64EncodeUnicode(str) {
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+        return String.fromCharCode('0x' + p1);
+    }));
+}
+function b64DecodeUnicode(str) {
+    return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+}
+
+function copyToClipboard(msg, text) {
+  window.prompt(msg + "\nCopy to clipboard: Ctrl+C, Enter", text);
+}

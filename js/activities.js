@@ -1,3 +1,33 @@
+// -------- ACTIVITIES
+var activities = getJsonVal("activities");
+// initialize activities on first use
+if (!activities) {
+  activities = config.activities.defaults;
+  storeJsonVal("activities", activities);
+}
+
+/** first check if we're importing **/
+var query = getParameterByName("import");
+if (supportsBase64 && query) {
+  // we are importing
+  var importedActivities = JSON.parse(b64DecodeUnicode(query));
+  var imported = false;
+  for (var a in importedActivities) {
+    if (hasOwnProperty.call(importedActivities, a)) {
+      var msg = activities[a] ? "Overwrite " : "Import ";
+      if (confirm(msg + a + "?")) {
+        activities[a] = importedActivities[a];
+        imported = true;
+      }
+    }
+  }
+  if (imported) {
+    storeJsonVal("activities", activities);
+  }
+  window.location = window.location.href.split('?')[0];
+}
+
+
 /*** dummy track required for polystats ***/
 var track = L.polyline([]);
 var polystats = L.Util.polyStats(track, {
@@ -20,16 +50,9 @@ function selectOption(select, optval) {
   select.children("option[value='"+optval+"']").prop("selected", true);
 }
 
-// -------- ACTIVITIES
-var activities = getJsonVal("activities");
 var activity;
 var activityname;
 
-// initialize activities on first use
-if (!activities) {
-  activities = config.activities.defaults;
-  storeJsonVal("activities", activities);
-}
 
 // vehicle menu
 var selectVehicle = $("#activityvehicle")[0];
@@ -90,6 +113,25 @@ $("#activitysave").click(function() {
     displaySelectedActivity();
   }
 });
+
+function share(json) {
+  var data = b64EncodeUnicode(json);
+  var url = window.location.toString() + "?import=" + data;
+  copyToClipboard("Share following URL", url);
+}
+$("#activityshareall").click(function() {
+  var str = JSON.stringify(activities);
+  share(str);
+});
+$("#activityshare").click(function() {
+  var str = "{\"" + activityname + "\":" + JSON.stringify(activity)+"}"
+  share(str);
+});
+
+if (!supportsBase64()) {
+  $("#activityshareall").attr("disabled", "disabled");
+  $("#activityshare").attr("disabled", "disabled");
+}
 
 function createActivity(vehicle, method, params) {
   return {
@@ -361,3 +403,4 @@ $("#data").change(changeData);
 $("#compute").click(computeSpeedProfile);
 $("#resetcompute").click(resetComputeParams);
 changeData();
+
