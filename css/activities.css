@@ -128,7 +128,7 @@ table.form tr td:first-child {
   text-align: left;
 }
 
-.rs-link {
+.btn-link {
   padding: 4px 7px 0 0;
   border: none;
   width: 18px;
@@ -140,7 +140,7 @@ table.form tr td:first-child {
   background: transparent;
   text-align: left;
 }
-.rs-link:hover {
+.btn-link:hover {
   color: #999;
 }
 

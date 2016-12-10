@@ -94,6 +94,53 @@ $("#activitysave").click(function() {
   }
 });
 
+function moveActivity(inc) {
+  var name = $("#activities").children(':selected').val();
+  var idx = selectActivity.selectedIndex + inc;
+  var newActivities = {};
+  var i = 0;
+  for (var a in activities) {
+    if (hasOwnProperty.call(activities, a)) {
+      if (i == idx) {
+        newActivities[name] = activities[name];
+        i++;
+      }
+      if (a != name) {
+        newActivities[a] = activities[a];
+        i++;
+      }
+    }
+  }
+  if (i == idx) {
+    newActivities[name] = activities[name];
+    i++;
+  }
+  // save
+  activities = newActivities;
+  storeJsonVal("activities", activities);
+  // update menu
+  var curIdx = selectActivity.selectedIndex;
+  var moved = selectActivity.children[curIdx];
+  var beforeIdx = (inc == -1) ? curIdx - 1 : curIdx + 2;
+  selectActivity.insertBefore(moved, selectActivity.children[beforeIdx]);
+  selectOption($("#activities"), name);
+}
+
+// activity up button
+$("#activityup").click(function(event) {
+  if (selectActivity.selectedIndex > 0) {
+    moveActivity(-1);
+  }
+  event.preventDefault();
+});
+// activity down button
+$("#activitydown").click(function(event) {
+  if (selectActivity.selectedIndex < selectActivity.children.length - 1) {
+    moveActivity(1);
+  }
+  event.preventDefault();
+});
+
 function exportA(json) {
   var data = b64EncodeUnicode(json);
   $("#prompt-text").text("Copy and share data below (Ctrl+C & Enter):");
@@ -223,7 +270,7 @@ function addRefSpeedLine(i) {
   tr.children[1].append(refSpeedInput(p[1], i, 1));
   var delrs = document.createElement("a");
   delrs.setAttribute("href", "#");
-  delrs.setAttribute("class", "rs-link");
+  delrs.setAttribute("class", "btn-link");
   delrs.innerHTML = "×";
   delrs.addEventListener("click", function(e) {
     // compute parameter index
@@ -280,7 +327,7 @@ var spFormula = {
     }
     var addrs = document.createElement("a");
     addrs.setAttribute("href", "#");
-    addrs.setAttribute("class", "rs-link");
+    addrs.setAttribute("class", "btn-link");
     addrs.innerHTML = "+";
     addrs.addEventListener("click", function(e) {
       addRefSpeed();
