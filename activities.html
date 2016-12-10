@@ -38,19 +38,33 @@
 					</ul>
 				</div>
 			</div>
+
+			<!-- Prompt box -->
+			<div id="prompt" class="modal">
+			  <!-- Modal content -->
+			  <div class="prompt-content">
+					<span id="prompt-close" class="close">&times;</span>
+			    <p id="prompt-text"></p>
+					<input id="prompt-val" type="text" size="50" value=""/>
+					<button id="prompt-ok">Ok</button>
+			  </div>
+			</div>
+
 			<div id="listdiv">
 				<h2>Saved activities:</h2>
 				<select id="activities">
 				</select>
 				<button id="activitydel">Delete</button>
 				<button id="activityreset">Reset Defaults</button>
-				<button id="activityshareall">Share All</button>
+				<button id="activityexportall">Export All</button>
+				<button id="activityimport">Import</button>
 				<img id="savingtxt" class="help-b" src="img/help.png"/>
 				<div class="text">
 					<p id="savingtxt-help" class="help-p">
 						The activities modifications you save are stored in your browser's local storage.
 						This way you will find them every time you visit WTracks with that same browser.
 						If you visit WTracks from a different device it will not have access to this storage.
+						To share your activities between devices or browsers, use the import and export buttons.
 					</p>
 				</div>
 
@@ -60,7 +74,7 @@
 				<span>
 					<button id="activitynew">New</button>
 					<button id="activitysave">Save</button>
-					<button id="activityshare">Share</button>
+					<button id="activityexport">Export</button>
 				</span>
 
 				<table class="form">

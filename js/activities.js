@@ -6,28 +6,6 @@ if (!activities) {
   storeJsonVal("activities", activities);
 }
 
-/** first check if we're importing **/
-var query = getParameterByName("import");
-if (supportsBase64 && query) {
-  // we are importing
-  var importedActivities = JSON.parse(b64DecodeUnicode(query));
-  var imported = false;
-  for (var a in importedActivities) {
-    if (hasOwnProperty.call(importedActivities, a)) {
-      var msg = activities[a] ? "Overwrite " : "Import ";
-      if (confirm(msg + a + "?")) {
-        activities[a] = importedActivities[a];
-        imported = true;
-      }
-    }
-  }
-  if (imported) {
-    storeJsonVal("activities", activities);
-  }
-  window.location = window.location.href.split('?')[0];
-}
-
-
 /*** dummy track required for polystats ***/
 var track = L.polyline([]);
 var polystats = L.Util.polyStats(track, {
@@ -79,6 +57,8 @@ function saveActivity(name, a) {
     sortSpeedRefs(a.speedprofile.parameters);
     spFormula[a.speedprofile.method]();
   }
+  // clear potential refspeeds used for computation
+  a.refspeeds = undefined;
   activities[name] = a;
   storeJsonVal("activities", activities);
 }
@@ -114,23 +94,78 @@ $("#activitysave").click(function() {
   }
 });
 
-function share(json) {
+function exportA(json) {
   var data = b64EncodeUnicode(json);
-  var url = window.location.toString() + "?import=" + data;
-  copyToClipboard("Share following URL", url);
+  $("#prompt-text").text("Copy and share data below (Ctrl+C & Enter):");
+  $("#prompt-ok").hide();
+  $("#prompt-val").val(data);
+  $("#prompt").show();
+  $("#prompt-val").focus();
+  $("#prompt-val").select();
 }
-$("#activityshareall").click(function() {
-  var str = JSON.stringify(activities);
-  share(str);
+
+function promptA() {
+  $("#prompt-text").text("Paste exported activity data:");
+  $("#prompt-val").val("");
+  $("#prompt-ok").show();
+  $("#prompt").show();
+  $("#prompt-val").focus();
+}
+
+$("#prompt-close").click(function(){
+  $("#prompt").hide();
 });
-$("#activityshare").click(function() {
+
+$("#prompt-val").keyup(function(event){
+  if ( event.which == 27 ) {
+    $("#prompt").hide();
+  } else if (event.keyCode == 13) {
+    var isImport = $("#prompt-ok").is(":visible");
+    $("#prompt").hide();
+    if (isImport) {
+      importA();
+    }
+  }
+});
+
+$("#prompt-ok").click(importA);
+
+function importA() {
+  var data = $("#prompt-val").val();
+  var importedActivities = JSON.parse(b64DecodeUnicode(data));
+  var imported = false;
+  for (var a in importedActivities) {
+    if (hasOwnProperty.call(importedActivities, a)) {
+      var msg = activities[a] ? "Overwrite " : "Import ";
+      if (confirm(msg + a + "?")) {
+        activities[a] = importedActivities[a];
+        imported = true;
+      }
+    }
+  }
+  if (imported) {
+    storeJsonVal("activities", activities);
+    // reload page
+    window.location.reload();
+  }
+}
+
+$("#activityexportall").click(function() {
+  var str = JSON.stringify(activities);
+  exportA(str);
+});
+$("#activityexport").click(function() {
   var str = "{\"" + activityname + "\":" + JSON.stringify(activity)+"}"
-  share(str);
+  exportA(str);
+});
+$("#activityimport").click(function() {
+  promptA();
 });
 
 if (!supportsBase64()) {
-  $("#activityshareall").attr("disabled", "disabled");
-  $("#activityshare").attr("disabled", "disabled");
+  $("#activityexportall").attr("disabled", "disabled");
+  $("#activityexport").attr("disabled", "disabled");
+  $("#activityimport").attr("disabled", "disabled");
 }
 
 function createActivity(vehicle, method, params) {
