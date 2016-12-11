@@ -47,7 +47,11 @@
     }
 
     function getSlope(dist, altdiff) {
+      if ((dist == 0) || (altdiff == 0)) {
+        return 0;
+      } else {
         return (altdiff / dist) * 100;
+      }
     }
 
     // utility function to sort speedRefs by increasing slope
