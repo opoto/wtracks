@@ -141,6 +141,7 @@ $("#activitydown").click(function(event) {
   event.preventDefault();
 });
 
+
 function exportA(json) {
   var data = b64EncodeUnicode(json);
   $("#prompt-text").text("Copy and share data below (Ctrl+C & Enter):");
