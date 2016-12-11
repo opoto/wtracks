@@ -160,6 +160,16 @@ table.form tr td:first-child {
 
 /* for 480px or less */
 @media screen and (max-width: 800px) {
+  #activities-btns {
+    display: block;
+    margin-top: 15px;
+  }
+  #activities-btns .help-b {
+    margin-left: 15px;
+  }
+  .movea {
+    margin-left: 20px;
+  }
   .graphdiv {
     position: relative;
     width: 350px;

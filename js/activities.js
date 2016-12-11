@@ -153,7 +153,7 @@ function exportA(json) {
 }
 
 function promptA() {
-  $("#prompt-text").text("Paste exported activity data:");
+  $("#prompt-text").text("Paste exported activity data (Ctrl+V & Enter):");
   $("#prompt-val").val("");
   $("#prompt-ok").show();
   $("#prompt").show();

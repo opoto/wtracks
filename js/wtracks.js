@@ -608,6 +608,11 @@ function getProvider(name) {
     p = L.tileLayer('http://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &amp; USGS'
     });
+  }  else if (name == "map1.eu") {
+    p = L.tileLayer('http://beta.map1.eu/tiles/{z}/{x}/{y}.jpg', {
+      maxZoom: 17,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &amp; <a href="http://map1.eu">map1.eu</a>'
+    });
   } else if (name == 'google:roadmap') {
     p = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
         maxZoom: 20,
@@ -665,6 +670,7 @@ var baseLayers = {
   "ESRI Topo": getProvider("esri:worldtopomap"),
   "ESRI Street": getProvider("esri:worldstreetmap"),
   "MTB (*)": getProvider("mtbmap"),
+  "Map1.eu (*)": getProvider("map1.eu"),
   "Google roads": getProvider('google:roadmap'),
   "Google Terrain": getProvider('google:terrain'),
   "Google Satellite": getProvider('google:satellite'),
