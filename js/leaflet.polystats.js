@@ -61,57 +61,56 @@
         });
     }
 
-    var computeSpeedEngines = {
-      'refspeeds': function(slope, params) {
-        if (params.length == 0) {
-          return 0;
-        }
-
-        // clone and sort
-        params = params.slice(0);
-        sortSpeedRefs(params);
-
-        if ((params.length == 1) || (slope <= params[0][0])) {
-            return params[0][1];
-        }
-        if (slope >= params[params.length - 1][0]) {
-            return params[params.length - 1][1];
-        }
-        var i = 1;
-        while (i < params.length) {
-            if ((slope >= params[i - 1][0]) && (slope < params[i][0])) {
-                var diffslope = params[i][0] - params[i - 1][0];
-                var a = (params[i][1] - params[i - 1][1]) / diffslope;
-                var res = (a * (slope - params[i - 1][0])) + params[i - 1][1];
-                return res;
-            }
-            i++;
-        }
-        return 0;
-      },
-      'power': function(slope, params) {
-        return params[0] * Math.pow(slope , params[1]);
-      },
-      'linear': function(slope, params) {
-        return slope * params[0] + params[1];
-      },
-      'polynomial': function(slope, params) {
-        var v = params[0];
-        var degree = params.length-1;
-        var d = 1;
-        while (d <= degree) {
-          v += params[d] * Math.pow(slope, d);
-          d++;
-        }
-        return v;
-      },
-    };
-
     // speedprofile computation methods
     var REFSPEEDS = "refspeeds";
     var POWER = "power";
     var LINEAR = "linear";
     var POLYNOMIAL = "polynomial";
+
+    var computeSpeedEngines = {};
+    computeSpeedEngines[REFSPEEDS] = function(slope, params) {
+      if (params.length == 0) {
+        return 0;
+      }
+
+      // clone and sort
+      params = params.slice(0);
+      sortSpeedRefs(params);
+
+      if ((params.length == 1) || (slope <= params[0][0])) {
+          return params[0][1];
+      }
+      if (slope >= params[params.length - 1][0]) {
+          return params[params.length - 1][1];
+      }
+      var i = 1;
+      while (i < params.length) {
+          if ((slope >= params[i - 1][0]) && (slope < params[i][0])) {
+              var diffslope = params[i][0] - params[i - 1][0];
+              var a = (params[i][1] - params[i - 1][1]) / diffslope;
+              var res = (a * (slope - params[i - 1][0])) + params[i - 1][1];
+              return res;
+          }
+          i++;
+      }
+      return 0;
+    };
+    computeSpeedEngines[POWER] = function(slope, params) {
+      return params[0] * Math.pow(slope , params[1]);
+    };
+    computeSpeedEngines[LINEAR] = function(slope, params) {
+      return slope * params[0] + params[1];
+    };
+    computeSpeedEngines[POLYNOMIAL] = function(slope, params) {
+      var v = params[0];
+      var degree = params.length-1;
+      var d = 1;
+      while (d <= degree) {
+        v += params[d] * Math.pow(slope, d);
+        d++;
+      }
+      return v;
+    };
 
     var PolyStats = L.Class.extend({
 

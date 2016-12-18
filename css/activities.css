@@ -93,24 +93,28 @@ table.form tr td:first-child {
   width: 8em;
 }
 
-#refspeeds {
+#spformula table {
   text-align: left;
   width: auto;
+  width: 280px;
+  table-layout: fixed;
+  background-color: #EEE;
 }
-#refspeeds table {
-    width: 280px;
-    table-layout: fixed;
-    background-color: #EEE;
-}
-#refspeeds table thead {
+#spformula table thead {
     width: 250px;
     display: inherit;
 }
-#refspeeds table tbody {
+#spformula table tbody {
   display: block;
   max-height: 150px;
   overflow-y: scroll;
   text-align: left;
+}
+
+.pow {
+  vertical-align: super;
+  display: inline !important;
+  font-size: 80%;
 }
 
 .btn-link {

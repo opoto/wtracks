@@ -55,7 +55,7 @@ function saveActivity(name, a) {
 
   if (a.speedprofile.method == L.Util.PolyStats.REFSPEEDS) {
     sortSpeedRefs(a.speedprofile.parameters);
-    spFormula[a.speedprofile.method]();
+    displayFormula(a.speedprofile.method);
   }
   // clear potential refspeeds used for computation
   a.refspeeds = undefined;
@@ -260,13 +260,13 @@ function refSpeedInput(val, paramidx, col) {
 }
 function delRefSpeed(i) {
   activity.speedprofile.parameters.splice(i, 1);
-  $("#spformula #refspeeds table tr:nth-of-type(" + (i+1) + ")").remove();
+  $("#spformula table tr:nth-of-type(" + (i+1) + ")").remove();
   displaySpeedProfile(activity.speedprofile);
 }
 function addRefSpeedLine(i) {
   var p = activity.speedprofile.parameters[i];
-  $("#spformula #refspeeds table tbody").append("<tr><td></td><td></td></tr>");
-  var tr = $("#spformula #refspeeds table tbody tr:last-of-type()")[0];
+  $("#spformula table tbody").append("<tr><td></td><td></td></tr>");
+  var tr = $("#spformula table tbody tr:last-of-type()")[0];
   tr.children[0].append(refSpeedInput(p[0], i, 0));
   tr.children[1].append(refSpeedInput(p[1], i, 1));
   var delrs = document.createElement("a");
@@ -297,56 +297,85 @@ function addRefSpeed() {
 function genericSpFormula(method, defparams) {
   function updParam(method, idx) {
     return function() {
-      activity.speedprofile.parameters[idx] = parseFloat($("#spformula #" + method + " #p"+idx).val());
+      activity.speedprofile.parameters[idx] = parseFloat($("#spformula #p"+idx).val());
       displaySpeedProfile(activity.speedprofile);
     }
   }
-  if (activity.speedprofile.method !== method) {
-    activity.speedprofile.method = method;
-    activity.speedprofile.parameters = defparams;
-  }
   $("#spformula input").off("keyup");
   for (var i = activity.speedprofile.parameters.length - 1; i >= 0; i--) {
-    $("#spformula #" + method + " #p"+i).val(activity.speedprofile.parameters[i]);
-    $("#spformula #" + method + " #p"+i).on("keyup", updParam(method, i));
+    $("#spformula #p"+i).val(activity.speedprofile.parameters[i]);
+    $("#spformula #p"+i).on("keyup", updParam(method, i));
   }
 }
 
-var spFormula = {
-  "refspeeds": function() {
-    $("#spformula #refspeeds").empty();
-    $("#spformula #refspeeds").append("<table></table>");
-    $("#spformula #refspeeds table").append("<thead><tr><th>Slope (%)</th><th>Speed (m/s)</th></tr></thead><tbody></tbody>");
-    if (activity.speedprofile.method !== L.Util.PolyStats.REFSPEEDS) {
-      activity.speedprofile.method = L.Util.PolyStats.REFSPEEDS;
-      activity.speedprofile.parameters = [ [-35, 0.4722], [-20, 0.6944], [-12, 0.9722],
-            [-10, 1.1111], [-6, 1.25], [-3, 1.25], [2, 1.1111], [6, 0.9722],
-            [10, 0.8333], [19, 0.5555], [38, 0.2777] ]
+var spFormula = {};
+spFormula[L.Util.PolyStats.REFSPEEDS] = {
+    defaultFormulaParams : [ [-35, 0.4722], [-20, 0.6944], [-12, 0.9722],
+          [-10, 1.1111], [-6, 1.25], [-3, 1.25], [2, 1.1111], [6, 0.9722],
+          [10, 0.8333], [19, 0.5555], [38, 0.2777] ],
+    displayFormulaParams : function() {
+      $("#spformula").empty();
+      $("#spformula").append("<table></table>");
+      $("#spformula table").append("<thead><tr><th>Slope (%)</th><th>Speed (m/s)</th></tr></thead><tbody></tbody>");
+      for (var i=0; i<activity.speedprofile.parameters.length; i++) {
+        addRefSpeedLine(i);
+      }
+      var addrs = document.createElement("a");
+      addrs.setAttribute("href", "#");
+      addrs.setAttribute("class", "btn-link");
+      addrs.innerHTML = "+";
+      addrs.addEventListener("click", function(e) {
+        addRefSpeed();
+        $("#spformula table tbody").scrollTop($("#spformula table tbody")[0].scrollHeight);
+        e.preventDefault();
+      });
+      $("#spformula").append(addrs);
+      $("#spformula table tbody").scrollTop($("#spformula table tbody")[0].scrollHeight);
     }
-    for (var i=0; i<activity.speedprofile.parameters.length; i++) {
-      addRefSpeedLine(i);
+  };
+spFormula[L.Util.PolyStats.LINEAR] = {
+    defaultFormulaParams : [0.2,4],
+    displayFormulaParams : function() {
+      $("#spformula").html("speed = <input id='p0' type='text'/> * slope + <input id='p1' type='text'/>");
+      genericSpFormula(L.Util.PolyStats.LINEAR);
     }
-    var addrs = document.createElement("a");
-    addrs.setAttribute("href", "#");
-    addrs.setAttribute("class", "btn-link");
-    addrs.innerHTML = "+";
-    addrs.addEventListener("click", function(e) {
-      addRefSpeed();
-      $("#refspeeds table tbody").scrollTop($("#refspeeds table tbody")[0].scrollHeight);
-      e.preventDefault();
-    });
-    $("#spformula #refspeeds").append(addrs);
-    $("#refspeeds table tbody").scrollTop($("#refspeeds table tbody")[0].scrollHeight);
-  },
-  "linear": function() {
-    genericSpFormula("linear", [4,0.2]);
-  },
-  "power": function() {
-    genericSpFormula("power", [1,2]);
-  },
-  "polynomial": function() {
-    genericSpFormula(L.Util.PolyStats.POLYNOMIAL, [ 1.1, -0.1, -0.001]);
-  },
+  };
+spFormula[L.Util.PolyStats.POWER] = {
+    defaultFormulaParams : [1,2],
+    displayFormulaParams : function() {
+      $("#spformula").html("speed = <input id='p0' type='text'/> * slope ^ <input id='p1' type='text'/>");
+      genericSpFormula(L.Util.PolyStats.POWER);
+    }
+  };
+spFormula[L.Util.PolyStats.POLYNOMIAL] = {
+    defaultFormulaParams : [ 1.1, -0.1, -0.001],
+    displayFormulaParams : function() {
+      var i = 0;
+      var html = "";
+      while (i < activity.speedprofile.parameters.length) {
+        var param = "<input id='p" + i + "' type='text'/>";
+        if (i > 0) {
+          param += " * slope"
+          if (i > 1) {
+            param += "<span class='pow'>"  + i + "</span>";
+          }
+          param += " + "
+        }
+        html = param + html;
+        i++;
+      }
+      $("#spformula").html("speed = " + html);
+      genericSpFormula(L.Util.PolyStats.POLYNOMIAL);
+    }
+  };
+
+function displayFormula(method) {
+  var spf = spFormula[method];
+  if (activity.speedprofile.method !== method) {
+    activity.speedprofile.method = method;
+    activity.speedprofile.parameters = spf.defaultFormulaParams;
+  }
+  spf.displayFormulaParams();
 }
 
 function displayActivity() {
@@ -429,9 +458,7 @@ $("#method").change(updateMethod);
 
 function updateMethod(){
   var method = $( "#method option:selected" ).text();
-  $("#spformula > div").hide();
-  $("#spformula > div#"+method).show();
-  spFormula[method]();
+  displayFormula(method);
   displaySpeedProfile(activity.speedprofile);
 }
 /********* speed profile from track *********/
@@ -486,4 +513,3 @@ $("#data").change(changeData);
 $("#compute").click(computeSpeedProfile);
 $("#resetcompute").click(resetComputeParams);
 changeData();
-
