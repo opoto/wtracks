@@ -1,0 +1,24 @@
+{
+  "short_name": "WTrack",
+  "name": "WTrack - online track editor for outdoor activites",
+  "icons": [
+    {
+      "src": "img/wtrack-icon-1x.png",
+      "type": "image/png",
+      "sizes": "48x48"
+    },
+    {
+      "src": "img/wtrack-icon-2x.png",
+      "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "img/wtrack-icon-4x.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "index.html",
+  "display": "standalone"
+
+}

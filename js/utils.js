@@ -167,3 +167,11 @@ function b64DecodeUnicode(str) {
 function copyToClipboard(msg, text) {
   window.prompt(msg + "\nCopy to clipboard: Ctrl+C, Enter", text);
 }
+
+/* ---------------------- Start service worker ------------------------*/
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker
+           .register('./service-worker.js')
+           .then(function() { console.log('Service Worker Registered'); });
+}
