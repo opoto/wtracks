@@ -49,7 +49,6 @@ var filesToCache = [
   './doc/index.html',
   './img/alert.png',
   './img/geosearch.png',
-  './img/help-grey.png',
   './img/help.png',
   './img/icons.png',
   './img/marker-icon.png',
