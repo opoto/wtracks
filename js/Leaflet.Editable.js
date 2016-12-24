@@ -1034,6 +1034,7 @@
         },
 
         addVertexMarker: function (latlng, latlngs) {
+            // @opoto: fire creation event
             var vertex = new this.tools.options.vertexMarkerClass(latlng, latlngs, this);
             this.fireAndForward('editable:vertex:create', {latlng: latlng, vertex: vertex});
             return vertex;
