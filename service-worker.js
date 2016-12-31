@@ -2,7 +2,9 @@ var cacheName = 'wtracks';
 var filesToCache = [
   './activities.html',
   './css/images/layers.png',
+  './css/images/layers-2x.png',
   './css/images/marker-icon.png',
+  './css/images/marker-icon-2x.png',
   './css/images/marker-shadow.png',
   './css/activities.css',
   './css/dark-bottom.css',
