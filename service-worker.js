@@ -1,9 +1,14 @@
 var cacheName = 'wtracks';
 var filesToCache = [
   './activities.html',
+  './css/images/layers.png',
+  './css/images/marker-icon.png',
+  './css/images/marker-shadow.png',
   './css/activities.css',
+  './css/dark-bottom.css',
   './css/l.geosearch.css',
   './css/leaflet-routing-machine.css',
+  './css/leaflet.css',
   './css/Leaflet.Elevation-0.0.4.css',
   './css/leaflet.routing.icons.png',
   './css/leaflet.routing.icons.svg',
@@ -24,6 +29,8 @@ var filesToCache = [
   './index.html',
   './js/activities.js',
   './js/config.js',
+  './js/cookieconsent.min.js',
+  './js/d3.v3.min.js',
   './js/dataset.js',
   './js/FileSaver.js',
   './js/htmlEncode.js',
