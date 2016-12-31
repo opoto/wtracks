@@ -585,6 +585,12 @@ function getProvider(name) {
       maxZoom: 18,
       attribution: '&copy; <a href="https://www.thunderforest.com/">Thunderforest</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     });
+
+  } else if (name == "sigma:cycle") {
+    p = L.tileLayer('https://tiles1.sigma-dc-control.com/layer5/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '&copy; <a href="http://www.sigmasport.com/" target="_blank">SIGMA Sport &reg;</a> Map data <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>'
+    });
   } else if (name == "tf:outdoors") {
     p = L.tileLayer('https://{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png', {
       maxZoom: 18,
@@ -665,6 +671,7 @@ var baseLayers = {
   "OpenStreetMap": getProvider("osm:std"),
   "OpenCycleMap": getProvider("tf:cycle"),
   "Outdoors": getProvider("tf:outdoors"),
+  "Sigma Cycle": getProvider("sigma:cycle"),
   "OSM HOT": getProvider("osm:hot"),
   "OSM HikeBike": getProvider("wmf:hikebike"),
   "ESRI Topo": getProvider("esri:worldtopomap"),
