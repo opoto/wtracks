@@ -523,8 +523,30 @@ function setMyIpLocation(res) {
   });
 }
 
-function setLocation(pos) {
-  map.setView(pos, config.display.zoom);
+var myLocIcon = L.icon({
+    iconUrl: 'img/crosshair.png',
+    iconSize:     [48, 48],
+    iconAnchor:   [24, 24]
+});
+var myLocMarker = undefined;
+var myLocTimer = undefined;
+
+function removeMyLocMarker() {
+  if (myLocMarker) myLocMarker.remove();
+}
+
+function setLocation(pos, showIcon) {
+  var zoom = map.getZoom() ? map.getZoom() : config.display.zoom;
+  map.setView(pos, zoom);
+  if (showIcon) {
+    if (myLocMarker) {
+      clearTimeout(myLocTimer);
+      removeMyLocMarker();
+    }
+    myLocMarker = new L.marker([ pos.lat, pos.lng ], {icon: myLocIcon, clickable:false});
+    myLocMarker.addTo(map);
+    myLocTimer = setTimeout(removeMyLocMarker, 5000);
+  }
 }
 
 function gotoMyLocation(defpos) {
@@ -533,7 +555,7 @@ function gotoMyLocation(defpos) {
       setLocation({
         lat: position.coords.latitude,
         lng: position.coords.longitude
-      });
+      }, true);
     }, function(err){
       log("Geolococation failed: [" + err.code + "] " + err.message);
       getMyIpLocation(defpos);
@@ -852,6 +874,33 @@ new L.Control.GeoSearch({
     retainZoomLevel: true,
     draggable: false
   }).addTo(map);
+
+L.MyLocationControl = L.Control.extend({
+
+    options: {
+        position: 'topleft',
+    },
+
+    onAdd: function (map) {
+        var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-edit'),
+            link = L.DomUtil.create('a', '', container);
+
+        link.href = '#';
+        link.title = 'My location';
+        link.innerHTML = '&nbsp;';
+        link.id = 'myloc';
+        L.DomEvent.disableClickPropagation(link);
+        L.DomEvent.on(link, 'click', L.DomEvent.stop)
+                  .on(link, 'click', function (e) {
+                    map.closePopup();
+                    gotoMyLocation();
+                  }, this);
+
+        return container;
+    }
+
+});
+map.addControl(new L.MyLocationControl());
 
 L.EditControl = L.Control.extend({
 
