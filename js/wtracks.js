@@ -887,8 +887,8 @@ L.MyLocationControl = L.Control.extend({
 
         link.href = '#';
         link.title = 'My location';
-        link.innerHTML = '&nbsp;';
-        link.id = 'myloc';
+        link.innerHTML = '<span id="myloc" class="wtracks-control-icon">&nbsp;</span>';
+        //link.id = 'myloc';
         L.DomEvent.disableClickPropagation(link);
         L.DomEvent.on(link, 'click', L.DomEvent.stop)
                   .on(link, 'click', function (e) {
@@ -932,7 +932,8 @@ L.EditControl = L.Control.extend({
                   }, this);
 
         editopts.id = 'edit-tools';
-        editopts.innerHTML = '<a href="#" title="Manual Track" id="edit-manual">&nbsp;</a><a href="#" title="Auto Track" id="edit-auto">&nbsp;</a><a href="#" title="Waypoint" id="edit-marker">&nbsp;</a>';
+        editopts.class = 'wtracks-control-icon';
+        editopts.innerHTML = '<a href="#" title="Manual Track" id="edit-manual"><span class="wtracks-control-icon">&nbsp;</span></a><a href="#" title="Auto Track" id="edit-auto"><span class="wtracks-control-icon">&nbsp;</span></a><a href="#" title="Waypoint" id="edit-marker"><span class="wtracks-control-icon">&nbsp;</span></a>';
 
         return container;
     }

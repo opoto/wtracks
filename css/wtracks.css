@@ -162,22 +162,18 @@ a.button {
 #edit-tools a {
   text-decoration: none;
   color: #444;
-  border: solid 1px #444;
   background-color: white;
-  height: 26px;
-  width: 26px;
-  margin: 0 auto;
 }
 #edit-tools a:hover {
   background-color: #EEE;
 }
-#edit-manual {
+#edit-manual span.wtracks-control-icon {
   background: url(../img/icons.png) 0 0 no-repeat;
 }
-#edit-auto {
+#edit-auto span.wtracks-control-icon {
   background: url(../img/icons.png) -25px 0 no-repeat;
 }
-#edit-marker {
+#edit-marker span.wtracks-control-icon {
   background: url(../img/icons.png) -51px 0 no-repeat;
 }
 .leaflet-control-edit > a {
@@ -188,6 +184,15 @@ a.button {
 }
 .leaflet-bar a.edit-tool-selected {
   background-color: #BBB !important;
+}
+.wtracks-control-icon {
+  width: 26px;
+  height: 26px;
+  display: inline-block;
+  border-radius: 4px;
+  margin: auto;
+  position: relative;
+  top: 5%;
 }
 #myloc {
   background: url(../img/icons.png) -78px 0 no-repeat;
