@@ -507,7 +507,7 @@ $("#compress").click(function() {
   }
 });
 
-function getMyIpLocation(defpos) {
+function getMyIpLocation() {
   log("Getting location from IP address");
   var geoapi = "https://freegeoip.net/json/?callback=";
   $.getScript(geoapi+"setMyIpLocation")
@@ -530,18 +530,26 @@ var myLocIcon = L.icon({
 });
 var myLocMarker = undefined;
 var myLocTimer = undefined;
-var trackLocation = false;
+var
+  LOC_NONE = 0,
+  LOC_ONCE = 1,
+  LOC_CONTINUOUS = 2,
+  showLocation = LOC_NONE;
 
 function removeMyLocMarker() {
-  if (trackLocation) {
+  if (showLocation == LOC_CONTINUOUS) {
     gotoMyLocation();
-  } else if (myLocMarker) {
-    myLocMarker.remove();
-    myLocMarker = undefined;
+  } else {
+    showLocation = LOC_NONE;
+    if (myLocMarker) {
+      myLocMarker.remove();
+      myLocMarker = undefined;
+    }
   }
 }
 
 function setLocation(pos, showIcon) {
+  if (showLocation == LOC_NONE) return; // cancelled in the meantime
   var zoom = map.getZoom() ? map.getZoom() : config.display.zoom;
   map.setView(pos, zoom);
   if (showIcon) {
@@ -555,7 +563,7 @@ function setLocation(pos, showIcon) {
   }
 }
 
-function gotoMyLocation(defpos) {
+function gotoMyLocation() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position) {
       setLocation({
@@ -564,10 +572,11 @@ function gotoMyLocation(defpos) {
       }, true);
     }, function(err){
       log("Geolococation failed: [" + err.code + "] " + err.message);
-      getMyIpLocation(defpos);
+      getMyIpLocation();
     });
   } else {
-    getMyIpLocation(defpos);
+    log("no runtime geolococation available");
+    getMyIpLocation();
   }
 }
 
@@ -758,6 +767,7 @@ if (JSON.parse && JSON.stringify) {
 }
 
 var defpos = getSavedPosition(config.display.pos.lat, config.display.pos.lng);
+showLocation = LOC_ONCE;
 setLocation(defpos); // required to initialize map
 
 $(".leaflet-control-layers-list").append("<div class='leaflet-control-layers-separator'></div>");
@@ -899,14 +909,15 @@ L.MyLocationControl = L.Control.extend({
         L.DomEvent.on(link, 'click', L.DomEvent.stop)
                   .on(link, 'click', function (e) {
                     map.closePopup();
-                    if (trackLocation) {
-                      trackLocation = false;
+                    if (showLocation == LOC_CONTINUOUS) {
+                      showLocation = LOC_NONE;
                       $("#myloc").removeClass("control-selected");
                       removeMyLocMarker();
                     } else if (myLocMarker) {
-                      trackLocation = true;
+                      showLocation = LOC_CONTINUOUS;
                       $("#myloc").addClass("control-selected");
                     } else {
+                      showLocation = LOC_ONCE;
                       gotoMyLocation();
                     }
                   }, this);
@@ -1512,9 +1523,10 @@ if (url) {
 } else {
   newTrack();
   setEditMode(EDIT_MANUAL_TRACK);
+  showLocation = LOC_ONCE;
   if (window.location.toString().indexOf('http') == 0) {
-    gotoMyLocation(defpos);
+    gotoMyLocation();
   } else {
-    getMyIpLocation(defpos);
+    getMyIpLocation();
   }
 }
