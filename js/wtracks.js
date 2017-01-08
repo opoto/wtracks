@@ -1530,3 +1530,7 @@ if (url) {
     getMyIpLocation();
   }
 }
+
+$( window ).on("unload", function() {
+  savePosition();
+});
