@@ -453,21 +453,21 @@ function setEditMode(mode) {
     default:
   }
   map.editTools.stopDrawing();
-  $("#edit-tools a").removeClass("edit-tool-selected");
+  $("#edit-tools a").removeClass("control-selected");
   switch (mode) {
     case EDIT_NONE:
       break;
     case EDIT_MANUAL_TRACK:
-      $("#edit-manual").addClass("edit-tool-selected");
+      $("#edit-manual").addClass("control-selected");
       track.enableEdit();
       track.editor.continueForward();
       break;
     case EDIT_AUTO_TRACK:
-      $("#edit-auto").addClass("edit-tool-selected");
+      $("#edit-auto").addClass("control-selected");
       restartRoute();
       break;
     case EDIT_MARKER:
-      $("#edit-marker").addClass("edit-tool-selected");
+      $("#edit-marker").addClass("control-selected");
       $("#map").css("cursor", "url(img/marker-pointer.png) 7 25,text");
       editableWaypoints(true);
       break;
@@ -520,7 +520,7 @@ function setMyIpLocation(res) {
   setLocation({
     lat: res.latitude,
     lng: res.longitude
-  });
+  }, false);
 }
 
 var myLocIcon = L.icon({
@@ -530,9 +530,15 @@ var myLocIcon = L.icon({
 });
 var myLocMarker = undefined;
 var myLocTimer = undefined;
+var trackLocation = false;
 
 function removeMyLocMarker() {
-  if (myLocMarker) myLocMarker.remove();
+  if (trackLocation) {
+    gotoMyLocation();
+  } else if (myLocMarker) {
+    myLocMarker.remove();
+    myLocMarker = undefined;
+  }
 }
 
 function setLocation(pos, showIcon) {
@@ -541,7 +547,7 @@ function setLocation(pos, showIcon) {
   if (showIcon) {
     if (myLocMarker) {
       clearTimeout(myLocTimer);
-      removeMyLocMarker();
+      myLocMarker.remove();
     }
     myLocMarker = new L.marker([ pos.lat, pos.lng ], {icon: myLocIcon, clickable:false});
     myLocMarker.addTo(map);
@@ -893,7 +899,16 @@ L.MyLocationControl = L.Control.extend({
         L.DomEvent.on(link, 'click', L.DomEvent.stop)
                   .on(link, 'click', function (e) {
                     map.closePopup();
-                    gotoMyLocation();
+                    if (trackLocation) {
+                      trackLocation = false;
+                      $("#myloc").removeClass("control-selected");
+                      removeMyLocMarker();
+                    } else if (myLocMarker) {
+                      trackLocation = true;
+                      $("#myloc").addClass("control-selected");
+                    } else {
+                      gotoMyLocation();
+                    }
                   }, this);
 
         return container;
