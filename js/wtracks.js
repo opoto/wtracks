@@ -1523,12 +1523,14 @@ if (url) {
 } else {
   newTrack();
   setEditMode(EDIT_MANUAL_TRACK);
+  /*
   showLocation = LOC_ONCE;
   if (window.location.toString().indexOf('http') == 0) {
     gotoMyLocation();
   } else {
     getMyIpLocation();
   }
+  */
 }
 
 $( window ).on("unload", function() {
