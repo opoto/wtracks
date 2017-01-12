@@ -183,7 +183,7 @@ a.button {
     border-bottom: 1px solid #ccc;
 }
 .control-selected {
-  background-color: #BBB !important;
+  background-color: #ffff99 !important;
 }
 .wtracks-control-icon {
   width: 26px;

@@ -1,3 +1,9 @@
+/**
+  Non official Leaflet.Editable:
+  @oopot : added "editable:vertex:create" event
+  @girakun : patched to fix chrome issue on android: https://github.com/girakun/Leaflet.Editable/blob/fc65275a39e0ac94abc41c54bd60634dcd0c9f35/src/Leaflet.Editable.js
+**/
+
 'use strict';
 (function (factory, window) {
     /*globals define, module, require*/
@@ -18,31 +24,31 @@
     }
 
 }(function (L) {
-    // 🍂miniclass CancelableEvent (Event objects)
-    // 🍂method cancel()
+    // ?miniclass CancelableEvent (Event objects)
+    // ?method cancel()
     // Cancel any subsequent action.
 
-    // 🍂miniclass VertexEvent (Event objects)
-    // 🍂property vertex: VertexMarker
+    // ?miniclass VertexEvent (Event objects)
+    // ?property vertex: VertexMarker
     // The vertex that fires the event.
 
-    // 🍂miniclass ShapeEvent (Event objects)
-    // 🍂property shape: Array
+    // ?miniclass ShapeEvent (Event objects)
+    // ?property shape: Array
     // The shape (LatLngs array) subject of the action.
 
-    // 🍂miniclass CancelableVertexEvent (Event objects)
-    // 🍂inherits VertexEvent
-    // 🍂inherits CancelableEvent
+    // ?miniclass CancelableVertexEvent (Event objects)
+    // ?inherits VertexEvent
+    // ?inherits CancelableEvent
 
-    // 🍂miniclass CancelableShapeEvent (Event objects)
-    // 🍂inherits ShapeEvent
-    // 🍂inherits CancelableEvent
+    // ?miniclass CancelableShapeEvent (Event objects)
+    // ?inherits ShapeEvent
+    // ?inherits CancelableEvent
 
-    // 🍂miniclass LayerEvent (Event objects)
-    // 🍂property layer: object
+    // ?miniclass LayerEvent (Event objects)
+    // ?property layer: object
     // The Layer (Marker, Polyline…) subject of the action.
 
-    // 🍂namespace Editable; 🍂class Editable; 🍂aka L.Editable
+    // ?namespace Editable; ?class Editable; ?aka L.Editable
     // Main edition handler. By default, it is attached to the map
     // as `map.editTools` property.
     // Leaflet.Editable is made to be fully extendable. You have three ways to customize
@@ -57,71 +63,71 @@
         options: {
 
             // You can pass them when creating a map using the `editOptions` key.
-            // 🍂option zIndex: int = 1000
+            // ?option zIndex: int = 1000
             // The default zIndex of the editing tools.
             zIndex: 1000,
 
-            // 🍂option polygonClass: class = L.Polygon
+            // ?option polygonClass: class = L.Polygon
             // Class to be used when creating a new Polygon.
             polygonClass: L.Polygon,
 
-            // 🍂option polylineClass: class = L.Polyline
+            // ?option polylineClass: class = L.Polyline
             // Class to be used when creating a new Polyline.
             polylineClass: L.Polyline,
 
-            // 🍂option markerClass: class = L.Marker
+            // ?option markerClass: class = L.Marker
             // Class to be used when creating a new Marker.
             markerClass: L.Marker,
 
-            // 🍂option rectangleClass: class = L.Rectangle
+            // ?option rectangleClass: class = L.Rectangle
             // Class to be used when creating a new Rectangle.
             rectangleClass: L.Rectangle,
 
-            // 🍂option circleClass: class = L.Circle
+            // ?option circleClass: class = L.Circle
             // Class to be used when creating a new Circle.
             circleClass: L.Circle,
 
-            // 🍂option drawingCSSClass: string = 'leaflet-editable-drawing'
+            // ?option drawingCSSClass: string = 'leaflet-editable-drawing'
             // CSS class to be added to the map container while drawing.
             drawingCSSClass: 'leaflet-editable-drawing',
 
-            // 🍂option drawingCursor: const = 'crosshair'
+            // ?option drawingCursor: const = 'crosshair'
             // Cursor mode set to the map while drawing.
             drawingCursor: 'crosshair',
 
-            // 🍂option editLayer: Layer = new L.LayerGroup()
+            // ?option editLayer: Layer = new L.LayerGroup()
             // Layer used to store edit tools (vertex, line guide…).
             editLayer: undefined,
 
-            // 🍂option featuresLayer: Layer = new L.LayerGroup()
+            // ?option featuresLayer: Layer = new L.LayerGroup()
             // Default layer used to store drawn features (Marker, Polyline…).
             featuresLayer: undefined,
 
-            // 🍂option polylineEditorClass: class = PolylineEditor
+            // ?option polylineEditorClass: class = PolylineEditor
             // Class to be used as Polyline editor.
             polylineEditorClass: undefined,
 
-            // 🍂option polygonEditorClass: class = PolygonEditor
+            // ?option polygonEditorClass: class = PolygonEditor
             // Class to be used as Polygon editor.
             polygonEditorClass: undefined,
 
-            // 🍂option markerEditorClass: class = MarkerEditor
+            // ?option markerEditorClass: class = MarkerEditor
             // Class to be used as Marker editor.
             markerEditorClass: undefined,
 
-            // 🍂option rectangleEditorClass: class = RectangleEditor
+            // ?option rectangleEditorClass: class = RectangleEditor
             // Class to be used as Rectangle editor.
             rectangleEditorClass: undefined,
 
-            // 🍂option circleEditorClass: class = CircleEditor
+            // ?option circleEditorClass: class = CircleEditor
             // Class to be used as Circle editor.
             circleEditorClass: undefined,
 
-            // 🍂option lineGuideOptions: hash = {}
+            // ?option lineGuideOptions: hash = {}
             // Options to be passed to the line guides.
             lineGuideOptions: {},
 
-            // 🍂option skipMiddleMarkers: boolean = false
+            // ?option skipMiddleMarkers: boolean = false
             // Set this to true if you don't want middle markers.
             skipMiddleMarkers: false
 
@@ -231,6 +237,7 @@
             this.map.on('mousemove touchmove', editor.onDrawingMouseMove, editor);
             this.map.on('mousedown', this.onMousedown, this);
             this.map.on('mouseup', this.onMouseup, this);
+            this.map.on('click', this.onMouseup, this);
             L.DomUtil.addClass(this.map._container, this.options.drawingCSSClass);
             this.defaultMapCursor = this.map._container.style.cursor;
             this.map._container.style.cursor = this.options.drawingCursor;
@@ -245,6 +252,7 @@
             this.map.off('mousemove touchmove', editor.onDrawingMouseMove, editor);
             this.map.off('mousedown', this.onMousedown, this);
             this.map.off('mouseup', this.onMouseup, this);
+            this.map.off('click', this.onMouseup, this);
             if (editor !== this._drawingEditor) return;
             delete this._drawingEditor;
             if (editor._drawing) editor.cancelDrawing();
@@ -256,6 +264,11 @@
         },
 
         onMouseup: function (e) {
+            if (e.type === "click" && !this._mouseDown && !(e.originalEvent instanceof MouseEvent)) {
+                this._mouseDown = e;
+                this._drawingEditor.onDrawingMouseDown(e);
+            }
+
             if (this._mouseDown) {
                 var editor = this._drawingEditor,
                     mouseDown = this._mouseDown;
@@ -268,25 +281,25 @@
             }
         },
 
-        // 🍂section Public methods
+        // ?section Public methods
         // You will generally access them by the `map.editTools`
         // instance:
         //
         // `map.editTools.startPolyline();`
 
-        // 🍂method drawing(): boolean
+        // ?method drawing(): boolean
         // Return true if any drawing action is ongoing.
         drawing: function () {
             return this._drawingEditor && this._drawingEditor.drawing();
         },
 
-        // 🍂method stopDrawing()
+        // ?method stopDrawing()
         // When you need to stop any ongoing drawing, without needing to know which editor is active.
         stopDrawing: function () {
             this.unregisterForDrawing();
         },
 
-        // 🍂method commitDrawing()
+        // ?method commitDrawing()
         // When you need to commit any ongoing drawing, without needing to know which editor is active.
         commitDrawing: function (e) {
             if (!this._drawingEditor) return;
@@ -297,7 +310,7 @@
             return this.featuresLayer.addLayer(layer);
         },
 
-        // 🍂method startPolyline(latlng: L.LatLng, options: hash): L.Polyline
+        // ?method startPolyline(latlng: L.LatLng, options: hash): L.Polyline
         // Start drawing a Polyline. If `latlng` is given, a first point will be added. In any case, continuing on user click.
         // If `options` is given, it will be passed to the Polyline class constructor.
         startPolyline: function (latlng, options) {
@@ -306,7 +319,7 @@
             return line;
         },
 
-        // 🍂method startPolygon(latlng: L.LatLng, options: hash): L.Polygon
+        // ?method startPolygon(latlng: L.LatLng, options: hash): L.Polygon
         // Start drawing a Polygon. If `latlng` is given, a first point will be added. In any case, continuing on user click.
         // If `options` is given, it will be passed to the Polygon class constructor.
         startPolygon: function (latlng, options) {
@@ -315,7 +328,7 @@
             return polygon;
         },
 
-        // 🍂method startMarker(latlng: L.LatLng, options: hash): L.Marker
+        // ?method startMarker(latlng: L.LatLng, options: hash): L.Marker
         // Start adding a Marker. If `latlng` is given, the Marker will be shown first at this point.
         // In any case, it will follow the user mouse, and will have a final `latlng` on next click (or touch).
         // If `options` is given, it will be passed to the Marker class constructor.
@@ -326,7 +339,7 @@
             return marker;
         },
 
-        // 🍂method startRectangle(latlng: L.LatLng, options: hash): L.Rectangle
+        // ?method startRectangle(latlng: L.LatLng, options: hash): L.Rectangle
         // Start drawing a Rectangle. If `latlng` is given, the Rectangle anchor will be added. In any case, continuing on user drag.
         // If `options` is given, it will be passed to the Rectangle class constructor.
         startRectangle: function(latlng, options) {
@@ -337,7 +350,7 @@
             return rectangle;
         },
 
-        // 🍂method startCircle(latlng: L.LatLng, options: hash): L.Circle
+        // ?method startCircle(latlng: L.LatLng, options: hash): L.Circle
         // Start drawing a Circle. If `latlng` is given, the Circle anchor will be added. In any case, continuing on user drag.
         // If `options` is given, it will be passed to the Circle class constructor.
         startCircle: function (latlng, options) {
@@ -354,8 +367,8 @@
         createLayer: function (klass, latlngs, options) {
             options = L.Util.extend({editOptions: {editTools: this}}, options);
             var layer = new klass(latlngs, options);
-            // 🍂namespace Editable
-            // 🍂event editable:created: LayerEvent
+            // ?namespace Editable
+            // ?event editable:created: LayerEvent
             // Fired when a new feature (Marker, Polyline…) is created.
             this.fireAndForward('editable:created', {layer: layer});
             return layer;
@@ -393,10 +406,10 @@
 
     });
 
-    // 🍂namespace Map; 🍂class Map
+    // ?namespace Map; ?class Map
     // Leaflet.Editable add options and events to the `L.Map` object.
     // See `Editable` events for the list of events fired on the Map.
-    // 🍂example
+    // ?example
     //
     // ```js
     // var map = L.map('map', {
@@ -406,20 +419,20 @@
     // }
     // });
     // ```
-    // 🍂section Editable Map Options
+    // ?section Editable Map Options
     L.Map.mergeOptions({
 
-        // 🍂namespace Map
-        // 🍂section Map Options
-        // 🍂option editToolsClass: class = L.Editable
+        // ?namespace Map
+        // ?section Map Options
+        // ?option editToolsClass: class = L.Editable
         // Class to be used as vertex, for path editing.
         editToolsClass: L.Editable,
 
-        // 🍂option editable: boolean = false
+        // ?option editable: boolean = false
         // Whether to create a L.Editable instance at map init.
         editable: false,
 
-        // 🍂option editOptions: hash = {}
+        // ?option editOptions: hash = {}
         // Options to pass to L.Editable when instanciating.
         editOptions: {}
 
@@ -452,7 +465,7 @@
     });
 
 
-    // 🍂namespace Editable; 🍂class VertexMarker; Handler for dragging path vertices.
+    // ?namespace Editable; ?class VertexMarker; Handler for dragging path vertices.
     L.Editable.VertexMarker = L.Marker.extend({
 
         options: {
@@ -461,7 +474,7 @@
         },
 
 
-        // 🍂section Public methods
+        // ?section Public methods
         // The marker used to handle path vertex. You will usually interact with a `VertexMarker`
         // instance when listening for events like `editable:vertex:ctrlclick`.
 
@@ -547,7 +560,7 @@
             this.editor.onVertexMarkerMouseDown(e);
         },
 
-        // 🍂method delete()
+        // ?method delete()
         // Delete a vertex and the related LatLng.
         delete: function () {
             var next = this.getNext();  // Compute before changing latlng
@@ -559,19 +572,19 @@
             this.editor.refresh();
         },
 
-        // 🍂method getIndex(): int
+        // ?method getIndex(): int
         // Get the index of the current vertex among others of the same LatLngs group.
         getIndex: function () {
             return this.latlngs.indexOf(this.latlng);
         },
 
-        // 🍂method getLastIndex(): int
+        // ?method getLastIndex(): int
         // Get last vertex index of the LatLngs group of the current vertex.
         getLastIndex: function () {
             return this.latlngs.length - 1;
         },
 
-        // 🍂method getPrevious(): VertexMarker
+        // ?method getPrevious(): VertexMarker
         // Get the previous VertexMarker in the same LatLngs group.
         getPrevious: function () {
             if (this.latlngs.length < 2) return;
@@ -582,7 +595,7 @@
             if (previous) return previous.__vertex;
         },
 
-        // 🍂method getNext(): VertexMarker
+        // ?method getNext(): VertexMarker
         // Get the next VertexMarker in the same LatLngs group.
         getNext: function () {
             if (this.latlngs.length < 2) return;
@@ -612,14 +625,14 @@
             this.addMiddleMarker();
         },
 
-        // 🍂method split()
+        // ?method split()
         // Split the vertex LatLngs group at its index, if possible.
         split: function () {
             if (!this.editor.splitShape) return;  // Only for PolylineEditor
             this.editor.splitShape(this.latlngs, this.getIndex());
         },
 
-        // 🍂method continue()
+        // ?method continue()
         // Continue the vertex LatLngs from this vertex. Only active for first and last vertices of a Polyline.
         continue: function () {
             if (!this.editor.continueBackward) return;  // Only for PolylineEditor
@@ -632,8 +645,8 @@
 
     L.Editable.mergeOptions({
 
-        // 🍂namespace Editable
-        // 🍂option vertexMarkerClass: class = VertexMarker
+        // ?namespace Editable
+        // ?option vertexMarkerClass: class = VertexMarker
         // Class to be used as vertex, for path editing.
         vertexMarkerClass: L.Editable.VertexMarker
 
@@ -743,14 +756,14 @@
 
     L.Editable.mergeOptions({
 
-        // 🍂namespace Editable
-        // 🍂option middleMarkerClass: class = VertexMarker
+        // ?namespace Editable
+        // ?option middleMarkerClass: class = VertexMarker
         // Class to be used as middle vertex, pulled by the user to create a new point in the middle of a path.
         middleMarkerClass: L.Editable.MiddleMarker
 
     });
 
-    // 🍂namespace Editable; 🍂class BaseEditor; 🍂aka L.Editable.BaseEditor
+    // ?namespace Editable; ?class BaseEditor; ?aka L.Editable.BaseEditor
     // When editing a feature (Marker, Polyline…), an editor is attached to it. This
     // editor basically knows how to handle the edition.
     L.Editable.BaseEditor = L.Handler.extend({
@@ -764,7 +777,7 @@
             this.tools = this.options.editTools || map.editTools;
         },
 
-        // 🍂method enable(): this
+        // ?method enable(): this
         // Set up the drawing tools for the feature to be editable.
         addHooks: function () {
             if (this.isConnected()) this.onFeatureAdd();
@@ -774,7 +787,7 @@
             return;
         },
 
-        // 🍂method disable(): this
+        // ?method disable(): this
         // Remove the drawing tools for the feature.
         removeHooks: function () {
             this.feature.off(this._getEvents(), this);
@@ -786,7 +799,7 @@
             return;
         },
 
-        // 🍂method drawing(): boolean
+        // ?method drawing(): boolean
         // Return true if any drawing action is ongoing with this editor.
         drawing: function () {
             return !!this._drawing;
@@ -811,70 +824,70 @@
         },
 
         onEnable: function () {
-            // 🍂namespace Editable
-            // 🍂event editable:enable: Event
+            // ?namespace Editable
+            // ?event editable:enable: Event
             // Fired when an existing feature is ready to be edited.
             this.fireAndForward('editable:enable');
         },
 
         onDisable: function () {
-            // 🍂namespace Editable
-            // 🍂event editable:disable: Event
+            // ?namespace Editable
+            // ?event editable:disable: Event
             // Fired when an existing feature is not ready anymore to be edited.
             this.fireAndForward('editable:disable');
         },
 
         onEditing: function () {
-            // 🍂namespace Editable
-            // 🍂event editable:editing: Event
+            // ?namespace Editable
+            // ?event editable:editing: Event
             // Fired as soon as any change is made to the feature geometry.
             this.fireAndForward('editable:editing');
         },
 
         onStartDrawing: function () {
-            // 🍂namespace Editable
-            // 🍂section Drawing events
-            // 🍂event editable:drawing:start: Event
+            // ?namespace Editable
+            // ?section Drawing events
+            // ?event editable:drawing:start: Event
             // Fired when a feature is to be drawn.
             this.fireAndForward('editable:drawing:start');
         },
 
         onEndDrawing: function () {
-            // 🍂namespace Editable
-            // 🍂section Drawing events
-            // 🍂event editable:drawing:end: Event
+            // ?namespace Editable
+            // ?section Drawing events
+            // ?event editable:drawing:end: Event
             // Fired when a feature is not drawn anymore.
             this.fireAndForward('editable:drawing:end');
         },
 
         onCancelDrawing: function () {
-            // 🍂namespace Editable
-            // 🍂section Drawing events
-            // 🍂event editable:drawing:cancel: Event
+            // ?namespace Editable
+            // ?section Drawing events
+            // ?event editable:drawing:cancel: Event
             // Fired when user cancel drawing while a feature is being drawn.
             this.fireAndForward('editable:drawing:cancel');
         },
 
         onCommitDrawing: function (e) {
-            // 🍂namespace Editable
-            // 🍂section Drawing events
-            // 🍂event editable:drawing:commit: Event
+            // ?namespace Editable
+            // ?section Drawing events
+            // ?event editable:drawing:commit: Event
             // Fired when user finish drawing a feature.
             this.fireAndForward('editable:drawing:commit', e);
         },
 
         onDrawingMouseDown: function (e) {
-            // 🍂namespace Editable
-            // 🍂section Drawing events
-            // 🍂event editable:drawing:mousedown: Event
+            // ?namespace Editable
+            // ?section Drawing events
+            // ?event editable:drawing:mousedown: Event
             // Fired when user `mousedown` while drawing.
             this.fireAndForward('editable:drawing:mousedown', e);
         },
 
         onDrawingMouseUp: function (e) {
-            // 🍂namespace Editable
-            // 🍂section Drawing events
-            // 🍂event editable:drawing:mouseup: Event
+            // ?namespace Editable
+            // ?section Drawing events
+            // ?event editable:drawing:mouseup: Event
             // Fired when user `mouseup` while drawing.
             this.fireAndForward('editable:drawing:mouseup', e);
         },
@@ -908,9 +921,9 @@
         onDrawingClick: function (e) {
             if (!this.drawing()) return;
             L.Editable.makeCancellable(e);
-            // 🍂namespace Editable
-            // 🍂section Drawing events
-            // 🍂event editable:drawing:click: CancelableEvent
+            // ?namespace Editable
+            // ?section Drawing events
+            // ?event editable:drawing:click: CancelableEvent
             // Fired when user `click` while drawing, before any internal action is being processed.
             this.fireAndForward('editable:drawing:click', e);
             if (e._cancelled) return;
@@ -928,9 +941,9 @@
         },
 
         onMove: function (e) {
-            // 🍂namespace Editable
-            // 🍂section Drawing events
-            // 🍂event editable:drawing:move: Event
+            // ?namespace Editable
+            // ?section Drawing events
+            // ?event editable:drawing:move: Event
             // Fired when `move` mouse while drawing, while dragging a marker, and while dragging a vertex.
             this.fireAndForward('editable:drawing:move', e);
         },
@@ -950,31 +963,31 @@
 
         onDragStart: function (e) {
             this.onEditing();
-            // 🍂namespace Editable
-            // 🍂event editable:dragstart: Event
+            // ?namespace Editable
+            // ?event editable:dragstart: Event
             // Fired before a path feature is dragged.
             this.fireAndForward('editable:dragstart', e);
         },
 
         onDrag: function (e) {
             this.onMove(e);
-            // 🍂namespace Editable
-            // 🍂event editable:drag: Event
+            // ?namespace Editable
+            // ?event editable:drag: Event
             // Fired when a path feature is being dragged.
             this.fireAndForward('editable:drag', e);
         },
 
         onDragEnd: function (e) {
-            // 🍂namespace Editable
-            // 🍂event editable:dragend: Event
+            // ?namespace Editable
+            // ?event editable:dragend: Event
             // Fired after a path feature has been dragged.
             this.fireAndForward('editable:dragend', e);
         }
 
     });
 
-    // 🍂namespace Editable; 🍂class MarkerEditor; 🍂aka L.Editable.MarkerEditor
-    // 🍂inherits BaseEditor
+    // ?namespace Editable; ?class MarkerEditor; ?aka L.Editable.MarkerEditor
+    // ?inherits BaseEditor
     // Editor for Marker.
     L.Editable.MarkerEditor = L.Editable.BaseEditor.extend({
 
@@ -984,9 +997,9 @@
         },
 
         processDrawingClick: function (e) {
-            // 🍂namespace Editable
-            // 🍂section Drawing events
-            // 🍂event editable:drawing:clicked: Event
+            // ?namespace Editable
+            // ?section Drawing events
+            // ?event editable:drawing:clicked: Event
             // Fired when user `click` while drawing, after all internal actions.
             this.fireAndForward('editable:drawing:clicked', e);
             this.commitDrawing(e);
@@ -1001,8 +1014,8 @@
 
     });
 
-    // 🍂namespace Editable; 🍂class PathEditor; 🍂aka L.Editable.PathEditor
-    // 🍂inherits BaseEditor
+    // ?namespace Editable; ?class PathEditor; ?aka L.Editable.PathEditor
+    // ?inherits BaseEditor
     // Base class for all path editors.
     L.Editable.PathEditor = L.Editable.BaseEditor.extend({
 
@@ -1026,7 +1039,7 @@
             return this.feature.getLatLngs();
         },
 
-        // 🍂method reset()
+        // ?method reset()
         // Rebuild edit elements (Vertex, MiddleMarker, etc.).
         reset: function () {
             this.editLayer.clearLayers();
@@ -1059,9 +1072,9 @@
 
         onVertexMarkerClick: function (e) {
             L.Editable.makeCancellable(e);
-            // 🍂namespace Editable
-            // 🍂section Vertex events
-            // 🍂event editable:vertex:click: CancelableVertexEvent
+            // ?namespace Editable
+            // ?section Vertex events
+            // ?event editable:vertex:click: CancelableVertexEvent
             // Fired when a `click` is issued on a vertex, before any internal action is being processed.
             this.fireAndForward('editable:vertex:click', e);
             if (e._cancelled) return;
@@ -1084,18 +1097,18 @@
             } else {
                 this.onVertexRawMarkerClick(e);
             }
-            // 🍂namespace Editable
-            // 🍂section Vertex events
-            // 🍂event editable:vertex:clicked: VertexEvent
+            // ?namespace Editable
+            // ?section Vertex events
+            // ?event editable:vertex:clicked: VertexEvent
             // Fired when a `click` is issued on a vertex, after all internal actions.
             this.fireAndForward('editable:vertex:clicked', e);
             if (commit) this.commitDrawing(e);
         },
 
         onVertexRawMarkerClick: function (e) {
-            // 🍂namespace Editable
-            // 🍂section Vertex events
-            // 🍂event editable:vertex:rawclick: CancelableVertexEvent
+            // ?namespace Editable
+            // ?section Vertex events
+            // ?event editable:vertex:rawclick: CancelableVertexEvent
             // Fired when a `click` is issued on a vertex without any special key and without being in drawing mode.
             this.fireAndForward('editable:vertex:rawclick', e);
             if (e._cancelled) return;
@@ -1108,65 +1121,65 @@
         },
 
         onVertexDeleted: function (e) {
-            // 🍂namespace Editable
-            // 🍂section Vertex events
-            // 🍂event editable:vertex:deleted: VertexEvent
+            // ?namespace Editable
+            // ?section Vertex events
+            // ?event editable:vertex:deleted: VertexEvent
             // Fired after a vertex has been deleted by user.
             this.fireAndForward('editable:vertex:deleted', e);
         },
 
         onVertexMarkerCtrlClick: function (e) {
-            // 🍂namespace Editable
-            // 🍂section Vertex events
-            // 🍂event editable:vertex:ctrlclick: VertexEvent
+            // ?namespace Editable
+            // ?section Vertex events
+            // ?event editable:vertex:ctrlclick: VertexEvent
             // Fired when a `click` with `ctrlKey` is issued on a vertex.
             this.fireAndForward('editable:vertex:ctrlclick', e);
         },
 
         onVertexMarkerShiftClick: function (e) {
-            // 🍂namespace Editable
-            // 🍂section Vertex events
-            // 🍂event editable:vertex:shiftclick: VertexEvent
+            // ?namespace Editable
+            // ?section Vertex events
+            // ?event editable:vertex:shiftclick: VertexEvent
             // Fired when a `click` with `shiftKey` is issued on a vertex.
             this.fireAndForward('editable:vertex:shiftclick', e);
         },
 
         onVertexMarkerMetaKeyClick: function (e) {
-            // 🍂namespace Editable
-            // 🍂section Vertex events
-            // 🍂event editable:vertex:metakeyclick: VertexEvent
+            // ?namespace Editable
+            // ?section Vertex events
+            // ?event editable:vertex:metakeyclick: VertexEvent
             // Fired when a `click` with `metaKey` is issued on a vertex.
             this.fireAndForward('editable:vertex:metakeyclick', e);
         },
 
         onVertexMarkerAltClick: function (e) {
-            // 🍂namespace Editable
-            // 🍂section Vertex events
-            // 🍂event editable:vertex:altclick: VertexEvent
+            // ?namespace Editable
+            // ?section Vertex events
+            // ?event editable:vertex:altclick: VertexEvent
             // Fired when a `click` with `altKey` is issued on a vertex.
             this.fireAndForward('editable:vertex:altclick', e);
         },
 
         onVertexMarkerContextMenu: function (e) {
-            // 🍂namespace Editable
-            // 🍂section Vertex events
-            // 🍂event editable:vertex:contextmenu: VertexEvent
+            // ?namespace Editable
+            // ?section Vertex events
+            // ?event editable:vertex:contextmenu: VertexEvent
             // Fired when a `contextmenu` is issued on a vertex.
             this.fireAndForward('editable:vertex:contextmenu', e);
         },
 
         onVertexMarkerMouseDown: function (e) {
-            // 🍂namespace Editable
-            // 🍂section Vertex events
-            // 🍂event editable:vertex:mousedown: VertexEvent
+            // ?namespace Editable
+            // ?section Vertex events
+            // ?event editable:vertex:mousedown: VertexEvent
             // Fired when user `mousedown` a vertex.
             this.fireAndForward('editable:vertex:mousedown', e);
         },
 
         onMiddleMarkerMouseDown: function (e) {
-            // 🍂namespace Editable
-            // 🍂section MiddleMarker events
-            // 🍂event editable:middlemarker:mousedown: VertexEvent
+            // ?namespace Editable
+            // ?section MiddleMarker events
+            // ?event editable:middlemarker:mousedown: VertexEvent
             // Fired when user `mousedown` a middle marker.
             this.fireAndForward('editable:middlemarker:mousedown', e);
         },
@@ -1174,25 +1187,25 @@
         onVertexMarkerDrag: function (e) {
             this.onMove(e);
             if (this.feature._bounds) this.extendBounds(e);
-            // 🍂namespace Editable
-            // 🍂section Vertex events
-            // 🍂event editable:vertex:drag: VertexEvent
+            // ?namespace Editable
+            // ?section Vertex events
+            // ?event editable:vertex:drag: VertexEvent
             // Fired when a vertex is dragged by user.
             this.fireAndForward('editable:vertex:drag', e);
         },
 
         onVertexMarkerDragStart: function (e) {
-            // 🍂namespace Editable
-            // 🍂section Vertex events
-            // 🍂event editable:vertex:dragstart: VertexEvent
+            // ?namespace Editable
+            // ?section Vertex events
+            // ?event editable:vertex:dragstart: VertexEvent
             // Fired before a vertex is dragged by user.
             this.fireAndForward('editable:vertex:dragstart', e);
         },
 
         onVertexMarkerDragEnd: function (e) {
-            // 🍂namespace Editable
-            // 🍂section Vertex events
-            // 🍂event editable:vertex:dragend: VertexEvent
+            // ?namespace Editable
+            // ?section Vertex events
+            // ?event editable:vertex:dragend: VertexEvent
             // Fired after a vertex is dragged by user.
             this.fireAndForward('editable:vertex:dragend', e);
         },
@@ -1237,8 +1250,8 @@
             this.tools.anchorBackwardLineGuide(latlng);
         },
 
-        // 🍂namespace PathEditor
-        // 🍂method push()
+        // ?namespace PathEditor
+        // ?method push()
         // Programmatically add a point while drawing.
         push: function (latlng) {
             if (!latlng) return console.error('L.Editable.PathEditor.push expect a vaild latlng as parameter');
@@ -1251,7 +1264,7 @@
             this.refresh();
         },
 
-        // 🍂method pop(): L.LatLng or null
+        // ?method pop(): L.LatLng or null
         // Programmatically remove last point (if any) while drawing.
         pop: function () {
             if (this._drawnLatLngs.length <= 1) return;
@@ -1284,8 +1297,8 @@
             this.onEditing();
         },
 
-        // 🍂namespace PathEditor
-        // 🍂method newShape(latlng?: L.LatLng)
+        // ?namespace PathEditor
+        // ?method newShape(latlng?: L.LatLng)
         // Add a new shape (Polyline, Polygon) in a multi, and setup up drawing tools to draw it;
         // if optional `latlng` is given, start a path at this point.
         newShape: function (latlng) {
@@ -1293,9 +1306,9 @@
             if (!shape) return;
             this.setDrawnLatLngs(shape[0] || shape);  // Polygon or polyline
             this.startDrawingForward();
-            // 🍂namespace Editable
-            // 🍂section Shape events
-            // 🍂event editable:shape:new: ShapeEvent
+            // ?namespace Editable
+            // ?section Shape events
+            // ?event editable:shape:new: ShapeEvent
             // Fired when a new shape is created in a multi (Polygon or Polyline).
             this.fireAndForward('editable:shape:new', {shape: shape});
             if (latlng) this.newPointForward(latlng);
@@ -1304,9 +1317,9 @@
         deleteShape: function (shape, latlngs) {
             var e = {shape: shape};
             L.Editable.makeCancellable(e);
-            // 🍂namespace Editable
-            // 🍂section Shape events
-            // 🍂event editable:shape:delete: CancelableShapeEvent
+            // ?namespace Editable
+            // ?section Shape events
+            // ?event editable:shape:delete: CancelableShapeEvent
             // Fired before a new shape is deleted in a multi (Polygon or Polyline).
             this.fireAndForward('editable:shape:delete', e);
             if (e._cancelled) return;
@@ -1315,9 +1328,9 @@
             this.feature.setLatLngs(this.getLatLngs());  // Force bounds reset.
             this.refresh();
             this.reset();
-            // 🍂namespace Editable
-            // 🍂section Shape events
-            // 🍂event editable:shape:deleted: ShapeEvent
+            // ?namespace Editable
+            // ?section Shape events
+            // ?event editable:shape:deleted: ShapeEvent
             // Fired after a new shape is deleted in a multi (Polygon or Polyline).
             this.fireAndForward('editable:shape:deleted', {shape: shape});
             return shape;
@@ -1345,27 +1358,27 @@
             }
         },
 
-        // 🍂namespace PathEditor
-        // 🍂method deleteShapeAt(latlng: L.LatLng): Array
+        // ?namespace PathEditor
+        // ?method deleteShapeAt(latlng: L.LatLng): Array
         // Remove a path shape at the given `latlng`.
         deleteShapeAt: function (latlng) {
             var shape = this.feature.shapeAt(latlng);
             if (shape) return this.deleteShape(shape);
         },
 
-        // 🍂method appendShape(shape: Array)
+        // ?method appendShape(shape: Array)
         // Append a new shape to the Polygon or Polyline.
         appendShape: function (shape) {
             this.insertShape(shape);
         },
 
-        // 🍂method prependShape(shape: Array)
+        // ?method prependShape(shape: Array)
         // Prepend a new shape to the Polygon or Polyline.
         prependShape: function (shape) {
             this.insertShape(shape, 0);
         },
 
-        // 🍂method insertShape(shape: Array, index: int)
+        // ?method insertShape(shape: Array, index: int)
         // Insert a new shape to the Polygon or Polyline at given index (default is to append).
         insertShape: function (shape, index) {
             this.ensureMulti();
@@ -1392,8 +1405,8 @@
 
     });
 
-    // 🍂namespace Editable; 🍂class PolylineEditor; 🍂aka L.Editable.PolylineEditor
-    // 🍂inherits PathEditor
+    // ?namespace Editable; ?class PolylineEditor; ?aka L.Editable.PolylineEditor
+    // ?inherits PathEditor
     L.Editable.PolylineEditor = L.Editable.PathEditor.extend({
 
         startDrawingBackward: function () {
@@ -1401,7 +1414,7 @@
             this.startDrawing();
         },
 
-        // 🍂method continueBackward(latlngs?: Array)
+        // ?method continueBackward(latlngs?: Array)
         // Set up drawing tools to continue the line backward.
         continueBackward: function (latlngs) {
             if (this.drawing()) return;
@@ -1414,7 +1427,7 @@
             this.startDrawingBackward();
         },
 
-        // 🍂method continueForward(latlngs?: Array)
+        // ?method continueForward(latlngs?: Array)
         // Set up drawing tools to continue the line forward.
         continueForward: function (latlngs) {
             if (this.drawing()) return;
@@ -1454,7 +1467,7 @@
             else if (shape[0]) return this.formatShape(shape[0]);
         },
 
-        // 🍂method splitShape(latlngs?: Array, index: int)
+        // ?method splitShape(latlngs?: Array, index: int)
         // Split the given `latlngs` shape at index `index` and integrate new shape in instance `latlngs`.
         splitShape: function (shape, index) {
             if (!index || index >= shape.length - 1) return;
@@ -1472,8 +1485,8 @@
 
     });
 
-    // 🍂namespace Editable; 🍂class PolygonEditor; 🍂aka L.Editable.PolygonEditor
-    // 🍂inherits PathEditor
+    // ?namespace Editable; ?class PolygonEditor; ?aka L.Editable.PolygonEditor
+    // ?inherits PathEditor
     L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
 
         CLOSED: true,
@@ -1494,7 +1507,7 @@
             return holes;
         },
 
-        // 🍂method newHole(latlng?: L.LatLng, index: int)
+        // ?method newHole(latlng?: L.LatLng, index: int)
         // Set up drawing tools for creating a new hole on the Polygon. If the `latlng` param is given, a first point is created.
         newHole: function (latlng) {
             var holes = this.addNewEmptyHole(latlng);
@@ -1546,8 +1559,8 @@
 
     });
 
-    // 🍂namespace Editable; 🍂class RectangleEditor; 🍂aka L.Editable.RectangleEditor
-    // 🍂inherits PathEditor
+    // ?namespace Editable; ?class RectangleEditor; ?aka L.Editable.RectangleEditor
+    // ?inherits PathEditor
     L.Editable.RectangleEditor = L.Editable.PathEditor.extend({
 
         CLOSED: true,
@@ -1631,8 +1644,8 @@
 
     });
 
-    // 🍂namespace Editable; 🍂class CircleEditor; 🍂aka L.Editable.CircleEditor
-    // 🍂inherits PathEditor
+    // ?namespace Editable; ?class CircleEditor; ?aka L.Editable.CircleEditor
+    // ?inherits PathEditor
     L.Editable.CircleEditor = L.Editable.PathEditor.extend({
 
         MIN_VERTEX: 2,
@@ -1707,9 +1720,9 @@
 
     });
 
-    // 🍂namespace Editable; 🍂class EditableMixin
+    // ?namespace Editable; ?class EditableMixin
     // `EditableMixin` is included to `L.Polyline`, `L.Polygon`, `L.Rectangle`, `L.Circle`
-    // and `L.Marker`. It adds some methods to them.
+    // and `L.Marker`. It adds some methods to them.
     // *When editing is enabled, the editor is accessible on the instance with the
     // `editor` property.*
     var EditableMixin = {
@@ -1722,7 +1735,7 @@
             return new Klass(map, this, this.options.editOptions);
         },
 
-        // 🍂method enableEdit(map?: L.Map): this.editor
+        // ?method enableEdit(map?: L.Map): this.editor
         // Enable editing, by creating an editor if not existing, and then calling `enable` on it.
         enableEdit: function (map) {
             if (!this.editor) this.createEditor(map);
@@ -1730,13 +1743,13 @@
             return this.editor;
         },
 
-        // 🍂method editEnabled(): boolean
+        // ?method editEnabled(): boolean
         // Return true if current instance has an editor attached, and this editor is enabled.
         editEnabled: function () {
             return this.editor && this.editor.enabled();
         },
 
-        // 🍂method disableEdit()
+        // ?method disableEdit()
         // Disable editing, also remove the editor property reference.
         disableEdit: function () {
             if (this.editor) {
@@ -1745,7 +1758,7 @@
             }
         },
 
-        // 🍂method toggleEdit()
+        // ?method toggleEdit()
         // Enable or disable editing, according to current status.
         toggleEdit: function () {
             if (this.editEnabled()) this.disableEdit();
