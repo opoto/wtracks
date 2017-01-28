@@ -1,4 +1,4 @@
-var cacheName = 'wtracks';
+var CACHE = 'wtracks';
 var filesToCache = [
   './activities.html',
   './css/images/layers.png',
@@ -58,12 +58,61 @@ var filesToCache = [
   './js/wtracks.js'
 ];
 
-self.addEventListener('install', function(e) {
-  console.log('[ServiceWorker] Install');
-  e.waitUntil(
-    caches.open(cacheName).then(function(cache) {
-      console.log('[ServiceWorker] Caching app shell');
-      return cache.addAll(filesToCache);
-    })
-  );
+/*
+  On install, cache some resources.
+*/
+self.addEventListener('install', function(evt) {
+  console.log('[ServiceWorker] installing...');
+  // Ask the service worker to keep installing until the returning promise resolves.
+  evt.waitUntil(precache());
 });
+
+/*
+  On fetch, use cache but update the entry with the latest contents from the server.
+*/
+self.addEventListener('fetch', function(evt) {
+  console.log('[ServiceWorker] fetching...');
+
+  // You can use respondWith() to answer immediately, without waiting
+  // for the network response to reach the service worker
+  evt.respondWith(fromCache(evt.request));
+
+  // and waitUntil() to prevent the worker from being killed until the cache is updated.
+  evt.waitUntil(update(evt.request));
+});
+
+/*
+  Open a cache and use addAll() with an array of assets to add all of
+  them to the cache. Return a promise resolving when all the assets are added.
+*/
+function precache() {
+  return caches.open(CACHE).then(function (cache) {
+    console.log('[ServiceWorker] Caching app');
+    return cache.addAll(filesToCache);
+  });
+}
+
+/*
+  Open the cache where the assets were stored and search for the
+  requested resource. Notice that in case of no matching, the promise
+  still resolves but it does with undefined as value.
+*/
+function fromCache(request) {
+  return caches.open(CACHE).then(function (cache) {
+    return cache.match(request).then(function (matching) {
+      return matching || Promise.reject('no-match');
+    });
+  });
+}
+
+/*
+  Update consists in opening the cache, performing a network request
+  and storing the new response data.
+*/
+function update(request) {
+  return caches.open(CACHE).then(function (cache) {
+    return fetch(request).then(function (response) {
+      return cache.put(request, response);
+    });
+  });
+}
