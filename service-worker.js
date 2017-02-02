@@ -69,17 +69,26 @@ self.addEventListener('install', function(evt) {
 
 /*
   On fetch, use cache but update the entry with the latest contents from the server.
-*/
+*
 self.addEventListener('fetch', function(evt) {
-  console.log('[ServiceWorker] fetching...');
+  console.log('[ServiceWorker] fetching: ' + evt.request.url);
 
   // You can use respondWith() to answer immediately, without waiting
   // for the network response to reach the service worker
-  evt.respondWith(fromCache(evt.request));
-
-  // and waitUntil() to prevent the worker from being killed until the cache is updated.
-  evt.waitUntil(update(evt.request));
+  var res = fromCache(evt.request);
+  if (evt.respondWith(res)) {
+    console.log('[ServiceWorker] FOUND: ' + evt.request.url);
+    // and waitUntil() to prevent the worker from being killed until the cache is updated.
+    evt.waitUntil(update(evt.request));
+  } else {
+    console.log('[ServiceWorker] not in cache: ' + evt.request.url);
+    fetch(evt.request).then(function (response) {
+      console.log('[ServiceWorker] not in cache, fetched: ' + response);
+      evt.respondWith(response);
+    });
+  }
 });
+*:
 
 /*
   Open a cache and use addAll() with an array of assets to add all of
@@ -98,12 +107,13 @@ function precache() {
   still resolves but it does with undefined as value.
 */
 function fromCache(request) {
+  //console.log("[SW] fromCache starting")
   return caches.open(CACHE).then(function (cache) {
+    //console.log("[SW] fromCache opened")
     return cache.match(request).then(function (matching) {
 //      return matching || Promise.reject('no-match');
-      return matching || fetch(request).then(function (response) {
-        return response;
-      });
+      //console.log("[SW] fromCache macthed: " + matching)
+      return matching;
     });
   });
 }
