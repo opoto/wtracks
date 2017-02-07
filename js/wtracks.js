@@ -376,7 +376,11 @@ $("#track-download").click(function() {
     trackname =  getTrackName();
   }
   var gpx = getGPX(trackname, /*savealt*/false, /*savetime*/false, asroute, nometadata);
-  var blob = new Blob([gpx], {type: "application/gpx+xml;charset=utf-8"});
+  if (isSafari()) alert("A new page will open, press cmd+s (" + String.fromCharCode(8984) + "+s) to save file")
+  var blob = new Blob([gpx],
+    isSafari() ? {type: "text/plain;charset=utf-8"} :
+      {type: "application/gpx+xml;charset=utf-8"}
+  );
   saveAs(blob, trackname+".gpx");
   clearStatus();
 })

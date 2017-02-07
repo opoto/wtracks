@@ -25,6 +25,12 @@ function isUnset(v) {
   return (typeof v === "undefined") || (v === null);
 }
 
+/* ----------------------- Testing safari browser ---------------------- */
+
+function isSafari() {
+  return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+}
+
 /* ----------------------- LOGGING SHORTCUTS -------------------------- */
 /* Extract URL parameters from current location */
 function getParameterByName(name, defaultValue) {
