@@ -564,16 +564,30 @@ function setLocation(pos, showIcon) {
 }
 
 function gotoMyLocation() {
+
+  function gotLocation(position) {
+    setLocation({
+      lat: position.coords.latitude,
+      lng: position.coords.longitude
+    }, true);
+  }
+
+  function highAccuracyFailed(posError) {
+    log("GPS location failed, trying low accuracy");
+    navigator.geolocation.getCurrentPosition(
+             gotLocation, lowAccuracyFailed,
+             {maximumAge:60000, timeout:5000, enableHighAccuracy: false});
+  }
+
+  function lowAccuracyFailed(posError) {
+    log("no runtime geolococation available");
+    getMyIpLocation();
+  }
+
+
   if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-      setLocation({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      }, true);
-    }, function(err){
-      log("Geolococation failed: [" + err.code + "] " + err.message);
-      getMyIpLocation();
-    });
+    navigator.geolocation.getCurrentPosition(gotLocation, highAccuracyFailed,
+       {maximumAge:60000, timeout:5000, enableHighAccuracy: true});
   } else {
     log("no runtime geolococation available");
     getMyIpLocation();
