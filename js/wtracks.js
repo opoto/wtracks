@@ -587,7 +587,7 @@ function gotoMyLocation() {
 
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(gotLocation, highAccuracyFailed,
-       {maximumAge:60000, timeout:5000, enableHighAccuracy: true});
+       {maximumAge:0, timeout:5000, enableHighAccuracy: true});
   } else {
     log("no runtime geolococation available");
     getMyIpLocation();
