@@ -24,6 +24,7 @@ var filesToCache = [
   './img/marker-pointer.png',
   './img/marker-shadow.png',
   './img/menu-icon.png',
+  './img/mylocation.png',
   './img/spinner.gif',
   './img/wtrack-icon-1x.png',
   './img/wtrack-icon-2x.png',

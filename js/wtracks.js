@@ -528,7 +528,7 @@ function setMyIpLocation(res) {
 }
 
 var myLocIcon = L.icon({
-    iconUrl: 'img/crosshair.png',
+    iconUrl: 'img/mylocation.png',
     iconSize:     [48, 48],
     iconAnchor:   [24, 24]
 });
@@ -556,14 +556,18 @@ function setLocation(pos, showIcon) {
   if (showLocation == LOC_NONE) return; // cancelled in the meantime
   var zoom = map.getZoom() ? map.getZoom() : config.display.zoom;
   map.setView(pos, zoom);
+  if (myLocMarker) {
+    clearTimeout(myLocTimer);
+    myLocMarker.remove();
+  }
   if (showIcon) {
-    if (myLocMarker) {
-      clearTimeout(myLocTimer);
-      myLocMarker.remove();
-    }
     myLocMarker = new L.marker([ pos.lat, pos.lng ], {icon: myLocIcon, clickable:false});
     myLocMarker.addTo(map);
+  }
+  if (showIcon || (showLocation == LOC_CONTINUOUS)) {
     myLocTimer = setTimeout(removeMyLocMarker, 5000);
+  } else {
+    showLocation = LOC_NONE;
   }
 }
 
@@ -584,13 +588,14 @@ function gotoMyLocation() {
   }
 
   function lowAccuracyFailed(posError) {
-    log("no runtime geolococation available");
+    log("low accuracy geolococation failed");
     getMyIpLocation();
   }
 
 
   if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(gotLocation, highAccuracyFailed,
+    navigator.geolocation.getCurrentPosition(
+      gotLocation, highAccuracyFailed,
        {maximumAge:0, timeout:5000, enableHighAccuracy: true});
   } else {
     log("no runtime geolococation available");
@@ -931,7 +936,7 @@ L.MyLocationControl = L.Control.extend({
                       showLocation = LOC_NONE;
                       $("#myloc").removeClass("control-selected");
                       removeMyLocMarker();
-                    } else if (myLocMarker) {
+                    } else if (showLocation == LOC_ONCE) {
                       showLocation = LOC_CONTINUOUS;
                       $("#myloc").addClass("control-selected");
                     } else {

@@ -125,7 +125,8 @@ function setEmailListener(selector, name, domain, subject) {
 
 /* ------------------------------ Encoding ---------------------------------*/
 function n10dLocation() {
-  res = window.location.toString().replace(/\?.*$/,"").replace(/\#.*$/,"");
+  var res = window.location.toString();
+  res = res.replace(/\?.*$/,"").replace(/\#.*$/,"");
   res = res.replace(/^.*:\/\//, "//");
   res = res.replace(/index.html$/, "");
   res = res.replace(/\/*$/, "/");
