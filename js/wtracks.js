@@ -1367,20 +1367,18 @@ map.on('editable:drawing:click', function (e) {
 map.on('editable:shape:new', function (e) {
   console.log(e.type);
 })
-map.on('editable:vertex:create', function (e) {
+map.on('editable:vertex:new', function (e) {
   var latlng = e.vertex.getLatLng();
-  if (isUndefined(latlng.i)) {
-    var prev = e.vertex.getPrevious();
-    i = isUndefined(prev) ? 0 : prev.latlng.i + 1;
-    latlng.i = i;
-    if (i == track.getLatLngs().length - 1) {
-      // last vertex
-      elevatePoint(latlng, function() {
-        polystats.updateStatsFrom(i);
-      });
-    }
-  }
+  var prev = e.vertex.getPrevious();
+  i = isUndefined(prev) ? 0 : prev.latlng.i + 1;
+  latlng.i = i;
   console.log(e.type + ": " + latlng.i);
+  if (i == track.getLatLngs().length - 1) {
+    // last vertex
+    elevatePoint(latlng, function() {
+      polystats.updateStatsFrom(i);
+    });
+  }
 })
 map.on('editable:vertex:dragend', function (e) {
   var i = e.vertex.getLatLng().i;
