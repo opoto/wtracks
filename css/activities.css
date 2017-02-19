@@ -96,13 +96,12 @@ table.form tr td:first-child {
 #spformula table {
   text-align: left;
   width: auto;
-  width: 280px;
   table-layout: fixed;
   background-color: #EEE;
 }
 #spformula table thead {
-    width: 250px;
-    display: inherit;
+  width: 250px;
+  display: inherit;
 }
 #spformula table tbody {
   display: block;
