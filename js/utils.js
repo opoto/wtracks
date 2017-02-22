@@ -28,7 +28,7 @@ function isUnset(v) {
 /* ----------------------- Testing safari browser ---------------------- */
 
 function isSafari() {
-  return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  return /^((?!chrome|android|ubuntu).)*safari/i.test(navigator.userAgent);
 }
 
 /* ----------------------- LOGGING SHORTCUTS -------------------------- */
