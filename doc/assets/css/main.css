@@ -2562,7 +2562,7 @@
 				#footer .copyright li:first-child {
 					margin-top: 0;
 				}
-        
+
     ul.default {
       padding: 0 10%;
     }
@@ -2574,4 +2574,9 @@
         margin-right: 0;
       }
 
+	}
+
+	img#browserstack-logo {
+		float: right;
+		width: 150px;
 	}
