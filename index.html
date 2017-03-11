@@ -68,13 +68,15 @@
           Load file:
         </td>
         <td>
-          File type:
-          <label><input type="radio" name="track-get-ext" value="auto" checked="checked"> Auto</label>
-          <label><input type="radio" name="track-get-ext" value="gpx"> GPX</label>
-          <label><input type="radio" name="track-get-ext" value="kml"> KML</label>
-          <label><input type="radio" name="track-get-ext" value="geojson"> GeoJson</label>
-          <br/>
           <label><input type="checkbox" id="merge"/>Merge with current track</label>
+          <br/>
+          File type:
+          <select id="track-ext">
+            <option value="auto">Auto</option>
+            <option value="gpx">GPX</option>
+            <option value="kml">KML</option>
+            <option value="geojson">GeoJson</option>
+          </select>
         </td>
       </tr><tr class="nobottomborder notopborder">
         <td>
@@ -92,10 +94,10 @@
         </td>
       </tr><tr>
         <td>
-          <button id="track-download" title="Download the track as a GPX file">Download</button>
+          <button id="track-download" title="Download current track as a GPX file">Download</button>
         </td>
         <td>
-          Download the track as a GPX file<br/><label><input type="checkbox" id="as-route"/>As route</label> | <label><input type="checkbox" id="nometadata"/>No metadata</label>
+          Download current track as a GPX file<br/><label><input type="checkbox" id="as-route"/>As route</label> | <label><input type="checkbox" id="nometadata"/>No metadata</label>
         </td>
       </tr>
     </table>

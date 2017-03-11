@@ -1149,7 +1149,7 @@ function loadFromUrl(url, ext) {
   });
 }
 function getLoadExt() {
-  var ext = $("input[name=track-get-ext]:checked").val();
+  var ext = $("#track-ext").children(':selected').val();
   if (ext === "auto") {
     ext = undefined
   }
