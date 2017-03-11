@@ -2,9 +2,7 @@ function setStatus(msg, options) {
   $("#status-msg").text(msg);
   var statusclass = options && options.class ? options.class : "status-info";
   $("#status-msg").attr("class", statusclass);
-  var showspinner = (options != undefined)
-    && (!isUndefined(options.spinner))
-    && options.spinner;
+  var showspinner = options && options.spinner;
   $("#spinner").toggle(showspinner);
   $("#status").fadeIn();
   if (options && options.timeout) {
@@ -1072,22 +1070,35 @@ function importGeoJson(geojson) {
     return point;
   }
 
+  function importLine(name, coords, times) {
+    var v = track.getLatLngs();
+    if (v.length == 0) {
+      setTrackName(name);
+    }
+    // import polyline vertexes
+    for (var i = 0; i < coords.length; i++) {
+      v.push(newPoint(coords[i], times ? times[i] : undefined, i));
+    }
+
+    track.setLatLngs(v);
+    bounds.extend(track.getBounds());
+  }
+
+
   L.geoJson(geojson,{
     onEachFeature: function(f) {
       if (f.geometry.type === "LineString") {
-        if (track.getLatLngs().length == 0) {
-          // import polyline vertexes
-          var v = [];
-          setTrackName(f.properties.name ? f.properties.name : NEW_TRACK_NAME);
-          var coords = f.geometry.coordinates;
-          var times = f.properties.coordTimes && (f.properties.coordTimes.length == coords.length) ? f.properties.coordTimes : undefined;
-          for (var i = 0; i < coords.length; i++) {
-            v.push(newPoint(coords[i], times ? times[i] : undefined, i));
+        var name = f.properties.name ? f.properties.name : NEW_TRACK_NAME;
+        var coords = f.geometry.coordinates
+        var times = f.properties.coordTimes && (f.properties.coordTimes.length == coords.length) ? f.properties.coordTimes : undefined;
+        importLine(name, coords, times);
+      } if (f.geometry.type === "MultiLineString") {
+          var name = f.properties.name ? f.properties.name : NEW_TRACK_NAME;
+          for (var i = 0; i < f.geometry.coordinates.length; i++) {
+            var coords = f.geometry.coordinates[i];
+            var times = f.properties.coordTimes[i] && (f.properties.coordTimes[i].length == coords.length) ? f.properties.coordTimes[i] : undefined;
+            importLine(name, coords, times);
           }
-
-          track.setLatLngs(v);
-          bounds.extend(track.getBounds());
-        }
       } else if (f.geometry.type === "Point") {
         // import marker
         var coords = f.geometry.coordinates;
