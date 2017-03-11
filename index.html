@@ -63,21 +63,32 @@
     <table id="menufile">
       <tr>
         <td><button id="track-new" title="Delete current track and start a new one">New</button></td><td>Delete current track and start a new one</td>
-      </tr><tr>
+      </tr><tr class="nobottomborder">
+        <td>
+          Load file:
+        </td>
+        <td>
+          File type:
+          <label><input type="radio" name="track-get-ext" value="auto" checked="checked"> Auto</label>
+          <label><input type="radio" name="track-get-ext" value="gpx"> GPX</label>
+          <label><input type="radio" name="track-get-ext" value="kml"> KML</label>
+          <label><input type="radio" name="track-get-ext" value="geojson"> GeoJson</label>
+          <br/>
+          <label><input type="checkbox" id="merge"/>Merge with current track</label>
+        </td>
+      </tr><tr class="nobottomborder notopborder">
         <td>
           <label id="track-upload-label"><input type="file" name="track" id="track-upload" /><span>Upload</span></label>
         </td>
         <td>
           Open a file from your device<br/>
-          <label><input type="checkbox" id="merge"/>Merge with current track</label>
         </td>
-      </tr><tr>
+      </tr><tr class="notopborder">
         <td>
-          <button id="track-get" title="Delete current track and loads a GPX file from the internet">Get from: </button></td><td><input id="track-get-url" placeholder="URL of GPX file on the internet" type="url"/></br>
-          <label><input type="radio" name="track-get-ext" value="auto" checked="checked"> Auto</label>
-          <label><input type="radio" name="track-get-ext" value="gpx"> GPX</label>
-          <label><input type="radio" name="track-get-ext" value="kml"> KML</label>
-          <label><input type="radio" name="track-get-ext" value="geojson"> GeoJson</label>
+          <button id="track-get" title="Load a file from the internet">Get from: </button>
+        </td>
+        <td>
+          <input id="track-get-url" placeholder="http://... (track URL)" type="url"/></br>
         </td>
       </tr><tr>
         <td>

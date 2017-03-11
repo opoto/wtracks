@@ -1148,6 +1148,13 @@ function loadFromUrl(url, ext) {
     fileloader.loadData(data, url, ext);
   });
 }
+function getLoadExt() {
+  var ext = $("input[name=track-get-ext]:checked").val();
+  if (ext === "auto") {
+    ext = undefined
+  }
+  return ext;
+}
 $("#track-get").click(function() {
   var url = $("#track-get-url").val().trim();
   if (!url) {
@@ -1156,11 +1163,7 @@ $("#track-get").click(function() {
   }
   setEditMode(EDIT_NONE);
   setStatus("Getting..", {spinner: true});
-  var ext = $("input[name=track-get-ext]:checked").val();
-  if (ext === "auto") {
-    ext = undefined
-  }
-  loadFromUrl(url, ext);
+  loadFromUrl(url, getLoadExt());
 });
 $("#track-get-url").keypress(function(e) {
   if (e.which == 13) {
@@ -1176,7 +1179,7 @@ $("#track-upload").change(function() {
   if (file) {
     setEditMode(EDIT_NONE);
     setStatus("Getting..", {spinner: true});
-    fileloader.load(file);
+    fileloader.load(file, getLoadExt());
   }
 });
 

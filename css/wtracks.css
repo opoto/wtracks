@@ -64,6 +64,12 @@ body {
 #menu tr {
   border: 1px solid #CCC;
 }
+#menu tr.nobottomborder {
+  border-bottom: none;
+}
+#menu tr.notopborder {
+  border-top: none;
+}
 #menu th {
   background-color: #BBB;
   cursor: pointer;
@@ -71,9 +77,9 @@ body {
 #menu td {
   padding: 5px;
 }
-#menu td label {
+/*#menu td label {
   font-size: 10pt;
-}
+}*/
 #menu tx:first-child {
   border-top: 0;
 }
