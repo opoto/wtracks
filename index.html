@@ -64,7 +64,13 @@
       <tr>
         <td><button id="track-new" title="Delete current track and start a new one">New</button></td><td>Delete current track and start a new one</td>
       </tr><tr>
-        <td><label id="track-upload-label"><input type="file" name="track" id="track-upload" /><span>Upload</span></label></td><td>Open a file from your device</td>
+        <td>
+          <label id="track-upload-label"><input type="file" name="track" id="track-upload" /><span>Upload</span></label>
+        </td>
+        <td>
+          Open a file from your device<br/>
+          <label><input type="checkbox" id="merge"/>Merge with current track</label>
+        </td>
       </tr><tr>
         <td>
           <button id="track-get" title="Delete current track and loads a GPX file from the internet">Get from: </button></td><td><input id="track-get-url" placeholder="URL of GPX file on the internet" type="url"/></br>
@@ -74,7 +80,12 @@
           <label><input type="radio" name="track-get-ext" value="geojson"> GeoJson</label>
         </td>
       </tr><tr>
-        <td><button id="track-download" title="Download the track as a GPX file">Download</button></td><td>Download the track as a GPX file<br/><label><input type="checkbox" id="as-route"/>As route</label> | <label><input type="checkbox" id="nometadata"/>No metadata</label></td>
+        <td>
+          <button id="track-download" title="Download the track as a GPX file">Download</button>
+        </td>
+        <td>
+          Download the track as a GPX file<br/><label><input type="checkbox" id="as-route"/>As route</label> | <label><input type="checkbox" id="nometadata"/>No metadata</label>
+        </td>
       </tr>
     </table>
     <table id="menutools">

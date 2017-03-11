@@ -1051,9 +1051,15 @@ $(".statistics").click(function(e){
 function importGeoJson(geojson) {
 
   setStatus("Loading..", {spinner: true});
-  newTrack();
   $("#edit-tools").hide();
-  var bounds = L.latLngBounds([]);
+  var bounds;
+  var merge = $("#merge").is(":checked");
+  if (!merge) {
+    newTrack();
+    bounds = L.latLngBounds([]);
+  } else {
+    bounds = L.latLngBounds(track.getLatLngs());
+  }
 
   function newPoint(coord, time, i) {
     var point = L.latLng(coord[1], coord[0]);
