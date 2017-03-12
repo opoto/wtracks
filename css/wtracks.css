@@ -89,12 +89,18 @@ body {
 #menu #track-get-url {
   width:100%;
 }
+
+#dropbox-chooser {
+  font-size: 10px;
+  padding-right: 0;
+  padding-left: 0;
+}
 #dropbox-logo {
   display: inline-block;
   width: 15px;
   height: 14px;
   vertical-align: bottom;
-  margin: 0 5px 0 2px;
+  margin: 0 2px 0 0px;
   background: transparent url('https://www.dropbox.com/static/images/widgets/dbx-saver-status.png') no-repeat;
   position: relative;
   top: 2px;

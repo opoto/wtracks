@@ -1192,8 +1192,7 @@ var dropboxOptions = {
 
     // Required. Called when a user selects an item in the Chooser.
     success: function(files) {
-        alert("Here's the file link: " + files[0].link)
-        loadFromUrl(files[0].link, getLoadExt());
+      loadFromUrl(files[0].link, getLoadExt());
     },
 
     // Optional. Called when the user closes the dialog without selecting a file
@@ -1215,13 +1214,13 @@ var dropboxOptions = {
     // only be able to select files with these extensions. You may also specify
     // file types, such as "video" or "images" in the list. For more information,
     // see File types below. By default, all extensions are allowed.
-    extensions: ['.gpx', '.json', '.geojson'],
+    //extensions: ['.gpx', '.json', '.kml', '.geojson'],
 };
 /*
 var dropboxButton = Dropbox.createChooseButton(dropboxOptions);
 document.getElementById("dropbox-td").appendChild(dropboxButton);
 */
-$("#drobox-chooser").click(function(e) {
+$("#dropbox-chooser").click(function(e) {
   Dropbox.choose(dropboxOptions);
 });
 
