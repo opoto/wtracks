@@ -89,7 +89,16 @@ body {
 #menu #track-get-url {
   width:100%;
 }
-
+#dropbox-logo {
+  display: inline-block;
+  width: 15px;
+  height: 14px;
+  vertical-align: bottom;
+  margin: 0 5px 0 2px;
+  background: transparent url('https://www.dropbox.com/static/images/widgets/dbx-saver-status.png') no-repeat;
+  position: relative;
+  top: 2px;
+}
 
 /* Style the list */
 ul.menutab {
