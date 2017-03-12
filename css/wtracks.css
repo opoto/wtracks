@@ -1,3 +1,4 @@
+html, body {height:100%; width:100%; margin:0;}
 body {
   margin:0;
   padding:0;
@@ -8,7 +9,6 @@ body {
   width: 100%;
   height: 100%;
   border-spacing: 0;
-  border-padding: 0;
 }
 
 #map-row {
@@ -414,7 +414,7 @@ button:active, #track-upload-label:active {
     display: none;
   }
   .statistics th, .statistics td {
-    //font-size: 90%;
+    /*font-size: 90%;*/
   }
   .hide-medium, .show-medium {
      display: none;

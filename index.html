@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <link rel="shortcut icon" href="img/favicon.ico" />
@@ -47,12 +48,12 @@
   <script src="js/leaflet.polystats.js"></script>
 
   <script src="js/config.js"></script>
+  <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="mb7pdzmlwfja7zi"></script>
   <script type="text/javascript">
     // load Google Maps API
     var key = config.google.mapsapikey();
     $.getScript("https://maps.googleapis.com/maps/api/js" + (key ? "?key=" + key : ""))
   </script>
-  <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="mb7pdzmlwfja7zi"></script>
 </head>
 <body>
   <div id="menu">
@@ -91,7 +92,7 @@
           <button id="track-get" title="Load a file from the internet">Get from: </button>
         </td>
         <td>
-          <input id="track-get-url" placeholder="http://... (track URL)" type="url"/></br>
+          <input id="track-get-url" placeholder="http://... (track URL)" type="url"/><br/>
         </td>
       </tr><tr class="notopborder">
         <td>
@@ -148,7 +149,7 @@
         <span id="status-msg"></span>
       </span>
     </td></tr>
-    <tr id="map-row"><td id='map'colspan="7"></td></tr>
+    <tr id="map-row"><td id="map" colspan="7"></td></tr>
     <tr class="statistics">
       <th><span class="hide-medium">Distance</span><span class="show-medium">&#x1f4cf;</span></th>
       <td title='One Way'>
