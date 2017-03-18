@@ -198,10 +198,22 @@ function newWaypoint(latlng, name, desc) {
     return div;
   }
 
+  var markerIcon = L.icon({
+    iconUrl: 'img/marker-icon.png',
+    iconRetinaUrl: 'img/marker-icon-2x.png',
+    iconSize: [16, 26],
+    iconAnchor: [8, 26],
+    popupAnchor: [0, 0],
+    shadowUrl: 'img/marker-shadow.png',
+    shadowRetinaUrl: 'img/marker-shadow-x2.png',
+    shadowSize: [26, 26],
+    shadowAnchor: [8, 26]
+  });
   var marker = L.marker(latlng, {
     title: name,
     desc: desc,
-    alt: name
+    alt: name,
+    icon: markerIcon
   }).addTo(waypoints);
 
   marker.on("click", function() {
