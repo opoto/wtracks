@@ -299,6 +299,52 @@ a.button {
 }
 /* --------------------------------------- */
 
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 15000; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.2); /* Black w/ opacity */
+}
+/* Modal Content/Box */
+.prompt-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 2px solid #333;
+  width: 80%; /* Could be more or less, depending on screen size */
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px 10px rgba(237,237,237,1);
+  max-width: 500px;
+}
+.prompt-content table {
+  width: 100%;
+}
+.prompt-content input {
+  width: 100%;
+}
+.prompt-content button {
+  padding: 5px 30px;
+  margin-top: 10px;
+  width: auto;
+}
+#prompt-ok {
+  font-weight: bold;
+  margin-left: auto;
+  margin-right: 10px;
+}
+#prompt-cancel {
+  margin-right: auto;
+}
+
+/* ---------------------------------------------------- */
+
 .credits {
   text-align: right;
   font-style: italic;

@@ -37,6 +37,7 @@ var map = L.map('map', {
           }
     });
 var track;
+var metadata;
 var waypoints;
 var editLayer;
 var route;
@@ -54,18 +55,54 @@ var editMode = EDIT_MANUAL_TRACK;
 function setTrackName(name) {
   $("#track-name").text(name);
   document.title = config.appname + " - " + name;
+  metadata.name = name;
 }
 function getTrackName() {
-  return $("#track-name").text();
+  return metadata.name;
 }
 function askTrackName() {
-    var name = $("#track-name").text();
-    name = prompt("Track name:", name);
+    var name = prompt("Track name:", getTrackName());
     if (name) {
       setTrackName(name);
     }
+    var desc = prompt("Track desc:", metadata.desc);
+    if (desc) {
+      metadata.desc = desc;
+    }
 }
-$("#track-name").click(askTrackName);
+
+function validatePrompt() {
+  setTrackName($("#prompt-name").val());
+  metadata.desc = $("#prompt-desc").val();
+  closeTrackNamePrompt();
+}
+
+function promptTrackName() {
+  $("#prompt-name").val(getTrackName());
+  $("#prompt-desc").val(metadata.desc);
+  $("#prompt").show();
+  $("#prompt-name").focus();
+}
+function closeTrackNamePrompt() {
+  $("#prompt").hide();
+}
+
+function promptKeyEvent(event) {
+  if ( event.which == 27 ) {
+    closeTrackNamePrompt();
+  } else if (event.keyCode == 13) {
+    validatePrompt();
+  }
+}
+$("#prompt-name").keyup(promptKeyEvent);
+$("#prompt-desc").keyup(promptKeyEvent);
+
+$("#prompt-ok").click(validatePrompt);
+$("#prompt-cancel").click(closeTrackNamePrompt);
+
+//$("#track-name").click(askTrackName);
+$("#track-name").click(promptTrackName);
+
 
 var selectActivity = $("#activity")[0];
 var activities;
@@ -110,6 +147,7 @@ $("#activity").change(function() {
 /* ------------------------------------------------------------*/
 
 function newTrack() {
+  metadata = {};
   setEditMode(EDIT_NONE);
   setTrackName(NEW_TRACK_NAME);
   if (track) {
@@ -330,7 +368,7 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
   if (!nometadata) {
     gpx += "<metadata>\n";
     gpx += "  <name>" + trackname + "</name>\n";
-    gpx += "  <desc></desc>\n";
+    gpx += "  <desc>" + metadata.desc + "</desc>\n";
     gpx += "  <author><name>" + config.appname + "</name></author>\n";
     gpx += "  <link href='" + window.location.href + "'>\n";
     gpx += "    <text>" + config.appname + "</text>\n";
@@ -1090,7 +1128,7 @@ function importGeoJson(geojson) {
 
   function importLine(name, coords, times) {
     var v = track.getLatLngs();
-    if (v.length == 0) {
+    if ((v.length == 0) && (metadata.name == NEW_TRACK_NAME)) {
       setTrackName(name);
     }
     // import polyline vertexes
@@ -1102,6 +1140,12 @@ function importGeoJson(geojson) {
     bounds.extend(track.getBounds());
   }
 
+  if ((track.getLatLngs.length == 0) && (geojson.metadata)) {
+    metadata = geojson.metadata;
+    if (metadata.name) {
+      setTrackName(metadata.name);
+    }
+  }
 
   L.geoJson(geojson,{
     onEachFeature: function(f) {
