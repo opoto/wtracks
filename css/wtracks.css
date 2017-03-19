@@ -314,7 +314,7 @@ a.button {
 }
 /* Modal Content/Box */
 .prompt-content {
-  background-color: #fefefe;
+  background-color: #eee;
   margin: 15% auto; /* 15% from the top and centered */
   padding: 20px;
   border: 2px solid #333;
@@ -326,8 +326,22 @@ a.button {
 .prompt-content table {
   width: 100%;
 }
-.prompt-content input {
+.prompt-content table th {
+  padding-bottom: 15px;
+}
+.prompt-content table td:first-child {
+  text-align: right;
+}
+.prompt-content input, .prompt-content textarea  {
   width: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: sans-serif;
+}
+.prompt-content textarea {
+  height: 60px;
 }
 .prompt-content button {
   padding: 5px 30px;

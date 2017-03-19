@@ -65,10 +65,6 @@ function askTrackName() {
     if (name) {
       setTrackName(name);
     }
-    var desc = prompt("Track desc:", metadata.desc);
-    if (desc) {
-      metadata.desc = desc;
-    }
 }
 
 function validatePrompt() {
@@ -94,13 +90,23 @@ function promptKeyEvent(event) {
     validatePrompt();
   }
 }
-$("#prompt-name").keyup(promptKeyEvent);
-$("#prompt-desc").keyup(promptKeyEvent);
+
+$("#prompt-name").keyup(function promptKeyEvent(event) {
+  if ( event.which == 27 ) {
+    closeTrackNamePrompt();
+  } else if (event.keyCode == 13) {
+    validatePrompt();
+  }
+});
+$("#prompt-desc").keyup(function promptKeyEvent(event) {
+  if ( event.which == 27 ) {
+    closeTrackNamePrompt();
+  }
+});
 
 $("#prompt-ok").click(validatePrompt);
 $("#prompt-cancel").click(closeTrackNamePrompt);
 
-//$("#track-name").click(askTrackName);
 $("#track-name").click(promptTrackName);
 
 
