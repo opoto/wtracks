@@ -85,6 +85,9 @@ body {
 #menu td:first-child button {
   width: 100%
 }
+#menu td:nth-child(2) {
+  padding-right: 10px;
+}
 #menu #track-get-url {
   width:100%;
 }
