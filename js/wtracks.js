@@ -107,7 +107,7 @@ $("#prompt-desc").keyup(function promptKeyEvent(event) {
 $("#prompt-ok").click(validatePrompt);
 $("#prompt-cancel").click(closeTrackNamePrompt);
 
-$("#track-name").click(promptTrackName);
+$("#track-name-edit").click(promptTrackName);
 
 
 var selectActivity = $("#activity")[0];

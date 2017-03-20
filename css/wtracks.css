@@ -31,7 +31,6 @@ body {
 .title {
   margin-left: 10px;
   font-weight: bold;
-  cursor: pointer;
 }
 
 .hidden {
@@ -166,6 +165,9 @@ a.button {
 .symbol {
   font-size: 120%;
   font-weight: bolder;
+}
+.link {
+  cursor: pointer;
 }
 
 .red {
@@ -331,6 +333,8 @@ a.button {
 }
 .prompt-content table td:first-child {
   text-align: right;
+  vertical-align: top;
+  padding-top: 5px;
 }
 .prompt-content input, .prompt-content textarea  {
   width: 100%;
@@ -344,9 +348,9 @@ a.button {
   height: 60px;
 }
 .prompt-content button {
-  padding: 5px 30px;
+  padding: 5px 10px;
   margin-top: 10px;
-  width: auto;
+  width: 80px;
 }
 #prompt-ok {
   font-weight: bold;
