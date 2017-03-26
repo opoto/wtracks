@@ -453,7 +453,7 @@ function editableWaypoints(editable) {
 function mergeRouteToTrack() {
   if (!route) return;
   var initlen = track.getLatLngs().length;
-  var pts = route._selectedRoute.coordinates;
+  var pts = route._selectedRoute ? route._selectedRoute.coordinates : [];
   pts = L.PolyUtil.prune(pts, config.compressdefault);
   route.remove();
   route = undefined;
