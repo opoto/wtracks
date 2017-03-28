@@ -45,6 +45,15 @@ var config = {
       return strdecode("znBAYM%5C%1AV%5EMEG", "zn%02r%0C%16fGTEJ%02%5D");
     }
   },
+  ign: {
+    key: function() {
+      // Create an IGN API key, and return it here
+      // Simple obfscuation below to avoid reuse by ommision
+      return strdecode(
+        "UM%06E%5C%1E%03%1A%0EP%06P%1B%07A%06%1CM%06%0E%1C%0EU%5D",
+        "C%16Z%19%10RT%1B%00%07%11%1AJY%0B%1E%01%0C%19%0BZ%1CE%5E");
+    }
+  },
   corsproxy: {
     url: function() {
       // proxy for fetching remote track files

@@ -773,6 +773,16 @@ function getProvider(name) {
         maxZoom: 17,
       attribution: 'Cycling Routes: (<a href="http://cycling.lonvia.de">Lonvias Cycling Map</a>)'
     });
+  } else if (name == 'ign:classic') {
+    p = L.tileLayer.wtms(
+          "http://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts",
+          {
+            layer: 'GEOGRAPHICALGRIDSYSTEMS.MAPS',
+            style: 'normal',
+            tilematrixSet: "PM",
+            format: 'image/jpeg',
+            attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
+          });
   }
   if (!p) {
     p = getProvider("osm:std");
@@ -795,13 +805,15 @@ var baseLayers = {
   "Google roads": getProvider('google:roadmap'),
   "Google Terrain": getProvider('google:terrain'),
   "Google Satellite": getProvider('google:satellite'),
-  "Google Hybrid": getProvider('google:hybrid')
+  "Google Hybrid": getProvider('google:hybrid'),
+  "IGN": getProvider("ign:classic")
 };
 var overlays = {
   "Hillshading": getProvider("wmf:hills"),
   "Hiking Routes (*)": getProvider("lv:hike"),
   "Cycling Routes (*)": getProvider("lv:bike"),
 };
+
 L.control.layers(baseLayers, overlays).addTo(map);
 map.addLayer(baseLayers[getVal("baseLayer", config.display.map)] || baseLayers[config.display.map]);
 map.on("baselayerchange", function(e) {
