@@ -23,8 +23,7 @@ L.TileLayer.WMTS = L.TileLayer.extend({
                 layer: '',
                 style: '',
                 tilematrixSet: '',
-                format: 'image/jpeg',
-                matrixIds: matrixIds3857
+                format: 'image/jpeg'
         },
 
         initialize: function (url, options) { // (String, Object)
@@ -44,7 +43,7 @@ L.TileLayer.WMTS = L.TileLayer.extend({
                 }
                 this.wmtsParams = wmtsParams;
                 this.matrixIds = options.matrixIds ?
-                  options.matrixIds : this.defaultWmtsParams.matrixIds;
+                  options.matrixIds : matrixIds3857;
                 L.setOptions(this, options);
         },
 
