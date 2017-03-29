@@ -20,6 +20,15 @@ body {
   border-top: 1px solid black;
 }
 
+.gh-credit {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0 5px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
 #menu-bar {
   margin: 0px;
   background-color: #ddd;

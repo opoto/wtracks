@@ -491,6 +491,13 @@ function restartRoute() {
   }
 }
 
+function showGraphHopperCredit() {
+  $("#map").append("<span class='gh-credit'>Powered by <a href='https://graphhopper.com/#directions-api'>GraphHopper API</a></span>");
+}
+function hideGraphHopperCredit() {
+  $(".gh-credit").remove();
+}
+
 function setEditMode(mode) {
   closeOverlays();
   if (mode === editMode) {
@@ -503,6 +510,7 @@ function setEditMode(mode) {
       }
       break;
     case EDIT_AUTO_TRACK:
+      hideGraphHopperCredit();
       mergeRouteToTrack();
       break;
     case EDIT_MARKER:
@@ -522,6 +530,7 @@ function setEditMode(mode) {
       break;
     case EDIT_AUTO_TRACK:
       $("#edit-auto").addClass("control-selected");
+      showGraphHopperCredit();
       restartRoute();
       break;
     case EDIT_MARKER:
