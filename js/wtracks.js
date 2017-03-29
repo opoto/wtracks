@@ -775,7 +775,7 @@ function getProvider(name) {
     });
   } else if (name == 'ign:classic') {
     p = L.tileLayer.wtms(
-          "http://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts",
+          "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts",
           {
             layer: 'GEOGRAPHICALGRIDSYSTEMS.MAPS',
             style: 'normal',

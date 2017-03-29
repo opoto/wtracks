@@ -26,7 +26,7 @@ L.TileLayer.WMTS = L.TileLayer.extend({
                 format: 'image/jpeg'
         },
 
-        initialize: function (url, options) { // (String, Object)
+        initializeOld: function (url, options) { // (String, Object)
                 this._url = url;
                 var wmtsParams = L.extend({}, this.defaultWmtsParams),
                     tileSize = options.tileSize || this.options.tileSize;
@@ -47,6 +47,57 @@ L.TileLayer.WMTS = L.TileLayer.extend({
                 L.setOptions(this, options);
         },
 
+        initialize: function (url, options) { // (String, Object)
+
+          		this._url = url;
+
+          		options = L.Util.setOptions(this, options);
+
+          		// detecting retina displays, adjusting tileSize and zoom levels
+          		if (options.detectRetina && Browser.retina && options.maxZoom > 0) {
+
+          			options.tileSize = Math.floor(options.tileSize / 2);
+
+          			if (!options.zoomReverse) {
+          				options.zoomOffset++;
+          				options.maxZoom--;
+          			} else {
+          				options.zoomOffset--;
+          				options.minZoom++;
+          			}
+
+          			options.minZoom = Math.max(0, options.minZoom);
+          		}
+
+          		if (typeof options.subdomains === 'string') {
+          			options.subdomains = options.subdomains.split('');
+          		}
+
+              //------------------vv WMTS vv-----------------------
+              var wmtsParams = L.extend({}, this.defaultWmtsParams),
+                  tileSize = options.tileSize || this.options.tileSize;
+              if (options.detectRetina && L.Browser.retina) {
+                      wmtsParams.width = wmtsParams.height = tileSize * 2;
+              } else {
+                      wmtsParams.width = wmtsParams.height = tileSize;
+              }
+              for (var i in options) {
+                      // all keys that are not TileLayer options go to WMTS params
+                      if (!this.options.hasOwnProperty(i) && i!="matrixIds") {
+                              wmtsParams[i] = options[i];
+                      }
+              }
+              this.wmtsParams = wmtsParams;
+              this.matrixIds = options.matrixIds ?
+                options.matrixIds : matrixIds3857;
+              //------------------^^ WMTS ^^-----------------------
+
+          		// for https://github.com/Leaflet/Leaflet/issues/137
+          		if (!L.Browser.android) {
+          			this.on('tileunload', this._onTileRemove);
+              }
+        },
+
         onAdd: function (map) {
                 L.TileLayer.prototype.onAdd.call(this, map);
         },
@@ -56,7 +107,7 @@ L.TileLayer.WMTS = L.TileLayer.extend({
                 crs = map.options.crs;
                 tileSize = this.options.tileSize;
                 nwPoint = tilePoint.multiplyBy(tileSize);
-                //+/-1 pour Ãªtre dans la tuile
+                //+/-1 pour être dans la tuile
                 nwPoint.x+=1;
                 nwPoint.y-=1;
                 sePoint = nwPoint.add(new L.Point(tileSize, tileSize));
