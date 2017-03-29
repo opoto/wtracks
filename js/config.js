@@ -51,7 +51,7 @@ var config = {
       // Simple obfscuation below to avoid reuse by ommision
       return strdecode(
         "UM%06E%5C%1E%03%1A%0EP%06P%1B%07A%06%1CM%06%0E%1C%0EU%5D",
-        "%5DHNzSBe%0A%14%1CK%1B%0E%11%19%15%0A%0D%17%5EC%23%24%7C");
+        "%5DHNQ%06%00UV%1E%02QB%08%04%04N!%11%16G%0E%1C%0E%1A");
     }
   },
   corsproxy: {
