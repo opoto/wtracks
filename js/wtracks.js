@@ -792,6 +792,16 @@ function getProvider(name) {
             format: 'image/jpeg',
             attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
           });
+  } else if (name == 'ign:express') {
+    p = L.tileLayer.wtms(
+          "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts",
+          {
+            layer: 'GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN-EXPRESS.STANDARD',
+            style: 'normal',
+            tilematrixSet: "PM",
+            format: 'image/jpeg',
+            attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
+          });
   }
   if (!p) {
     p = getProvider("osm:std");
@@ -815,7 +825,8 @@ var baseLayers = {
   "Google Terrain": getProvider('google:terrain'),
   "Google Satellite": getProvider('google:satellite'),
   "Google Hybrid": getProvider('google:hybrid'),
-  "IGN": getProvider("ign:classic")
+  "IGN Classic": getProvider("ign:classic"),
+  "IGN Express": getProvider("ign:express")
 };
 var overlays = {
   "Hillshading": getProvider("wmf:hills"),
