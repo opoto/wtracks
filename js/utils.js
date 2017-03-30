@@ -132,6 +132,10 @@ function n10dLocation() {
   res = res.replace(/\/*$/, "/");
   return res;
 }
+function n10dUA() {
+  var res = getVal("wtracks.code");
+  return res;
+}
 
 function strxor(s, k) {
   var enc = "";
@@ -151,8 +155,10 @@ function strencode(s, k) {
   return encodeURIComponent(strxor(s, k))
 }
 function strdecode(s1, s2) {
-  var s = (window.location.toString().indexOf("file:") == 0) ? s2: s1;
-  return s ? strxor(decodeURIComponent(s), n10dLocation()) : s;
+  var f = (window.location.toString().indexOf("file:") == 0);
+  var s = f ? s2 : s1;
+  var k = f ? n10dUA() : n10dLocation();
+  return s ? strxor(decodeURIComponent(s), k) : s;
 }
 
 // Base 64 encoding / decoding

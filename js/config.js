@@ -22,7 +22,7 @@ var config = {
       // Create aThunderForest account, generate a key, and return it here
       // Simple obfscuation below to avoid reuse by ommision
       return strdecode("%1FL%0E%13%0D%11W%18VPBQAT%1D%5BW%18%40%10%16R%00%0FA%1A%18%1C%0CCW%15",
-        "%1FLN%20XJmETKE%16%5BF%5CFWYY%0DKc1-dtcvLwJ%0E");
+        "%05.%0B%0E%24KFhZHA%5Dz%12%10vR%10u3_y%5B5E%1F%1D%0E%11gKM");
     }
   },
   graphhopper: {
@@ -30,7 +30,7 @@ var config = {
       // Create a GraphHopper account, generate a key, and return it here
       // Simple obfscuation below to avoid reuse by ommision
       return strdecode("%1F%1AWI%0C%16%0EHJ%08A%0CBO%1A%0C%0BNZM%10%07RFC%1EI%1D%0E%11ZBY%19P%0A",
-        "%1F%1A%17zYM4%15H%13FKX%5D%5B%11%0B%0FCPM6cdfp2wN%25GYFUX%1B");
+        "%05xRT%25L%1F8F%10B%00y%09%17!%0EFonY%2C%09%7CG%1BL%0F%135F%1A%03z%5D%0E");
     }
   },
   google: {
@@ -42,7 +42,7 @@ var config = {
     analyticsid: function() {
       // Create a Google analytics trackind ID, and return it here
       // Simple obfscuation below to avoid reuse by ommision
-      return strdecode("znBAYM%5C%1AV%5EMEG", "zn%02r%0C%16fGTEJ%02%5D");
+      return strdecode("znBAYM%5C%1AV%5EMEG", "");
     }
   },
   ign: {
@@ -51,14 +51,14 @@ var config = {
       // Simple obfscuation below to avoid reuse by ommision
       return strdecode(
         "UM%06E%5C%1E%03%1A%0EP%06P%1B%07A%06%1CM%06%0E%1C%0EU%5D",
-        "%5DHNQ%06%00UV%1E%02QB%08%04%04N!%11%16G%0E%1C%0E%1A");
+        "G*%0BT%2FCN'%1A%1FOP%2FEU%25%0FD%3B%60W9Nd");
     }
   },
   corsproxy: {
     url: function() {
       // proxy for fetching remote track files
       return strdecode("G%5B%1B%00%1CN%40%01%10%1D%06%09%16%09%5DG%0E_%07%07%02%0E%17E%10%40B%00%0C%1F%1D%07%1F%5C%08%11%0DF%1F%11%5E",
-        "G%5B%5B3I%15z%5C%12%06%01N%0C%1B%1CZ%0E%1E%1E%1A_%3F%26g5.9jL%2B%00%1C%00%10%00%00VY%1E%01%11");
+        "%5D9%1E%1D5%14Qq%1C%05%05%05-OPj%0BW2%24K%25L%7F%14EG%12%11%3B%01_E%3F%05%15%3F%00%14-%1B");
     },
     query: "?url="
   },
