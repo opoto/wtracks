@@ -838,6 +838,7 @@ L.control.layers(baseLayers, overlays).addTo(map);
 map.addLayer(baseLayers[getVal("baseLayer", config.display.map)] || baseLayers[config.display.map]);
 map.on("baselayerchange", function(e) {
   saveValOpt("baseLayer", e.name);
+  $(".leaflet-control-layers").removeClass("leaflet-control-layers-expanded");
 });
 function getOverlays() {
   var v = getJsonVal("overlays");
