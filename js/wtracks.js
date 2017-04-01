@@ -673,6 +673,10 @@ function getSavedPosition(_lat, _lng) {
     lat: parseFloat(vlat),
     lng: parseFloat(vlng)
   };
+  // ask for position on first use
+  if (vlat == _lat && vlng == _lng) {
+    setTimeout(gotoMyLocation, 2000);
+  }
   return pos;
 }
 
