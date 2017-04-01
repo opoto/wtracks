@@ -1280,7 +1280,7 @@ $("#track-upload").change(function() {
   }
 });
 
-/*-- DropBox --*/
+/*-- DropBox --*
 
 
 var dropboxOptions = {
@@ -1311,15 +1311,15 @@ var dropboxOptions = {
     // see File types below. By default, all extensions are allowed.
     //extensions: ['.gpx', '.json', '.kml', '.geojson'],
 };
-/*
+
 var dropboxButton = Dropbox.createChooseButton(dropboxOptions);
 document.getElementById("dropbox-td").appendChild(dropboxButton);
-*/
+
 $("#dropbox-chooser").click(function(e) {
   Dropbox.choose(dropboxOptions);
 });
 
-/* ------------ */
+/s* ------------ */
 
 function newRouteWaypoint(i, waypoint, n) {
 
@@ -1613,6 +1613,10 @@ map.on('editable:vertex:click', function (e) {
   }
 
   track.editor.commitDrawing();
+  if (track.getLatLngs().length == 0) {
+    setEditMode(EDIT_MANUAL_TRACK);
+    return;
+  }
   e.cancel();
   var div = getTrackPointPopupContent(e.latlng);
   var pop = L.popup()
