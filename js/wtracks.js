@@ -249,7 +249,7 @@ function newWaypoint(latlng, name, desc) {
     iconAnchor: [8, 26],
     popupAnchor: [0, 0],
     shadowUrl: 'img/marker-shadow.png',
-    shadowRetinaUrl: 'img/marker-shadow-x2.png',
+    shadowRetinaUrl: 'img/marker-shadow-2x.png',
     shadowSize: [26, 26],
     shadowAnchor: [8, 26]
   });

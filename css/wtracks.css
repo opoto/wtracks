@@ -232,6 +232,9 @@ a.button {
 #myloc {
   background: url(../img/icons.png) -78px 0 no-repeat;
 }
+.leaflet-default-icon-path {
+	background-image: url(../img/marker-icon.png);
+}
 
 .popupdiv {
   margin: 5px 0;
