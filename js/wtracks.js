@@ -637,6 +637,7 @@ function setLocation(pos, showIcon) {
 function gotoMyLocation() {
 
   function gotLocation(position) {
+    log("Got location");
     setLocation({
       lat: position.coords.latitude,
       lng: position.coords.longitude
@@ -675,7 +676,10 @@ function getSavedPosition(_lat, _lng) {
   };
   // ask for position on first use
   if (vlat == _lat && vlng == _lng) {
-    setTimeout(gotoMyLocation, 2000);
+    setTimeout(function() {
+      showLocation = LOC_ONCE;
+      gotoMyLocation();
+    }, 1000);
   }
   return pos;
 }
