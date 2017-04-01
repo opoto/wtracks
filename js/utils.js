@@ -158,7 +158,7 @@ function strdecode(s1, s2) {
   var f = (window.location.toString().indexOf("file:") == 0);
   var s = f ? s2 : s1;
   var k = f ? n10dUA() : n10dLocation();
-  return s ? strxor(decodeURIComponent(s), k) : s;
+  return s ? strxor(decodeURIComponent(s), k ? k : "") : s;
 }
 
 // Base 64 encoding / decoding
