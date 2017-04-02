@@ -19,7 +19,6 @@ var filesToCache = [
   './img/icons.png',
   './img/marker-icon.png',
   './img/marker-icon-2x.png',
-  './img/marker-pointer.png',
   './img/marker-shadow.png',
   './img/marker-shadow-2x.png',
   './img/menu-icon.png',
@@ -88,7 +87,7 @@ self.addEventListener('fetch', function(evt) {
     });
   }
 });
-*:
+*/
 
 /*
   Open a cache and use addAll() with an array of assets to add all of
