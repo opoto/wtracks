@@ -62,6 +62,7 @@
     <ul class="menutab">
       <li><a href="#" class="tablinks" id="tabfile">File</a></li>
       <li><a href="#" class="tablinks" id="tabtools">Tools</a></li>
+      <li><a href="#" class="tablinks" id="tabconfig">Settings</a></li>
     </ul>
     <table id="menufile">
       <tr>
@@ -133,6 +134,11 @@
         <td>
           <input type="range" id="trim-range" min="0" step="1" value="0"/>&nbsp;<span id="trim-txt"></span>
         </td>
+      </tr>
+    </table>
+    <table id="menuconfig">
+      <tr>
+        <td><input id="cfgsave" class="no-trim" type="checkbox"/></td><td>Locally save editor's state between sessions<br/>Privacy warning: state is shared with all users of this device</td>
       </tr>
     </table>
     <div class="credits"><span class="appname">WTracks</span> by <a id="email" href="#">Olivier Potonniée</a> - <a href="doc/" target="_blank">About</a></div>

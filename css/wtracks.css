@@ -91,6 +91,9 @@ body {
 #menu tx:first-child {
   border-top: 0;
 }
+#menu td:first-child {
+  vertical-align: top;
+}
 #menu td:first-child button {
   width: 100%
 }
@@ -358,6 +361,7 @@ a.button {
   border: 1px solid #ccc;
   border-radius: 4px;
   font-family: sans-serif;
+  font-size: 100%;
 }
 .prompt-content textarea {
   height: 60px;

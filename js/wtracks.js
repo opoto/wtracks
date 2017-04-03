@@ -49,7 +49,7 @@ var EDIT_NONE = 0;
 var EDIT_MANUAL_TRACK = 1;
 var EDIT_AUTO_TRACK = 2;
 var EDIT_MARKER = 3;
-var editMode = EDIT_MANUAL_TRACK;
+var editMode = -1;
 
 
 function setTrackName(name) {
@@ -70,6 +70,7 @@ function askTrackName() {
 function validatePrompt() {
   setTrackName($("#prompt-name").val());
   metadata.desc = $("#prompt-desc").val();
+  saveState();
   closeTrackNamePrompt();
 }
 
@@ -154,8 +155,6 @@ $("#activity").change(function() {
 
 function newTrack() {
   metadata = {};
-  setEditMode(EDIT_NONE);
-  setTrackName(NEW_TRACK_NAME);
   if (track) {
     track.remove();
     track = undefined;
@@ -181,6 +180,8 @@ function newTrack() {
     speedProfile:  getCurrentActivity().speedprofile,
     onUpdate: showStats,
   });
+  setTrackName(NEW_TRACK_NAME);
+  setEditMode(EDIT_NONE);
   showStats();
 }
 
@@ -300,6 +301,7 @@ function finishTrim() {
     polystats.updateStatsFrom(0);
   }
   polytrim = undefined;
+  saveState();
 }
 
 $("#trim-range").on("change", trimTrack)
@@ -327,7 +329,7 @@ $("#menu-close").click(function() {
 $("#track-new").click(function() {
   newTrack();
   setEditMode(EDIT_MANUAL_TRACK);
-
+  saveState();
 })
 $("#menu-track").click(function() {
   $(".collapsable-track").toggle();
@@ -374,7 +376,7 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
   if (!nometadata) {
     gpx += "<metadata>\n";
     gpx += "  <name>" + trackname + "</name>\n";
-    gpx += "  <desc>" + metadata.desc + "</desc>\n";
+    gpx += "  <desc>" + (metadata.desc ? metadata.desc : "") + "</desc>\n";
     gpx += "  <author><name>" + config.appname + "</name></author>\n";
     gpx += "  <link href='" + window.location.href + "'>\n";
     gpx += "    <text>" + config.appname + "</text>\n";
@@ -384,7 +386,7 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
     gpx += "  <time>" + t.toISOString() + "</time>\n";
     var sw = map.getBounds().getSouthWest();
     var ne = map.getBounds().getNorthEast();
-    gpx += '<bounds minlat="' + Math.min(sw.lat, ne.lat) + '" minlon="' + Math.min(sw.lng, ne.lng) + '" maxlat="' + Math.max(sw.lat, ne.lat) + '" maxlon="'+ Math.max(sw.lng, ne.lng) + '"/>';
+    gpx += '  <bounds minlat="' + Math.min(sw.lat, ne.lat) + '" minlon="' + Math.min(sw.lng, ne.lng) + '" maxlat="' + Math.max(sw.lat, ne.lat) + '" maxlon="'+ Math.max(sw.lng, ne.lng) + '"/>\n';
     gpx += "</metadata>\n";
   }
   var wpts = waypoints ? waypoints.getLayers() : undefined;
@@ -411,11 +413,12 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
       i++;
     }
     if (asroute) {
-      gpx += "</rte></gpx>\n";
+      gpx += "</rte>\n";
     } else {
-      gpx += "</trkseg></trk></gpx>\n";
+      gpx += "</trkseg></trk>\n";
     }
   }
+  gpx += "</gpx>\n";
   return gpx;
 }
 
@@ -520,6 +523,9 @@ function setEditMode(mode) {
   }
   map.editTools.stopDrawing();
   $("#edit-tools a").removeClass("control-selected");
+  if (editMode > 0) {
+    saveState();
+  }
   switch (mode) {
     case EDIT_NONE:
       break;
@@ -568,6 +574,7 @@ $("#compress").click(function() {
       alert("Removed " + removedpts + " points out of " + pts.length + " (" + Math.round((removedpts / pts.length) * 100) + "%)")
       // switch to new values
       track.setLatLngs(pruned);
+      saveState();
     } else {
       setStatus("Already optimized", {timeout:3});
     }
@@ -690,6 +697,50 @@ function savePosition() {
   saveValOpt("poslng",pos.lng);
 }
 
+function saveTrack() {
+  var trackname =  getTrackName();
+  var numPts = track.getLatLngs().length + waypoints.getLayers().length;
+  if (numPts < 1000) {
+    var gpx = getGPX(trackname, /*savealt*/false, /*savetime*/false, /*asroute*/false, /*nometadata*/false);
+    saveValOpt("gpx",gpx);
+  }
+}
+
+function saveState() {
+  if (isStateSaved()) {
+    saveTrack();
+    savePosition();
+  }
+}
+
+function restorePosition() {
+  var defpos = getSavedPosition(config.display.pos.lat, config.display.pos.lng);
+  showLocation = LOC_ONCE;
+  setLocation(defpos); // required to initialize map
+}
+
+function restoreTrack() {
+  var gpx = isStateSaved() ? getVal("gpx", null) : null;
+  if (gpx) {
+    fileloader.loadData(gpx, "dummy", "gpx");
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function restoreState() {
+  if (!restoreTrack()) {
+    restorePosition();
+  }
+}
+
+function clearSavedState() {
+  storeVal("gpx", "");
+  storeVal("poslat", "");
+  storeVal("poslng", "");
+}
+
 function saveMapType() {
   saveValOpt("maptype", map.getMapTypeId());
 }
@@ -810,6 +861,16 @@ function getProvider(name) {
             format: 'image/jpeg',
             attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
           });
+  } else if (name == 'ign:imagery') {
+    p = L.tileLayer.wtms(
+          "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts",
+          {
+            layer: 'ORTHOIMAGERY.ORTHOPHOTOS',
+            style: 'normal',
+            tilematrixSet: "PM",
+            format: 'image/jpeg',
+            attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
+          });
   }
   if (!p) {
     p = getProvider("osm:std");
@@ -834,7 +895,8 @@ var baseLayers = {
   "Google Satellite": getProvider('google:satellite'),
   "Google Hybrid": getProvider('google:hybrid'),
   "IGN Classic": getProvider("ign:classic"),
-  "IGN Express": getProvider("ign:express")
+  "IGN Express": getProvider("ign:express"),
+  //"IGN Aerial": getProvider("ign:imagery")
 };
 var overlays = {
   "Hillshading": getProvider("wmf:hills"),
@@ -884,9 +946,7 @@ if (JSON.parse && JSON.stringify) {
 
 }
 
-var defpos = getSavedPosition(config.display.pos.lat, config.display.pos.lng);
-showLocation = LOC_ONCE;
-setLocation(defpos); // required to initialize map
+restorePosition();
 
 $(".leaflet-control-layers-list").append("<div class='leaflet-control-layers-separator'></div>");
 $(".leaflet-control-layers-list").append("<div>(*): no https</div>");
@@ -1123,18 +1183,21 @@ $("#elevate").click(function (e) {
   $("#menu").hide();
   if (track) elevate(track.getLatLngs(), function() {
     polystats.updateStatsFrom(0);
+    saveState();
   });
   return false;
 });
 $("#flatten").click(function (e) {
   $("#menu").hide();
   flatten();
+  saveState();
   return false;
 });
 
 $("#revert").click(function (e) {
   $("#menu").hide();
   revert();
+  saveState();
   return false;
 });
 
@@ -1217,9 +1280,12 @@ function importGeoJson(geojson) {
       }
     }
   })
-  map.fitBounds(bounds);
+  if (bounds.isValid()) {
+    map.fitBounds(bounds);
+  }
   clearStatus();
   polystats.updateStatsFrom(0);
+  saveState();
   return editLayer;
 }
 
@@ -1289,7 +1355,6 @@ $("#track-upload").change(function() {
 });
 
 /*-- DropBox --*
-
 
 var dropboxOptions = {
 
@@ -1707,6 +1772,24 @@ $(".tablinks").click(function(event) {
   menu(event.target.id.replace("tab",""), event)
 });
 
+
+function isStateSaved() {
+  return $("#cfgsave").is(":checked");
+}
+function setStateSaved(on) {
+  return $("#cfgsave").prop('checked', on);;
+}
+setStateSaved(getVal("gpx") ? true : false);
+$("#cfgsave").change(function(e){
+  var saveCfg = isStateSaved();
+  if (saveCfg) {
+    saveState();
+  } else {
+    clearSavedState();
+  }
+});
+
+
 var url = getParameterByName("url");
 if (url) {
   var ext = getParameterByName("ext");
@@ -1714,16 +1797,9 @@ if (url) {
 } else {
   newTrack();
   setEditMode(EDIT_MANUAL_TRACK);
-  /*
-  showLocation = LOC_ONCE;
-  if (window.location.toString().indexOf('http') == 0) {
-    gotoMyLocation();
-  } else {
-    getMyIpLocation();
-  }
-  */
+  restoreState();
 }
 
 $( window ).on("unload", function() {
-  savePosition();
+  saveState();
 });
