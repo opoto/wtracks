@@ -298,7 +298,7 @@ var toGeoJSON = (function() {
                 // a feature collection
                 gj = fc(),
                 feature;
-            if (metadata) {
+            if (metadata && metadata[0]) {
               gj.metadata = getMetadata(metadata[0]);
             }
             for (i = 0; i < tracks.length; i++) {
