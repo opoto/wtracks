@@ -61,7 +61,7 @@ function storeVal(name, val) {
   if (canValBeSaved()) {
     var store = window.localStorage;
     if (store) {
-      if (val === "") {
+      if (isUnset(val)) {
         store.removeItem(name);
       } else {
         store.setItem(name, val);

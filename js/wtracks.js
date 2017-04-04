@@ -736,9 +736,9 @@ function restoreState() {
 }
 
 function clearSavedState() {
-  storeVal("gpx", "");
-  storeVal("poslat", "");
-  storeVal("poslng", "");
+  storeVal("gpx", undefined);
+  storeVal("poslat", undefined);
+  storeVal("poslng", undefined);
 }
 
 function saveMapType() {
