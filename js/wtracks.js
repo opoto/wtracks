@@ -918,7 +918,7 @@ function getOverlays() {
 function setOverlay(name, yesno) {
   var cfg = getOverlays();
   cfg[name] = yesno;
-  saveJsonValOpt("overlays", v);
+  saveJsonValOpt("overlays", cfg);
 }
 
 if (JSON.parse && JSON.stringify) {
