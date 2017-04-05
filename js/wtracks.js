@@ -871,6 +871,16 @@ function getProvider(name) {
             format: 'image/jpeg',
             attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
           });
+  } else if (name == 'spain:dee') {
+    p = L.tileLayer('http://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png',{
+        maxZoom: 17,
+      attribution: 'Cycling Routes: (<a href="http://cycling.lonvia.de">Lonvias Cycling Map</a>)'
+    });
+  } else if (name == 'us:mytop') {
+    p = L.tileLayer('http://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png',{
+        maxZoom: 17,
+      attribution: 'Cycling Routes: (<a href="http://cycling.lonvia.de">Lonvias Cycling Map</a>)'
+    });
   }
   if (!p) {
     p = getProvider("osm:std");
@@ -897,6 +907,9 @@ var baseLayers = {
   "IGN Classic": getProvider("ign:classic"),
   "IGN Express": getProvider("ign:express"),
   //"IGN Aerial": getProvider("ign:imagery")
+  "IGN Classic": getProvider("ign:classic"),
+  "IGN Express": getProvider("ign:express"),
+  "Spain DEE": Spain_MapasrasterIGN,
 };
 var overlays = {
   "Hillshading": getProvider("wmf:hills"),
