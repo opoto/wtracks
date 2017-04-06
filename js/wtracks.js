@@ -841,7 +841,7 @@ function getProvider(name) {
         maxZoom: 17,
       attribution: 'Cycling Routes: (<a href="http://cycling.lonvia.de">Lonvias Cycling Map</a>)'
     });
-  } else if (name == 'ign:classic') {
+  } else if (name == 'fr:ignclassic') {
     p = L.tileLayer.wtms(
           "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts",
           {
@@ -851,7 +851,7 @@ function getProvider(name) {
             format: 'image/jpeg',
             attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
           });
-  } else if (name == 'ign:express') {
+  } else if (name == 'fr:ignexpress') {
     p = L.tileLayer.wtms(
           "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts",
           {
@@ -861,7 +861,7 @@ function getProvider(name) {
             format: 'image/jpeg',
             attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
           });
-  } else if (name == 'ign:imagery') {
+  } else if (name == 'fr:ignimagery') {
     p = L.tileLayer.wtms(
           "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts",
           {
@@ -871,16 +871,15 @@ function getProvider(name) {
             format: 'image/jpeg',
             attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
           });
-  } else if (name == 'spain:dee') {
-    p = L.tileLayer('http://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png',{
-        maxZoom: 17,
-      attribution: 'Cycling Routes: (<a href="http://cycling.lonvia.de">Lonvias Cycling Map</a>)'
-    });
-  } else if (name == 'us:mytop') {
-    p = L.tileLayer('http://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png',{
-        maxZoom: 17,
-      attribution: 'Cycling Routes: (<a href="http://cycling.lonvia.de">Lonvias Cycling Map</a>)'
-    });
+  } else if (name == 'spain:ignraster') {
+    // https://github.com/sigdeletras/Leaflet.Spain.WMS
+    p = L.tileLayer.wms('http://www.ign.es/wms-inspire/mapa-raster', {
+        	layers: 'mtn_rasterizado',
+        	format: 'image/png',
+        	transparent: false,
+        	continuousWorld : true,
+        	attribution: '© <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+        });
   }
   if (!p) {
     p = getProvider("osm:std");
@@ -904,12 +903,10 @@ var baseLayers = {
   "Google Terrain": getProvider('google:terrain'),
   "Google Satellite": getProvider('google:satellite'),
   "Google Hybrid": getProvider('google:hybrid'),
-  "IGN Classic": getProvider("ign:classic"),
-  "IGN Express": getProvider("ign:express"),
-  //"IGN Aerial": getProvider("ign:imagery")
-  "IGN Classic": getProvider("ign:classic"),
-  "IGN Express": getProvider("ign:express"),
-  "Spain DEE": Spain_MapasrasterIGN,
+  "FR IGN classic": getProvider("fr:ignclassic"),
+  "FR IGN express": getProvider("fr:ignexpress"),
+  //"FR IGN aerial": getProvider("fr:ignimagery")
+  "ES IGN": getProvider("spain:ignraster"),
 };
 var overlays = {
   "Hillshading": getProvider("wmf:hills"),
