@@ -522,8 +522,10 @@ function setEditMode(mode) {
   }
   map.editTools.stopDrawing();
   $("#edit-tools a").removeClass("control-selected");
-  if (editMode > 0) {
+  if (editMode > 0) { // exiting edit mode
     saveState();
+    // reset mouse pointer
+    $("#map").css("cursor", "");
   }
   switch (mode) {
     case EDIT_NONE:
