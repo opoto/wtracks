@@ -15,13 +15,13 @@ function clearStatus() {
 }
 
 function saveValOpt(name, val) {
- if (config.saveprefs) {
+ if (config.saveprefs && isStateSaved()) {
    storeVal(name, val);
  }
 }
 
 function saveJsonValOpt(name, val) {
- if (config.saveprefs) {
+ if (config.saveprefs && isStateSaved()) {
    storeJsonVal(name, val);
  }
 }
@@ -721,7 +721,7 @@ function saveState() {
 }
 
 function restoreEditMode() {
-  var restoredMode = isStateSaved() ? getVal("wt.editMode", EDIT_DEFAULT) : EDIT_DEFAULT;
+  var restoredMode = getVal("wt.editMode", EDIT_DEFAULT);
   setEditMode(parseInt(restoredMode));
 }
 
@@ -732,7 +732,7 @@ function restorePosition() {
 }
 
 function restoreTrack() {
-  var gpx = isStateSaved() ? getVal("wt.gpx", null) : null;
+  var gpx = getVal("wt.gpx", null);
   if (gpx) {
     fileloader.loadData(gpx, "dummy", "gpx");
     return true;
@@ -754,6 +754,8 @@ function clearSavedState() {
   storeVal("wt.poslat", undefined);
   storeVal("wt.poslng", undefined);
   storeVal("wt.editMode", undefined);
+  storeVal("wt.baseLayer", undefined);
+  storeVal("wt.overlays", undefined);
 }
 
 function saveMapType() {
