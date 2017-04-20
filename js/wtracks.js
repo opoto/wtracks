@@ -756,6 +756,8 @@ function clearSavedState() {
   storeVal("wt.editMode", undefined);
   storeVal("wt.baseLayer", undefined);
   storeVal("wt.overlays", undefined);
+  storeVal("wt.activity", undefined);
+  storeVal("wt.activities", undefined);
 }
 
 function saveMapType() {
