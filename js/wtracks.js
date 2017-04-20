@@ -49,6 +49,7 @@ var EDIT_NONE = 0;
 var EDIT_MANUAL_TRACK = 1;
 var EDIT_AUTO_TRACK = 2;
 var EDIT_MARKER = 3;
+var EDIT_DEFAULT = EDIT_MANUAL_TRACK;
 var editMode = -1;
 
 
@@ -115,19 +116,16 @@ var selectActivity = $("#activity")[0];
 var activities;
 
 function loadActivities() {
-  activities = getJsonVal("activities");
+  activities = getJsonVal("wt.activities");
   if (!activities) {
     activities = config.activities.defaults;
-    saveJsonValOpt("activities", activities);
+    saveJsonValOpt("wt.activities", activities);
   }
   // append activities
   for (var a in activities) {
     if (hasOwnProperty.call(activities, a)) {
       if (!selectActivity.options[a]) {
-        var opt = document.createElement("option");
-        opt.innerHTML = a;
-        opt.setAttribute("name", a);
-        selectActivity.appendChild(opt);
+        addSelectOption(selectActivity, a);
       }
     }
   }
@@ -139,11 +137,12 @@ function loadActivities() {
   })
 }
 loadActivities();
+selectOption(selectActivity, getVal("wt.activity", undefined))
 
 function getCurrentActivity() {
   var res = $("#activity").children(':selected').val()
   log("activity: " + res);
-  saveValOpt("activity", res);
+  saveValOpt("wt.activity", res);
   return activities[res];
 }
 $("#activity").click(loadActivities);
@@ -181,7 +180,7 @@ function newTrack() {
     onUpdate: showStats,
   });
   setTrackName(NEW_TRACK_NAME);
-  setEditMode(EDIT_NONE);
+//  setEditMode(EDIT_NONE);
   showStats();
 }
 
@@ -549,6 +548,7 @@ function setEditMode(mode) {
       return;
   }
   editMode = mode;
+  $("#edit-tools").toggle(editMode > 0);
 }
 
 $("#compress").click(function() {
@@ -675,8 +675,8 @@ function gotoMyLocation() {
 }
 
 function getSavedPosition(_lat, _lng) {
-  var vlat = getVal("poslat", _lat);
-  var vlng = getVal("poslng", _lng);
+  var vlat = getVal("wt.poslat", _lat);
+  var vlng = getVal("wt.poslng", _lng);
   var pos = {
     lat: parseFloat(vlat),
     lng: parseFloat(vlng)
@@ -693,8 +693,12 @@ function getSavedPosition(_lat, _lng) {
 
 function savePosition() {
   var pos = map.getCenter();
-  saveValOpt("poslat",pos.lat);
-  saveValOpt("poslng",pos.lng);
+  saveValOpt("wt.poslat",pos.lat);
+  saveValOpt("wt.poslng",pos.lng);
+}
+
+function saveEditMode() {
+  if (editMode >= 0) saveValOpt("wt.editMode",editMode);
 }
 
 function saveTrack() {
@@ -702,7 +706,7 @@ function saveTrack() {
   var numPts = track.getLatLngs().length + waypoints.getLayers().length;
   if (numPts < 1000) {
     var gpx = getGPX(trackname, /*savealt*/false, /*savetime*/false, /*asroute*/false, /*nometadata*/false);
-    saveValOpt("gpx",gpx);
+    saveValOpt("wt.gpx",gpx);
   }
 }
 
@@ -710,7 +714,13 @@ function saveState() {
   if (isStateSaved()) {
     saveTrack();
     savePosition();
+    saveEditMode();
   }
+}
+
+function restoreEditMode() {
+  var restoredMode = isStateSaved() ? getVal("wt.editMode", EDIT_DEFAULT) : EDIT_DEFAULT;
+  setEditMode(parseInt(restoredMode));
 }
 
 function restorePosition() {
@@ -720,11 +730,12 @@ function restorePosition() {
 }
 
 function restoreTrack() {
-  var gpx = isStateSaved() ? getVal("gpx", null) : null;
+  var gpx = isStateSaved() ? getVal("wt.gpx", null) : null;
   if (gpx) {
     fileloader.loadData(gpx, "dummy", "gpx");
     return true;
   } else {
+    newTrack();
     return false;
   }
 }
@@ -733,16 +744,18 @@ function restoreState() {
   if (!restoreTrack()) {
     restorePosition();
   }
+  restoreEditMode();
 }
 
 function clearSavedState() {
-  storeVal("gpx", undefined);
-  storeVal("poslat", undefined);
-  storeVal("poslng", undefined);
+  storeVal("wt.gpx", undefined);
+  storeVal("wt.poslat", undefined);
+  storeVal("wt.poslng", undefined);
+  storeVal("wt.editMode", undefined);
 }
 
 function saveMapType() {
-  saveValOpt("maptype", map.getMapTypeId());
+  saveValOpt("wt.maptype", map.getMapTypeId());
 }
 
 function getProvider(name) {
@@ -915,20 +928,20 @@ var overlays = {
 };
 
 L.control.layers(baseLayers, overlays).addTo(map);
-map.addLayer(baseLayers[getVal("baseLayer", config.display.map)] || baseLayers[config.display.map]);
+map.addLayer(baseLayers[getVal("wt.baseLayer", config.display.map)] || baseLayers[config.display.map]);
 map.on("baselayerchange", function(e) {
-  saveValOpt("baseLayer", e.name);
+  saveValOpt("wt.baseLayer", e.name);
   $(".leaflet-control-layers").removeClass("leaflet-control-layers-expanded");
 });
 function getOverlays() {
-  var v = getJsonVal("overlays");
+  var v = getJsonVal("wt.overlays");
   return v || {};
 }
 
 function setOverlay(name, yesno) {
   var cfg = getOverlays();
   cfg[name] = yesno;
-  saveJsonValOpt("overlays", cfg);
+  saveJsonValOpt("wt.overlays", cfg);
 }
 
 if (JSON.parse && JSON.stringify) {
@@ -1142,7 +1155,6 @@ L.EditControl = L.Control.extend({
                     if (!et.is(":visible")) {
                       setEditMode(EDIT_NONE);
                     }
-                    //return false;
                   }, this);
 
         editopts.id = 'edit-tools';
@@ -1658,9 +1670,10 @@ map.on('click', function (e) {
         setRouteStart(e.latlng);
       } else {
         var fromPt = routeStart,
-            toPt = e.latlng;
+            toPt = e.latlng,
+            router = L.Routing.graphHopper(config.graphhopper.key(), {urlParameters: {vehicle: getCurrentActivity().vehicle}});
         route = L.Routing.control({
-          router: L.Routing.graphHopper(config.graphhopper.key(), {urlParameters: {vehicle: getCurrentActivity().vehicle}}),
+          router: router,
           waypoints: [ fromPt, toPt ],
           routeWhileDragging: false,
           autoRoute: true,
@@ -1789,7 +1802,7 @@ function isStateSaved() {
 function setStateSaved(on) {
   return $("#cfgsave").prop('checked', on);;
 }
-setStateSaved(getVal("gpx") ? true : false);
+setStateSaved(getVal("wt.gpx") ? true : false);
 $("#cfgsave").change(function(e){
   var saveCfg = isStateSaved();
   if (saveCfg) {
@@ -1805,8 +1818,6 @@ if (url) {
   var ext = getParameterByName("ext");
   loadFromUrl(url, ext || undefined);
 } else {
-  newTrack();
-  setEditMode(EDIT_MANUAL_TRACK);
   restoreState();
 }
 

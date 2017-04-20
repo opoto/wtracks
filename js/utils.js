@@ -40,6 +40,24 @@ function getParameterByName(name, defaultValue) {
   return results === null ? (isUnset(defaultValue) ? defaultValue : "") : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
+// --------- Drop down menu utils
+
+// add a drop down menu item
+function addSelectOption(select, optval) {
+  var opt = document.createElement("option");
+  opt.innerHTML = optval;
+  opt.value = optval;
+  opt.setAttribute("name", optval); 
+  select.appendChild(opt);
+}
+
+// select a drop down menu item
+function selectOption(select, optval) {
+  jqselect = $(select);
+  jqselect.children(":selected").prop("selected", false);
+  jqselect.children("option[value='"+optval+"']").prop("selected", true);
+}
+
 /* ----------------------- Local storage -------------------------- */
 <!-- Begin Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent -->
 window.cookieconsent_options = {

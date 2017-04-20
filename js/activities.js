@@ -1,9 +1,9 @@
 // -------- ACTIVITIES
-var activities = getJsonVal("activities");
+var activities = getJsonVal("wt.activities");
 // initialize activities on first use
 if (!activities) {
   activities = config.activities.defaults;
-  storeJsonVal("activities", activities);
+  storeJsonVal("wt.activities", activities);
 }
 
 /*** dummy track required for polystats ***/
@@ -11,22 +11,6 @@ var track = L.polyline([]);
 var polystats = L.Util.polyStats(track, {
   chrono: true
 });
-
-// --------- Drop down menu utils
-
-// add a drop down menu item
-function addSelectOption(select, optval) {
-  var opt = document.createElement("option");
-  opt.innerHTML = optval;
-  opt.value = optval;
-  select.appendChild(opt);
-}
-
-// select a drop down menu item
-function selectOption(select, optval) {
-  select.children(":selected").prop("selected", false);
-  select.children("option[value='"+optval+"']").prop("selected", true);
-}
 
 var activity;
 var activityname;
@@ -60,7 +44,7 @@ function saveActivity(name, a) {
   // clear potential refspeeds used for computation
   a.refspeeds = undefined;
   activities[name] = a;
-  storeJsonVal("activities", activities);
+  storeJsonVal("wt.activities", activities);
 }
 
 // activity menu
@@ -80,7 +64,7 @@ $("#activitydel").click(function() {
   var name = $("#activities").children(':selected').val()
   if (confirm("Delete " + name + "?")) {
     activities[name] = undefined;
-    storeJsonVal("activities", activities);
+    storeJsonVal("wt.activities", activities);
     activityname = $("#activities").children(':selected').remove();
   }
 });
@@ -117,7 +101,7 @@ function moveActivity(inc) {
   }
   // save
   activities = newActivities;
-  storeJsonVal("activities", activities);
+  storeJsonVal("wt.activities", activities);
   // update menu
   var curIdx = selectActivity.selectedIndex;
   var moved = selectActivity.children[curIdx];
@@ -192,7 +176,7 @@ function importA() {
     }
   }
   if (imported) {
-    storeJsonVal("activities", activities);
+    storeJsonVal("wt.activities", activities);
     // reload page
     window.location.reload();
   }
@@ -243,7 +227,7 @@ $("#activitynew").click(function() {
 $("#activityreset").click(function() {
   if (confirm("Delete current activities and restore defaults?")) {
     activities = config.activities.defaults;
-    storeJsonVal("activities", activities);
+    storeJsonVal("wt.activities", activities);
     window.location = window.location;
   }
 });
