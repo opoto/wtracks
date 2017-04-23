@@ -742,7 +742,23 @@ function restoreTrack() {
   }
 }
 
+function saveInfo(save) {
+  $("#save-info").hide();
+  $("#cfgsave").prop('checked', save);
+  $("#cfgsave").change();
+}
+$("#save-yes").click(function (){
+  saveInfo(true);
+});
+$("#save-no").click(function (){
+  saveInfo(false);
+});
+
 function restoreState() {
+  var isSaving = getVal("wt.saveState", null);
+  if (isUnset(isSaving)) {
+    $("#save-info").show();
+  }
   if (!restoreTrack()) {
     restorePosition();
   }
@@ -1805,12 +1821,9 @@ $(".tablinks").click(function(event) {
 function isStateSaved() {
   return $("#cfgsave").is(":checked");
 }
-function setStateSaved(on) {
-  return $("#cfgsave").prop('checked', on);;
-}
-setStateSaved(getVal("wt.gpx") ? true : false);
 $("#cfgsave").change(function(e){
   var saveCfg = isStateSaved();
+  storeVal("wt.saveState", saveCfg ? "true" : "false");
   if (saveCfg) {
     saveState();
   } else {

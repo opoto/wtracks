@@ -379,6 +379,16 @@ a.button {
 #prompt-cancel {
   margin-right: auto;
 }
+.prompt-title {
+  padding-bottom: 15px;
+  font-weight: bold;
+  text-align: center;
+}
+.prompt-buttons {
+  padding-bottom: 15px;
+  font-weight: bold;
+  text-align: center;
+}
 
 /* ---------------------------------------------------- */
 
