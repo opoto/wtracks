@@ -758,6 +758,8 @@ function restoreState() {
   var isSaving = getVal("wt.saveState", null);
   if (isUnset(isSaving)) {
     $("#save-info").show();
+  } else {
+    $("#cfgsave").prop('checked', isSaving == "true");
   }
   if (!restoreTrack()) {
     restorePosition();
