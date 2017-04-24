@@ -758,6 +758,8 @@ function restoreState() {
   var isSaving = getVal("wt.saveState", null);
   if (isUnset(isSaving)) {
     $("#save-info").show();
+  } else {
+    saveInfo(isSaving == "true")
   }
   if (!restoreTrack()) {
     restorePosition();
