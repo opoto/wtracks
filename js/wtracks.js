@@ -2,7 +2,7 @@ function setStatus(msg, options) {
   $("#status-msg").text(msg);
   var statusclass = options && options.class ? options.class : "status-info";
   $("#status-msg").attr("class", statusclass);
-  var showspinner = options && options.spinner;
+  var showspinner = options && !isUnset(options.spinner) && options.spinner;
   $("#spinner").toggle(showspinner);
   $("#status").fadeIn();
   if (options && options.timeout) {
@@ -498,6 +498,9 @@ function showGraphHopperCredit() {
 }
 function hideGraphHopperCredit() {
   $(".gh-credit").remove();
+}
+function showGraphHopperMessage(msg) {
+  setStatus(msg, {timeout:5, class:"status-error"});
 }
 
 function setEditMode(mode) {
@@ -1215,8 +1218,9 @@ $("#edit-manual").click(function (e) {
   e.preventDefault();
 });
 $("#edit-auto").click(function (e) {
-  //$("#edit-tools").hide();
-  setEditMode(EDIT_AUTO_TRACK);
+  if (checkGraphHopperCredit()) {
+    setEditMode(EDIT_AUTO_TRACK);
+  }
   e.preventDefault();
 });
 $("#edit-marker").click(function (e) {
@@ -1682,6 +1686,41 @@ map.on('editable:vertex:deleted', function (e) {
 map.on('editable:created', function (e) {
   console.log("Created: " + e.layer.getEditorClass());
 });
+
+var MAX_GH_CREDITS = 200;
+function checkGraphHopperCredit(e) {
+  var gh = getJsonVal("wt.gh", {credits:0, reset:new Date(0)});
+
+  // check GraphHopper response
+  if (!isUnset(e)) {
+    if (e.reset > gh.reset) {
+      gh.reset = e.reset;
+      gh.credits = 0;
+    }
+    if ((e.status >= 400) || (e.remaining == 0)) {
+      gh.credits = -1;
+    } else if (gh.credits >= 0) {
+      gh.credits += e.credits;
+    }
+    storeJsonVal("wt.gh", gh);
+  }
+
+  var message = undefined;
+  if (gh.credits < 0) {
+    message = "WTracks's GraphHopper quota exceeded";
+  } else if (gh.credits >= MAX_GH_CREDITS) {
+    message = "You exceeded your GraphHopper quota limit";
+    if (!isUnset(e)) {
+      setEditMode(EDIT_NONE);
+    }
+  }
+  if (message) {
+    showGraphHopperMessage(message);
+    return false;
+  }
+  return true;
+}
+
 map.on('click', function (e) {
 
   if (editMode == EDIT_MARKER) {
@@ -1696,6 +1735,7 @@ map.on('click', function (e) {
         var fromPt = routeStart,
             toPt = e.latlng,
             router = L.Routing.graphHopper(config.graphhopper.key(), {urlParameters: {vehicle: getCurrentActivity().vehicle}});
+        router.on("response", checkGraphHopperCredit);
         route = L.Routing.control({
           router: router,
           waypoints: [ fromPt, toPt ],
