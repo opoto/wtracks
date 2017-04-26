@@ -1773,6 +1773,11 @@ map.on('editable:vertex:click', function (e) {
     event.preventDefault();
   }
 
+  if (e.originalEvent.shiftKey) {
+    // shortcut to delete a vertex
+    e.vertex.delete();
+    return;
+  }
   track.editor.commitDrawing();
   if (track.getLatLngs().length == 0) {
     setEditMode(EDIT_MANUAL_TRACK);
