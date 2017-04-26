@@ -1693,6 +1693,7 @@ function checkGraphHopperCredit(e) {
 
   // check GraphHopper response
   if (!isUnset(e)) {
+    log("GraphHopper credits: " + e.credits);
     if (e.reset > gh.reset) {
       gh.reset = e.reset;
       gh.credits = 0;

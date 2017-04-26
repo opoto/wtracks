@@ -245,7 +245,7 @@ if (typeof module !== undefined) module.exports = polyline;
 				var fired = err ? err : resp;
 				this.fire("response", {
 					status: fired.status,
-					limit: fired.getResponseHeader("X-RateLimit"),
+					limit: fired.getResponseHeader("X-RateLimit-Limit"),
 					remaining: fired.getResponseHeader("X-RateLimit-Remaining"),
 					reset: fired.getResponseHeader("X-RateLimit-Reset"),
 					credits: fired.getResponseHeader("X-RateLimit-Credits"),
