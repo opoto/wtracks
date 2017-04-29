@@ -311,6 +311,7 @@ $("#trim-type").change(prepareTrim);
 $("#menu-button").click(function() {
   if (!$("#menu").is(":visible")) {
     setEditMode(EDIT_NONE);
+    setChecked("#merge", false);
     menu("file");
     $("#menu").show();
     prepareTrim();
@@ -424,8 +425,8 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
 $("#track-download").click(function() {
   setEditMode(EDIT_NONE);
   setStatus("Formatting..", {spinner: true});
-  var asroute = $("#as-route").is(":checked");
-  var nometadata = $("#nometadata").is(":checked");
+  var asroute = isChecked("#as-route");
+  var nometadata = isChecked("#nometadata");
   var trackname =  getTrackName();
   if (trackname === NEW_TRACK_NAME) {
     askTrackName();
@@ -747,7 +748,7 @@ function restoreTrack() {
 
 function saveInfo(save) {
   $("#save-info").hide();
-  $("#cfgsave").prop('checked', save);
+  setChecked("#cfgsave", save);
   $("#cfgsave").change();
 }
 $("#save-yes").click(function (){
@@ -762,7 +763,7 @@ function restoreState() {
   if (isUnset(isSaving)) {
     $("#save-info").show();
   } else {
-    $("#cfgsave").prop('checked', isSaving == "true");
+    setChecked("#cfgsave", isSaving == "true");
   }
   if (!restoreTrack()) {
     restorePosition();
@@ -1263,7 +1264,7 @@ function importGeoJson(geojson) {
   setStatus("Loading..", {spinner: true});
   $("#edit-tools").hide();
   var bounds;
-  var merge = $("#merge").is(":checked");
+  var merge = isChecked("#merge");
   if (!merge) {
     newTrack();
     bounds = L.latLngBounds([]);
@@ -1867,7 +1868,7 @@ $(".tablinks").click(function(event) {
 
 
 function isStateSaved() {
-  return $("#cfgsave").is(":checked");
+  return isChecked("#cfgsave");
 }
 $("#cfgsave").change(function(e){
   var saveCfg = isStateSaved();
@@ -1879,7 +1880,7 @@ $("#cfgsave").change(function(e){
   }
 });
 
-
+setChecked("#merge", false);
 var url = getParameterByName("url");
 if (url) {
   var ext = getParameterByName("ext");

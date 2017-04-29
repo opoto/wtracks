@@ -47,7 +47,7 @@ function addSelectOption(select, optval) {
   var opt = document.createElement("option");
   opt.innerHTML = optval;
   opt.value = optval;
-  opt.setAttribute("name", optval); 
+  opt.setAttribute("name", optval);
   select.appendChild(opt);
 }
 
@@ -58,6 +58,14 @@ function selectOption(select, optval) {
   jqselect.children("option[value='"+optval+"']").prop("selected", true);
 }
 
+// get checkbox status
+function isChecked(selector) {
+  $(selector).is(':checked');
+}
+// set checkbox status
+function setChecked(selector, val) {
+  $(selector).prop('checked', val);
+}
 /* ----------------------- Local storage -------------------------- */
 <!-- Begin Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent -->
 window.cookieconsent_options = {
