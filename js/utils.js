@@ -60,7 +60,7 @@ function selectOption(select, optval) {
 
 // get checkbox status
 function isChecked(selector) {
-  $(selector).is(':checked');
+  return $(selector).is(':checked');
 }
 // set checkbox status
 function setChecked(selector, val) {
