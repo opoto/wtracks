@@ -314,9 +314,10 @@ var toGeoJSON = (function() {
             }
             function getMetadata(metadata) {
               var md = {};
-              for (var i = 0; i < metadata.children.length; i++) {
-                var item = metadata.children.item(i);
-                md[item.tagName] = item.innerHTML.trim();
+              var item = metadata.firstElementChild;
+              while (item) {
+                md[item.tagName] = item.textContent.trim();
+                item = item.nextElementSibling;
               }
               return md;
             }
