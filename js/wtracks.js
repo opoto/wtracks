@@ -768,7 +768,7 @@ function restoreState() {
   if (!restoreTrack()) {
     restorePosition();
   }
-  restoreEditMode();
+  setTimeout(restoreEditMode, 500);
 }
 
 function clearSavedState() {
