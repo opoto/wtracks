@@ -69,11 +69,15 @@
         <td><button id="track-new" title="Delete current track and start a new one">New</button></td><td>Delete current track and start a new one</td>
       </tr><tr class="nobottomborder">
         <td>
-          Load file:
+          <span>Load file:</span>
         </td>
         <td>
           <label><input type="checkbox" id="merge"/>Merge with current track</label>
-          <br/>
+        </td>
+      </tr><tr class="nobottomborder notopborder">
+        <td>
+        </td>
+        <td>
           File type:
           <select id="track-ext">
             <option value="auto">Auto</option>
@@ -111,7 +115,10 @@
           <button id="track-download" title="Download current track as a GPX file">Save</button>
         </td>
         <td>
-          Download current track as a GPX file<br/><label><input type="checkbox" id="as-route"/>As route</label> | <label><input type="checkbox" id="nometadata"/>No metadata</label>
+          Download current track as a GPX file<br/>
+          <label><input type="checkbox" id="as-route"/>As route</label><br/>
+          <label><input type="checkbox" id="nometadata"/>Without metadata</label><br/>
+          <label><input type="checkbox" id="savetiming"/>Save computed timings</label>
         </td>
       </tr>
     </table>

@@ -341,15 +341,6 @@ $("#menu-tools").click(function() {
 /* ------------------------ EXPORT GPX ---------------------------------- */
 
 function LatLngToGPX(latlng, gpxelt, name, time, desc) {
-  function showDateTime(time) {
-    var strTime = "P";
-    if (time >= 3600) strTime += Math.floor(time/3600) + "H";
-    time %= 3600;
-    if (time >= 60) strTime += Math.floor(time/60) + "M";
-    time %= 60;
-    strTime += Math.round(time) + "S";
-    return strTime
-  }
 
   var gpx = "<"+gpxelt;
   gpx += " lat=\"" + latlng.lat+ "\" lon=\"" + latlng.lng + "\">";
@@ -363,7 +354,7 @@ function LatLngToGPX(latlng, gpxelt, name, time, desc) {
     gpx += "<ele>" + latlng.alt + "</ele>";
   }
   if (time) {
-    gpx += "<time>" + (typeof time === "string" ? time : showDateTime(time)) + "</time>";
+    gpx += "<time>" + (typeof time === "string" ? time : time.toISOString()) + "</time>";
   }
   gpx += "</"+gpxelt+">\n"
   return gpx;
@@ -371,6 +362,7 @@ function LatLngToGPX(latlng, gpxelt, name, time, desc) {
 
 function getGPX(trackname, savealt, savetime, asroute, nometadata) {
 
+  var now = new Date();
   var gpx = '<\?xml version="1.0" encoding="UTF-8" standalone="no" \?>\n';
   gpx += '<gpx creator="' + config.appname + '" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" version="1.1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">\n';
   if (!nometadata) {
@@ -382,8 +374,7 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
     gpx += "    <text>" + config.appname + "</text>\n";
     gpx += "    <type>text/html</type>\n";
     gpx += "  </link>\n";
-    var t = new Date();
-    gpx += "  <time>" + t.toISOString() + "</time>\n";
+    gpx += "  <time>" + now.toISOString() + "</time>\n";
     var sw = map.getBounds().getSouthWest();
     var ne = map.getBounds().getNorthEast();
     gpx += '  <bounds minlat="' + Math.min(sw.lat, ne.lat) + '" minlon="' + Math.min(sw.lng, ne.lng) + '" maxlat="' + Math.max(sw.lat, ne.lat) + '" maxlon="'+ Math.max(sw.lng, ne.lng) + '"/>\n';
@@ -394,28 +385,41 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
     var i = 0;
     while (i < wpts.length) {
       var wpt = wpts[i];
-      gpx += "  " + LatLngToGPX(wpt.getLatLng(), "wpt", wpt.options.title, wpt.getLatLng().time, wpt.options.desc);
+      gpx += LatLngToGPX(wpt.getLatLng(), "wpt", wpt.options.title, wpt.getLatLng().time, wpt.options.desc);
       i++;
     }
   }
   var latlngs = track ? track.getLatLngs() : undefined;
   if (latlngs && latlngs.length > 0) {
     var xmlname = "<name>" + trackname + "</name>";
+    var ptindent = "  ";
+    var pttag;
     if (asroute) {
       gpx += "<rte>" + xmlname + "\n";
+      pttag = "rtept";
     } else {
-      gpx += "<trk>" + xmlname + "<trkseg>\n";
+      gpx += "<trk>" + xmlname + "\n  <trkseg>\n";
+      ptindent += "  ";
+      pttag = "trkpt";
     }
     var i = 0;
+    var saveTiming = isChecked("#savetiming");
+    now = now.getTime();
     while (i < latlngs.length) {
       var pt = latlngs[i];
-      gpx += "  " + LatLngToGPX(pt, asroute ? "rtept" : "trkpt", undefined, pt.time);
+      var time;
+      if (saveTiming) {
+        time = new Date(now + (pt.chrono*1000));
+      } else {
+        time = pt.time;
+      }
+      gpx += ptindent + LatLngToGPX(pt, pttag, undefined, time);
       i++;
     }
     if (asroute) {
       gpx += "</rte>\n";
     } else {
-      gpx += "</trkseg></trk>\n";
+      gpx += "  </trkseg>\n</trk>\n";
     }
   }
   gpx += "</gpx>\n";
