@@ -104,6 +104,18 @@ body {
   width:100%;
 }
 
+.help-p {
+  display: none;
+  font-style: oblique;
+  margin: 2px 0 5px 0;
+  font-size: 90%;
+}
+
+.help-b {
+  margin-left: 10px;
+}
+
+
 #dropbox-chooser {
   font-size: 10px;
   padding-right: 0;

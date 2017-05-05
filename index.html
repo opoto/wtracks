@@ -66,13 +66,18 @@
     </ul>
     <table id="menufile">
       <tr>
-        <td><button id="track-new" title="Delete current track and start a new one">New</button></td><td>Delete current track and start a new one</td>
+        <td><button id="track-new" title="Discard current track and start a new one">New</button></td><td>Delete current track and start a new one</td>
       </tr><tr class="nobottomborder">
         <td>
           <span>Load file:</span>
         </td>
         <td>
           <label><input type="checkbox" id="merge"/>Merge with current track</label>
+          <img id="mergetxt" class="help-b" src="img/help.png"/>
+          <p id="mergetxt-help" class="help-p">
+            Current edited track will not be discarded,<br/>
+            it will be exetended with the loaded one.
+          </p>
         </td>
       </tr><tr class="nobottomborder notopborder">
         <td>
@@ -85,6 +90,11 @@
             <option value="kml">KML</option>
             <option value="geojson">GeoJson</option>
           </select>
+          <img id="filetypetxt" class="help-b" src="img/help.png"/>
+          <p id="filetypetxt-help" class="help-p">
+            If "Auto" is selected, the type of the file is<br/>
+            selected based on the file extension.
+          </p>
         </td>
       </tr><tr class="nobottomborder notopborder">
         <td>
@@ -116,21 +126,71 @@
         </td>
         <td>
           Download current track as a GPX file<br/>
-          <label><input type="checkbox" id="as-route"/>As route</label><br/>
-          <label><input type="checkbox" id="nometadata"/>Without metadata</label><br/>
+          <label><input type="checkbox" id="as-route"/>As route</label>
+          <img id="routetxt" class="help-b" src="img/help.png"/>
+          <p id="routetxt-help" class="help-p">
+            Check to save the track as a GPX route,<br/>
+            instead of a GPX track segment.
+          </p>
+          <br/>
+          <label><input type="checkbox" id="nometadata"/>Without metadata</label>
+          <img id="nometadatatxt" class="help-b" src="img/help.png"/>
+          <p id="nometadatatxt-help" class="help-p">
+            Check to save without GPX metadata.
+          </p>
+          <br/>
           <label><input type="checkbox" id="savetiming"/>Save computed timings</label>
+          <img id="savetimingtxt" class="help-b" src="img/help.png"/>
+          <p id="savetimingtxt-help" class="help-p">
+            Check to save in the GPX the timings computed by<br/>
+            WTracks and displayed in the bottom banner of the page.<br/>
+            Note that it will override any potential timing<br/>
+            you may have previously recorded for this track.
+          </p>
         </td>
       </tr>
     </table>
     <table id="menutools">
       <tr>
-        <td><button id="compress" class="no-trim">Compress</button></td><td>Remove track points within a  <input id="prunedist" type="text" size="2" value="5"/> meters band</td>
+        <td>
+          <button id="compress" class="no-trim">Compress</button>
+        </td><td>
+          Remove track points within a  <input id="prunedist" type="text" size="2" value="5"/> meters band
+          <img id="compresstxt" class="help-b" src="img/help.png"/>
+          <p id="compresstxt-help" class="help-p">
+            Reduces track size without significantly changing track shape.<br/>
+          </p>
+        </td>
       </tr><tr>
-        <td> <button id="elevate" class="no-trim">Elevate</button></td><td>Add altitude information to some track points</td>
+        <td>
+          <button id="elevate" class="no-trim">Elevate</button>
+        </td><td>
+          Add altitude information to some track points
+          <img id="elevatetxt" class="help-b" src="img/help.png"/>
+          <p id="elevatetxt-help" class="help-p">
+            Uses external web service to get elevation of track points.
+          </p>
+        </td>
       </tr><tr>
-        <td><button id="flatten" class="no-trim">Flatten</button></td><td>Remove altitude information from all track points</td>
+        <td>
+          <button id="flatten" class="no-trim">Flatten</button>
+        </td><td>
+          Remove altitude information from all track points
+          <img id="flattentxt" class="help-b" src="img/help.png"/>
+          <p id="flattentxt-help" class="help-p">
+            Resets elevation data for the whole track.
+          </p>
+        </td>
       </tr><tr>
-        <td><button id="revert" class="no-trim">Revert</button></td><td>Reverts direction of the track<br>(start becomes end)</td>
+        <td>
+          <button id="revert" class="no-trim">Revert</button>
+        </td><td>
+          Reverts direction of the track
+          <img id="reverttxt" class="help-b" src="img/help.png"/>
+          <p id="reverttxt-help" class="help-p">
+            Invert all track points so thath start of the track becomes the end.
+          </p>
+        </td>
       </tr><tr>
         <td>
           <select id="trim-type">
@@ -140,12 +200,25 @@
         </td>
         <td>
           <input type="range" id="trim-range" min="0" step="1" value="0"/>&nbsp;<span id="trim-txt"></span>
+          <img id="trimtxt" class="help-b" src="img/help.png"/>
+          <p id="trimtxt-help" class="help-p">
+            Move cursor to delete points from the start or the end of the track.
+          </p>
         </td>
       </tr>
     </table>
     <table id="menuconfig">
       <tr>
-        <td><input id="cfgsave" class="no-trim" type="checkbox"/></td><td>Locally save editor's state between sessions<br/>Privacy warning: state is shared with all users of this browser profile</td>
+        <td>
+          <input id="cfgsave" class="no-trim" type="checkbox"/>
+        </td><td>
+          Locally save editor's state between sessions<br/>Privacy warning: state is shared with all users of this browser profile
+          <img id="cfgsavetxt" class="help-b" src="img/help.png"/>
+          <p id="cfgsavetxt-help" class="help-p">
+            Your WTracks editor status will be saved continuously in your browser local storage,<br/>
+            so that when you close and reopen it later it will display the exact same content.
+          </p>
+        </td>
       </tr>
     </table>
     <div class="credits"><span class="appname">WTracks</span> by <a id="email" href="#">Olivier Potonniée</a> - <a href="doc/" target="_blank">About</a></div>

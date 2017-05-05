@@ -26,6 +26,12 @@ function saveJsonValOpt(name, val) {
  }
 }
 
+/* help buttons */
+function toggleHelp(e) {
+  $("#" + this.id + "-help").toggle();
+}
+$(".help-b").click(toggleHelp)
+
 var map = L.map('map', {
       editable: true,
       editOptions: {
