@@ -94,6 +94,9 @@ body {
 #menu td:first-child {
   vertical-align: top;
 }
+#menu #menufile td:first-child {
+  min-width: 80px;
+}
 #menu td:first-child button {
   width: 100%
 }
@@ -101,7 +104,7 @@ body {
   padding-right: 10px;
 }
 #menu #track-get-url {
-  width:100%;
+  width:95%;
 }
 
 .help-p {
@@ -109,6 +112,7 @@ body {
   font-style: oblique;
   margin: 2px 0 5px 0;
   font-size: 90%;
+  max-width: 400px;
 }
 
 .help-b {
@@ -408,6 +412,7 @@ a.button {
   text-align: right;
   font-style: italic;
   margin: 10px;
+  font-size: 80%;
 }
 
 button, #track-upload-label {
