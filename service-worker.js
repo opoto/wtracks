@@ -59,8 +59,8 @@ var filesToCache = [
 ];
 
 importScripts('js/sw-toolbox.js');
-toolbox.options.debug = true;
+toolbox.options.debug = false;
 toolbox.options.cache.name = 'wtracks';
 toolbox.options.cache.maxEntries = 200;
 toolbox.precache(filesToCache);
-toolbox.router.default = toolbox.cacheFirst;
+toolbox.router.default = toolbox.networkFirst; // toolbox.cacheFirst;
