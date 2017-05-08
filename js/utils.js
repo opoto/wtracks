@@ -158,7 +158,7 @@ function n10dLocation() {
   res = res.replace(/\/*$/, "/");
   return res;
 }
-function n10dUA() {
+function getLocalCode() {
   var res = getVal("wtracks.code");
   return res;
 }
@@ -181,9 +181,10 @@ function strencode(s, k) {
   return encodeURIComponent(strxor(s, k))
 }
 function strdecode(s1, s2) {
-  var f = (window.location.toString().indexOf("file:") == 0);
-  var s = f ? s2 : s1;
-  var k = f ? n10dUA() : n10dLocation();
+  var islocal = (window.location.toString().indexOf("file:") == 0)
+    ||(window.location.toString().indexOf("localhost:") > 0);
+  var s = islocal ? s2 : s1;
+  var k = islocal ? getLocalCode() : n10dLocation();
   return s ? strxor(decodeURIComponent(s), k ? k : "") : s;
 }
 
