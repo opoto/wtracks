@@ -182,7 +182,7 @@ function strencode(s, k) {
 }
 function strdecode(s1, s2) {
   var islocal = (window.location.toString().indexOf("file:") == 0)
-    ||(window.location.toString().indexOf("localhost:") > 0);
+    ||(window.location.toString().indexOf(".dev.local:") > 0);
   var s = islocal ? s2 : s1;
   var k = islocal ? getLocalCode() : n10dLocation();
   return s ? strxor(decodeURIComponent(s), k ? k : "") : s;
