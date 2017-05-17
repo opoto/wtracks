@@ -748,6 +748,7 @@ function restorePosition() {
 function restoreTrack() {
   var gpx = getVal("wt.gpx", null);
   if (gpx) {
+    loadCount = 0;
     fileloader.loadData(gpx, "dummy", "gpx");
     return true;
   } else {
@@ -1274,7 +1275,8 @@ function importGeoJson(geojson) {
   setStatus("Loading..", {spinner: true});
   $("#edit-tools").hide();
   var bounds;
-  var merge = isChecked("#merge");
+  var merge = loadCount > 0 || isChecked("#merge");
+  loadCount++;
   if (!merge) {
     newTrack();
     bounds = L.latLngBounds([]);
@@ -1357,7 +1359,7 @@ var loadcontrol = L.Control.fileLayerLoad({
     // L.Proj.GeoJson instead of the L.geoJson.
     layer: importGeoJson,
     // See http://leafletjs.com/reference.html#geojson-options
-    layerOptions: {style: {color:'red'}},
+    //layerOptions: {},
     // Add to map after loading (default: true) ?
     addToMap: false,
     // File size limit in kb (default: 1024) ?
@@ -1367,10 +1369,12 @@ var loadcontrol = L.Control.fileLayerLoad({
         '.gpx',
         '.geojson',
         '.kml'
-    ]
+    ],
+    fitBounds: false
 });
 map.addControl(loadcontrol);
 var fileloader = loadcontrol.loader;
+var loadCount = 0;
 fileloader.on('data:error', function (e) {
   setStatus("Failed: check file and type", { 'class':'status-error', 'timeout': 3});
 });
@@ -1378,6 +1382,7 @@ fileloader.on('data:error', function (e) {
 function loadFromUrl(url, ext) {
   setStatus("Loading...", {"spinner": true});
   $.get(config.corsproxy.url() + config.corsproxy.query + url, function(data){
+    loadCount = 0;
     fileloader.loadData(data, url, ext);
   }).fail(function(resp) {
     setStatus("Failed: " + resp.statusText, { 'class':'status-error', 'timeout': 3});
@@ -1409,14 +1414,17 @@ $("#track-upload").click(function() {
   $("#track-upload").val("");
 });
 $("#track-upload").change(function() {
-  var file = $("#track-upload")[0].files[0];
-  if (file) {
+  var files = $("#track-upload")[0].files;
+  if (files[0]) {
     setEditMode(EDIT_NONE);
-    setStatus("Getting..", {spinner: true});
-    fileloader.load(file, getLoadExt());
+    setStatus("Loading...", {spinner: true});
+    loadCount = 0;
+    fileloader.loadMultiple(files, getLoadExt());
   }
 });
-
+map.getContainer().addEventListener("drop", function(){
+  loadCount = 0;
+});
 /*-- DropBox --*
 
 var dropboxOptions = {

@@ -105,6 +105,18 @@
             return reader;
         },
 
+        loadMultiple: function (files, ext) {
+            files = Array.prototype.slice.apply(files);
+            var thisLoad = this.load;
+            var loadOne = L.Util.bind(function () {
+              this.load(files.shift(), ext);
+              if (files.length > 0) {
+                  setTimeout(loadOne, 25);
+              }
+            }, this);
+            setTimeout(loadOne, 25);
+        },
+
         loadData: function (data, name, ext) {
             var parser;
             var layer;
@@ -248,7 +260,7 @@
 
         _initDragAndDrop: function (map) {
             var callbackName;
-            var thisFileLayerLoad = this;
+            var thisLoader = this.loader;
             var dropbox = map._container;
 
             var callbacks = {
@@ -266,7 +278,7 @@
                     e.stopPropagation();
                     e.preventDefault();
 
-                    thisFileLayerLoad._loadFiles(e.dataTransfer.files);
+                    thisLoader.loadMultiple(e.dataTransfer.files);
                     map.scrollWheelZoom.enable();
                 }
             };
@@ -278,7 +290,7 @@
         },
 
         _initContainer: function () {
-            var thisFileLayerLoad = this;
+            var thisLoader = this.loader;
 
             // Create a button, and bind click on hidden file input
             var fileInput;
@@ -303,7 +315,7 @@
             fileInput.style.display = 'none';
             // Load on file change
             fileInput.addEventListener('change', function () {
-                thisFileLayerLoad._loadFiles(this.files);
+                thisLoader.loadMultiple(this.files);
                 // reset so that the user can upload the same file again if they want to
                 this.value = '';
             }, false);
