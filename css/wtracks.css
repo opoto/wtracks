@@ -538,7 +538,7 @@ button:active, #track-upload-label:active {
   }
 }
 
-/** routing hask to hide control **/
-.leaflet-control-container .leaflet-routing-container-hide {
+/** hide routing and file controls **/
+.leaflet-control-container .leaflet-routing-container-hide, .leaflet-control-filelayer {
     display: none;
 }

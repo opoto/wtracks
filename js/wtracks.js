@@ -1350,7 +1350,7 @@ function importGeoJson(geojson) {
   return editLayer;
 }
 
-var fileloader = L.Util.fileLoader(map, {
+var loadcontrol = L.Control.fileLayerLoad({
     // Allows you to use a customized version of L.geoJson.
     // For example if you are using the Proj4Leaflet leaflet plugin,
     // you can pass L.Proj.geoJson and load the files into the
@@ -1369,6 +1369,8 @@ var fileloader = L.Util.fileLoader(map, {
         '.kml'
     ]
 });
+map.addControl(loadcontrol);
+var fileloader = loadcontrol.loader;
 fileloader.on('data:error', function (e) {
   setStatus("Failed: check file and type", { 'class':'status-error', 'timeout': 3});
 });
