@@ -59,8 +59,7 @@
             };
         },
 
-        load: function (file, ext) {
-            var reader;
+        load: function (file, ext, reader /* for loadMultiple tests */) {
             var parser;
 
             // Check file is defined
@@ -80,7 +79,8 @@
             }
 
             // Read selected file using HTML5 File API
-            reader = new FileReader();
+            // for testing loadMultiple, reuse reader passed as method argument
+            if (!file.testing || !reader) reader = new FileReader();
             reader.onload = L.Util.bind(function (e) {
                 var layer;
                 try {
@@ -106,15 +106,21 @@
         },
 
         loadMultiple: function (files, ext) {
-            files = Array.prototype.slice.apply(files);
-            var thisLoad = this.load;
-            var loadOne = L.Util.bind(function () {
-              this.load(files.shift(), ext);
-              if (files.length > 0) {
-                  setTimeout(loadOne, 25);
-              }
-            }, this);
-            setTimeout(loadOne, 25);
+            var reader = false;
+            if (files[0]) {
+              files = Array.prototype.slice.apply(files);
+              var loadOne = L.Util.bind(function () {
+                reader = this.load(files.shift(), ext, reader);
+                if (files.length > 0) {
+                    setTimeout(loadOne, 25);
+                }
+                return reader;
+              }, this);
+              loadOne();
+            }
+            // return first reader (or false if no file),
+            // which is also used for subsequent loadings
+            return reader;
         },
 
         loadData: function (data, name, ext) {
