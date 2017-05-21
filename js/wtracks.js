@@ -1008,8 +1008,6 @@ if (JSON.parse && JSON.stringify) {
 
 }
 
-restorePosition();
-
 $(".leaflet-control-layers-list").append("<div class='leaflet-control-layers-separator'></div>");
 $(".leaflet-control-layers-list").append("<div>(*): no https</div>");
 
