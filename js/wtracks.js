@@ -15,13 +15,13 @@ function clearStatus() {
 }
 
 function saveValOpt(name, val) {
- if (config.saveprefs && isStateSaved()) {
+ if (config.saveprefs() && isStateSaved()) {
    storeVal(name, val);
  }
 }
 
 function saveJsonValOpt(name, val) {
- if (config.saveprefs && isStateSaved()) {
+ if (config.saveprefs() && isStateSaved()) {
    storeJsonVal(name, val);
  }
 }
