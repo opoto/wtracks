@@ -1713,8 +1713,10 @@ function checkGraphHopperCredit(e) {
   // check GraphHopper response
   if (!isUnset(e)) {
     log("GraphHopper credits: " + e.credits);
-    if (e.reset > gh.reset) {
-      gh.reset = e.reset;
+    var now = new Date();
+    var resetDate = new Date(now.getTime() + (e.reset*1000));
+    if (resetDate > Date.parse(gh.reset)) {
+      gh.reset = resetDate;
       gh.credits = 0;
     }
     if ((e.status >= 400) || (e.remaining == 0)) {
