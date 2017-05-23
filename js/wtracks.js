@@ -1462,7 +1462,7 @@ $("#dropbox-chooser").click(function(e) {
   Dropbox.choose(dropboxOptions);
 });
 
-/s* ------------ */
+/* ------------ */
 
 function newRouteWaypoint(i, waypoint, n) {
 
@@ -1494,7 +1494,7 @@ function newRouteWaypoint(i, waypoint, n) {
     // no start marker for routes that continue an existing track
     return undefined
   };
-  if (i==3) { // 4 with free package
+  if (i==2) { // up to 4 with free package
     // we reached graphHopper limit for free package, merge and start a new route
     mergeRouteToTrack();
     restartRoute();
