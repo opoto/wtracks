@@ -925,7 +925,7 @@ function getProvider(name) {
           });
   } else if (name == 'spain:ignraster') {
     // https://github.com/sigdeletras/Leaflet.Spain.WMS
-    p = L.tileLayer.wms('http://www.ign.es/wms-inspire/mapa-raster', {
+    p = L.tileLayer.wms('https://www.ign.es/wms-inspire/mapa-raster', {
         	layers: 'mtn_rasterizado',
         	format: 'image/png',
         	transparent: false,
