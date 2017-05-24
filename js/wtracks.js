@@ -1494,13 +1494,6 @@ function newRouteWaypoint(i, waypoint, n) {
     // no start marker for routes that continue an existing track
     return undefined
   };
-  if (i==2) { // up to 4 with free package
-    // we reached graphHopper limit for free package, merge and start a new route
-    mergeRouteToTrack();
-    restartRoute();
-    map.fireEvent("click", {latlng: waypoint.latLng});
-    return undefined;
-  }
   var marker = L.marker(waypoint.latLng, {
     draggable: true
   });
@@ -1779,8 +1772,14 @@ map.on('click', function (e) {
       }
     } else {
       var wpts = route.getWaypoints();
-      wpts.push({latLng: e.latlng});
-      route.setWaypoints(wpts);
+      if (wpts.length == 2) { // up to 4 with free version
+        mergeRouteToTrack();
+        restartRoute();
+        map.fireEvent("click", {latlng: e.latlng});
+      } else {
+        wpts.push({latLng: e.latlng});
+        route.setWaypoints(wpts);
+      }
     }
   } else {
     closeOverlays();
