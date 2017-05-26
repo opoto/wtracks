@@ -84,6 +84,7 @@ body {
 }
 #menu td {
   padding: 5px;
+  max-width: 550px;
 }
 /*#menu td label {
   font-size: 10pt;
@@ -115,7 +116,7 @@ body {
   font-style: oblique;
   margin: 2px 0 5px 0;
   font-size: 90%;
-  max-width: 400px;
+  max-width: 500px;
 }
 
 .help-b {
