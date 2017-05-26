@@ -106,6 +106,9 @@ body {
 #menu #track-get-url {
   width:95%;
 }
+#menu #about-logo {
+  margin: 15px 5px;
+}
 
 .help-p {
   display: none;
