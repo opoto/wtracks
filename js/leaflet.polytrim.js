@@ -61,7 +61,7 @@
                 // From Start
                 if (_diff > 0) {
                     this._trimmed = this._trimmed.concat(_latlngs.slice(0, _diff));
-                    _latlngs = _latlngs.slice(_diff)
+                    _latlngs = _latlngs.slice(_diff);
                 } else {
                     _diff = Math.abs(_diff);
                     _latlngs = this._trimmed.slice(this._trimmed.length - _diff).concat(_latlngs);
@@ -75,7 +75,7 @@
                 } else {
                     _diff = Math.abs(_diff);
                     _latlngs = _latlngs.concat(this._trimmed.slice(0, _diff));
-                    this._trimmed = this._trimmed.slice(_diff)
+                    this._trimmed = this._trimmed.slice(_diff);
                 }
             } else {
                 return 0;

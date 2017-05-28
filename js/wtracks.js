@@ -6,7 +6,7 @@ function setStatus(msg, options) {
   $("#spinner").toggle(showspinner);
   $("#status").fadeIn();
   if (options && options.timeout) {
-    setTimeout(function(){ clearStatus() }, 1000*options.timeout);
+    setTimeout(function(){ clearStatus(); }, 1000*options.timeout);
   }
 }
 
@@ -30,7 +30,7 @@ function saveJsonValOpt(name, val) {
 function toggleHelp(e) {
   $("#" + this.id + "-help").toggle();
 }
-$(".help-b").click(toggleHelp)
+$(".help-b").click(toggleHelp);
 
 var map = L.map('map', {
       editable: true,
@@ -140,13 +140,13 @@ function loadActivities() {
     if (!activities[v.innerHTML]) {
       v.remove();
     }
-  })
+  });
 }
 loadActivities();
-selectOption(selectActivity, getVal("wt.activity", undefined))
+selectOption(selectActivity, getVal("wt.activity", undefined));
 
 function getCurrentActivity() {
-  var res = $("#activity").children(':selected').val()
+  var res = $("#activity").children(':selected').val();
   log("activity: " + res);
   saveValOpt("wt.activity", res);
   return activities[res];
@@ -154,7 +154,7 @@ function getCurrentActivity() {
 $("#activity").click(loadActivities);
 $("#activity").change(function() {
   polystats.setSpeedProfile(getCurrentActivity().speedprofile);
-})
+});
 
 /* ------------------------------------------------------------*/
 
@@ -230,22 +230,22 @@ function newWaypoint(latlng, name, desc) {
 
       // name
       if (marker.options.title) {
-        var name = L.DomUtil.create('div', "popup-name", div);
-        name.innerHTML = marker.options.title;
+        var popupName = L.DomUtil.create('div', "popup-name", div);
+        popupName.innerHTML = marker.options.title;
       }
 
       // description
       if (marker.options.desc) {
-        var desc = L.DomUtil.create('div', "popup-desc", div);
-        desc.innerHTML = marker.options.desc;
+        var popupDesc = L.DomUtil.create('div', "popup-desc", div);
+        popupDesc.innerHTML = marker.options.desc;
       }
     }
 
 
 
     var latlng = marker.getLatLng();
-    var div = getLatLngPopupContent(latlng, deletMarker, div)
-    return div;
+    var markerDiv = getLatLngPopupContent(latlng, deletMarker, div);
+    return markerDiv;
   }
 
   var markerIcon = L.icon({
@@ -293,7 +293,7 @@ function trimTrack(e) {
   var n = parseInt($("#trim-range").val());
   log("trimming " + n);
   $("#trim-txt").text(n + "/" + polytrim.getPolySize());
-  $(".no-trim").prop('disabled',(n != 0));
+  $(".no-trim").prop('disabled',(n !== 0));
   polytrim.trim(n);
 }
 
@@ -309,7 +309,7 @@ function finishTrim() {
   saveState();
 }
 
-$("#trim-range").on("change", trimTrack)
+$("#trim-range").on("change", trimTrack);
 $("#trim-type").change(prepareTrim);
 
 /* ------------------------ MENU ---------------------------------- */
@@ -326,23 +326,23 @@ $("#menu-button").click(function() {
     finishTrim();
   }
   return false;
-})
+});
 $("#menu-close").click(function() {
   $("#menu").hide();
   finishTrim();
   return false;
-})
+});
 $("#track-new").click(function() {
   newTrack();
   setEditMode(EDIT_MANUAL_TRACK);
   saveState();
-})
+});
 $("#menu-track").click(function() {
   $(".collapsable-track").toggle();
-})
+});
 $("#menu-tools").click(function() {
   $(".collapsable-tools").toggle();
-})
+});
 
 /* ------------------------ EXPORT GPX ---------------------------------- */
 
@@ -362,7 +362,7 @@ function LatLngToGPX(latlng, gpxelt, name, time, desc) {
   if (time) {
     gpx += "<time>" + (typeof time === "string" ? time : time.toISOString()) + "</time>";
   }
-  gpx += "</"+gpxelt+">\n"
+  gpx += "</"+gpxelt+">\n";
   return gpx;
 }
 
@@ -408,11 +408,11 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
       ptindent += "  ";
       pttag = "trkpt";
     }
-    var i = 0;
+    var j = 0;
     var saveTiming = isChecked("#savetiming");
     now = now.getTime();
-    while (i < latlngs.length) {
-      var pt = latlngs[i];
+    while (j < latlngs.length) {
+      var pt = latlngs[j];
       var time;
       if (saveTiming) {
         time = new Date(now + (pt.chrono*1000));
@@ -420,7 +420,7 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
         time = pt.time;
       }
       gpx += ptindent + LatLngToGPX(pt, pttag, undefined, time);
-      i++;
+      j++;
     }
     if (asroute) {
       gpx += "</rte>\n";
@@ -443,14 +443,14 @@ $("#track-download").click(function() {
     trackname =  getTrackName();
   }
   var gpx = getGPX(trackname, /*savealt*/false, /*savetime*/false, asroute, nometadata);
-  if (isSafari()) alert("A new page will open, press cmd+s (" + String.fromCharCode(8984) + "+s) to save file")
+  if (isSafari()) alert("A new page will open, press cmd+s (" + String.fromCharCode(8984) + "+s) to save file");
   var blob = new Blob([gpx],
     isSafari() ? {type: "text/plain;charset=utf-8"} :
       {type: "application/gpx+xml;charset=utf-8"}
   );
   saveAs(blob, trackname+".gpx");
   clearStatus();
-})
+});
 
 function editableWaypoints(editable) {
   var wpts = waypoints.getLayers();
@@ -571,7 +571,7 @@ $("#compress").click(function() {
   // get & check input value
   var prunedist = $("#prunedist");
   var input = prunedist.val().trim();
-  var tolerance = undefined;
+  var tolerance;
   if (input) {
     tolerance = parseFloat(input);
   }
@@ -587,7 +587,7 @@ $("#compress").click(function() {
     var pruned = L.PolyUtil.prune(pts, tolerance);
     var removedpts = (pts.length - pruned.length);
     if (removedpts> 0) {
-      alert("Removed " + removedpts + " points out of " + pts.length + " (" + Math.round((removedpts / pts.length) * 100) + "%)")
+      alert("Removed " + removedpts + " points out of " + pts.length + " (" + Math.round((removedpts / pts.length) * 100) + "%)");
       // switch to new values
       track.setLatLngs(pruned);
       saveState();
@@ -618,8 +618,8 @@ var myLocIcon = L.icon({
     iconSize:     [48, 48],
     iconAnchor:   [24, 24]
 });
-var myLocMarker = undefined;
-var myLocTimer = undefined;
+var myLocMarker;
+var myLocTimer;
 var
   LOC_NONE = 0,
   LOC_ONCE = 1,
@@ -798,7 +798,7 @@ function saveMapType() {
 }
 
 function getProvider(name) {
-  var p = undefined;
+  var p;
   if (name == "opentopomap") {
     p =  L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
       maxZoom: 17,
@@ -1020,16 +1020,16 @@ function elevateDSTK(pt, cb) {
     error('Error: ' +  textStatus);
     // callback
     if (cb) cb(false);
-  }
+  };
   var elevateDSTKcb = function(result) {
-    var ok = isUndefined(result['error']);
+    var ok = isUndefined(result.error);
     if (ok) {
       clearStatus();
       pt.alt = result[0].statistics.elevation.value;
       // callback
       if (cb) cb(true);
     } else {
-      elevateDSTKerror(null, result['error']);
+      elevateDSTKerror(null, result.error);
     }
   };
 
@@ -1046,7 +1046,7 @@ function elevateDSTK(pt, cb) {
 
 // Google elevation API - free upto 2500 req per day (max 512 points per req)
 function elevateGoogle(points, cb) {
-  if (!points || (points.length == 0)) {
+  if (!points || (points.length === 0)) {
     return;
   }
   var locations;
@@ -1055,7 +1055,7 @@ function elevateGoogle(points, cb) {
     locations = [points];
   } else {
     setStatus("Elevating..", {spinner: true});
-    inc = Math.round(Math.max(1, points.length/512))
+    inc = Math.round(Math.max(1, points.length/512));
     if (inc == 1) {
       locations = points;
     } else {
@@ -1069,7 +1069,7 @@ function elevateGoogle(points, cb) {
       }
     }
   }
-  var elevator = new google.maps.ElevationService;
+  var elevator = new google.maps.ElevationService();
   elevator.getElevationForLocations({
     'locations': locations
   }, function(results, status) {
@@ -1267,7 +1267,7 @@ $(".statistics").click(function(e){
   if ((tag !== "SELECT") && (tag !== "OPTION")) {
     toggleElevation(e);
   }
-})
+});
 
 function importGeoJson(geojson) {
 
@@ -1300,7 +1300,7 @@ function importGeoJson(geojson) {
 
   function importLine(name, coords, times) {
     var v = track.getLatLngs();
-    if ((v.length == 0) && (metadata.name == NEW_TRACK_NAME)) {
+    if ((v.length === 0) && (metadata.name == NEW_TRACK_NAME)) {
       setTrackName(name);
     }
     // import polyline vertexes
@@ -1312,7 +1312,7 @@ function importGeoJson(geojson) {
     bounds.extend(track.getBounds());
   }
 
-  if ((track.getLatLngs.length == 0) && (geojson.metadata)) {
+  if ((track.getLatLngs.length === 0) && (geojson.metadata)) {
     metadata = geojson.metadata;
     if (metadata.name) {
       setTrackName(metadata.name);
@@ -1321,27 +1321,28 @@ function importGeoJson(geojson) {
 
   L.geoJson(geojson,{
     onEachFeature: function(f) {
+      var name, coords, times;
       if (f.geometry.type === "LineString") {
-        var name = f.properties.name ? f.properties.name : NEW_TRACK_NAME;
-        var coords = f.geometry.coordinates
-        var times = f.properties.coordTimes && (f.properties.coordTimes.length == coords.length) ? f.properties.coordTimes : undefined;
+        name = f.properties.name ? f.properties.name : NEW_TRACK_NAME;
+        coords = f.geometry.coordinates;
+        times = f.properties.coordTimes && (f.properties.coordTimes.length == coords.length) ? f.properties.coordTimes : undefined;
         importLine(name, coords, times);
       } if (f.geometry.type === "MultiLineString") {
-          var name = f.properties.name ? f.properties.name : NEW_TRACK_NAME;
+          name = f.properties.name ? f.properties.name : NEW_TRACK_NAME;
           for (var i = 0; i < f.geometry.coordinates.length; i++) {
-            var coords = f.geometry.coordinates[i];
-            var times = f.properties.coordTimes[i] && (f.properties.coordTimes[i].length == coords.length) ? f.properties.coordTimes[i] : undefined;
+            coords = f.geometry.coordinates[i];
+            times = f.properties.coordTimes[i] && (f.properties.coordTimes[i].length == coords.length) ? f.properties.coordTimes[i] : undefined;
             importLine(name, coords, times);
           }
       } else if (f.geometry.type === "Point") {
         // import marker
-        var coords = f.geometry.coordinates;
+        coords = f.geometry.coordinates;
         var latlng = newPoint(coords);
         newWaypoint(latlng, f.properties.name, f.properties.description || f.properties.desc);
         bounds.extend(latlng);
       }
     }
-  })
+  });
   if (bounds.isValid()) {
     map.fitBounds(bounds);
   }
@@ -1390,7 +1391,7 @@ function loadFromUrl(url, ext) {
 function getLoadExt() {
   var ext = $("#track-ext").children(':selected').val();
   if (ext === "auto") {
-    ext = undefined
+    ext = undefined;
   }
   return ext;
 }
@@ -1474,7 +1475,7 @@ function newRouteWaypoint(i, waypoint, n) {
     del.class = "sympol red";
     del.href = "#";
     del.title = "Delete";
-    del.innerHTML = "<span class='popupfield'>DELETE</span>"
+    del.innerHTML = "<span class='popupfield'>DELETE</span>";
     del.onclick = function(e) {
       var wpts = route.getWaypoints();
       if (wpts.length > 2) {
@@ -1490,10 +1491,10 @@ function newRouteWaypoint(i, waypoint, n) {
     return div;
   }
 
-  if ((track.getLatLngs().length > 0)  && (i == 0)) {
+  if ((track.getLatLngs().length > 0)  && (i === 0)) {
     // no start marker for routes that continue an existing track
-    return undefined
-  };
+    return undefined;
+  }
   var marker = L.marker(waypoint.latLng, {
     draggable: true
   });
@@ -1571,7 +1572,7 @@ function getLatLngPopupContent(latlng, deletefn, toadd) {
     del.class = "sympol red";
     del.href = "#";
     del.title = "Delete";
-    del.innerHTML = "<span class='popupfield'>DELETE</span>"
+    del.innerHTML = "<span class='popupfield'>DELETE</span>";
     del.onclick = deletefn;
   }
 
@@ -1604,7 +1605,7 @@ function time2txt(time) {
   if (time >= 60) strTime += Math.floor(time/60) + "m";
   time %= 60;
   strTime += Math.round(time) + "s";
-  return strTime
+  return strTime;
 }
 
 function showStats() {
@@ -1639,28 +1640,28 @@ map.on('popupclose', function (e) {
     if ((editMode === EDIT_MANUAL_TRACK) && (track.editor)) {
       track.editor.continueForward();
     }
-})
+});
 map.on('editable:enable', function (e) {
     console.log(e.type);
-})
+});
 map.on('editable:drawing:start', function (e) {
     console.log(e.type);
-})
+});
 map.on('editable:drawing:dragend', function (e) {
     console.log(e.type);
-})
+});
 map.on('editable:drawing:commit', function (e) {
     console.log(e.type);
-})
+});
 map.on('editable:drawing:end', function (e) {
     console.log(e.type);
-})
+});
 map.on('editable:drawing:click', function (e) {
   console.log(e.type);
-})
+});
 map.on('editable:shape:new', function (e) {
   console.log(e.type);
-})
+});
 map.on('editable:vertex:new', function (e) {
   var latlng = e.vertex.getLatLng();
   var prev = e.vertex.getPrevious();
@@ -1673,27 +1674,27 @@ map.on('editable:vertex:new', function (e) {
       polystats.updateStatsFrom(i);
     });
   }
-})
+});
 map.on('editable:vertex:dragend', function (e) {
   var i = e.vertex.getLatLng().i;
   elevatePoint(e.vertex.getLatLng(), function() {
     polystats.updateStatsFrom(i);
   });
   console.log(e.type + ": " + i);
-})
+});
 map.on('editable:middlemarker:mousedown', function (e) {
   console.log(e.type);
-})
+});
 map.on('editable:dragend', function (e) {
   elevatePoint(e.layer.getLatLng());
   console.log(e.type);
-})
+});
 
 map.on('editable:vertex:deleted', function (e) {
   var i = e.latlng.i;
   console.log(e.type + ": " + i);
   polystats.updateStatsFrom(i);
-})
+});
 
 
 map.on('editable:created', function (e) {
@@ -1713,7 +1714,7 @@ function checkGraphHopperCredit(e) {
       gh.reset = resetDate;
       gh.credits = 0;
     }
-    if ((e.status >= 400) || (e.remaining == 0)) {
+    if ((e.status >= 400) || (e.remaining === 0)) {
       gh.credits = -1;
     } else if (gh.credits >= 0) {
       gh.credits += e.credits;
@@ -1721,7 +1722,7 @@ function checkGraphHopperCredit(e) {
     storeJsonVal("wt.gh", gh);
   }
 
-  var message = undefined;
+  var message;
   if (gh.credits < 0) {
     message = "WTracks's GraphHopper quota exceeded";
   } else if (gh.credits >= MAX_GH_CREDITS) {
@@ -1800,7 +1801,7 @@ map.on('editable:vertex:click', function (e) {
     return;
   }
   track.editor.commitDrawing();
-  if (track.getLatLngs().length == 0) {
+  if (track.getLatLngs().length === 0) {
     setEditMode(EDIT_MANUAL_TRACK);
     return;
   }
@@ -1850,7 +1851,7 @@ function toggleElevation(e) {
           el: el,
           gjl: gjl
         };
-      } catch (e) {
+      } catch (err) {
         log('no elevation');
       }
     }
@@ -1883,7 +1884,7 @@ function menu(item, event) {
   }
 }
 $(".tablinks").click(function(event) {
-  menu(event.target.id.replace("tab",""), event)
+  menu(event.target.id.replace("tab",""), event);
 });
 
 

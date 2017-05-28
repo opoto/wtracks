@@ -37,8 +37,8 @@
      * It removes points located less then "tolerance" meters from the track between its adjacent points
      */
     var prune = function(latlngs, tolerance) {
-        var initlen = latlngs.length // initial number of points
-        var pruned = []
+        var initlen = latlngs.length; // initial number of points
+        var pruned = [];
 
         /**
          * Returns the closest distance (2D) of a point to a segment defined by 2 points
@@ -54,7 +54,7 @@
             var xDelta = endLine.lng - startLine.lng;
             var yDelta = endLine.lat - startLine.lat;
 
-            if ((xDelta == 0) && (yDelta == 0)) {
+            if ((xDelta === 0) && (yDelta === 0)) {
                 // startLine and endLine are the same point, return distance from this point
                 return latlng.distanceTo(startLine);
             }
@@ -75,47 +75,47 @@
 
 
         if (initlen > 2) { // no pruning required when 0, 1 or 2 points
-            var mindeleted = initlen // mindeleted tracks the smallest deleted point index
+            var mindeleted = initlen; // mindeleted tracks the smallest deleted point index
 
             // we always keep first point
-            pruned.push(latlngs[0])
+            pruned.push(latlngs[0]);
 
-            var ptmax = initlen - 1 // max point index
-            var ptlast = 0 // mast inserted point index
+            var ptmax = initlen - 1; // max point index
+            var ptlast = 0; // mast inserted point index
 
             for (var i = 1; i < ptmax; i++) {
 
-                var prev = pruned[pruned.length - 1]
-                var next = latlngs[i + 1]
+                var prev = pruned[pruned.length - 1];
+                var next = latlngs[i + 1];
 
                 for (var j = i; j > ptlast; j--) {
-                    var pt = latlngs[j]
-                    var delta = distanceFromLine(pt, prev, next)
+                    var pt = latlngs[j];
+                    var delta = distanceFromLine(pt, prev, next);
                     if (delta > tolerance) {
                         // removing i loses this pt, keep this trkpt[i]
-                        latlngs[i].i = pruned.length
-                        ptlast = i
-                        pruned.push(latlngs[i])
-                        break
+                        latlngs[i].i = pruned.length;
+                        ptlast = i;
+                        pruned.push(latlngs[i]);
+                        break;
                     }
                 }
                 // did we keep i?
                 if (ptlast != i) {
                     // discarded
-                    mindeleted = Math.min(i, mindeleted)
+                    mindeleted = Math.min(i, mindeleted);
                 }
             }
 
             // we always keep last point
-            latlngs[initlen - 1].i = pruned.length
-            pruned.push(latlngs[latlngs.length - 1])
+            latlngs[initlen - 1].i = pruned.length;
+            pruned.push(latlngs[latlngs.length - 1]);
 
             return pruned;
         } else {
             return latlngs;
         }
 
-    }
+    };
 
     L.PolyUtil.prune = prune;
 }, window));

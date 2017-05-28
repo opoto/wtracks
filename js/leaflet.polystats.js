@@ -47,7 +47,7 @@
     }
 
     function getSlope(dist, altdiff) {
-      if ((dist == 0) || (altdiff == 0)) {
+      if ((dist === 0) || (altdiff === 0)) {
         return 0;
       } else {
         return (altdiff / dist) * 100;
@@ -69,7 +69,7 @@
 
     var computeSpeedEngines = {};
     computeSpeedEngines[REFSPEEDS] = function(slope, params) {
-      if (params.length == 0) {
+      if (params.length === 0) {
         return 0;
       }
 
@@ -154,15 +154,16 @@
             "method": method,
             "parameters": [],
             "refspeeds": refspeeds,
-          }
+          };
 
           var engine = computeSpeedEngines[method];
 
           var pruned = refspeeds.slice(0);
+          var i;
 
           if (threshold) {
             // prune speeds below threshold
-            var i = 0;
+            i = 0;
             while (i < pruned.length) {
               if (pruned[i][1] < this.options.threshold) {
                 pruned.splice(i, 1);
@@ -180,11 +181,11 @@
               var compreg = regression(method, pruned, polydeg);
               sp.parameters = compreg.equation;
               //sp.speedsamples = compreg.points;
-              for (var i = 0; i < pruned.length;) {
+              for (i = 0; i < pruned.length;) {
                 var slope = pruned[i][0];
                 var speed = pruned[i][1];
                 var estimatedspeed = engine(slope, sp.parameters);
-                var error = Math.abs((estimatedspeed / speed) - 1)
+                var error = Math.abs((estimatedspeed / speed) - 1);
                 if (error > pruning) {
                   pruned.splice(i, 1);
                 } else {
@@ -193,7 +194,7 @@
               }
             }
           } else {
-            var i = 0;
+            i = 0;
             var maxi = pruned.length-1;
             var s = pruned[i][0];
             var maxs = pruned[maxi][0];
@@ -317,25 +318,26 @@
                 maxalt: undefined,
                 climbing: 0,
                 descent: 0,
-            }
+            };
 
-            var stats = this._polyline.stats;
-            for (var j = 0; j < pts.length; j++) {
-                var pt = pts[j];
+            var stats = this._polyline.stats,
+                j, pt, slope, relchrono, chrono, reldist, altdiff;
+            for (j = 0; j < pts.length; j++) {
+                pt = pts[j];
                 pt.i = j;
                 if (j > 0) {
                     var prevpt = pts[j - 1];
-                    var reldist = getDistance3D(prevpt, pt);
+                    reldist = getDistance3D(prevpt, pt);
                     pt.dist = prevpt.dist + reldist;
                     if (this.options.chrono) {
-                        var altdiff = getAlt(pt) - getAlt(prevpt);
+                        altdiff = getAlt(pt) - getAlt(prevpt);
                         if (altdiff > 0) {
                             stats.climbing += altdiff;
                         } else {
                             stats.descent += altdiff;
                         }
-                        var slope = getSlope(reldist, altdiff);
-                        var relchrono = getDuration.call(this, this._speedProfile, reldist, slope);
+                        slope = getSlope(reldist, altdiff);
+                        relchrono = getDuration.call(this, this._speedProfile, reldist, slope);
                         pt.chrono = prevpt.chrono + relchrono;
                     }
                 } else {
@@ -357,14 +359,14 @@
             }
             if (this.options.chrono) {
                 // compute chrono for round trip
-                for (var j = pts.length - 1; j >= 0; j--) {
-                    var pt = pts[j];
+                for (j = pts.length - 1; j >= 0; j--) {
+                    pt = pts[j];
                     if (j < pts.length - 1) {
                         var nextpt = pts[j + 1];
-                        var reldist = getDistance3D(nextpt, pt);
-                        var altdiff = getAlt(pt) - getAlt(nextpt);
-                        var slope = getSlope(reldist, altdiff);
-                        var relchrono = getDuration.call(this, this._speedProfile, reldist, slope);
+                        reldist = getDistance3D(nextpt, pt);
+                        altdiff = getAlt(pt) - getAlt(nextpt);
+                        slope = getSlope(reldist, altdiff);
+                        relchrono = getDuration.call(this, this._speedProfile, reldist, slope);
                         pt.chrono_rt = nextpt.chrono_rt + relchrono;
                     } else {
                         pt.chrono_rt = pt.chrono;
