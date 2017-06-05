@@ -932,6 +932,16 @@ function getProvider(name) {
         	continuousWorld : true,
         	attribution: '© <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
         });
+  } else if (name == 'spain:icgc') {
+    p = L.tileLayer.wtms(
+          "https://geoserveis.icgc.cat/icc_mapesmultibase/noutm/wmts/service",
+          {
+            layer: 'topo',
+            style: 'normal',
+            tilematrixSet: "GRID3857",
+            format: 'image/jpeg',
+            attribution: "&copy; Institut Cartogràfic i Geològic de Catalunya - ICGC"
+          });
   }
   if (!p) {
     p = getProvider("osm:std");
@@ -959,6 +969,7 @@ var baseLayers = {
   "FR IGN express": getProvider("fr:ignexpress"),
   //"FR IGN aerial": getProvider("fr:ignimagery")
   "ES IGN": getProvider("spain:ignraster"),
+  "ES ICGC": getProvider("spain:icgc")
 };
 var overlays = {
   "Hillshading": getProvider("wmf:hills"),
