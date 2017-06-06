@@ -63,6 +63,11 @@ var config = {
     },
     query: "?url="
   },
+  dropbox: {
+    key: function() {
+      return strdecode("BMX%00%0B%0E%02B%10%0F%1E%09B%18G", "X%2F%5D%1D%22T%132%1C%17%1D%05y%5EJ")
+    }
+  },
   /*------------ activities  -----------*/
   // GraphHopper vehicles
   activities: {

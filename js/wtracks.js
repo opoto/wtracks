@@ -1390,9 +1390,10 @@ fileloader.on('data:error', function (e) {
   setStatus("Failed: check file and type", { 'class':'status-error', 'timeout': 3});
 });
 
-function loadFromUrl(url, ext) {
+function loadFromUrl(url, ext, direct) {
   setStatus("Loading...", {"spinner": true});
-  $.get(config.corsproxy.url() + config.corsproxy.query + url, function(data){
+  var _url = direct ? url : config.corsproxy.url() + config.corsproxy.query + url;
+  $.get(_url, function(data){
     loadCount = 0;
     fileloader.loadData(data, url, ext);
   }).fail(function(resp) {
@@ -1436,13 +1437,14 @@ $("#track-upload").change(function() {
 map.getContainer().addEventListener("drop", function(){
   loadCount = 0;
 });
-/*-- DropBox --*
+/*-- DropBox --*/
 
 var dropboxOptions = {
 
     // Required. Called when a user selects an item in the Chooser.
     success: function(files) {
-      loadFromUrl(files[0].link, getLoadExt());
+      $("#menu").hide();
+      loadFromUrl(files[0].link, getLoadExt(), true);
     },
 
     // Optional. Called when the user closes the dialog without selecting a file
@@ -1467,9 +1469,9 @@ var dropboxOptions = {
     //extensions: ['.gpx', '.json', '.kml', '.geojson'],
 };
 
-var dropboxButton = Dropbox.createChooseButton(dropboxOptions);
-document.getElementById("dropbox-td").appendChild(dropboxButton);
-
+//var dropboxButton = Dropbox.createChooseButton(dropboxOptions);
+//document.getElementById("dropbox-td").appendChild(dropboxButton);
+// OR
 $("#dropbox-chooser").click(function(e) {
   Dropbox.choose(dropboxOptions);
 });
