@@ -67,7 +67,7 @@ function setChecked(selector, val) {
   $(selector).prop('checked', val);
 }
 /* ----------------------- Local storage -------------------------- */
-<!-- Begin Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent -->
+// Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent
 window.cookieconsent_options = {
   "message":"This website uses cookies to ensure you get the best experience on our website",
   "dismiss":"Got it!",
@@ -79,7 +79,7 @@ window.cookieconsent_options = {
 };
 
 function canValBeSaved() {
-  return window.hasCookieConsent || (window.location.toString().indexOf("file:") == 0);
+  return window.hasCookieConsent || (window.location.toString().indexOf("file:") === 0);
 }
 
 function storeVal(name, val) {
@@ -146,7 +146,7 @@ function setEmailListener(selector, name, domain, subject) {
     }
     doEmail(domain, name, "?subject="+subject);
     return false;
-  })
+  });
 }
 
 /* ------------------------------ Encoding ---------------------------------*/
@@ -178,11 +178,11 @@ function strxor(s, k) {
   return enc;
 }
 function strencode(s, k) {
-  return encodeURIComponent(strxor(s, k))
+  return encodeURIComponent(strxor(s, k));
 }
 function strdecode(s1, s2) {
-  var islocal = (window.location.toString().indexOf("file:") == 0)
-    ||(window.location.toString().indexOf(".dev.local:") > 0);
+  var islocal = (window.location.toString().indexOf("file:") === 0) ||
+    (window.location.toString().indexOf(".dev.local:") > 0);
   var s = islocal ? s2 : s1;
   var k = islocal ? getLocalCode() : n10dLocation();
   return s ? strxor(decodeURIComponent(s), k ? k : "") : s;
