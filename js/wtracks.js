@@ -1,3 +1,11 @@
+if (config.google && config.google.analyticsid) {
+  initGoogleAnalytics(config.google.analyticsid());
+}
+if (config.email) {
+  setEmailListener(config.email.selector, config.email.name,
+    config.email.domain, config.email.subject);
+}
+
 function setStatus(msg, options) {
   $("#status-msg").text(msg);
   var statusclass = options && options.class ? options.class : "status-info";
@@ -145,14 +153,18 @@ function loadActivities() {
 loadActivities();
 selectOption(selectActivity, getVal("wt.activity", undefined));
 
+function getCurrentActivityName() {
+  return $("#activity").children(':selected').val();
+}
 function getCurrentActivity() {
-  var res = $("#activity").children(':selected').val();
+  var res = getCurrentActivityName();
   log("activity: " + res);
   saveValOpt("wt.activity", res);
   return activities[res];
 }
 $("#activity").click(loadActivities);
 $("#activity").change(function() {
+  ga('send', 'event', 'activity', 'change', undefined, getCurrentActivityName());
   polystats.setSpeedProfile(getCurrentActivity().speedprofile);
 });
 
@@ -192,6 +204,8 @@ function newTrack() {
 }
 
 function newWaypoint(latlng, name, desc) {
+
+  ga('send', 'event', 'edit', 'newWaypoint');
 
   function deleteMarker(e) {
     waypoints.removeLayer(marker);
@@ -293,6 +307,7 @@ function prepareTrim() {
 
 function trimTrack(e) {
   var n = parseInt($("#trim-range").val());
+  ga('send', 'event', 'tool', 'trim', undefined, n);
   log("trimming " + n);
   $("#trim-txt").text(n + "/" + polytrim.getPolySize());
   $(".no-trim").prop('disabled',(n !== 0));
@@ -454,6 +469,7 @@ $("#track-download").click(function() {
   setEditMode(EDIT_NONE);
   setStatus("Formatting..", {spinner: true});
   var gpx = getTrackGPX(true);
+  ga('send', 'event', 'file', 'save', undefined, gpx.length);
   if (isSafari()) alert("A new page will open, press cmd+s (" + String.fromCharCode(8984) + "+s) to save file");
   var blob = new Blob([gpx],
     isSafari() ? {type: "text/plain;charset=utf-8"} :
@@ -479,6 +495,7 @@ function mergeRouteToTrack() {
   var initlen = track.getLatLngs().length;
   var pts = route._selectedRoute ? route._selectedRoute.coordinates : [];
   pts = L.PolyUtil.prune(pts, config.compressdefault);
+  ga('send', 'event', 'edit', 'merge', undefined, pts.length);
   route.remove();
   route = undefined;
   routeStart = undefined;
@@ -597,6 +614,7 @@ $("#compress").click(function() {
     var pts = track.getLatLngs();
     var pruned = L.PolyUtil.prune(pts, tolerance);
     var removedpts = (pts.length - pruned.length);
+    ga('send', 'event', 'tool', 'compress', undefined, removedpts);
     if (removedpts> 0) {
       alert("Removed " + removedpts + " points out of " + pts.length + " (" + Math.round((removedpts / pts.length) * 100) + "%)");
       // switch to new values
@@ -991,6 +1009,7 @@ var overlays = {
 L.control.layers(baseLayers, overlays).addTo(map);
 map.addLayer(baseLayers[getVal("wt.baseLayer", config.display.map)] || baseLayers[config.display.map]);
 map.on("baselayerchange", function(e) {
+  ga('send', 'event', 'map', 'baselayer', undefined, e.name);
   saveValOpt("wt.baseLayer", e.name);
   $(".leaflet-control-layers").removeClass("leaflet-control-layers-expanded");
 });
@@ -1246,23 +1265,27 @@ L.DomEvent.disableClickPropagation(L.DomUtil.get("edit-manual"));
 L.DomEvent.disableClickPropagation(L.DomUtil.get("edit-auto"));
 L.DomEvent.disableClickPropagation(L.DomUtil.get("edit-marker"));
 $("#edit-manual").click(function (e) {
+  ga('send', 'event', 'edit', 'manual');
   //$("#edit-tools").hide();
   setEditMode(EDIT_MANUAL_TRACK);
   e.preventDefault();
 });
 $("#edit-auto").click(function (e) {
+  ga('send', 'event', 'edit', 'auto');
   if (checkGraphHopperCredit()) {
     setEditMode(EDIT_AUTO_TRACK);
   }
   e.preventDefault();
 });
 $("#edit-marker").click(function (e) {
+  ga('send', 'event', 'edit', 'marker');
   //$("#edit-tools").hide();
   setEditMode(EDIT_MARKER);
   e.preventDefault();
 });
 
 $("#elevate").click(function (e) {
+  ga('send', 'event', 'tool', 'elevate', undefined, track.getLatLngs());
   $("#menu").hide();
   if (track) elevate(track.getLatLngs(), function() {
     polystats.updateStatsFrom(0);
@@ -1271,6 +1294,7 @@ $("#elevate").click(function (e) {
   return false;
 });
 $("#flatten").click(function (e) {
+  ga('send', 'event', 'tool', 'flatten', undefined, track.getLatLngs());
   $("#menu").hide();
   flatten();
   saveState();
@@ -1278,6 +1302,7 @@ $("#flatten").click(function (e) {
 });
 
 $("#revert").click(function (e) {
+  ga('send', 'event', 'tool', 'revert', undefined, track.getLatLngs());
   $("#menu").hide();
   revert();
   saveState();
@@ -1424,6 +1449,7 @@ $("#track-get").click(function() {
     $("#track-get-url").focus();
     return;
   }
+  ga('send', 'event', 'file', 'load-url');
   setEditMode(EDIT_NONE);
   loadFromUrl(url, getLoadExt());
 });
@@ -1439,6 +1465,7 @@ $("#track-upload").click(function() {
 $("#track-upload").change(function() {
   var files = $("#track-upload")[0].files;
   if (files[0]) {
+    ga('send', 'event', 'file', 'load-file');
     setEditMode(EDIT_NONE);
     setStatus("Loading...", {spinner: true});
     loadCount = 0;
@@ -1456,6 +1483,7 @@ var dropboxLoadOptions = {
     // Required. Called when a user selects an item in the Chooser.
     success: function(files) {
       $("#menu").hide();
+      ga('send', 'event', 'file', 'load-dropbox');
       loadFromUrl(files[0].link, getLoadExt(), true);
     },
 
@@ -1698,38 +1726,38 @@ function showStats() {
 
 
 map.on('popupclose', function (e) {
-    console.log(e.type);
+    //console.log(e.type);
     if ((editMode === EDIT_MANUAL_TRACK) && (track.editor)) {
       track.editor.continueForward();
     }
 });
 map.on('editable:enable', function (e) {
-    console.log(e.type);
+    //console.log(e.type);
 });
 map.on('editable:drawing:start', function (e) {
-    console.log(e.type);
+    //console.log(e.type);
 });
 map.on('editable:drawing:dragend', function (e) {
-    console.log(e.type);
+    //console.log(e.type);
 });
 map.on('editable:drawing:commit', function (e) {
-    console.log(e.type);
+    //console.log(e.type);
 });
 map.on('editable:drawing:end', function (e) {
-    console.log(e.type);
+    //console.log(e.type);
 });
 map.on('editable:drawing:click', function (e) {
-  console.log(e.type);
+  //console.log(e.type);
 });
 map.on('editable:shape:new', function (e) {
-  console.log(e.type);
+  //console.log(e.type);
 });
 map.on('editable:vertex:new', function (e) {
   var latlng = e.vertex.getLatLng();
   var prev = e.vertex.getPrevious();
   i = isUndefined(prev) ? 0 : prev.latlng.i + 1;
   latlng.i = i;
-  console.log(e.type + ": " + latlng.i);
+  //console.log(e.type + ": " + latlng.i);
   if (i == track.getLatLngs().length - 1) {
     // last vertex
     elevatePoint(latlng, function() {
@@ -1742,25 +1770,25 @@ map.on('editable:vertex:dragend', function (e) {
   elevatePoint(e.vertex.getLatLng(), function() {
     polystats.updateStatsFrom(i);
   });
-  console.log(e.type + ": " + i);
+  //console.log(e.type + ": " + i);
 });
 map.on('editable:middlemarker:mousedown', function (e) {
-  console.log(e.type);
+  //console.log(e.type);
 });
 map.on('editable:dragend', function (e) {
   elevatePoint(e.layer.getLatLng());
-  console.log(e.type);
+  //console.log(e.type);
 });
 
 map.on('editable:vertex:deleted', function (e) {
   var i = e.latlng.i;
-  console.log(e.type + ": " + i);
+  //console.log(e.type + ": " + i);
   polystats.updateStatsFrom(i);
 });
 
 
 map.on('editable:created', function (e) {
-  console.log("Created: " + e.layer.getEditorClass());
+  //console.log("Created: " + e.layer.getEditorClass());
 });
 
 var MAX_GH_CREDITS = 200;
@@ -1928,14 +1956,6 @@ $(".appname").text(config.appname);
 $("#prunedist").val(config.compressdefault);
 setStatus("Welcome to " + config.appname + "!", {timeout:3});
 
-if (config.google && config.google.analyticsid) {
-  initGoogleAnalytics(config.google.analyticsid());
-}
-if (config.email) {
-  setEmailListener(config.email.selector, config.email.name,
-    config.email.domain, config.email.subject);
-}
-
 function menu(item, event) {
   $("#menu table").hide();
   $(".tablinks").removeClass("active");
@@ -1966,6 +1986,7 @@ $("#cfgsave").change(function(e){
 setChecked("#merge", false);
 var url = getParameterByName("url");
 if (url) {
+  ga('send', 'event', 'file', 'load-param');
   var ext = getParameterByName("ext");
   showLocation = LOC_NONE;
   loadFromUrl(url, ext || undefined);
