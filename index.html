@@ -50,6 +50,7 @@
 
   <script src="js/config.js"></script>
   <script type="text/javascript" id="dropboxjs" data-app-key=""></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/dropbox.js/0.10.2/dropbox.min.js"></script>
   <script type="text/javascript">
     // load Google Maps API
     var key = config.google.mapsapikey();
@@ -58,7 +59,6 @@
     $("#dropboxjs").attr("data-app-key", config.dropbox.key());
     $("#dropboxjs").attr("src", "https://www.dropbox.com/static/api/2/dropins.js");
   </script>
-  <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key=""></script>
 </head>
 <body>
   <div id="menu">
@@ -124,17 +124,22 @@
         </td>
       </tr><tr class="notopborder">
         <td>
-          <button id="dropbox-chooser" title="Load a file from your DropBox">
+          <button id="dropbox-chooser" title="Load a track from your Dropbox">
             <span id="dropbox-logo"></span>
-            DropBox
+              Dropbox
           </button>
         </td>
         <td>
-          Load a file from your DropBox
+          Load a track from your Dropbox
         </td>
       </tr><tr>
         <td>
           <button id="track-download" title="Download current track as a GPX file">Save</button>
+          <!-- br/>
+          <button id="dropbox-saver" title="Save track in your Dropbox">
+            <span id="dropbox-logo"></span>
+              Dropbox
+          </button -->
         </td>
         <td>
           Download current track as a GPX file<br/>

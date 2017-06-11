@@ -432,17 +432,26 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
   return gpx;
 }
 
-$("#track-download").click(function() {
-  setEditMode(EDIT_NONE);
-  setStatus("Formatting..", {spinner: true});
-  var asroute = isChecked("#as-route");
-  var nometadata = isChecked("#nometadata");
-  var trackname =  getTrackName();
-  if (trackname === NEW_TRACK_NAME) {
+function getConfirmedTrackName() {
+  var trackname = getTrackName();
+  if (!trackname || trackname === NEW_TRACK_NAME) {
     askTrackName();
     trackname =  getTrackName();
   }
-  var gpx = getGPX(trackname, /*savealt*/false, /*savetime*/false, asroute, nometadata);
+  return trackname;
+}
+
+function getTrackGPX(doConfirmName) {
+  var asroute = isChecked("#as-route");
+  var nometadata = isChecked("#nometadata");
+  var trackname = doConfirmName ? getConfirmedTrackName() : getTrackName();
+  return getGPX(trackname, /*savealt*/false, /*savetime*/false, asroute, nometadata);
+}
+
+$("#track-download").click(function() {
+  setEditMode(EDIT_NONE);
+  setStatus("Formatting..", {spinner: true});
+  var gpx = getTrackGPX(true);
   if (isSafari()) alert("A new page will open, press cmd+s (" + String.fromCharCode(8984) + "+s) to save file");
   var blob = new Blob([gpx],
     isSafari() ? {type: "text/plain;charset=utf-8"} :
@@ -1437,9 +1446,10 @@ $("#track-upload").change(function() {
 map.getContainer().addEventListener("drop", function(){
   loadCount = 0;
 });
+
 /*-- DropBox --*/
 
-var dropboxOptions = {
+var dropboxLoadOptions = {
 
     // Required. Called when a user selects an item in the Chooser.
     success: function(files) {
@@ -1468,13 +1478,51 @@ var dropboxOptions = {
     // see File types below. By default, all extensions are allowed.
     //extensions: ['.gpx', '.json', '.kml', '.geojson'],
 };
-
-//var dropboxButton = Dropbox.createChooseButton(dropboxOptions);
-//document.getElementById("dropbox-td").appendChild(dropboxButton);
-// OR
 $("#dropbox-chooser").click(function(e) {
-  Dropbox.choose(dropboxOptions);
+  Dropbox.choose(dropboxLoadOptions);
 });
+
+var dropboxSaveOptions = {
+    files: [
+      {
+        url: "",
+        filename: "",
+        mode: "overwrite",
+        autorename: false,
+      }
+    ],
+
+    // Success is called once all files have been successfully added to the user's
+    // Dropbox, although they may not have synced to the user's devices yet.
+    success: function (res) {
+        // Indicate to the user that the files have been saved.
+        setStatus(response || "File saved", {timeout:3});
+        $("#menu").hide();
+    },
+
+    // Progress is called periodically to update the application on the progress
+    // of the user's downloads. The value passed to this callback is a float
+    // between 0 and 1. The progress callback is guaranteed to be called at least
+    // once with the value 1.
+    progress: function (progress) {},
+
+    // Cancel is called if the user presses the Cancel button or closes the Saver.
+    cancel: function () {},
+
+    // Error is called in the event of an unexpected response from the server
+    // hosting the files, such as not being able to find a file. This callback is
+    // also called if there is an error on Dropbox or if the user is over quota.
+    error: function (errorMessage) {
+      setStatus(errorMessage || "Failed", {timeout:5, class:"status-error"});
+    }
+};
+$("#dropbox-saver").click(function(e) {
+  dropboxSaveOptions.files[0].filename = getConfirmedTrackName() + ".png";
+  var gpx = getTrackGPX(false);
+  dropboxSaveOptions.files[0].url = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAMCAYAAABvEu28AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AEEFQYCyiuo9AAAABxJREFUKM9jZGBg+M9ABcDEMAoIAcbRwB7JgQ0A/wcDB9ggv60AAAAASUVORK5CYII=";
+  Dropbox.save(dropboxSaveOptions);
+});
+
 
 /* ------------ */
 
