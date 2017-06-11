@@ -459,7 +459,7 @@ $("#track-download").click(function() {
     isSafari() ? {type: "text/plain;charset=utf-8"} :
       {type: "application/gpx+xml;charset=utf-8"}
   );
-  saveAs(blob, trackname+".gpx");
+  saveAs(blob, getTrackName()+".gpx");
   clearStatus();
 });
 
