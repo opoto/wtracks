@@ -161,11 +161,11 @@ $("#activity").change(function() {
 function newTrack() {
   metadata = {};
   if (track) {
-    track.remove();
+    track.removeFrom(editLayer);
     track = undefined;
   }
   if (waypoints) {
-    waypoints.remove();
+    waypoints.removeFrom(editLayer);
   }
   if (editLayer) {
     editLayer.remove();
@@ -192,8 +192,8 @@ function newTrack() {
 
 function newWaypoint(latlng, name, desc) {
 
-  function deletMarker(e) {
-    marker.remove();
+  function deleteMarker(e) {
+    marker.removeFrom(waypoints);
     map.closePopup();
     e.preventDefault();
   }
@@ -244,7 +244,7 @@ function newWaypoint(latlng, name, desc) {
 
 
     var latlng = marker.getLatLng();
-    var markerDiv = getLatLngPopupContent(latlng, deletMarker, div);
+    var markerDiv = getLatLngPopupContent(latlng, deleteMarker, div);
     return markerDiv;
   }
 
@@ -1630,7 +1630,6 @@ function getLatLngPopupContent(latlng, deletefn, toadd) {
   if (editMode != EDIT_NONE) {
     p = L.DomUtil.create("div", "popupdiv", div);
     var del = L.DomUtil.create('a', "", p);
-    del.class = "sympol red";
     del.href = "#";
     del.title = "Delete";
     del.innerHTML = "<span class='popupfield'>DELETE</span>";
