@@ -161,11 +161,11 @@ $("#activity").change(function() {
 function newTrack() {
   metadata = {};
   if (track) {
-    track.removeFrom(editLayer);
+    editLayer.removeLayer(track);
     track = undefined;
   }
   if (waypoints) {
-    waypoints.removeFrom(editLayer);
+    editLayer.removeLayer(waypoints);
   }
   if (editLayer) {
     editLayer.remove();
@@ -176,10 +176,11 @@ function newTrack() {
   }
   routeStart = undefined;
   editLayer = L.layerGroup([]).addTo(map);
-  waypoints = L.layerGroup([]).addTo(editLayer);
+  waypoints = L.featureGroup([]);
+  editLayer.addLayer(waypoints);
   track = L.polyline([]);
   track.setStyle({color:"#F00", dashColor:"#F00", });
-  track.addTo(editLayer);
+  editLayer.addLayer(track);
   polystats = L.Util.polyStats(track, {
     chrono: true,
     speedProfile:  getCurrentActivity().speedprofile,
@@ -193,7 +194,7 @@ function newTrack() {
 function newWaypoint(latlng, name, desc) {
 
   function deleteMarker(e) {
-    marker.removeFrom(waypoints);
+    waypoints.removeLayer(marker);
     map.closePopup();
     e.preventDefault();
   }
@@ -264,7 +265,8 @@ function newWaypoint(latlng, name, desc) {
     desc: desc,
     alt: name,
     icon: markerIcon
-  }).addTo(waypoints);
+  });
+  waypoints.addLayer(marker);
 
   marker.on("click", function() {
     pop = L.popup()
