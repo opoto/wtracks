@@ -469,7 +469,7 @@ $("#track-download").click(function() {
   setEditMode(EDIT_NONE);
   setStatus("Formatting..", {spinner: true});
   var gpx = getTrackGPX(true);
-  ga('send', 'event', 'file', 'save', undefined, gpx.length);
+  ga('send', 'event', 'file', 'save', undefined, Math.round(gpx.length/1000));
   if (isSafari()) alert("A new page will open, press cmd+s (" + String.fromCharCode(8984) + "+s) to save file");
   var blob = new Blob([gpx],
     isSafari() ? {type: "text/plain;charset=utf-8"} :
