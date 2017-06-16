@@ -164,7 +164,7 @@ function getCurrentActivity() {
 }
 $("#activity").click(loadActivities);
 $("#activity").change(function() {
-  ga('send', 'event', 'activity', 'change', undefined, getCurrentActivityName());
+  ga('send', 'event', 'activity', 'change', getCurrentActivityName());
   polystats.setSpeedProfile(getCurrentActivity().speedprofile);
 });
 
@@ -205,7 +205,7 @@ function newTrack() {
 
 function newWaypoint(latlng, name, desc) {
 
-  ga('send', 'event', 'edit', 'newWaypoint');
+  ga('send', 'event', 'edit', 'new-marker');
 
   function deleteMarker(e) {
     waypoints.removeLayer(marker);
@@ -350,6 +350,7 @@ $("#menu-close").click(function() {
   return false;
 });
 $("#track-new").click(function() {
+  ga('send', 'event', 'file', 'new');
   newTrack();
   setEditMode(EDIT_MANUAL_TRACK);
   saveState();
@@ -1009,7 +1010,7 @@ var overlays = {
 L.control.layers(baseLayers, overlays).addTo(map);
 map.addLayer(baseLayers[getVal("wt.baseLayer", config.display.map)] || baseLayers[config.display.map]);
 map.on("baselayerchange", function(e) {
-  ga('send', 'event', 'map', 'baselayer', undefined, e.name);
+  ga('send', 'event', 'map', 'baselayer', e.name);
   saveValOpt("wt.baseLayer", e.name);
   $(".leaflet-control-layers").removeClass("leaflet-control-layers-expanded");
 });
@@ -1975,6 +1976,7 @@ function isStateSaved() {
 }
 $("#cfgsave").change(function(e){
   var saveCfg = isStateSaved();
+  ga('send', 'event', 'config', saveCfg ? 'save-on' : 'save-off');
   storeVal("wt.saveState", saveCfg ? "true" : "false");
   if (saveCfg) {
     saveState();

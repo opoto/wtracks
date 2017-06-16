@@ -1,3 +1,7 @@
+if (config.google && config.google.analyticsid) {
+  initGoogleAnalytics(config.google.analyticsid());
+}
+
 // -------- ACTIVITIES
 var activities = getJsonVal("wt.activities");
 // initialize activities on first use
@@ -56,6 +60,10 @@ for (var a in activities) {
   }
 }
 
+function activitiesLen() {
+  return selectActivity.length;
+}
+
 // listen to activity change from menu
 $("#activities").change(displaySelectedActivity);
 
@@ -71,6 +79,7 @@ $("#activitydel").click(function() {
 
 // activity save button
 $("#activitysave").click(function() {
+  ga('send', 'event', 'activity', 'save', undefined, activitiesLen());
   var name = $("#activities").children(':selected').val()
   if (activity && activityname) {
     saveActivity(activityname, activity);
@@ -183,14 +192,17 @@ function importA() {
 }
 
 $("#activityexportall").click(function() {
+  ga('send', 'event', 'activity', 'export-all', undefined, activitiesLen());
   var str = JSON.stringify(activities);
   exportA(str);
 });
 $("#activityexport").click(function() {
+  ga('send', 'event', 'activity', 'export', undefined, activitiesLen());
   var str = "{\"" + activityname + "\":" + JSON.stringify(activity)+"}"
   exportA(str);
 });
 $("#activityimport").click(function() {
+  ga('send', 'event', 'activity', 'import', undefined, activitiesLen());
   promptA();
 });
 
@@ -213,6 +225,7 @@ function createActivity(vehicle, method, params) {
 // activity creation button: initialize editor with new activity name
 // and some defaults activity parameters
 $("#activitynew").click(function() {
+  ga('send', 'event', 'activity', 'new', undefined, activitiesLen());
   var index = 1;
   activityname = "New";
   while (activities[activityname]) {
@@ -497,3 +510,4 @@ $("#data").change(changeData);
 $("#compute").click(computeSpeedProfile);
 $("#resetcompute").click(resetComputeParams);
 changeData();
+ga('send', 'event', 'activity', 'editor', undefined, activitiesLen());
