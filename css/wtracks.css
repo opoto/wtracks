@@ -30,7 +30,7 @@ body {
 }
 
 #menu-bar {
-  margin: 0px;
+  margin: 0;
   background-color: #ddd;
   vertical-align: middle;
   padding: 2px 5px;
@@ -134,7 +134,7 @@ body {
   width: 15px;
   height: 14px;
   vertical-align: bottom;
-  margin: 0 2px 0 0px;
+  margin: 0 2px 0 0;
   background: transparent url('https://www.dropbox.com/static/images/widgets/dbx-saver-status.png') no-repeat;
   position: relative;
   /*top: 2px;*/

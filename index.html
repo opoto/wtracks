@@ -82,7 +82,7 @@
         </td>
         <td>
           <label><input type="checkbox" id="merge"/>Merge with current track</label>
-          <img id="mergetxt" class="help-b" src="img/help.png"/>
+          <img id="mergetxt" class="help-b" src="img/help.png" alt="help"/>
           <p id="mergetxt-help" class="help-p">
             Current edited track will not be discarded,
             it will be extended with the loaded one.
@@ -99,7 +99,7 @@
             <option value="kml">KML</option>
             <option value="geojson">GeoJson</option>
           </select>
-          <img id="filetypetxt" class="help-b" src="img/help.png"/>
+          <img id="filetypetxt" class="help-b" src="img/help.png" alt="help"/>
           <p id="filetypetxt-help" class="help-p">
             If "Auto" is selected, the type of the file is
             selected based on the file extension.
@@ -144,20 +144,20 @@
         <td>
           Download current track as a GPX file<br/>
           <label><input type="checkbox" id="as-route"/>As route</label>
-          <img id="routetxt" class="help-b" src="img/help.png"/>
+          <img id="routetxt" class="help-b" src="img/help.png" alt="help"/>
           <p id="routetxt-help" class="help-p">
             Check to save the track as a GPX route,
             instead of a GPX track segment.
           </p>
           <br/>
           <label><input type="checkbox" id="nometadata"/>Without metadata</label>
-          <img id="nometadatatxt" class="help-b" src="img/help.png"/>
+          <img id="nometadatatxt" class="help-b" src="img/help.png" alt="help"/>
           <p id="nometadatatxt-help" class="help-p">
             Check to save without GPX metadata.
           </p>
           <br/>
           <label><input type="checkbox" id="savetiming"/>Save computed timings</label>
-          <img id="savetimingtxt" class="help-b" src="img/help.png"/>
+          <img id="savetimingtxt" class="help-b" src="img/help.png" alt="help"/>
           <p id="savetimingtxt-help" class="help-p">
             Check to save in the GPX the timings computed by
             WTracks and displayed in the bottom banner of the page.
@@ -173,7 +173,7 @@
           <button id="compress" class="no-trim">Compress</button>
         </td><td>
           Remove track points within a  <input id="prunedist" type="text" size="2" value="5"/> meters band
-          <img id="compresstxt" class="help-b" src="img/help.png"/>
+          <img id="compresstxt" class="help-b" src="img/help.png" alt="help"/>
           <p id="compresstxt-help" class="help-p">
             Reduces track size without significantly changing track shape.
           </p>
@@ -183,7 +183,7 @@
           <button id="elevate" class="no-trim">Elevate</button>
         </td><td>
           Add altitude information to some track points
-          <img id="elevatetxt" class="help-b" src="img/help.png"/>
+          <img id="elevatetxt" class="help-b" src="img/help.png" alt="help"/>
           <p id="elevatetxt-help" class="help-p">
             Uses external web service to get elevation of track points.
           </p>
@@ -193,7 +193,7 @@
           <button id="flatten" class="no-trim">Flatten</button>
         </td><td>
           Remove altitude information from all track points
-          <img id="flattentxt" class="help-b" src="img/help.png"/>
+          <img id="flattentxt" class="help-b" src="img/help.png" alt="help"/>
           <p id="flattentxt-help" class="help-p">
             Resets elevation data for the whole track.
           </p>
@@ -203,7 +203,7 @@
           <button id="revert" class="no-trim">Revert</button>
         </td><td>
           Reverts direction of the track
-          <img id="reverttxt" class="help-b" src="img/help.png"/>
+          <img id="reverttxt" class="help-b" src="img/help.png" alt="help"/>
           <p id="reverttxt-help" class="help-p">
             Inverts all track points so that start of the track becomes the end.
           </p>
@@ -217,7 +217,7 @@
         </td>
         <td>
           <input type="range" id="trim-range" min="0" step="1" value="0"/>&nbsp;<span id="trim-txt"></span>
-          <img id="trimtxt" class="help-b" src="img/help.png"/>
+          <img id="trimtxt" class="help-b" src="img/help.png" alt="help"/>
           <p id="trimtxt-help" class="help-p">
             Move cursor to delete points from the start or the end of the track.
           </p>
@@ -230,7 +230,7 @@
           <input id="cfgsave" class="no-trim" type="checkbox"/>
         </td><td>
           Locally save editor's state between sessions<br/>Privacy warning: state is shared with all users of this browser profile
-          <img id="cfgsavetxt" class="help-b" src="img/help.png"/>
+          <img id="cfgsavetxt" class="help-b" src="img/help.png" alt="help"/>
           <p id="cfgsavetxt-help" class="help-p">
             Your WTracks editor status will be saved continuously in your browser local storage,
             so that when you close and reopen it later it will restore the same content.
@@ -300,11 +300,11 @@
 
   <table id="tdisplay">
     <tr id="menu-bar"><td colspan="7">
-      <a href="#" id="menu-button" class="button"><img src="img/menu-icon.png"/></a>
+      <a href="#" id="menu-button" class="button"><img src="img/menu-icon.png" alt="menu"/></a>
       <span id="track-name-edit" class="link" title="Edit track details">
         <span class="title" id="track-name"></span>
         <span class="symbol">&#9998;</span>
-      <span>
+      </span>
       <span id="status">
         <span id="spinner" class="spinner">
           <div class="bounce1"></div>
