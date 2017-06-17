@@ -161,6 +161,10 @@ table.form tr td:first-child {
   margin-top: 2em;
 }
 
+#activities-btns, #editor-btns {
+  display: inline-block;
+}
+
 /* for 480px or less */
 @media screen and (max-width: 800px) {
   #activities-btns {

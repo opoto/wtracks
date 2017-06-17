@@ -29,7 +29,7 @@
 				<h1>Activity Editor</h1>
 				<p>
 					Here you can edit the activities associated to your tracks.
-					<img id="intro" class="help-b" src="img/help.png"/>
+					<img id="intro" class="help-b" src="img/help.png" alt="help"/>
 				</p>
 				<div id="intro-help" class="help-p">Activities have two characteristics:
 					<ul>
@@ -43,7 +43,7 @@
 			<div id="prompt" class="modal">
 			  <!-- Modal content -->
 			  <div class="prompt-content">
-					<a href"#" id="prompt-close" class="btn-link">×</a>
+					<a href="#" id="prompt-close" class="btn-link">×</a>
 			    <p id="prompt-text"></p>
 					<input id="prompt-val" type="text" size="50" value=""/>
 					<button id="prompt-ok">Ok</button>
@@ -56,13 +56,13 @@
 				</select>
 				<a href="#" id="activityup" class="btn-link movea" title="Move up">&#x2c4;</a>
 				<a href="#" id="activitydown" class="btn-link movea" title="Move down">&#x2c5;</a>
-				<span id="activities-btns">
+				<div id="activities-btns">
 					<button id="activitydel">Delete</button>
 					<button id="activityreset">Reset Defaults</button>
 					<button id="activityexportall">Export All</button>
 					<button id="activityimport">Import</button>
-					<img id="savingtxt" class="help-b" src="img/help.png"/>
-				</span>
+					<img id="savingtxt" class="help-b" src="img/help.png" alt="help"/>
+				</div>
 				<div class="text">
 					<p id="savingtxt-help" class="help-p">
 						The activities modifications you save are stored in your browser's local storage.
@@ -75,11 +75,11 @@
 			</div>
 			<div id="editordiv">
 				<h2>Edit activity:</h2>
-				<span>
+				<div id="editor-btns">
 					<button id="activitynew">New</button>
 					<button id="activitysave">Save</button>
 					<button id="activityexport">Export</button>
-				</span>
+				</div>
 
 				<table class="form">
 					<tr>
@@ -120,7 +120,7 @@
 
 				<div class="text">
 					<p>
-						<img id="computetxt" class="help-b" src="img/help.png"/>
+						<img id="computetxt" class="help-b" src="img/help.png" alt="help"/>
 					</p>
 					<p id="computetxt-help" class="help-p">
 						Use our engine to compute a speed profile based on a recorded GPS track. This track should have elevation and timing data. Select the activity's speed profile type in the activity edition form above, upload your track below, optionally change the engine parameters, and click "Compute" button. Don't forget to save your activity if you want to reuse it later.

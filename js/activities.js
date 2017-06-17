@@ -69,7 +69,7 @@ $("#activities").change(displaySelectedActivity);
 
 // activity deletion button
 $("#activitydel").click(function() {
-  var name = $("#activities").children(':selected').val()
+  var name = $("#activities").children(':selected').val();
   if (confirm("Delete " + name + "?")) {
     activities[name] = undefined;
     storeJsonVal("wt.activities", activities);
@@ -80,7 +80,7 @@ $("#activitydel").click(function() {
 // activity save button
 $("#activitysave").click(function() {
   ga('send', 'event', 'activity', 'save', undefined, activitiesLen());
-  var name = $("#activities").children(':selected').val()
+  var name = $("#activities").children(':selected').val();
   if (activity && activityname) {
     saveActivity(activityname, activity);
     displaySelectedActivity();
@@ -198,7 +198,7 @@ $("#activityexportall").click(function() {
 });
 $("#activityexport").click(function() {
   ga('send', 'event', 'activity', 'export', undefined, activitiesLen());
-  var str = "{\"" + activityname + "\":" + JSON.stringify(activity)+"}"
+  var str = "{\"" + activityname + "\":" + JSON.stringify(activity)+"}";
   exportA(str);
 });
 $("#activityimport").click(function() {
@@ -219,7 +219,7 @@ function createActivity(vehicle, method, params) {
       method: method,
       parameters: params.slice(0)
     }
-  }
+  };
 }
 
 // activity creation button: initialize editor with new activity name
@@ -296,7 +296,7 @@ function genericSpFormula(method, defparams) {
     return function() {
       activity.speedprofile.parameters[idx] = parseFloat($("#spformula #p"+idx).val());
       displaySpeedProfile(activity.speedprofile);
-    }
+    };
   }
   $("#spformula input").off("keyup");
   for (var i = activity.speedprofile.parameters.length - 1; i >= 0; i--) {
@@ -352,11 +352,11 @@ spFormula[L.Util.PolyStats.POLYNOMIAL] = {
       while (i < activity.speedprofile.parameters.length) {
         var param = "<input id='p" + i + "' type='text'/>";
         if (i > 0) {
-          param += " * slope"
+          param += " * slope";
           if (i > 1) {
             param += "<span class='pow'>"  + i + "</span>";
           }
-          param += " + "
+          param += " + ";
         }
         html = param + html;
         i++;
@@ -387,7 +387,7 @@ $("#activityname").keyup(function() {
 });
 
 function displaySelectedActivity() {
-  activityname = $("#activities").children(':selected').val()
+  activityname = $("#activities").children(':selected').val();
   // clone a copy to edit
   var a = activities[activityname];
   activity = createActivity(a.vehicle, a.speedprofile.method,
@@ -398,7 +398,7 @@ displaySelectedActivity();
 
 var selectdata = $("#data")[0];
 forEachDataset(function(name) {
-  addSelectOption(selectdata, name)
+  addSelectOption(selectdata, name);
 });
 
 
@@ -477,7 +477,7 @@ $("#trackfile").change(function() {
   selectOption($("#data"), "none");
   var file = $("#trackfile")[0].files[0];
   fileloader.load(file);
-})
+});
 
 /********* speed profile from reference speeds *********/
 
@@ -505,7 +505,7 @@ function toggleHelp(e) {
   $("#" + this.id + "-help").toggle();
 }
 
-$(".help-b").click(toggleHelp)
+$(".help-b").click(toggleHelp);
 $("#data").change(changeData);
 $("#compute").click(computeSpeedProfile);
 $("#resetcompute").click(resetComputeParams);
