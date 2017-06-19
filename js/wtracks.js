@@ -205,8 +205,6 @@ function newTrack() {
 
 function newWaypoint(latlng, name, desc) {
 
-  ga('send', 'event', 'edit', 'new-marker');
-
   function deleteMarker(e) {
     waypoints.removeLayer(marker);
     map.closePopup();
@@ -1832,6 +1830,7 @@ function checkGraphHopperCredit(e) {
 map.on('click', function (e) {
 
   if (editMode == EDIT_MARKER) {
+    ga('send', 'event', 'edit', 'new-marker');
     var marker = newWaypoint(e.latlng);
     elevatePoint(e.latlng);
     marker.enableEdit();

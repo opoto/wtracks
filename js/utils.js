@@ -114,14 +114,53 @@ function getJsonVal(name, defval) {
 
 /* ---------------------- GOOGLE ANALYTICS ------------------------- */
 
+// Log all google analytics calls
+function logGA() {
+  //EVENT: ga('send', 'event', [eventCategory], [eventAction], [eventLabel], [eventValue], [fieldsObject]);
+  var realGaFunc = ga;
+  window.ga = function() {
+
+    var args = ga.arguments;
+    try {
+      var i = 0;
+      var logStr = "ga(";
+      while (i < args.length) {
+        if (i>0) {
+          logStr += ", ";
+        }
+        var argv = args[i++];
+        logStr += argv ? argv.toString() : "undefined";
+      }
+      logStr += ")";
+      log(logStr);
+    } catch (e) {
+      log(" !ERR")
+    }
+
+    realGaFunc.apply(this, args);
+  }
+}
+
 function initGoogleAnalytics(trackingid) {
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  /* --------------- LOGS ?? ------------- */
+  var doLogGA = false;
+  if (doLogGA) {
+    // loading of analytics.js is asynchronous, we wrap it several times:
+    logGA(); // now
+    setTimeout(logGA, 4000); // soon
+    setTimeout(logGA, 10000); // later
+  }
+  /* ------------------------------------- */
+
   ga('create', trackingid, 'auto');
   ga('send', 'pageview');
 }
+
 
 /* ---------------------- EMAIL ------------------------- */
 /*
