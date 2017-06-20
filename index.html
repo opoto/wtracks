@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <link rel="shortcut icon" href="img/favicon.ico" />
   <meta charset='utf-8'>
-  <meta http-equiv="x-ua-compatible" content="IE=edge" >
+  <meta http-equiv="x-ua-compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width,height=device-height, user-scalable=no" />
   <META name="keywords" content="Leaflet, OpenStreetMap, GPX, GPS, Tracks, Trails, GIS, outdoor">
   <link rel="manifest" href="./manifest.json">
   <title class="appname">WTracks</title>
 
   <link rel="stylesheet" href="css/leaflet.css" />
-  <link rel="stylesheet" href="css/wtracks.css"/>
+  <link rel="stylesheet" href="css/wtracks.css" />
 
   <script type="text/javascript" src="js/cookieconsent.min.js"></script>
   <script src="js/jquery.min.js"></script>
@@ -60,6 +61,7 @@
     $("#dropboxjs").attr("src", "https://www.dropbox.com/static/api/2/dropins.js");
   </script>
 </head>
+
 <body>
   <div id="menu">
     <div id="menu-header"><a id="menu-close" href="#" class="menu-close-button">×</a></div>
@@ -73,22 +75,24 @@
       <tr>
         <td>
           <button id="track-new" title="Discard current track and start a new one">New</button>
-        </td><td>
+        </td>
+        <td>
           Discard current track and start a new one
         </td>
-      </tr><tr class="nobottomborder">
+      </tr>
+      <tr class="nobottomborder">
         <td>
           <span>Load file:</span>
         </td>
         <td>
           <label><input type="checkbox" id="merge"/>Merge with current track</label>
-          <img id="mergetxt" class="help-b" src="img/help.png" alt="help"/>
+          <img id="mergetxt" class="help-b" src="img/help.png" alt="help" />
           <p id="mergetxt-help" class="help-p">
-            Current edited track will not be discarded,
-            it will be extended with the loaded one.
+            Current edited track will not be discarded, it will be extended with the loaded one.
           </p>
         </td>
-      </tr><tr class="nobottomborder notopborder">
+      </tr>
+      <tr class="nobottomborder notopborder">
         <td>
         </td>
         <td>
@@ -99,13 +103,13 @@
             <option value="kml">KML</option>
             <option value="geojson">GeoJson</option>
           </select>
-          <img id="filetypetxt" class="help-b" src="img/help.png" alt="help"/>
+          <img id="filetypetxt" class="help-b" src="img/help.png" alt="help" />
           <p id="filetypetxt-help" class="help-p">
-            If "Auto" is selected, the type of the file is
-            selected based on the file extension.
+            If "Auto" is selected, the type of the file is selected based on the file extension.
           </p>
         </td>
-      </tr><tr class="nobottomborder notopborder">
+      </tr>
+      <tr class="nobottomborder notopborder">
         <td>
           <label id="track-upload-label">
             <input type="file" name="track" id="track-upload" multiple="multiple" accept=".gpx,.kml,.geojson"/>
@@ -115,14 +119,16 @@
         <td>
           Open a file from your device<br/>
         </td>
-      </tr><tr class="nobottomborder notopborder">
+      </tr>
+      <tr class="nobottomborder notopborder">
         <td>
           <button id="track-get" title="Load a file from the internet">Get from: </button>
         </td>
         <td>
-          <input id="track-get-url" placeholder="http://... (track URL)" type="url"/>
+          <input id="track-get-url" placeholder="http://... (track URL)" type="url" />
         </td>
-      </tr><tr class="notopborder">
+      </tr>
+      <tr class="notopborder">
         <td>
           <button id="dropbox-chooser" title="Load a track from your Dropbox">
             <span id="dropbox-logo"></span>
@@ -132,7 +138,8 @@
         <td>
           Load a track from your Dropbox
         </td>
-      </tr><tr>
+      </tr>
+      <tr>
         <td>
           <button id="track-download" title="Download current track as a GPX file">Save</button>
           <!-- br/>
@@ -144,25 +151,21 @@
         <td>
           Download current track as a GPX file<br/>
           <label><input type="checkbox" id="as-route"/>As route</label>
-          <img id="routetxt" class="help-b" src="img/help.png" alt="help"/>
+          <img id="routetxt" class="help-b" src="img/help.png" alt="help" />
           <p id="routetxt-help" class="help-p">
-            Check to save the track as a GPX route,
-            instead of a GPX track segment.
+            Check to save the track as a GPX route, instead of a GPX track segment.
           </p>
           <br/>
           <label><input type="checkbox" id="nometadata"/>Without metadata</label>
-          <img id="nometadatatxt" class="help-b" src="img/help.png" alt="help"/>
+          <img id="nometadatatxt" class="help-b" src="img/help.png" alt="help" />
           <p id="nometadatatxt-help" class="help-p">
             Check to save without GPX metadata.
           </p>
           <br/>
           <label><input type="checkbox" id="savetiming"/>Save computed timings</label>
-          <img id="savetimingtxt" class="help-b" src="img/help.png" alt="help"/>
+          <img id="savetimingtxt" class="help-b" src="img/help.png" alt="help" />
           <p id="savetimingtxt-help" class="help-p">
-            Check to save in the GPX the timings computed by
-            WTracks and displayed in the bottom banner of the page.
-            Note that it will override any potential timing
-            you may have previously recorded for this track.
+            Check to save in the GPX the timings computed by WTracks and displayed in the bottom banner of the page. Note that it will override any potential timing you may have previously recorded for this track.
           </p>
         </td>
       </tr>
@@ -171,44 +174,52 @@
       <tr>
         <td>
           <button id="compress" class="no-trim">Compress</button>
-        </td><td>
-          Remove track points within a  <input id="prunedist" type="text" size="2" value="5"/> meters band
-          <img id="compresstxt" class="help-b" src="img/help.png" alt="help"/>
+        </td>
+        <td>
+          Remove track points within a <input id="prunedist" type="text" size="2" value="5" /> meters band
+          <img id="compresstxt" class="help-b" src="img/help.png" alt="help" />
           <p id="compresstxt-help" class="help-p">
             Reduces track size without significantly changing track shape.
           </p>
         </td>
-      </tr><tr>
+      </tr>
+      <tr>
         <td>
           <button id="elevate" class="no-trim">Elevate</button>
-        </td><td>
+        </td>
+        <td>
           Add altitude information to some track points
-          <img id="elevatetxt" class="help-b" src="img/help.png" alt="help"/>
+          <img id="elevatetxt" class="help-b" src="img/help.png" alt="help" />
           <p id="elevatetxt-help" class="help-p">
             Uses external web service to get elevation of track points.
           </p>
         </td>
-      </tr><tr>
+      </tr>
+      <tr>
         <td>
           <button id="flatten" class="no-trim">Flatten</button>
-        </td><td>
+        </td>
+        <td>
           Remove altitude information from all track points
-          <img id="flattentxt" class="help-b" src="img/help.png" alt="help"/>
+          <img id="flattentxt" class="help-b" src="img/help.png" alt="help" />
           <p id="flattentxt-help" class="help-p">
             Resets elevation data for the whole track.
           </p>
         </td>
-      </tr><tr>
+      </tr>
+      <tr>
         <td>
           <button id="revert" class="no-trim">Revert</button>
-        </td><td>
+        </td>
+        <td>
           Reverts direction of the track
-          <img id="reverttxt" class="help-b" src="img/help.png" alt="help"/>
+          <img id="reverttxt" class="help-b" src="img/help.png" alt="help" />
           <p id="reverttxt-help" class="help-p">
             Inverts all track points so that start of the track becomes the end.
           </p>
         </td>
-      </tr><tr>
+      </tr>
+      <tr>
         <td>
           <select id="trim-type">
             <option>Trim start</option>
@@ -216,8 +227,8 @@
           </select>
         </td>
         <td>
-          <input type="range" id="trim-range" min="0" step="1" value="0"/>&nbsp;<span id="trim-txt"></span>
-          <img id="trimtxt" class="help-b" src="img/help.png" alt="help"/>
+          <input type="range" id="trim-range" min="0" step="1" value="0" />&nbsp;<span id="trim-txt"></span>
+          <img id="trimtxt" class="help-b" src="img/help.png" alt="help" />
           <p id="trimtxt-help" class="help-p">
             Move cursor to delete points from the start or the end of the track.
           </p>
@@ -227,13 +238,13 @@
     <table id="menuconfig">
       <tr>
         <td>
-          <input id="cfgsave" class="no-trim" type="checkbox"/>
-        </td><td>
+          <input id="cfgsave" class="no-trim" type="checkbox" />
+        </td>
+        <td>
           Locally save editor's state between sessions<br/>Privacy warning: state is shared with all users of this browser profile
-          <img id="cfgsavetxt" class="help-b" src="img/help.png" alt="help"/>
+          <img id="cfgsavetxt" class="help-b" src="img/help.png" alt="help" />
           <p id="cfgsavetxt-help" class="help-p">
-            Your WTracks editor status will be saved continuously in your browser local storage,
-            so that when you close and reopen it later it will restore the same content.
+            Your WTracks editor status will be saved continuously in your browser local storage, so that when you close and reopen it later it will restore the same content.
           </p>
         </td>
       </tr>
@@ -241,8 +252,9 @@
     <table id="menuabout">
       <tr>
         <td>
-          <img id="about-logo" src="img/wtrack-icon-1x.png" alt="WTracks logo"/>
-        </td><td>
+          <img id="about-logo" src="img/wtrack-icon-1x.png" alt="WTracks logo" />
+        </td>
+        <td>
           <p><span class="appname">WTracks</span> by <a id="email" href="#">Olivier Potonniée</a></p>
           <p>Check <a href="doc/" target="_blank">documentation</a> for application features and details</p>
           <p>WTracks is free to use, as free as you are to donate to support development :)</p>
@@ -260,19 +272,22 @@
       <table>
         <tr>
           <th colspan="2">Enter track details</th>
-        </tr><tr>
+        </tr>
+        <tr>
           <td>Name: </td>
-          <td><input id="prompt-name" type="text" size="50" value=""/></td>
-        </tr><tr>
+          <td><input id="prompt-name" type="text" size="50" value="" /></td>
+        </tr>
+        <tr>
           <td>Description: </td>
           <td><textarea id="prompt-desc"></textarea></td>
-        </tr><tr>
+        </tr>
+        <tr>
           <td></td>
           <td>
             <button id="prompt-ok">Ok</button>
             <button id="prompt-cancel">Cancel</button>
           </td>
-          </tr>
+        </tr>
       </table>
     </div>
   </div>
@@ -283,12 +298,8 @@
     <div class="prompt-content">
       <div class="prompt-title">Save status between sessions</div>
       <div>
-        <p>WTracks can store IN YOUR BROWSER (none of your data is stored on our server)
-        the status of your editor session, so that next time your reopen the editor it
-        restores your preferences and latest edited track.</p>
-        <p>In order to protect your privacy, this option should only be set if you
-        are using a personal device. This option can be (de)activated at any moment
-        in the "Settings" menu.</p>
+        <p>WTracks can store IN YOUR BROWSER (none of your data is stored on our server) the status of your editor session, so that next time your reopen the editor it restores your preferences and latest edited track.</p>
+        <p>In order to protect your privacy, this option should only be set if you are using a personal device. This option can be (de)activated at any moment in the "Settings" menu.</p>
         <p>Would you like to activate saving of the status now?</p>
       </div>
       <div class="prompt-buttons">
@@ -299,22 +310,26 @@
   </div>
 
   <table id="tdisplay">
-    <tr id="menu-bar"><td colspan="7">
-      <a href="#" id="menu-button" class="button"><img src="img/menu-icon.png" alt="menu"/></a>
-      <span id="track-name-edit" class="link" title="Edit track details">
+    <tr id="menu-bar">
+      <td colspan="7">
+        <a href="#" id="menu-button" class="button"><img src="img/menu-icon.png" alt="menu"/></a>
+        <span id="track-name-edit" class="link" title="Edit track details">
         <span class="title" id="track-name"></span>
         <span class="symbol">&#9998;</span>
-      </span>
-      <span id="status">
+        </span>
+        <span id="status">
         <span id="spinner" class="spinner">
           <div class="bounce1"></div>
           <div class="bounce2"></div>
           <div class="bounce3"></div>
         </span>
         <span id="status-msg"></span>
-      </span>
-    </td></tr>
-    <tr id="map-row"><td id="map" colspan="7"></td></tr>
+        </span>
+      </td>
+    </tr>
+    <tr id="map-row">
+      <td id="map" colspan="7"></td>
+    </tr>
     <tr class="statistics">
       <th><span class="hide-medium">Distance</span><span class="show-medium">&#x1f4cf;</span></th>
       <td title='One Way'>
@@ -346,7 +361,7 @@
       </td>
       <th><span class="hide-medium">Alt. Min</span><span class="show-medium">&#x2198;</span></th>
       <td>
-        &#9660;  <span id="altmin"></span>
+        &#9660; <span id="altmin"></span>
       </td>
       <th class="hide-medium">Descent</th>
       <td id="descent">
@@ -356,4 +371,5 @@
 
   <script src="js/wtracks.js"></script>
 </body>
+
 </html>

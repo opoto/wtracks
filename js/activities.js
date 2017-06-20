@@ -153,12 +153,12 @@ function promptA() {
   $("#prompt-val").focus();
 }
 
-$("#prompt-close").click(function(){
+$("#prompt-close").click(function() {
   $("#prompt").hide();
 });
 
-$("#prompt-val").keyup(function(event){
-  if ( event.which == 27 ) {
+$("#prompt-val").keyup(function(event) {
+  if (event.which == 27) {
     $("#prompt").hide();
   } else if (event.keyCode == 13) {
     var isImport = $("#prompt-ok").is(":visible");
@@ -198,7 +198,7 @@ $("#activityexportall").click(function() {
 });
 $("#activityexport").click(function() {
   ga('send', 'event', 'activity', 'export', undefined, activitiesLen());
-  var str = "{\"" + activityname + "\":" + JSON.stringify(activity)+"}";
+  var str = "{\"" + activityname + "\":" + JSON.stringify(activity) + "}";
   exportA(str);
 });
 $("#activityimport").click(function() {
@@ -255,11 +255,13 @@ function refSpeedInput(val, paramidx, col) {
   };
   return rs;
 }
+
 function delRefSpeed(i) {
   activity.speedprofile.parameters.splice(i, 1);
-  $("#spformula table tr:nth-of-type(" + (i+1) + ")").remove();
+  $("#spformula table tr:nth-of-type(" + (i + 1) + ")").remove();
   displaySpeedProfile(activity.speedprofile);
 }
+
 function addRefSpeedLine(i) {
   var p = activity.speedprofile.parameters[i];
   $("#spformula table tbody").append("<tr><td></td><td></td></tr>");
@@ -284,87 +286,90 @@ function addRefSpeedLine(i) {
   });
   tr.children[1].append(delrs);
 }
+
 function addRefSpeed() {
   var p = activity.speedprofile.parameters;
   var i = p.length;
-  p.push([0,0]);
+  p.push([0, 0]);
   addRefSpeedLine(i);
   displaySpeedProfile(activity.speedprofile);
 }
+
 function genericSpFormula(method, defparams) {
   function updParam(method, idx) {
     return function() {
-      activity.speedprofile.parameters[idx] = parseFloat($("#spformula #p"+idx).val());
+      activity.speedprofile.parameters[idx] = parseFloat($("#spformula #p" + idx).val());
       displaySpeedProfile(activity.speedprofile);
     };
   }
   $("#spformula input").off("keyup");
   for (var i = activity.speedprofile.parameters.length - 1; i >= 0; i--) {
-    $("#spformula #p"+i).val(activity.speedprofile.parameters[i]);
-    $("#spformula #p"+i).on("keyup", updParam(method, i));
+    $("#spformula #p" + i).val(activity.speedprofile.parameters[i]);
+    $("#spformula #p" + i).on("keyup", updParam(method, i));
   }
 }
 
 var spFormula = {};
 spFormula[L.Util.PolyStats.REFSPEEDS] = {
-    defaultFormulaParams : [ [-35, 0.4722], [-20, 0.6944], [-12, 0.9722],
-          [-10, 1.1111], [-6, 1.25], [-3, 1.25], [2, 1.1111], [6, 0.9722],
-          [10, 0.8333], [19, 0.5555], [38, 0.2777] ],
-    displayFormulaParams : function() {
-      $("#spformula").empty();
-      $("#spformula").append("<table></table>");
-      $("#spformula table").append("<thead><tr><th>Slope (%)</th><th>Speed (m/s)</th></tr></thead><tbody></tbody>");
-      for (var i=0; i<activity.speedprofile.parameters.length; i++) {
-        addRefSpeedLine(i);
-      }
-      var addrs = document.createElement("a");
-      addrs.setAttribute("href", "#");
-      addrs.setAttribute("class", "btn-link");
-      addrs.innerHTML = "+";
-      addrs.addEventListener("click", function(e) {
-        addRefSpeed();
-        $("#spformula table tbody").scrollTop($("#spformula table tbody")[0].scrollHeight);
-        e.preventDefault();
-      });
-      $("#spformula").append(addrs);
+  defaultFormulaParams: [
+    [-35, 0.4722], [-20, 0.6944], [-12, 0.9722], [-10, 1.1111], [-6, 1.25],
+    [-3, 1.25], [2, 1.1111], [6, 0.9722], [10, 0.8333], [19, 0.5555], [38, 0.2777]
+  ],
+  displayFormulaParams: function() {
+    $("#spformula").empty();
+    $("#spformula").append("<table></table>");
+    $("#spformula table").append("<thead><tr><th>Slope (%)</th><th>Speed (m/s)</th></tr></thead><tbody></tbody>");
+    for (var i = 0; i < activity.speedprofile.parameters.length; i++) {
+      addRefSpeedLine(i);
+    }
+    var addrs = document.createElement("a");
+    addrs.setAttribute("href", "#");
+    addrs.setAttribute("class", "btn-link");
+    addrs.innerHTML = "+";
+    addrs.addEventListener("click", function(e) {
+      addRefSpeed();
       $("#spformula table tbody").scrollTop($("#spformula table tbody")[0].scrollHeight);
-    }
-  };
+      e.preventDefault();
+    });
+    $("#spformula").append(addrs);
+    $("#spformula table tbody").scrollTop($("#spformula table tbody")[0].scrollHeight);
+  }
+};
 spFormula[L.Util.PolyStats.LINEAR] = {
-    defaultFormulaParams : [0.2,4],
-    displayFormulaParams : function() {
-      $("#spformula").html("speed = <input id='p0' type='text'/> * slope + <input id='p1' type='text'/>");
-      genericSpFormula(L.Util.PolyStats.LINEAR);
-    }
-  };
+  defaultFormulaParams: [0.2, 4],
+  displayFormulaParams: function() {
+    $("#spformula").html("speed = <input id='p0' type='text'/> * slope + <input id='p1' type='text'/>");
+    genericSpFormula(L.Util.PolyStats.LINEAR);
+  }
+};
 spFormula[L.Util.PolyStats.POWER] = {
-    defaultFormulaParams : [1,2],
-    displayFormulaParams : function() {
-      $("#spformula").html("speed = <input id='p0' type='text'/> * slope ^ <input id='p1' type='text'/>");
-      genericSpFormula(L.Util.PolyStats.POWER);
-    }
-  };
+  defaultFormulaParams: [1, 2],
+  displayFormulaParams: function() {
+    $("#spformula").html("speed = <input id='p0' type='text'/> * slope ^ <input id='p1' type='text'/>");
+    genericSpFormula(L.Util.PolyStats.POWER);
+  }
+};
 spFormula[L.Util.PolyStats.POLYNOMIAL] = {
-    defaultFormulaParams : [ 1.1, -0.1, -0.001],
-    displayFormulaParams : function() {
-      var i = 0;
-      var html = "";
-      while (i < activity.speedprofile.parameters.length) {
-        var param = "<input id='p" + i + "' type='text'/>";
-        if (i > 0) {
-          param += " * slope";
-          if (i > 1) {
-            param += "<span class='pow'>"  + i + "</span>";
-          }
-          param += " + ";
+  defaultFormulaParams: [1.1, -0.1, -0.001],
+  displayFormulaParams: function() {
+    var i = 0;
+    var html = "";
+    while (i < activity.speedprofile.parameters.length) {
+      var param = "<input id='p" + i + "' type='text'/>";
+      if (i > 0) {
+        param += " * slope";
+        if (i > 1) {
+          param += "<span class='pow'>" + i + "</span>";
         }
-        html = param + html;
-        i++;
+        param += " + ";
       }
-      $("#spformula").html("speed = " + html);
-      genericSpFormula(L.Util.PolyStats.POLYNOMIAL);
+      html = param + html;
+      i++;
     }
-  };
+    $("#spformula").html("speed = " + html);
+    genericSpFormula(L.Util.PolyStats.POLYNOMIAL);
+  }
+};
 
 function displayFormula(method) {
   var spf = spFormula[method];
@@ -391,7 +396,7 @@ function displaySelectedActivity() {
   // clone a copy to edit
   var a = activities[activityname];
   activity = createActivity(a.vehicle, a.speedprofile.method,
-      a.speedprofile.parameters);
+    a.speedprofile.parameters);
   displayActivity();
 }
 displaySelectedActivity();
@@ -418,7 +423,7 @@ function displaySpeedProfile(sp) {
   var maxslope = 40;
   if (refspeeds && refspeeds.length > 1) {
     minslope = refspeeds[0][0];
-    maxslope = refspeeds[refspeeds.length-1][0];
+    maxslope = refspeeds[refspeeds.length - 1][0];
   }
   var incslope = (maxslope - minslope) / 20;
   for (var slope = minslope; slope <= maxslope; slope += incslope) {
@@ -428,19 +433,26 @@ function displaySpeedProfile(sp) {
   // Plot graph
   var data = [];
   if (refspeeds) {
-    data.push({data: refspeeds, lines: { show: false }, points: { show: true }});
+    data.push({
+      data: refspeeds,
+      lines: { show: false },
+      points: { show: true }
+    });
   }
-  data.push({data: speedline, points: { show: false }});
+  data.push({
+    data: speedline,
+    points: { show: false }
+  });
   $.plot($('.graph'), data);
 
 }
 
 function computeSpeedProfile() {
 
-  var method = $( "#method option:selected" ).text();
-  var degree = Number($( "#degree option:selected" ).text());
-  var iterations = Number($( "#iterations option:selected" ).text());
-  var pruning = Number($( "#pruning option:selected" ).text());
+  var method = $("#method option:selected").text();
+  var degree = Number($("#degree option:selected").text());
+  var iterations = Number($("#iterations option:selected").text());
+  var pruning = Number($("#pruning option:selected").text());
 
   activity.speedprofile = polystats[importfnname](inputdata, method, iterations, pruning, degree);
 
@@ -453,8 +465,8 @@ function computeSpeedProfile() {
 
 $("#method").change(updateMethod);
 
-function updateMethod(){
-  var method = $( "#method option:selected" ).text();
+function updateMethod() {
+  var method = $("#method option:selected").text();
   displayFormula(method);
   displaySpeedProfile(activity.speedprofile);
 }
@@ -468,10 +480,10 @@ function importGeoJson(geojson) {
   displaySpeedProfile(activity.speedprofile);
 }
 var fileloader = L.Util.fileLoader(undefined, {
-    layer: importGeoJson,
-    addToMap: false,
-    fileSizeLimit: 1024*1024,
-    formats: [ 'gpx', 'geojson', 'kml' ]
+  layer: importGeoJson,
+  addToMap: false,
+  fileSizeLimit: 1024 * 1024,
+  formats: ['gpx', 'geojson', 'kml']
 });
 $("#trackfile").change(function() {
   selectOption($("#data"), "none");
@@ -482,7 +494,7 @@ $("#trackfile").change(function() {
 /********* speed profile from reference speeds *********/
 
 function changeData() {
-  var dataname = $( "#data option:selected" ).text();
+  var dataname = $("#data option:selected").text();
   refspeeds = inputdata = getDataset(dataname);
   importfnname = "computeSpeedProfileFromSpeeds";
   displaySpeedProfile(activity.speedprofile);

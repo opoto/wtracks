@@ -14,7 +14,7 @@ function setStatus(msg, options) {
   $("#spinner").toggle(showspinner);
   $("#status").fadeIn();
   if (options && options.timeout) {
-    setTimeout(function(){ clearStatus(); }, 1000*options.timeout);
+    setTimeout(function() { clearStatus(); }, 1000 * options.timeout);
   }
 }
 
@@ -23,15 +23,15 @@ function clearStatus() {
 }
 
 function saveValOpt(name, val) {
- if (config.saveprefs() && isStateSaved()) {
-   storeVal(name, val);
- }
+  if (config.saveprefs() && isStateSaved()) {
+    storeVal(name, val);
+  }
 }
 
 function saveJsonValOpt(name, val) {
- if (config.saveprefs() && isStateSaved()) {
-   storeJsonVal(name, val);
- }
+  if (config.saveprefs() && isStateSaved()) {
+    storeJsonVal(name, val);
+  }
 }
 
 /* help buttons */
@@ -41,15 +41,15 @@ function toggleHelp(e) {
 $(".help-b").click(toggleHelp);
 
 var map = L.map('map', {
-      editable: true,
-      editOptions: {
-            lineGuideOptions: {
-              color: "red",
-              weight: 4,
-              opacity: 0.5
-            }
-          }
-    });
+  editable: true,
+  editOptions: {
+    lineGuideOptions: {
+      color: "red",
+      weight: 4,
+      opacity: 0.5
+    }
+  }
+});
 var track;
 var metadata;
 var waypoints;
@@ -72,14 +72,16 @@ function setTrackName(name) {
   document.title = config.appname + " - " + name;
   metadata.name = name;
 }
+
 function getTrackName() {
   return metadata.name;
 }
+
 function askTrackName() {
-    var name = prompt("Track name:", getTrackName());
-    if (name) {
-      setTrackName(name);
-    }
+  var name = prompt("Track name:", getTrackName());
+  if (name) {
+    setTrackName(name);
+  }
 }
 
 function validatePrompt() {
@@ -95,12 +97,13 @@ function promptTrackName() {
   $("#prompt").show();
   $("#prompt-name").focus();
 }
+
 function closeTrackNamePrompt() {
   $("#prompt").hide();
 }
 
 function promptKeyEvent(event) {
-  if ( event.which == 27 ) {
+  if (event.which == 27) {
     closeTrackNamePrompt();
   } else if (event.keyCode == 13) {
     validatePrompt();
@@ -108,14 +111,14 @@ function promptKeyEvent(event) {
 }
 
 $("#prompt-name").keyup(function promptKeyEvent(event) {
-  if ( event.which == 27 ) {
+  if (event.which == 27) {
     closeTrackNamePrompt();
   } else if (event.keyCode == 13) {
     validatePrompt();
   }
 });
 $("#prompt-desc").keyup(function promptKeyEvent(event) {
-  if ( event.which == 27 ) {
+  if (event.which == 27) {
     closeTrackNamePrompt();
   }
 });
@@ -144,7 +147,7 @@ function loadActivities() {
     }
   }
   // remove deleted activites
-  $("#activity option").each(function(i,v) {
+  $("#activity option").each(function(i, v) {
     if (!activities[v.innerHTML]) {
       v.remove();
     }
@@ -156,6 +159,7 @@ selectOption(selectActivity, getVal("wt.activity", undefined));
 function getCurrentActivityName() {
   return $("#activity").children(':selected').val();
 }
+
 function getCurrentActivity() {
   var res = getCurrentActivityName();
   log("activity: " + res);
@@ -191,15 +195,15 @@ function newTrack() {
   waypoints = L.featureGroup([]);
   editLayer.addLayer(waypoints);
   track = L.polyline([]);
-  track.setStyle({color:"#F00", dashColor:"#F00", });
+  track.setStyle({ color: "#F00", dashColor: "#F00", });
   editLayer.addLayer(track);
   polystats = L.Util.polyStats(track, {
     chrono: true,
-    speedProfile:  getCurrentActivity().speedprofile,
+    speedProfile: getCurrentActivity().speedprofile,
     onUpdate: showStats,
   });
   setTrackName(NEW_TRACK_NAME);
-//  setEditMode(EDIT_NONE);
+  //  setEditMode(EDIT_NONE);
   showStats();
 }
 
@@ -223,7 +227,7 @@ function newWaypoint(latlng, name, desc) {
       var name = L.DomUtil.create('input', "popup-nameinput", label);
       name.type = "text";
       name.value = marker.options.title ? marker.options.title : "";
-      name.onkeyup = function(){
+      name.onkeyup = function() {
         marker.options.title = name.value;
         var elt = marker.getElement();
         elt.title = name.value;
@@ -235,7 +239,7 @@ function newWaypoint(latlng, name, desc) {
       label.innerHTML = "<span class='popupfield'>Desc:</span> ";
       var desc = L.DomUtil.create('textarea', "popup-descinput", label);
       desc.value = marker.options.desc ? marker.options.desc : "";
-      desc.onkeyup = function(){
+      desc.onkeyup = function() {
         marker.options.desc = desc.value;
       };
 
@@ -282,9 +286,9 @@ function newWaypoint(latlng, name, desc) {
 
   marker.on("click", function() {
     pop = L.popup()
-        .setLatLng(marker.getLatLng())
-        .setContent(getMarkerPopupContent(marker))
-        .openOn(map);
+      .setLatLng(marker.getLatLng())
+      .setContent(getMarkerPopupContent(marker))
+      .openOn(map);
   });
 
   return marker;
@@ -293,12 +297,13 @@ function newWaypoint(latlng, name, desc) {
 /* ------------------------ TRIMMING ---------------------------------- */
 
 var polytrim;
+
 function prepareTrim() {
   var trimMax = Math.round(track.getLatLngs().length / 2);
   $("#trim-txt").text("");
   $("#trim-range").attr("max", trimMax);
   $("#trim-range").val(0);
-  $(".no-trim").prop('disabled',false);
+  $(".no-trim").prop('disabled', false);
   var trimType = $("#trim-type")[0].selectedIndex;
   polytrim = L.Util.polyTrim(track, trimType);
 }
@@ -308,14 +313,14 @@ function trimTrack(e) {
   ga('send', 'event', 'tool', 'trim', undefined, n);
   log("trimming " + n);
   $("#trim-txt").text(n + "/" + polytrim.getPolySize());
-  $(".no-trim").prop('disabled',(n !== 0));
+  $(".no-trim").prop('disabled', (n !== 0));
   polytrim.trim(n);
 }
 
 function finishTrim() {
   if (polytrim.getDirection() === polytrim.FROM_END) {
     // From End
-    polystats.updateStatsFrom(track.getLatLngs().length-1);
+    polystats.updateStatsFrom(track.getLatLngs().length - 1);
   } else {
     // From Start
     polystats.updateStatsFrom(0);
@@ -364,13 +369,13 @@ $("#menu-tools").click(function() {
 
 function LatLngToGPX(latlng, gpxelt, name, time, desc) {
 
-  var gpx = "<"+gpxelt;
-  gpx += " lat=\"" + latlng.lat+ "\" lon=\"" + latlng.lng + "\">";
+  var gpx = "<" + gpxelt;
+  gpx += " lat=\"" + latlng.lat + "\" lon=\"" + latlng.lng + "\">";
   if (name) {
-    gpx += "<name>" + htmlEncode(name, false, 0)  + "</name>";
+    gpx += "<name>" + htmlEncode(name, false, 0) + "</name>";
   }
   if (desc) {
-    gpx += "<desc>" + htmlEncode(desc, false, 0)  + "</desc>";
+    gpx += "<desc>" + htmlEncode(desc, false, 0) + "</desc>";
   }
   if (latlng.alt) {
     gpx += "<ele>" + latlng.alt + "</ele>";
@@ -378,7 +383,7 @@ function LatLngToGPX(latlng, gpxelt, name, time, desc) {
   if (time) {
     gpx += "<time>" + (typeof time === "string" ? time : time.toISOString()) + "</time>";
   }
-  gpx += "</"+gpxelt+">\n";
+  gpx += "</" + gpxelt + ">\n";
   return gpx;
 }
 
@@ -399,7 +404,7 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
     gpx += "  <time>" + now.toISOString() + "</time>\n";
     var sw = map.getBounds().getSouthWest();
     var ne = map.getBounds().getNorthEast();
-    gpx += '  <bounds minlat="' + Math.min(sw.lat, ne.lat) + '" minlon="' + Math.min(sw.lng, ne.lng) + '" maxlat="' + Math.max(sw.lat, ne.lat) + '" maxlon="'+ Math.max(sw.lng, ne.lng) + '"/>\n';
+    gpx += '  <bounds minlat="' + Math.min(sw.lat, ne.lat) + '" minlon="' + Math.min(sw.lng, ne.lng) + '" maxlat="' + Math.max(sw.lat, ne.lat) + '" maxlon="' + Math.max(sw.lng, ne.lng) + '"/>\n';
     gpx += "</metadata>\n";
   }
   var wpts = waypoints ? waypoints.getLayers() : undefined;
@@ -431,7 +436,7 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
       var pt = latlngs[j];
       var time;
       if (saveTiming) {
-        time = new Date(now + (pt.chrono*1000));
+        time = new Date(now + (pt.chrono * 1000));
       } else {
         time = pt.time;
       }
@@ -452,7 +457,7 @@ function getConfirmedTrackName() {
   var trackname = getTrackName();
   if (!trackname || trackname === NEW_TRACK_NAME) {
     askTrackName();
-    trackname =  getTrackName();
+    trackname = getTrackName();
   }
   return trackname;
 }
@@ -461,26 +466,25 @@ function getTrackGPX(doConfirmName) {
   var asroute = isChecked("#as-route");
   var nometadata = isChecked("#nometadata");
   var trackname = doConfirmName ? getConfirmedTrackName() : getTrackName();
-  return getGPX(trackname, /*savealt*/false, /*savetime*/false, asroute, nometadata);
+  return getGPX(trackname, /*savealt*/ false, /*savetime*/ false, asroute, nometadata);
 }
 
 $("#track-download").click(function() {
   setEditMode(EDIT_NONE);
-  setStatus("Formatting..", {spinner: true});
+  setStatus("Formatting..", { spinner: true });
   var gpx = getTrackGPX(true);
-  ga('send', 'event', 'file', 'save', undefined, Math.round(gpx.length/1000));
+  ga('send', 'event', 'file', 'save', undefined, Math.round(gpx.length / 1000));
   if (isSafari()) alert("A new page will open, press cmd+s (" + String.fromCharCode(8984) + "+s) to save file");
   var blob = new Blob([gpx],
-    isSafari() ? {type: "text/plain;charset=utf-8"} :
-      {type: "application/gpx+xml;charset=utf-8"}
+    isSafari() ? { type: "text/plain;charset=utf-8" } : { type: "application/gpx+xml;charset=utf-8" }
   );
-  saveAs(blob, getTrackName()+".gpx");
+  saveAs(blob, getTrackName() + ".gpx");
   clearStatus();
 });
 
 function editableWaypoints(editable) {
   var wpts = waypoints.getLayers();
-  for (var i=0; i< wpts.length; i++) {
+  for (var i = 0; i < wpts.length; i++) {
     if (editable) {
       wpts[i].enableEdit();
     } else {
@@ -527,18 +531,20 @@ function restartRoute() {
   $("#map").css("cursor", "copy");
   var ll = track.getLatLngs();
   if (ll.length > 0) {
-    setRouteStart(ll[ll.length-1]);
+    setRouteStart(ll[ll.length - 1]);
   }
 }
 
 function showGraphHopperCredit() {
   $("#map").append("<span class='gh-credit'>Powered by <a href='https://graphhopper.com/#directions-api'>GraphHopper API</a></span>");
 }
+
 function hideGraphHopperCredit() {
   $(".gh-credit").remove();
 }
+
 function showGraphHopperMessage(msg) {
-  setStatus(msg, {timeout:5, class:"status-error"});
+  setStatus(msg, { timeout: 5, class: "status-error" });
 }
 
 function setEditMode(mode) {
@@ -614,13 +620,13 @@ $("#compress").click(function() {
     var pruned = L.PolyUtil.prune(pts, tolerance);
     var removedpts = (pts.length - pruned.length);
     ga('send', 'event', 'tool', 'compress', undefined, removedpts);
-    if (removedpts> 0) {
+    if (removedpts > 0) {
       alert("Removed " + removedpts + " points out of " + pts.length + " (" + Math.round((removedpts / pts.length) * 100) + "%)");
       // switch to new values
       track.setLatLngs(pruned);
       saveState();
     } else {
-      setStatus("Already optimized", {timeout:3});
+      setStatus("Already optimized", { timeout: 3 });
     }
   }
 });
@@ -628,10 +634,10 @@ $("#compress").click(function() {
 function getMyIpLocation() {
   log("Getting location from IP address");
   var geoapi = "https://freegeoip.net/json/?callback=";
-  $.getScript(geoapi+"setMyIpLocation")
-  .fail(function( jqxhr, settings, exception ) {
-    warn("freegeoip request failed");
-  });
+  $.getScript(geoapi + "setMyIpLocation")
+    .fail(function(jqxhr, settings, exception) {
+      warn("freegeoip request failed");
+    });
 }
 
 function setMyIpLocation(res) {
@@ -642,9 +648,9 @@ function setMyIpLocation(res) {
 }
 
 var myLocIcon = L.icon({
-    iconUrl: 'img/mylocation.png',
-    iconSize:     [48, 48],
-    iconAnchor:   [24, 24]
+  iconUrl: 'img/mylocation.png',
+  iconSize: [48, 48],
+  iconAnchor: [24, 24]
 });
 var myLocMarker;
 var myLocTimer;
@@ -675,7 +681,7 @@ function setLocation(pos, showIcon) {
     myLocMarker.remove();
   }
   if (showIcon) {
-    myLocMarker = new L.marker([ pos.lat, pos.lng ], {icon: myLocIcon, clickable:false});
+    myLocMarker = new L.marker([pos.lat, pos.lng], { icon: myLocIcon, clickable: false });
     myLocMarker.addTo(map);
   }
   if (showIcon || (showLocation == LOC_CONTINUOUS)) {
@@ -698,8 +704,7 @@ function gotoMyLocation() {
   function highAccuracyFailed(posError) {
     log("GPS location failed, trying low accuracy");
     navigator.geolocation.getCurrentPosition(
-             gotLocation, lowAccuracyFailed,
-             {maximumAge:60000, timeout:5000, enableHighAccuracy: false});
+      gotLocation, lowAccuracyFailed, { maximumAge: 60000, timeout: 5000, enableHighAccuracy: false });
   }
 
   function lowAccuracyFailed(posError) {
@@ -710,8 +715,7 @@ function gotoMyLocation() {
 
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
-      gotLocation, highAccuracyFailed,
-       {maximumAge:0, timeout:5000, enableHighAccuracy: true});
+      gotLocation, highAccuracyFailed, { maximumAge: 0, timeout: 5000, enableHighAccuracy: true });
   } else {
     log("no runtime geolococation available");
     getMyIpLocation();
@@ -737,20 +741,20 @@ function getSavedPosition(_lat, _lng) {
 
 function savePosition() {
   var pos = map.getCenter();
-  saveValOpt("wt.poslat",pos.lat);
-  saveValOpt("wt.poslng",pos.lng);
+  saveValOpt("wt.poslat", pos.lat);
+  saveValOpt("wt.poslng", pos.lng);
 }
 
 function saveEditMode() {
-  if (editMode >= 0) saveValOpt("wt.editMode",editMode);
+  if (editMode >= 0) saveValOpt("wt.editMode", editMode);
 }
 
 function saveTrack() {
-  var trackname =  getTrackName();
+  var trackname = getTrackName();
   var numPts = track.getLatLngs().length + waypoints.getLayers().length;
   if (numPts < 1000) {
-    var gpx = getGPX(trackname, /*savealt*/false, /*savetime*/false, /*asroute*/false, /*nometadata*/false);
-    saveValOpt("wt.gpx",gpx);
+    var gpx = getGPX(trackname, /*savealt*/ false, /*savetime*/ false, /*asroute*/ false, /*nometadata*/ false);
+    saveValOpt("wt.gpx", gpx);
   }
 }
 
@@ -790,10 +794,10 @@ function saveInfo(save) {
   setChecked("#cfgsave", save);
   $("#cfgsave").change();
 }
-$("#save-yes").click(function (){
+$("#save-yes").click(function() {
   saveInfo(true);
 });
-$("#save-no").click(function (){
+$("#save-no").click(function() {
   saveInfo(false);
 });
 
@@ -828,7 +832,7 @@ function saveMapType() {
 function getProvider(name) {
   var p;
   if (name == "opentopomap") {
-    p =  L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+    p = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
       maxZoom: 17,
       attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
     });
@@ -843,7 +847,7 @@ function getProvider(name) {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     });
   } else if (name == "tf:cycle") {
-    p = L.tileLayer('https://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey='+config.thunderforest.key(), {
+    p = L.tileLayer('https://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=' + config.thunderforest.key(), {
       maxZoom: 18,
       attribution: '&copy; <a href="https://www.thunderforest.com/">Thunderforest</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     });
@@ -854,7 +858,7 @@ function getProvider(name) {
       attribution: '&copy; <a href="http://www.sigmasport.com/" target="_blank">SIGMA Sport &reg;</a> Map data <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>'
     });
   } else if (name == "tf:outdoors") {
-    p = L.tileLayer('https://{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey='+config.thunderforest.key(), {
+    p = L.tileLayer('https://{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=' + config.thunderforest.key(), {
       maxZoom: 18,
       attribution: '&copy; <a href="https://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     });
@@ -864,112 +868,108 @@ function getProvider(name) {
       maxZoom: 17,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     });
-  }  else if (name == "esri:worldtopomap") {
+  } else if (name == "esri:worldtopomap") {
     p = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
       attribution: 'Tiles &copy; Esri &mdash; Esri and GIS Community'
     });
-  }  else if (name == "esri:worldstreetmap") {
+  } else if (name == "esri:worldstreetmap") {
     p = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
       attribution: 'Tiles &copy; Esri &mdash; Esri &amp; al.'
     });
-  }  else if (name == "mtbmap") {
+  } else if (name == "mtbmap") {
     p = L.tileLayer('http://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &amp; USGS'
     });
-  }  else if (name == "map1.eu") {
+  } else if (name == "map1.eu") {
     p = L.tileLayer('http://beta.map1.eu/tiles/{z}/{x}/{y}.jpg', {
       maxZoom: 17,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &amp; <a href="http://map1.eu">map1.eu</a>'
     });
   } else if (name == 'google:roadmap') {
-    p = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
-        maxZoom: 20,
-        subdomains:['mt0','mt1','mt2','mt3'],
-        attribution: '&copy; Google'
+    p = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+      maxZoom: 20,
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+      attribution: '&copy; Google'
     });
   } else if (name == 'google:terrain') {
-    p = L.tileLayer('https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',{
-        maxZoom: 20,
-        subdomains:['mt0','mt1','mt2','mt3'],
-        attribution: '&copy; Google'
+    p = L.tileLayer('https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', {
+      maxZoom: 20,
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+      attribution: '&copy; Google'
     });
   } else if (name == 'google:satellite') {
-    p = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
-        maxZoom: 20,
-        subdomains:['mt0','mt1','mt2','mt3'],
-        attribution: '&copy; Google'
+    p = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+      maxZoom: 20,
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+      attribution: '&copy; Google'
     });
   } else if (name == 'google:hybrid') {
-    p = L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
-        maxZoom: 20,
-        subdomains:['mt0','mt1','mt2','mt3'],
-        attribution: '&copy; Google'
+    p = L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+      maxZoom: 20,
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+      attribution: '&copy; Google'
     });
   } else if (name == 'wmf:hills') {
     //p = L.tileLayer('http://{s}.tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png',{
-    p = L.tileLayer('https://tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png',{
+    p = L.tileLayer('https://tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png', {
       maxZoom: 17,
       attribution: 'Hillshading: SRTM3 v2 (<a href="https://www2.jpl.nasa.gov/srtm/">NASA</a>)'
     });
   } else if (name == 'lv:hike') {
-    p = L.tileLayer('http://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png',{
-        maxZoom: 17,
+    p = L.tileLayer('http://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png', {
+      maxZoom: 17,
       attribution: 'Hiking Routes: (<a href="http://hiking.lonvia.de">Lonvias Hiking Map</a>)'
     });
   } else if (name == 'lv:bike') {
-    p = L.tileLayer('http://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png',{
-        maxZoom: 17,
+    p = L.tileLayer('http://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png', {
+      maxZoom: 17,
       attribution: 'Cycling Routes: (<a href="http://cycling.lonvia.de">Lonvias Cycling Map</a>)'
     });
   } else if (name == 'fr:ignclassic') {
     p = L.tileLayer.wtms(
-          "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts",
-          {
-            layer: 'GEOGRAPHICALGRIDSYSTEMS.MAPS',
-            style: 'normal',
-            tilematrixSet: "PM",
-            format: 'image/jpeg',
-            attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
-          });
+      "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts", {
+        layer: 'GEOGRAPHICALGRIDSYSTEMS.MAPS',
+        style: 'normal',
+        tilematrixSet: "PM",
+        format: 'image/jpeg',
+        attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
+      });
   } else if (name == 'fr:ignexpress') {
     p = L.tileLayer.wtms(
-          "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts",
-          {
-            layer: 'GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN-EXPRESS.STANDARD',
-            style: 'normal',
-            tilematrixSet: "PM",
-            format: 'image/jpeg',
-            attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
-          });
+      "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts", {
+        layer: 'GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN-EXPRESS.STANDARD',
+        style: 'normal',
+        tilematrixSet: "PM",
+        format: 'image/jpeg',
+        attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
+      });
   } else if (name == 'fr:ignimagery') {
     p = L.tileLayer.wtms(
-          "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts",
-          {
-            layer: 'ORTHOIMAGERY.ORTHOPHOTOS',
-            style: 'normal',
-            tilematrixSet: "PM",
-            format: 'image/jpeg',
-            attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
-          });
+      "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts", {
+        layer: 'ORTHOIMAGERY.ORTHOPHOTOS',
+        style: 'normal',
+        tilematrixSet: "PM",
+        format: 'image/jpeg',
+        attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
+      });
   } else if (name == 'spain:ignraster') {
     // https://github.com/sigdeletras/Leaflet.Spain.WMS
     p = L.tileLayer.wms('https://www.ign.es/wms-inspire/mapa-raster', {
-        	layers: 'mtn_rasterizado',
-        	format: 'image/png',
-        	transparent: false,
-        	continuousWorld : true,
-        	attribution: '© <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
-        });
+      layers: 'mtn_rasterizado',
+      format: 'image/png',
+      transparent: false,
+      continuousWorld: true,
+      attribution: '© <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+    });
   } else if (name == 'spain:icgc') {
     p = L.tileLayer.wtms(
-          "https://geoserveis.icgc.cat/icc_mapesmultibase/noutm/wmts/service",
-          {
-            layer: 'topo',
-            style: 'normal',
-            tilematrixSet: "GRID3857",
-            format: 'image/jpeg',
-            attribution: "&copy; Institut Cartogràfic i Geològic de Catalunya - ICGC"
-          });
+      "https://geoserveis.icgc.cat/icc_mapesmultibase/noutm/wmts/service", {
+        layer: 'topo',
+        style: 'normal',
+        tilematrixSet: "GRID3857",
+        format: 'image/jpeg',
+        attribution: "&copy; Institut Cartogràfic i Geològic de Catalunya - ICGC"
+      });
   }
   if (!p) {
     p = getProvider("osm:std");
@@ -1012,6 +1012,7 @@ map.on("baselayerchange", function(e) {
   saveValOpt("wt.baseLayer", e.name);
   $(".leaflet-control-layers").removeClass("leaflet-control-layers-expanded");
 });
+
 function getOverlays() {
   var v = getJsonVal("wt.overlays");
   return v || {};
@@ -1056,8 +1057,8 @@ $(".leaflet-control-layers-list").append("<div>(*): no https</div>");
 function elevateDSTK(pt, cb) {
 
   var elevateDSTKerror = function(jqXHR, textStatus, errorThrown) {
-    setStatus("Elevation failed", {timeout:3, class:"status-error"});
-    error('Error: ' +  textStatus);
+    setStatus("Elevation failed", { timeout: 3, class: "status-error" });
+    error('Error: ' + textStatus);
     // callback
     if (cb) cb(false);
   };
@@ -1094,18 +1095,18 @@ function elevateGoogle(points, cb) {
   if (isUndefined(points.length)) {
     locations = [points];
   } else {
-    setStatus("Elevating..", {spinner: true});
-    inc = Math.round(Math.max(1, points.length/512));
+    setStatus("Elevating..", { spinner: true });
+    inc = Math.round(Math.max(1, points.length / 512));
     if (inc == 1) {
       locations = points;
     } else {
       locations = [];
-      for (var i = 0; i < points.length; i+=inc) {
+      for (var i = 0; i < points.length; i += inc) {
         locations.push(points[i]);
       }
       // make sure last point is included
       if (i < points.length) {
-        locations.push(points[points.length-1]);
+        locations.push(points[points.length - 1]);
       }
     }
   }
@@ -1116,15 +1117,15 @@ function elevateGoogle(points, cb) {
     if (status === 'OK') {
       clearStatus();
       if (points.length) {
-        for (var i = 0; i < points.length; i+=inc) {
-          var pos = i*inc;
-          points[pos<points.length ? pos : points.length].alt = results[i].elevation;
+        for (var i = 0; i < points.length; i += inc) {
+          var pos = i * inc;
+          points[pos < points.length ? pos : points.length].alt = results[i].elevation;
         }
       } else {
         points.alt = results[0].elevation;
       }
     } else {
-      setStatus("Elevation failed", {timeout:3, class:"status-error"});
+      setStatus("Elevation failed", { timeout: 3, class: "status-error" });
       warn("elevation request not OK: " + status);
     }
     // callback
@@ -1136,7 +1137,7 @@ var elevatePoint = elevateGoogle;
 
 
 function flatten() {
-  setStatus("Flatening..", {spinner: true});
+  setStatus("Flatening..", { spinner: true });
   var points = track ? track.getLatLngs() : undefined;
   if (points && (points.length > 0)) {
     for (var i = 0; i < points.length; i++) {
@@ -1149,9 +1150,9 @@ function flatten() {
 function revert() {
   var points = track ? track.getLatLngs() : undefined;
   if (points && (points.length > 0)) {
-    setStatus("Reverting..", {spinner: true});
+    setStatus("Reverting..", { spinner: true });
     var newpoints = [];
-    for (var i = points.length - 1; i >= 0 ; i--) {
+    for (var i = points.length - 1; i >= 0; i--) {
       newpoints.push(points[i]);
     }
     track.setLatLngs(newpoints);
@@ -1161,100 +1162,100 @@ function revert() {
 }
 
 new L.Control.GeoSearch({
-    provider: new L.GeoSearch.Provider.OpenStreetMap(),
-    position: 'topleft',
-    showMarker: false,
-    showPopup: true,
-    customIcon: false,
-    retainZoomLevel: true,
-    draggable: false
-  }).addTo(map);
+  provider: new L.GeoSearch.Provider.OpenStreetMap(),
+  position: 'topleft',
+  showMarker: false,
+  showPopup: true,
+  customIcon: false,
+  retainZoomLevel: true,
+  draggable: false
+}).addTo(map);
 
 L.MyLocationControl = L.Control.extend({
 
-    options: {
-        position: 'topleft',
-    },
+  options: {
+    position: 'topleft',
+  },
 
-    onAdd: function (map) {
-        var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-edit'),
-            link = L.DomUtil.create('a', '', container);
+  onAdd: function(map) {
+    var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-edit'),
+      link = L.DomUtil.create('a', '', container);
 
-        link.href = '#';
-        link.title = 'My location';
-        link.innerHTML = '<span id="myloc" class="wtracks-control-icon">&nbsp;</span>';
-        //link.id = 'myloc';
-        L.DomEvent.disableClickPropagation(link);
-        L.DomEvent.on(link, 'click', L.DomEvent.stop)
-                  .on(link, 'click', function (e) {
-                    map.closePopup();
-                    if (showLocation == LOC_CONTINUOUS) {
-                      showLocation = LOC_NONE;
-                      $("#myloc").removeClass("control-selected");
-                      removeMyLocMarker();
-                    } else if (showLocation == LOC_ONCE) {
-                      showLocation = LOC_CONTINUOUS;
-                      $("#myloc").addClass("control-selected");
-                    } else {
-                      showLocation = LOC_ONCE;
-                      gotoMyLocation();
-                    }
-                  }, this);
+    link.href = '#';
+    link.title = 'My location';
+    link.innerHTML = '<span id="myloc" class="wtracks-control-icon">&nbsp;</span>';
+    //link.id = 'myloc';
+    L.DomEvent.disableClickPropagation(link);
+    L.DomEvent.on(link, 'click', L.DomEvent.stop)
+      .on(link, 'click', function(e) {
+        map.closePopup();
+        if (showLocation == LOC_CONTINUOUS) {
+          showLocation = LOC_NONE;
+          $("#myloc").removeClass("control-selected");
+          removeMyLocMarker();
+        } else if (showLocation == LOC_ONCE) {
+          showLocation = LOC_CONTINUOUS;
+          $("#myloc").addClass("control-selected");
+        } else {
+          showLocation = LOC_ONCE;
+          gotoMyLocation();
+        }
+      }, this);
 
-        return container;
-    }
+    return container;
+  }
 
 });
 map.addControl(new L.MyLocationControl());
 
 L.EditControl = L.Control.extend({
 
-    options: {
-        position: 'topleft',
-        kind: '',
-        html: '',
-        event: 'click'
-    },
+  options: {
+    position: 'topleft',
+    kind: '',
+    html: '',
+    event: 'click'
+  },
 
-    onAdd: function (map) {
-        var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-edit'),
-            link = L.DomUtil.create('a', '', container),
-            editopts = L.DomUtil.create('span', '', container);
+  onAdd: function(map) {
+    var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-edit'),
+      link = L.DomUtil.create('a', '', container),
+      editopts = L.DomUtil.create('span', '', container);
 
-        link.href = '#';
-        link.title = this.options.title;
-        link.innerHTML = this.options.html;
-        L.DomEvent.disableClickPropagation(link);
-        L.DomEvent.on(link, this.options.event, L.DomEvent.stop)
-                  .on(link, this.options.event, function (e) {
-                    map.closePopup();
-                    var et = $("#edit-tools");
-                    et.toggle();
-                    if (!et.is(":visible")) {
-                      setEditMode(EDIT_NONE);
-                    }
-                  }, this);
+    link.href = '#';
+    link.title = this.options.title;
+    link.innerHTML = this.options.html;
+    L.DomEvent.disableClickPropagation(link);
+    L.DomEvent.on(link, this.options.event, L.DomEvent.stop)
+      .on(link, this.options.event, function(e) {
+        map.closePopup();
+        var et = $("#edit-tools");
+        et.toggle();
+        if (!et.is(":visible")) {
+          setEditMode(EDIT_NONE);
+        }
+      }, this);
 
-        editopts.id = 'edit-tools';
-        editopts.class = 'wtracks-control-icon';
-        editopts.innerHTML = '<a href="#" title="Manual Track" id="edit-manual"><span class="wtracks-control-icon">&nbsp;</span></a><a href="#" title="Auto Track" id="edit-auto"><span class="wtracks-control-icon">&nbsp;</span></a><a href="#" title="Waypoint" id="edit-marker"><span class="wtracks-control-icon">&nbsp;</span></a>';
+    editopts.id = 'edit-tools';
+    editopts.class = 'wtracks-control-icon';
+    editopts.innerHTML = '<a href="#" title="Manual Track" id="edit-manual"><span class="wtracks-control-icon">&nbsp;</span></a><a href="#" title="Auto Track" id="edit-auto"><span class="wtracks-control-icon">&nbsp;</span></a><a href="#" title="Waypoint" id="edit-marker"><span class="wtracks-control-icon">&nbsp;</span></a>';
 
-        return container;
-    }
+    return container;
+  }
 
 });
 L.EditorControl = L.EditControl.extend({
-    options: {
-        position: 'topleft',
-        title: 'Toggle Edit',
-        html: '&#x270e;',
-        event: 'click'
-    }
+  options: {
+    position: 'topleft',
+    title: 'Toggle Edit',
+    html: '&#x270e;',
+    event: 'click'
+  }
 });
 map.addControl(new L.EditorControl());
 
 $("body").keydown(function(event) {
-  if ( event.which == 27 ) {
+  if (event.which == 27) {
     setEditMode(EDIT_NONE);
   }
 });
@@ -1263,27 +1264,27 @@ $("body").keydown(function(event) {
 L.DomEvent.disableClickPropagation(L.DomUtil.get("edit-manual"));
 L.DomEvent.disableClickPropagation(L.DomUtil.get("edit-auto"));
 L.DomEvent.disableClickPropagation(L.DomUtil.get("edit-marker"));
-$("#edit-manual").click(function (e) {
+$("#edit-manual").click(function(e) {
   ga('send', 'event', 'edit', 'manual');
   //$("#edit-tools").hide();
   setEditMode(EDIT_MANUAL_TRACK);
   e.preventDefault();
 });
-$("#edit-auto").click(function (e) {
+$("#edit-auto").click(function(e) {
   ga('send', 'event', 'edit', 'auto');
   if (checkGraphHopperCredit()) {
     setEditMode(EDIT_AUTO_TRACK);
   }
   e.preventDefault();
 });
-$("#edit-marker").click(function (e) {
+$("#edit-marker").click(function(e) {
   ga('send', 'event', 'edit', 'marker');
   //$("#edit-tools").hide();
   setEditMode(EDIT_MARKER);
   e.preventDefault();
 });
 
-$("#elevate").click(function (e) {
+$("#elevate").click(function(e) {
   ga('send', 'event', 'tool', 'elevate', undefined, track.getLatLngs());
   $("#menu").hide();
   if (track) elevate(track.getLatLngs(), function() {
@@ -1292,7 +1293,7 @@ $("#elevate").click(function (e) {
   });
   return false;
 });
-$("#flatten").click(function (e) {
+$("#flatten").click(function(e) {
   ga('send', 'event', 'tool', 'flatten', undefined, track.getLatLngs());
   $("#menu").hide();
   flatten();
@@ -1300,7 +1301,7 @@ $("#flatten").click(function (e) {
   return false;
 });
 
-$("#revert").click(function (e) {
+$("#revert").click(function(e) {
   ga('send', 'event', 'tool', 'revert', undefined, track.getLatLngs());
   $("#menu").hide();
   revert();
@@ -1308,7 +1309,7 @@ $("#revert").click(function (e) {
   return false;
 });
 
-$(".statistics").click(function(e){
+$(".statistics").click(function(e) {
   var tag = e.target.tagName.toUpperCase();
   if ((tag !== "SELECT") && (tag !== "OPTION")) {
     toggleElevation(e);
@@ -1317,10 +1318,10 @@ $(".statistics").click(function(e){
 
 function importGeoJson(geojson) {
 
-  setStatus("Loading..", {spinner: true});
+  setStatus("Loading..", { spinner: true });
   $("#edit-tools").hide();
   var bounds;
-  var merge = loadCount > 0 || isChecked("#merge");
+  var merge = loadCount > 0 ||  isChecked("#merge");
   loadCount++;
   if (!merge) {
     newTrack();
@@ -1365,7 +1366,7 @@ function importGeoJson(geojson) {
     }
   }
 
-  L.geoJson(geojson,{
+  L.geoJson(geojson, {
     onEachFeature: function(f) {
       var name, coords, times;
       if (f.geometry.type === "LineString") {
@@ -1373,13 +1374,14 @@ function importGeoJson(geojson) {
         coords = f.geometry.coordinates;
         times = f.properties.coordTimes && (f.properties.coordTimes.length == coords.length) ? f.properties.coordTimes : undefined;
         importLine(name, coords, times);
-      } if (f.geometry.type === "MultiLineString") {
-          name = f.properties.name ? f.properties.name : NEW_TRACK_NAME;
-          for (var i = 0; i < f.geometry.coordinates.length; i++) {
-            coords = f.geometry.coordinates[i];
-            times = f.properties.coordTimes[i] && (f.properties.coordTimes[i].length == coords.length) ? f.properties.coordTimes[i] : undefined;
-            importLine(name, coords, times);
-          }
+      }
+      if (f.geometry.type === "MultiLineString") {
+        name = f.properties.name ? f.properties.name : NEW_TRACK_NAME;
+        for (var i = 0; i < f.geometry.coordinates.length; i++) {
+          coords = f.geometry.coordinates[i];
+          times = f.properties.coordTimes[i] && (f.properties.coordTimes[i].length == coords.length) ? f.properties.coordTimes[i] : undefined;
+          importLine(name, coords, times);
+        }
       } else if (f.geometry.type === "Point") {
         // import marker
         coords = f.geometry.coordinates;
@@ -1399,42 +1401,43 @@ function importGeoJson(geojson) {
 }
 
 var loadcontrol = L.Control.fileLayerLoad({
-    // Allows you to use a customized version of L.geoJson.
-    // For example if you are using the Proj4Leaflet leaflet plugin,
-    // you can pass L.Proj.geoJson and load the files into the
-    // L.Proj.GeoJson instead of the L.geoJson.
-    layer: importGeoJson,
-    // See http://leafletjs.com/reference.html#geojson-options
-    //layerOptions: {},
-    // Add to map after loading (default: true) ?
-    addToMap: false,
-    // File size limit in kb (default: 1024) ?
-    fileSizeLimit: config.maxfilesize,
-    // Restrict accepted file formats (default: .geojson, .kml, and .gpx) ?
-    formats: [
+  // Allows you to use a customized version of L.geoJson.
+  // For example if you are using the Proj4Leaflet leaflet plugin,
+  // you can pass L.Proj.geoJson and load the files into the
+  // L.Proj.GeoJson instead of the L.geoJson.
+  layer: importGeoJson,
+  // See http://leafletjs.com/reference.html#geojson-options
+  //layerOptions: {},
+  // Add to map after loading (default: true) ?
+  addToMap: false,
+  // File size limit in kb (default: 1024) ?
+  fileSizeLimit: config.maxfilesize,
+  // Restrict accepted file formats (default: .geojson, .kml, and .gpx) ?
+  formats: [
         '.gpx',
         '.geojson',
         '.kml'
     ],
-    fitBounds: false
+  fitBounds: false
 });
 map.addControl(loadcontrol);
 var fileloader = loadcontrol.loader;
 var loadCount = 0;
-fileloader.on('data:error', function (e) {
-  setStatus("Failed: check file and type", { 'class':'status-error', 'timeout': 3});
+fileloader.on('data:error', function(e) {
+  setStatus("Failed: check file and type", { 'class': 'status-error', 'timeout': 3 });
 });
 
 function loadFromUrl(url, ext, direct) {
-  setStatus("Loading...", {"spinner": true});
+  setStatus("Loading...", { "spinner": true });
   var _url = direct ? url : config.corsproxy.url() + config.corsproxy.query + url;
-  $.get(_url, function(data){
+  $.get(_url, function(data) {
     loadCount = 0;
     fileloader.loadData(data, url, ext);
   }).fail(function(resp) {
-    setStatus("Failed: " + resp.statusText, { 'class':'status-error', 'timeout': 3});
+    setStatus("Failed: " + resp.statusText, { 'class': 'status-error', 'timeout': 3 });
   });
 }
+
 function getLoadExt() {
   var ext = $("#track-ext").children(':selected').val();
   if (ext === "auto") {
@@ -1466,12 +1469,12 @@ $("#track-upload").change(function() {
   if (files[0]) {
     ga('send', 'event', 'file', 'load-file');
     setEditMode(EDIT_NONE);
-    setStatus("Loading...", {spinner: true});
+    setStatus("Loading...", { spinner: true });
     loadCount = 0;
     fileloader.loadMultiple(files, getLoadExt());
   }
 });
-map.getContainer().addEventListener("drop", function(){
+map.getContainer().addEventListener("drop", function() {
   loadCount = 0;
 });
 
@@ -1479,71 +1482,71 @@ map.getContainer().addEventListener("drop", function(){
 
 var dropboxLoadOptions = {
 
-    // Required. Called when a user selects an item in the Chooser.
-    success: function(files) {
-      $("#menu").hide();
-      ga('send', 'event', 'file', 'load-dropbox');
-      loadFromUrl(files[0].link, getLoadExt(), true);
-    },
+  // Required. Called when a user selects an item in the Chooser.
+  success: function(files) {
+    $("#menu").hide();
+    ga('send', 'event', 'file', 'load-dropbox');
+    loadFromUrl(files[0].link, getLoadExt(), true);
+  },
 
-    // Optional. Called when the user closes the dialog without selecting a file
-    // and does not include any parameters.
-    cancel: function() {
+  // Optional. Called when the user closes the dialog without selecting a file
+  // and does not include any parameters.
+  cancel: function() {
 
-    },
+  },
 
-    // Optional. "preview" (default) is a preview link to the document for sharing,
-    // "direct" is an expiring link to download the contents of the file. For more
-    // information about link types, see Link types below.
-    linkType: "direct", // or "preview"
+  // Optional. "preview" (default) is a preview link to the document for sharing,
+  // "direct" is an expiring link to download the contents of the file. For more
+  // information about link types, see Link types below.
+  linkType: "direct", // or "preview"
 
-    // Optional. A value of false (default) limits selection to a single file, while
-    // true enables multiple file selection.
-    multiselect: false, // or true
+  // Optional. A value of false (default) limits selection to a single file, while
+  // true enables multiple file selection.
+  multiselect: false, // or true
 
-    // Optional. This is a list of file extensions. If specified, the user will
-    // only be able to select files with these extensions. You may also specify
-    // file types, such as "video" or "images" in the list. For more information,
-    // see File types below. By default, all extensions are allowed.
-    //extensions: ['.gpx', '.json', '.kml', '.geojson'],
+  // Optional. This is a list of file extensions. If specified, the user will
+  // only be able to select files with these extensions. You may also specify
+  // file types, such as "video" or "images" in the list. For more information,
+  // see File types below. By default, all extensions are allowed.
+  //extensions: ['.gpx', '.json', '.kml', '.geojson'],
 };
 $("#dropbox-chooser").click(function(e) {
   Dropbox.choose(dropboxLoadOptions);
 });
 
 var dropboxSaveOptions = {
-    files: [
-      {
-        url: "",
-        filename: "",
-        mode: "overwrite",
-        autorename: false,
+  files: [
+    {
+      url: "",
+      filename: "",
+      mode: "overwrite",
+      autorename: false,
       }
     ],
 
-    // Success is called once all files have been successfully added to the user's
-    // Dropbox, although they may not have synced to the user's devices yet.
-    success: function (res) {
-        // Indicate to the user that the files have been saved.
-        setStatus(response || "File saved", {timeout:3});
-        $("#menu").hide();
-    },
+  // Success is called once all files have been successfully added to the user's
+  // Dropbox, although they may not have synced to the user's devices yet.
+  success: function(res) {
+    // Indicate to the user that the files have been saved.
+    setStatus(response || "File saved", { timeout: 3 });
+    $("#menu").hide();
+  },
 
-    // Progress is called periodically to update the application on the progress
-    // of the user's downloads. The value passed to this callback is a float
-    // between 0 and 1. The progress callback is guaranteed to be called at least
-    // once with the value 1.
-    progress: function (progress) {},
+  // Progress is called periodically to update the application on the progress
+  // of the user's downloads. The value passed to this callback is a float
+  // between 0 and 1. The progress callback is guaranteed to be called at least
+  // once with the value 1.
+  progress: function(progress) {},
 
-    // Cancel is called if the user presses the Cancel button or closes the Saver.
-    cancel: function () {},
+  // Cancel is called if the user presses the Cancel button or closes the Saver.
+  cancel: function() {},
 
-    // Error is called in the event of an unexpected response from the server
-    // hosting the files, such as not being able to find a file. This callback is
-    // also called if there is an error on Dropbox or if the user is over quota.
-    error: function (errorMessage) {
-      setStatus(errorMessage || "Failed", {timeout:5, class:"status-error"});
-    }
+  // Error is called in the event of an unexpected response from the server
+  // hosting the files, such as not being able to find a file. This callback is
+  // also called if there is an error on Dropbox or if the user is over quota.
+  error: function(errorMessage) {
+    setStatus(errorMessage || "Failed", { timeout: 5, class: "status-error" });
+  }
 };
 $("#dropbox-saver").click(function(e) {
   dropboxSaveOptions.files[0].filename = getConfirmedTrackName() + ".png";
@@ -1569,7 +1572,7 @@ function newRouteWaypoint(i, waypoint, n) {
     del.onclick = function(e) {
       var wpts = route.getWaypoints();
       if (wpts.length > 2) {
-        wpts.splice(index,1);
+        wpts.splice(index, 1);
         route.setWaypoints(wpts);
       } else {
         restartRoute();
@@ -1581,7 +1584,7 @@ function newRouteWaypoint(i, waypoint, n) {
     return div;
   }
 
-  if ((track.getLatLngs().length > 0)  && (i === 0)) {
+  if ((track.getLatLngs().length > 0) && (i === 0)) {
     // no start marker for routes that continue an existing track
     return undefined;
   }
@@ -1592,9 +1595,9 @@ function newRouteWaypoint(i, waypoint, n) {
   marker.on("click", function(e) {
 
     var pop = L.popup()
-        .setLatLng(e.latlng)
-        .setContent(getRouteWaypoinContent(e.latlng, i))
-        .openOn(map);
+      .setLatLng(e.latlng)
+      .setContent(getRouteWaypoinContent(e.latlng, i))
+      .openOn(map);
 
   });
 
@@ -1608,13 +1611,13 @@ function getTrackPointPopupContent(latlng) {
     data;
 
   var pts = track.getLatLngs();
-  var last = pts[pts.length-1];
+  var last = pts[pts.length - 1];
   var first = pts[0];
   var stats = track.stats;
 
   data = L.DomUtil.create('div', "popupdiv", div);
   data.innerHTML = "<span class='popupfield'>Distance:</span> " +
-    dist2txt(latlng.dist) + " / " + dist2txt(last.dist*2-latlng.dist);
+    dist2txt(latlng.dist) + " / " + dist2txt(last.dist * 2 - latlng.dist);
   data = L.DomUtil.create('div', "popupdiv", div);
   data.innerHTML = "<span class='popupfield'>Time:</span> " +
     time2txt(latlng.chrono) + " / " + time2txt(latlng.chrono_rt);
@@ -1637,11 +1640,10 @@ function getLatLngPopupContent(latlng, deletefn, toadd) {
     altinput.type = "text";
     altinput.size = "5";
     altinput.value = isUndefined(latlng.alt) ? "" : latlng.alt;
-    altinput.onkeyup = function(){
+    altinput.onkeyup = function() {
       try {
         latlng.alt = $.isNumeric(altinput.value) ? parseFloat(altinput.value) : undefined;
-      } catch (e) {
-      }
+      } catch (e) {}
     };
     p = L.DomUtil.create("span", "", p);
     p.innerHTML = "m";
@@ -1681,7 +1683,7 @@ function alt2txt(alt) {
 function dist2txt(dist) {
   dist = Math.round(dist);
   if (dist > 5000) {
-    return (dist/1000).toFixed(1) + "km";
+    return (dist / 1000).toFixed(1) + "km";
   } else {
     return dist + "m";
   }
@@ -1689,9 +1691,9 @@ function dist2txt(dist) {
 
 function time2txt(time) {
   var strTime = "";
-  if (time >= 3600) strTime += Math.floor(time/3600) + "h";
+  if (time >= 3600) strTime += Math.floor(time / 3600) + "h";
   time %= 3600;
-  if (time >= 60) strTime += Math.floor(time/60) + "m";
+  if (time >= 60) strTime += Math.floor(time / 60) + "m";
   time %= 60;
   strTime += Math.round(time) + "s";
   return strTime;
@@ -1700,11 +1702,11 @@ function time2txt(time) {
 function showStats() {
   var pts = track ? track.getLatLngs() : undefined;
   if (pts && pts.length > 0) {
-    var last = pts[pts.length-1];
+    var last = pts[pts.length - 1];
     var first = pts[0];
     var stats = track.stats;
     $("#distow").text(dist2txt(last.dist));
-    $("#distrt").text(dist2txt(2*last.dist));
+    $("#distrt").text(dist2txt(2 * last.dist));
     $("#timeow").text(time2txt(last.chrono));
     $("#timert").text(time2txt(first.chrono_rt));
     $("#altmin").text(alt2txt(stats.minalt));
@@ -1724,34 +1726,34 @@ function showStats() {
 }
 
 
-map.on('popupclose', function (e) {
-    //console.log(e.type);
-    if ((editMode === EDIT_MANUAL_TRACK) && (track.editor)) {
-      track.editor.continueForward();
-    }
+map.on('popupclose', function(e) {
+  //console.log(e.type);
+  if ((editMode === EDIT_MANUAL_TRACK) && (track.editor)) {
+    track.editor.continueForward();
+  }
 });
-map.on('editable:enable', function (e) {
-    //console.log(e.type);
-});
-map.on('editable:drawing:start', function (e) {
-    //console.log(e.type);
-});
-map.on('editable:drawing:dragend', function (e) {
-    //console.log(e.type);
-});
-map.on('editable:drawing:commit', function (e) {
-    //console.log(e.type);
-});
-map.on('editable:drawing:end', function (e) {
-    //console.log(e.type);
-});
-map.on('editable:drawing:click', function (e) {
+map.on('editable:enable', function(e) {
   //console.log(e.type);
 });
-map.on('editable:shape:new', function (e) {
+map.on('editable:drawing:start', function(e) {
   //console.log(e.type);
 });
-map.on('editable:vertex:new', function (e) {
+map.on('editable:drawing:dragend', function(e) {
+  //console.log(e.type);
+});
+map.on('editable:drawing:commit', function(e) {
+  //console.log(e.type);
+});
+map.on('editable:drawing:end', function(e) {
+  //console.log(e.type);
+});
+map.on('editable:drawing:click', function(e) {
+  //console.log(e.type);
+});
+map.on('editable:shape:new', function(e) {
+  //console.log(e.type);
+});
+map.on('editable:vertex:new', function(e) {
   var latlng = e.vertex.getLatLng();
   var prev = e.vertex.getPrevious();
   i = isUndefined(prev) ? 0 : prev.latlng.i + 1;
@@ -1764,41 +1766,42 @@ map.on('editable:vertex:new', function (e) {
     });
   }
 });
-map.on('editable:vertex:dragend', function (e) {
+map.on('editable:vertex:dragend', function(e) {
   var i = e.vertex.getLatLng().i;
   elevatePoint(e.vertex.getLatLng(), function() {
     polystats.updateStatsFrom(i);
   });
   //console.log(e.type + ": " + i);
 });
-map.on('editable:middlemarker:mousedown', function (e) {
+map.on('editable:middlemarker:mousedown', function(e) {
   //console.log(e.type);
 });
-map.on('editable:dragend', function (e) {
+map.on('editable:dragend', function(e) {
   elevatePoint(e.layer.getLatLng());
   //console.log(e.type);
 });
 
-map.on('editable:vertex:deleted', function (e) {
+map.on('editable:vertex:deleted', function(e) {
   var i = e.latlng.i;
   //console.log(e.type + ": " + i);
   polystats.updateStatsFrom(i);
 });
 
 
-map.on('editable:created', function (e) {
+map.on('editable:created', function(e) {
   //console.log("Created: " + e.layer.getEditorClass());
 });
 
 var MAX_GH_CREDITS = 200;
+
 function checkGraphHopperCredit(e) {
-  var gh = getJsonVal("wt.gh", {credits:0, reset:new Date(0)});
+  var gh = getJsonVal("wt.gh", { credits: 0, reset: new Date(0) });
 
   // check GraphHopper response
   if (!isUnset(e)) {
     log("GraphHopper credits: " + e.credits);
     var now = new Date();
-    var resetDate = new Date(now.getTime() + (e.reset*1000));
+    var resetDate = new Date(now.getTime() + (e.reset * 1000));
     if (resetDate > Date.parse(gh.reset)) {
       gh.reset = resetDate;
       gh.credits = 0;
@@ -1827,7 +1830,7 @@ function checkGraphHopperCredit(e) {
   return true;
 }
 
-map.on('click', function (e) {
+map.on('click', function(e) {
 
   if (editMode == EDIT_MARKER) {
     ga('send', 'event', 'edit', 'new-marker');
@@ -1840,20 +1843,20 @@ map.on('click', function (e) {
         setRouteStart(e.latlng);
       } else {
         var fromPt = routeStart,
-            toPt = e.latlng,
-            router = L.Routing.graphHopper(config.graphhopper.key(), {urlParameters: {vehicle: getCurrentActivity().vehicle}});
+          toPt = e.latlng,
+          router = L.Routing.graphHopper(config.graphhopper.key(), { urlParameters: { vehicle: getCurrentActivity().vehicle } });
         router.on("response", checkGraphHopperCredit);
         route = L.Routing.control({
           router: router,
-          waypoints: [ fromPt, toPt ],
+          waypoints: [fromPt, toPt],
           routeWhileDragging: false,
           autoRoute: true,
           fitSelectedRoutes: false,
           lineOptions: {
             styles: [{
-                color: "red",
-                weight: 3,
-                opacity: 1
+              color: "red",
+              weight: 3,
+              opacity: 1
             }],
             addWaypoints: true
           },
@@ -1866,9 +1869,9 @@ map.on('click', function (e) {
       if (wpts.length == 2) { // up to 4 with free version
         mergeRouteToTrack();
         restartRoute();
-        map.fireEvent("click", {latlng: e.latlng});
+        map.fireEvent("click", { latlng: e.latlng });
       } else {
-        wpts.push({latLng: e.latlng});
+        wpts.push({ latLng: e.latlng });
         route.setWaypoints(wpts);
       }
     }
@@ -1877,7 +1880,7 @@ map.on('click', function (e) {
   }
 });
 
-map.on('editable:vertex:click', function (e) {
+map.on('editable:vertex:click', function(e) {
 
   function deleteTrackPoint(event) {
     e.vertex.delete();
@@ -1898,9 +1901,9 @@ map.on('editable:vertex:click', function (e) {
   e.cancel();
   var div = getTrackPointPopupContent(e.latlng);
   var pop = L.popup()
-      .setLatLng(e.latlng)
-      .setContent(getLatLngPopupContent(e.latlng, deleteTrackPoint, div))
-      .openOn(map);
+    .setLatLng(e.latlng)
+    .setContent(getLatLngPopupContent(e.latlng, deleteTrackPoint, div))
+    .openOn(map);
   $(".leaflet-popup-close-button").click(function(e) {
     track.editor.continueForward();
     return false;
@@ -1909,9 +1912,11 @@ map.on('editable:vertex:click', function (e) {
 
 // ---- ELEVATION
 var elevation;
+
 function hideElevation() {
   if (elevation) toggleElevation();
 }
+
 function toggleElevation(e) {
   // is elevation currently displayed?
   if (!elevation) {
@@ -1919,23 +1924,23 @@ function toggleElevation(e) {
     if (track && track.getLatLngs().length > 1) {
       setEditMode(EDIT_NONE);
       map.closePopup();
-      var options =$(document).width() < 600 ? {
-          width:355,
-          height:125,
-          margins: {
-              top: 10,
-              right: 10,
-              bottom: 25,
-              left: 40
-          },
-        } : {};
+      var options = $(document).width() < 600 ? {
+        width: 355,
+        height: 125,
+        margins: {
+          top: 10,
+          right: 10,
+          bottom: 25,
+          left: 40
+        },
+      } : {};
       var el = L.control.elevation(options);
-      var gjl = L.geoJson(track.toGeoJSON(),{
-                  onEachFeature: el.addData.bind(el)
-              });
+      var gjl = L.geoJson(track.toGeoJSON(), {
+        onEachFeature: el.addData.bind(el)
+      });
       try {
         el.addTo(map);
-        gjl.setStyle({opacity:0});
+        gjl.setStyle({ opacity: 0 });
         gjl.addTo(map);
         elevation = {
           el: el,
@@ -1954,26 +1959,26 @@ function toggleElevation(e) {
 
 $(".appname").text(config.appname);
 $("#prunedist").val(config.compressdefault);
-setStatus("Welcome to " + config.appname + "!", {timeout:3});
+setStatus("Welcome to " + config.appname + "!", { timeout: 3 });
 
 function menu(item, event) {
   $("#menu table").hide();
   $(".tablinks").removeClass("active");
-  $("#tab"+item).addClass("active");
-  $("#menu #menu"+item).show();
+  $("#tab" + item).addClass("active");
+  $("#menu #menu" + item).show();
   if (event) {
     event.preventDefault();
   }
 }
 $(".tablinks").click(function(event) {
-  menu(event.target.id.replace("tab",""), event);
+  menu(event.target.id.replace("tab", ""), event);
 });
 
 
 function isStateSaved() {
   return isChecked("#cfgsave");
 }
-$("#cfgsave").change(function(e){
+$("#cfgsave").change(function(e) {
   var saveCfg = isStateSaved();
   ga('send', 'event', 'config', saveCfg ? 'save-on' : 'save-off');
   storeVal("wt.saveState", saveCfg ? "true" : "false");
@@ -1995,6 +2000,6 @@ if (url) {
   restoreState();
 }
 
-$( window ).on("unload", function() {
+$(window).on("unload", function() {
   saveState();
 });

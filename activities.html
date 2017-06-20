@@ -1,208 +1,209 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<link rel="shortcut icon" href="img/favicon.ico" />
-	  <meta charset='utf-8'>
-	  <meta http-equiv="x-ua-compatible" content="IE=edge" >
-	  <meta name="viewport" content="width=device-width,height=device-height, user-scalable=no" />
-	  <META name="keywords" content="Leaflet, OpenStreetMap, GPX, GPS, speed, regression, GIS, outdoor">
-    <link rel="manifest" href="./manifest.json">
-		<title>Speed profile editor</title>
-		<script src="js/jquery.min.js"></script>
-		<script src="js/jquery.flot.min.js"></script>
-		<script type="text/javascript" src="js/cookieconsent.min.js"></script>
-		<script src="js/regression.js"></script>
-		<script src="js/dataset.js"></script>
-		<script src="js/config.js"></script>
-		<script src="js/utils.js"></script>
 
-		<script src="js/leaflet.js"></script>
-		<script src="js/leaflet.polystats.js"></script>
-		<!-- File upload -->
-	  <script src="js/togeojson.js"></script>
-	  <script src="js/leaflet.filelayer.js"></script>
-		<link rel="stylesheet" href="css/activities.css"/>
-	</head>
-	<body>
-		<div class="container">
-			<div class="text">
-				<h1>Activity Editor</h1>
-				<p>
-					Here you can edit the activities associated to your tracks.
-					<img id="intro" class="help-b" src="img/help.png" alt="help"/>
-				</p>
-				<div id="intro-help" class="help-p">Activities have two characteristics:
-					<ul>
-						<li>'vehicle' configures the routing engine when editing tracks in this mode, which ultimately will define which kind of road you can follow;</li>
-						<li>'speed profile' is used to evaluate the time you'll need to physically travel through your track. Speed is computed based on the track slope between each segment of the track. It is either the result of a formula (usually polynomial of 2nd degree), or a lookup within a set of reference speeds for a selection of slope values.</li>
-					</ul>
-				</div>
-			</div>
+<head>
+  <link rel="shortcut icon" href="img/favicon.ico" />
+  <meta charset='utf-8'>
+  <meta http-equiv="x-ua-compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,height=device-height, user-scalable=no" />
+  <META name="keywords" content="Leaflet, OpenStreetMap, GPX, GPS, speed, regression, GIS, outdoor">
+  <link rel="manifest" href="./manifest.json">
+  <title>Speed profile editor</title>
+  <script src="js/jquery.min.js"></script>
+  <script src="js/jquery.flot.min.js"></script>
+  <script type="text/javascript" src="js/cookieconsent.min.js"></script>
+  <script src="js/regression.js"></script>
+  <script src="js/dataset.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
 
-			<!-- Prompt box -->
-			<div id="prompt" class="modal">
-			  <!-- Modal content -->
-			  <div class="prompt-content">
-					<a href="#" id="prompt-close" class="btn-link">×</a>
-			    <p id="prompt-text"></p>
-					<input id="prompt-val" type="text" size="50" value=""/>
-					<button id="prompt-ok">Ok</button>
-			  </div>
-			</div>
+  <script src="js/leaflet.js"></script>
+  <script src="js/leaflet.polystats.js"></script>
+  <!-- File upload -->
+  <script src="js/togeojson.js"></script>
+  <script src="js/leaflet.filelayer.js"></script>
+  <link rel="stylesheet" href="css/activities.css" />
+</head>
 
-			<div id="listdiv">
-				<h2>Saved activities:</h2>
-				<select id="activities">
-				</select>
-				<a href="#" id="activityup" class="btn-link movea" title="Move up">&#x2c4;</a>
-				<a href="#" id="activitydown" class="btn-link movea" title="Move down">&#x2c5;</a>
-				<div id="activities-btns">
-					<button id="activitydel">Delete</button>
-					<button id="activityreset">Reset Defaults</button>
-					<button id="activityexportall">Export All</button>
-					<button id="activityimport">Import</button>
-					<img id="savingtxt" class="help-b" src="img/help.png" alt="help"/>
-				</div>
-				<div class="text">
-					<p id="savingtxt-help" class="help-p">
-						The activities modifications you save are stored in your browser's local storage.
-						This way you will find them every time you visit WTracks with that same browser.
-						If you visit WTracks from a different device it will not have access to this storage.
-						To share your activities between devices or browsers, use the import and export buttons.
-					</p>
-				</div>
+<body>
+  <div class="container">
+    <div class="text">
+      <h1>Activity Editor</h1>
+      <p>
+        Here you can edit the activities associated to your tracks.
+        <img id="intro" class="help-b" src="img/help.png" alt="help" />
+      </p>
+      <div id="intro-help" class="help-p">Activities have two characteristics:
+        <ul>
+          <li>'vehicle' configures the routing engine when editing tracks in this mode, which ultimately will define which kind of road you can follow;</li>
+          <li>'speed profile' is used to evaluate the time you'll need to physically travel through your track. Speed is computed based on the track slope between each segment of the track. It is either the result of a formula (usually polynomial of 2nd degree), a lookup within a set of reference speeds for a selection of slope values.</li>
+        </ul>
+      </div>
+    </div>
 
-			</div>
-			<div id="editordiv">
-				<h2>Edit activity:</h2>
-				<div id="editor-btns">
-					<button id="activitynew">New</button>
-					<button id="activitysave">Save</button>
-					<button id="activityexport">Export</button>
-				</div>
+    <!-- Prompt box -->
+    <div id="prompt" class="modal">
+      <!-- Modal content -->
+      <div class="prompt-content">
+        <a href="#" id="prompt-close" class="btn-link">×</a>
+        <p id="prompt-text"></p>
+        <input id="prompt-val" type="text" size="50" value="" />
+        <button id="prompt-ok">Ok</button>
+      </div>
+    </div>
 
-				<table class="form">
-					<tr>
-						<td>Name:</td>
-						<td><input type="text" id="activityname" placeholder="Activity's name"/></td>
-					</tr>
-					<tr>
-						<td>Routing vehicule:</td>
-						<td><select id="activityvehicle"></select></td>
-					</tr>
-					<tr>
-						<td>Speed profile:</td>
-						<td>
-							<select id="method">
-								<option value="refspeeds">refspeeds</option>
-								<option value="linear">linear</option>
-								<option value="power">power</option>
-								<option selected="selected" value="polynomial">polynomial</option>
-							</select>
-						</td>
-					</tr>
-				</table>
+    <div id="listdiv">
+      <h2>Saved activities:</h2>
+      <select id="activities">
+        </select>
+      <a href="#" id="activityup" class="btn-link movea" title="Move up">&#x2c4;</a>
+      <a href="#" id="activitydown" class="btn-link movea" title="Move down">&#x2c5;</a>
+      <div id="activities-btns">
+        <button id="activitydel">Delete</button>
+        <button id="activityreset">Reset Defaults</button>
+        <button id="activityexportall">Export All</button>
+        <button id="activityimport">Import</button>
+        <img id="savingtxt" class="help-b" src="img/help.png" alt="help" />
+      </div>
+      <div class="text">
+        <p id="savingtxt-help" class="help-p">
+          The activities modifications you save are stored in your browser's local storage. This way you will find them every time you visit WTracks with that same browser. If you visit WTracks from a different device it will not have access to this storage. To your activities between devices or browsers, use the import and export buttons.
+        </p>
+      </div>
 
-				<div class="text">
-					<p>
-						Speed will be computed using the following formula:
-					</p>
-				</div>
+    </div>
+    <div id="editordiv">
+      <h2>Edit activity:</h2>
+      <div id="editor-btns">
+        <button id="activitynew">New</button>
+        <button id="activitysave">Save</button>
+        <button id="activityexport">Export</button>
+      </div>
 
-				<div id="spformula">
-				</div>
+      <table class="form">
+        <tr>
+          <td>Name:</td>
+          <td><input type="text" id="activityname" placeholder="Activity's name" /></td>
+        </tr>
+        <tr>
+          <td>Routing vehicule:</td>
+          <td><select id="activityvehicle"></select></td>
+        </tr>
+        <tr>
+          <td>Speed profile:</td>
+          <td>
+            <select id="method">
+                <option value="refspeeds">refspeeds</option>
+                <option value="linear">linear</option>
+                <option value="power">power</option>
+                <option selected="selected" value="polynomial">polynomial</option>
+              </select>
+          </td>
+        </tr>
+      </table>
 
-				<div class="graphdiv">
-					<div class="graph"></div>
-				</div>
+      <div class="text">
+        <p>
+          Speed will be computed using the following formula:
+        </p>
+      </div>
 
-				<h2>Compute speed profile:</h2>
+      <div id="spformula">
+      </div>
 
-				<div class="text">
-					<p>
-						<img id="computetxt" class="help-b" src="img/help.png" alt="help"/>
-					</p>
-					<p id="computetxt-help" class="help-p">
-						Use our engine to compute a speed profile based on a recorded GPS track. This track should have elevation and timing data. Select the activity's speed profile type in the activity edition form above, upload your track below, optionally change the engine parameters, and click "Compute" button. Don't forget to save your activity if you want to reuse it later.
-					</p>
-				</div>
+      <div class="graphdiv">
+        <div class="graph"></div>
+      </div>
 
-				<table class="form">
-					<tr>
-						<td>Input data:</td>
-						<td>
-							<p>Ref. speeds:
-							<select id="data">
-							</select></p>or<p>
-							Track file:
-							<input type="file" id="trackfile"></p>
-						</td>
-					</tr>
-					<tr>
-						<td>Polynomial degree:</td>
-						<td>
-							<select id="degree">
-								<option value="1">1</option>
-								<option value="2" selected="selected">2</option>
-								<option value="3">3</option>
-								<option value="4">4</option>
-								<option value="5">5</option>
-								<option value="6">6</option>
-								<option value="7">7</option>
-								<option value="8">8</option>
-								<option value="9">9</option>
-								<option value="10">10</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>Iterations:</td>
-						<td>
-							<select id="iterations">
-								<option value="1" selected="selected">1</option>
-								<option value="2">2</option>
-								<option value="3">3</option>
-								<option value="4">4</option>
-								<option value="5">5</option>
-								<option value="6">6</option>
-								<option value="7">7</option>
-								<option value="8">8</option>
-								<option value="9">9</option>
-								<option value="10">10</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>Pruning:</td>
-						<td>
-							<select id="pruning">
-								<option value="0">0</option>
-								<option value="0.1">0.1</option>
-								<option value="0.2">0.2</option>
-								<option value="0.3" selected="selected">0.3</option>
-								<option value="0.4">0.4</option>
-								<option value="0.5">0.5</option>
-								<option value="0.6">0.6</option>
-								<option value="0.7">0.7</option>
-								<option value="0.8">0.8</option>
-								<option value="0.9">0.9</option>
-								<option value="1">1</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td></td>
-						<td><button id="resetcompute">Reset parameters</button></td>
-					</tr>
-				</table>
-				<p>
-  				<button id="compute">Compute</button>
-				</p>
-  		</div>
-			<div id="footer">
-				<a href="." class="btn-link">&lt;&lt; Back to WTracks editor</a>
-			</div>
-	</div>
-		<script src="js/activities.js"></script>
-	</body>
+      <h2>Compute speed profile:</h2>
+
+      <div class="text">
+        <p>
+          <img id="computetxt" class="help-b" src="img/help.png" alt="help" />
+        </p>
+        <p id="computetxt-help" class="help-p">
+          Use our engine to compute a speed profile based on a recorded GPS track. This track should have elevation and timing data. Select the activity's speed profile type in the activity edition form above, upload your track below, optionally change the engine, and click "Compute" button. Don't forget to save your activity if you want to reuse it later.
+        </p>
+      </div>
+
+      <table class="form">
+        <tr>
+          <td>Input data:</td>
+          <td>
+            <p>Ref. speeds:
+              <select id="data">
+              </select></p>or
+            <p>
+              Track file:
+              <input type="file" id="trackfile"></p>
+          </td>
+        </tr>
+        <tr>
+          <td>Polynomial degree:</td>
+          <td>
+            <select id="degree">
+                <option value="1">1</option>
+                <option value="2" selected="selected">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Iterations:</td>
+          <td>
+            <select id="iterations">
+                <option value="1" selected="selected">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Pruning:</td>
+          <td>
+            <select id="pruning">
+                <option value="0">0</option>
+                <option value="0.1">0.1</option>
+                <option value="0.2">0.2</option>
+                <option value="0.3" selected="selected">0.3</option>
+                <option value="0.4">0.4</option>
+                <option value="0.5">0.5</option>
+                <option value="0.6">0.6</option>
+                <option value="0.7">0.7</option>
+                <option value="0.8">0.8</option>
+                <option value="0.9">0.9</option>
+                <option value="1">1</option>
+              </select>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><button id="resetcompute">Reset parameters</button></td>
+        </tr>
+      </table>
+      <p>
+        <button id="compute">Compute</button>
+      </p>
+    </div>
+    <div id="footer">
+      <a href="." class="btn-link">&lt;&lt; Back to WTracks editor</a>
+    </div>
+  </div>
+  <script src="js/activities.js"></script>
+</body>
+
 </html>

@@ -4,11 +4,13 @@ function log(msg) {
     console.log(msg);
   }
 }
+
 function error(msg) {
   if (console && console.error) {
     console.error(msg);
   }
 }
+
 function warn(msg) {
   if (console && console.warn) {
     console.warn(msg);
@@ -36,7 +38,7 @@ function isSafari() {
 function getParameterByName(name, defaultValue) {
   name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
   var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-      results = regex.exec(location.search);
+    results = regex.exec(location.search);
   return results === null ? (isUnset(defaultValue) ? defaultValue : "") : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
@@ -55,7 +57,7 @@ function addSelectOption(select, optval) {
 function selectOption(select, optval) {
   jqselect = $(select);
   jqselect.children(":selected").prop("selected", false);
-  jqselect.children("option[value='"+optval+"']").prop("selected", true);
+  jqselect.children("option[value='" + optval + "']").prop("selected", true);
 }
 
 // get checkbox status
@@ -69,13 +71,13 @@ function setChecked(selector, val) {
 /* ----------------------- Local storage -------------------------- */
 // Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent
 window.cookieconsent_options = {
-  "message":"This website uses cookies to ensure you get the best experience on our website",
-  "dismiss":"Got it!",
-  "learnMore":"More",
-  "link":"doc/#privacy",
-  "target":"_blank",
+  "message": "This website uses cookies to ensure you get the best experience on our website",
+  "dismiss": "Got it!",
+  "learnMore": "More",
+  "link": "doc/#privacy",
+  "target": "_blank",
   //"container":"#map",
-  "theme":"dark-bottom"
+  "theme": "dark-bottom"
 };
 
 function canValBeSaved() {
@@ -95,6 +97,7 @@ function storeVal(name, val) {
     }
   }
 }
+
 function storeJsonVal(name, val) {
   if (JSON && JSON.stringify) {
     v = JSON.stringify(val);
@@ -106,6 +109,7 @@ function getVal(name, defval) {
   var v = window.localStorage ? window.localStorage.getItem(name) : undefined;
   return isUnset(v) ? defval : v;
 }
+
 function getJsonVal(name, defval) {
   var v = getVal(name);
   var val = v && JSON && JSON.parse ? JSON.parse(v) : undefined;
@@ -125,7 +129,7 @@ function logGA() {
       var i = 0;
       var logStr = "ga(";
       while (i < args.length) {
-        if (i>0) {
+        if (i > 0) {
           logStr += ", ";
         }
         var argv = args[i++];
@@ -142,10 +146,17 @@ function logGA() {
 }
 
 function initGoogleAnalytics(trackingid) {
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  (function(i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r;
+    i[r] = i[r] || function() {
+      (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date();
+    a = s.createElement(o),
+      m = s.getElementsByTagName(o)[0];
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
   /* --------------- LOGS ?? ------------- */
   var doLogGA = false;
@@ -179,11 +190,11 @@ function initGoogleAnalytics(trackingid) {
  * "mailto:<name>@<domain>?subject=<subject>
  */
 function setEmailListener(selector, name, domain, subject) {
-  $(selector).click(function(){
+  $(selector).click(function() {
     function doEmail(d, i, tail) {
       location.href = "mailto:" + i + "@" + d + tail;
     }
-    doEmail(domain, name, "?subject="+subject);
+    doEmail(domain, name, "?subject=" + subject);
     return false;
   });
 }
@@ -191,12 +202,13 @@ function setEmailListener(selector, name, domain, subject) {
 /* ------------------------------ Encoding ---------------------------------*/
 function n10dLocation() {
   var res = window.location.toString();
-  res = res.replace(/\?.*$/,"").replace(/\#.*$/,"");
+  res = res.replace(/\?.*$/, "").replace(/\#.*$/, "");
   res = res.replace(/^.*:\/\//, "//");
   res = res.replace(/index.html$/, "");
   res = res.replace(/\/*$/, "/");
   return res;
 }
+
 function getLocalCode() {
   var res = getVal("wtracks.code");
   return res;
@@ -216,9 +228,11 @@ function strxor(s, k) {
   }
   return enc;
 }
+
 function strencode(s, k) {
   return encodeURIComponent(strxor(s, k));
 }
+
 function strdecode(s1, s2) {
   var islocal = (window.location.toString().indexOf("file:") === 0) ||
     (window.location.toString().indexOf(".dev.local:") > 0);
@@ -232,15 +246,17 @@ function strdecode(s1, s2) {
 function supportsBase64() {
   return btoa && atob ? true : false;
 }
+
 function b64EncodeUnicode(str) {
-    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
-        return String.fromCharCode('0x' + p1);
-    }));
+  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+    return String.fromCharCode('0x' + p1);
+  }));
 }
+
 function b64DecodeUnicode(str) {
-    return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
+  return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
 }
 
 function copyToClipboard(msg, text) {
@@ -251,6 +267,8 @@ function copyToClipboard(msg, text) {
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker
-           .register('./service-worker.js')
-           .then(function() { console.log('Service Worker Registered'); });
+    .register('./service-worker.js')
+    .then(function() {
+      console.log('Service Worker Registered');
+    });
 }
