@@ -12,7 +12,7 @@ var config = {
   display: {
     // default display settings
     zoom: 14,
-    map: "Google Terrain",
+    map: "Sigma Cycle",
     pos: { lat: "-17.857677", lng: "177.201950" }
   },
   maxfilesize: 1024 * 1024, // 1GB
