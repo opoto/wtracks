@@ -118,31 +118,37 @@ function getJsonVal(name, defval) {
 
 /* ---------------------- GOOGLE ANALYTICS ------------------------- */
 
+var originGA;
+function wrappedGA() {
+  var args = ga.arguments;
+  try {
+    var i = 0;
+    var logStr = "ga(";
+    while (i < args.length) {
+      if (i > 0) {
+        logStr += ", ";
+      }
+      var argv = args[i++];
+      logStr += argv ? argv.toString() : "undefined";
+    }
+    logStr += ")";
+    log(logStr);
+  } catch (e) {
+    log(" !ERR")
+  }
+
+  originGA.apply(this, args);
+}
+
 // Log all google analytics calls
 function logGA() {
-  //EVENT: ga('send', 'event', [eventCategory], [eventAction], [eventLabel], [eventValue], [fieldsObject]);
-  var realGaFunc = ga;
-  window.ga = function() {
-
-    var args = ga.arguments;
-    try {
-      var i = 0;
-      var logStr = "ga(";
-      while (i < args.length) {
-        if (i > 0) {
-          logStr += ", ";
-        }
-        var argv = args[i++];
-        logStr += argv ? argv.toString() : "undefined";
-      }
-      logStr += ")";
-      log(logStr);
-    } catch (e) {
-      log(" !ERR")
-    }
-
-    realGaFunc.apply(this, args);
+  if (ga === wrappedGA) {
+    // already wrapped
+    return;
   }
+  //EVENT: ga('send', 'event', [eventCategory], [eventAction], [eventLabel], [eventValue], [fieldsObject]);
+  originGA = ga;
+  window.ga = wrappedGA;
 }
 
 function initGoogleAnalytics(trackingid) {
@@ -159,7 +165,7 @@ function initGoogleAnalytics(trackingid) {
   })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
   /* --------------- LOGS ?? ------------- */
-  var doLogGA = false;
+  var doLogGA = getLocalCode();
   if (doLogGA) {
     // loading of analytics.js is asynchronous, we wrap it several times:
     logGA(); // now

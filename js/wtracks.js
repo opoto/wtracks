@@ -1285,7 +1285,7 @@ $("#edit-marker").click(function(e) {
 });
 
 $("#elevate").click(function(e) {
-  ga('send', 'event', 'tool', 'elevate', undefined, track.getLatLngs());
+  ga('send', 'event', 'tool', 'elevate', undefined, track.getLatLngs().length);
   $("#menu").hide();
   if (track) elevate(track.getLatLngs(), function() {
     polystats.updateStatsFrom(0);
@@ -1294,7 +1294,7 @@ $("#elevate").click(function(e) {
   return false;
 });
 $("#flatten").click(function(e) {
-  ga('send', 'event', 'tool', 'flatten', undefined, track.getLatLngs());
+  ga('send', 'event', 'tool', 'flatten', undefined, track.getLatLngs().length);
   $("#menu").hide();
   flatten();
   saveState();
@@ -1302,7 +1302,7 @@ $("#flatten").click(function(e) {
 });
 
 $("#revert").click(function(e) {
-  ga('send', 'event', 'tool', 'revert', undefined, track.getLatLngs());
+  ga('send', 'event', 'tool', 'revert', undefined, track.getLatLngs().length);
   $("#menu").hide();
   revert();
   saveState();

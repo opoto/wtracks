@@ -71,6 +71,7 @@ $("#activities").change(displaySelectedActivity);
 $("#activitydel").click(function() {
   var name = $("#activities").children(':selected').val();
   if (confirm("Delete " + name + "?")) {
+    ga('send', 'event', 'activity', 'delete', undefined, activitiesLen());
     activities[name] = undefined;
     storeJsonVal("wt.activities", activities);
     activityname = $("#activities").children(':selected').remove();
