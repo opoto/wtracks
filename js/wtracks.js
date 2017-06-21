@@ -1816,10 +1816,14 @@ function checkGraphHopperCredit(e) {
 
   var message;
   if (gh.credits < 0) {
+    if (!isUnset(e)) {{
+      ga('send', 'event', 'gh', 'wt-max');
+    }
     message = "WTracks's GraphHopper quota exceeded";
   } else if (gh.credits >= MAX_GH_CREDITS) {
     message = "You exceeded your GraphHopper quota limit";
     if (!isUnset(e)) {
+      ga('send', 'event', 'gh', 'user-max');
       setEditMode(EDIT_NONE);
     }
   }
