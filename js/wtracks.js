@@ -1816,7 +1816,7 @@ function checkGraphHopperCredit(e) {
 
   var message;
   if (gh.credits < 0) {
-    if (!isUnset(e)) {{
+    if (!isUnset(e)) {
       ga('send', 'event', 'gh', 'wt-max');
     }
     message = "WTracks's GraphHopper quota exceeded";
