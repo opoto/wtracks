@@ -226,21 +226,25 @@ function newWaypoint(latlng, name, desc) {
       label.innerHTML = "<span class='popupfield'>Name:</span> ";
       var name = L.DomUtil.create('input', "popup-nameinput", label);
       name.type = "text";
-      name.value = marker.options.title ? marker.options.title : "";
+      $(name).val(marker.options.title ? marker.options.title : "");
       name.onkeyup = function() {
-        marker.options.title = name.value;
+        var nameval = $(name).val();
+        nameval = $('<div/>').text(nameval).html();
+        marker.options.title = nameval;
         var elt = marker.getElement();
-        elt.title = name.value;
-        elt.alt = name.value;
+        elt.title = nameval;
+        elt.alt = nameval;
       };
 
       // description
       label = L.DomUtil.create('div', "popupdiv", div);
       label.innerHTML = "<span class='popupfield'>Desc:</span> ";
       var desc = L.DomUtil.create('textarea', "popup-descinput", label);
-      desc.value = marker.options.desc ? marker.options.desc : "";
+      $(desc).val(marker.options.desc ? marker.options.desc : "");
       desc.onkeyup = function() {
-        marker.options.desc = desc.value;
+        var descval = $(desc).val();
+        descval = $('<div/>').text(descval).html();
+        marker.options.desc = descval;
       };
 
     } else {
@@ -1639,7 +1643,7 @@ function getLatLngPopupContent(latlng, deletefn, toadd) {
     var altinput = L.DomUtil.create('input', "", p);
     altinput.type = "text";
     altinput.size = "5";
-    altinput.value = isUndefined(latlng.alt) ? "" : latlng.alt;
+    $(altinput).val(isUndefined(latlng.alt) || !$.isNumeric(latlng.alt) ? "" : latlng.alt);
     altinput.onkeyup = function() {
       try {
         latlng.alt = $.isNumeric(altinput.value) ? parseFloat(altinput.value) : undefined;
