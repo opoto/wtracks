@@ -226,6 +226,7 @@ function newWaypoint(latlng, name, desc) {
       label.innerHTML = "<span class='popupfield'>Name:</span> ";
       var name = L.DomUtil.create('input', "popup-nameinput", label);
       name.type = "text";
+      name.placeholder = "Textual name";
       $(name).val(marker.options.title ? marker.options.title : "");
       name.onkeyup = function() {
         var nameval = $(name).val();
@@ -240,10 +241,11 @@ function newWaypoint(latlng, name, desc) {
       label = L.DomUtil.create('div', "popupdiv", div);
       label.innerHTML = "<span class='popupfield'>Desc:</span> ";
       var desc = L.DomUtil.create('textarea', "popup-descinput", label);
+      desc.placeholder = "Textual/HTML description";
       $(desc).val(marker.options.desc ? marker.options.desc : "");
       desc.onkeyup = function() {
         var descval = $(desc).val();
-        descval = $('<div/>').text(descval).html();
+        //descval = $('<div/>').text(descval).html();
         marker.options.desc = descval;
       };
 
@@ -1642,6 +1644,7 @@ function getLatLngPopupContent(latlng, deletefn, toadd) {
     p.innerHTML = "<span class='popupfield'>Altitude:</span> ";
     var altinput = L.DomUtil.create('input', "", p);
     altinput.type = "text";
+    altinput.placeholder = "Numeric altitude";
     altinput.size = "5";
     $(altinput).val(isUndefined(latlng.alt) || !$.isNumeric(latlng.alt) ? "" : latlng.alt);
     altinput.onkeyup = function() {
