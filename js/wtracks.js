@@ -259,7 +259,7 @@ function newWaypoint(latlng, name, desc) {
 
       // description
       if (marker.options.desc) {
-        var popupDesc = L.DomUtil.create('div', "popup-desc", div);
+        var popupDesc = L.DomUtil.create('pre', "popup-desc", div);
         popupDesc.innerHTML = marker.options.desc;
       }
     }

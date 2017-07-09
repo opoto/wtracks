@@ -280,6 +280,7 @@ a.button {
 .popup-desc {
   max-height: 10em;
   overflow: auto;
+  font-family: "Helvetica Neue",Arial,Helvetica,sans-serif;
 }
 
 #status {
