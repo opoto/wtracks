@@ -976,6 +976,11 @@ function getProvider(name) {
         format: 'image/jpeg',
         attribution: "&copy; Institut Cartogràfic i Geològic de Catalunya - ICGC"
       });
+    } else if (name == 'eu:huts') {
+      p = L.tileLayer('//maps.refuges.info/hiking/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> | <a href="http://wiki.openstreetmap.org/wiki/Hiking/mri">MRI</a>'
+      });
   }
   if (!p) {
     p = getProvider("osm:std");
@@ -1003,7 +1008,8 @@ var baseLayers = {
   "FR IGN express": getProvider("fr:ignexpress"),
   //"FR IGN aerial": getProvider("fr:ignimagery")
   "ES IGN": getProvider("spain:ignraster"),
-  "ES ICGC": getProvider("spain:icgc")
+  "ES ICGC": getProvider("spain:icgc"),
+  "EU HikingHuts": getProvider("eu:huts"),
 };
 var overlays = {
   "Hillshading": getProvider("wmf:hills"),
