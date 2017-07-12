@@ -976,11 +976,11 @@ function getProvider(name) {
         format: 'image/jpeg',
         attribution: "&copy; Institut Cartogràfic i Geològic de Catalunya - ICGC"
       });
-    } else if (name == 'eu:huts') {
-      p = L.tileLayer('//maps.refuges.info/hiking/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> | <a href="http://wiki.openstreetmap.org/wiki/Hiking/mri">MRI</a>'
-      });
+  } else if (name == 'eu:huts') {
+    p = L.tileLayer('//maps.refuges.info/hiking/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> | <a href="http://wiki.openstreetmap.org/wiki/Hiking/mri">MRI</a>'
+    });
   }
   if (!p) {
     p = getProvider("osm:std");
