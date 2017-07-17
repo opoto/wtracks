@@ -282,7 +282,7 @@ a.button {
   overflow: auto;
   font-family: "Helvetica Neue",Arial,Helvetica,sans-serif;
   word-wrap: break-word;
-  white-space: normal;
+  white-space: pre-wrap;
 }
 
 #status {
