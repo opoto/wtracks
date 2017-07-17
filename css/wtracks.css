@@ -281,6 +281,8 @@ a.button {
   max-height: 10em;
   overflow: auto;
   font-family: "Helvetica Neue",Arial,Helvetica,sans-serif;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 #status {
