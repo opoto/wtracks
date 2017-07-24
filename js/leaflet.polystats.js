@@ -378,9 +378,9 @@
 
     });
 
-    L.Util.PolyStats = PolyStats;
-    L.Util.polyStats = function(polyline, options) {
-        return new L.Util.PolyStats(polyline, options);
+    L.PolyStats = PolyStats;
+    L.polyStats = function(polyline, options) {
+        return new L.PolyStats(polyline, options);
     };
 
 }, window));

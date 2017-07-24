@@ -197,7 +197,7 @@ function newTrack() {
   track = L.polyline([]);
   track.setStyle({ color: "#F00", dashColor: "#F00", });
   editLayer.addLayer(track);
-  polystats = L.Util.polyStats(track, {
+  polystats = L.polyStats(track, {
     chrono: true,
     speedProfile: getCurrentActivity().speedprofile,
     onUpdate: showStats,
@@ -311,7 +311,7 @@ function prepareTrim() {
   $("#trim-range").val(0);
   $(".no-trim").prop('disabled', false);
   var trimType = $("#trim-type")[0].selectedIndex;
-  polytrim = L.Util.polyTrim(track, trimType);
+  polytrim = L.polyTrim(track, trimType);
 }
 
 function trimTrack(e) {

@@ -85,9 +85,9 @@
         }
     });
 
-    L.Util.PolyTrim = PolyTrim;
-    L.Util.polyTrim = function(polyline, direction) {
-        return new L.Util.PolyTrim(polyline, direction);
+    L.PolyTrim = PolyTrim;
+    L.polyTrim = function(polyline, direction) {
+        return new L.PolyTrim(polyline, direction);
     };
 
 }, window));
