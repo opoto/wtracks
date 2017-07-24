@@ -998,8 +998,6 @@ var baseLayers = {
   "OSM HikeBike": getProvider("wmf:hikebike"),
   "ESRI Topo": getProvider("esri:worldtopomap"),
   "ESRI Street": getProvider("esri:worldstreetmap"),
-  "MTB (*)": getProvider("mtbmap"),
-  "Map1.eu (*)": getProvider("map1.eu"),
   "Google roads": getProvider('google:roadmap'),
   "Google Terrain": getProvider('google:terrain'),
   "Google Satellite": getProvider('google:satellite'),
@@ -1013,11 +1011,26 @@ var baseLayers = {
 };
 var overlays = {
   "Hillshading": getProvider("wmf:hills"),
-  "Hiking Routes (*)": getProvider("lv:hike"),
-  "Cycling Routes (*)": getProvider("lv:bike"),
 };
 
+var isHttpOk = (window.location.protocol != "https:");
+if (isHttpOk) {
+  $.extend(baseLayers,{
+    "MTB (*)": getProvider("mtbmap"),
+    "Map1.eu (*)": getProvider("map1.eu")
+  });
+  $.extend(overlays,{
+    "Hiking Routes (*)": getProvider("lv:hike"),
+    "Cycling Routes (*)": getProvider("lv:bike")
+  });
+}
+
 L.control.layers(baseLayers, overlays).addTo(map);
+if (isHttpOk) {
+  $(".leaflet-control-layers-list").append("<div class='leaflet-control-layers-separator'></div>");
+  $(".leaflet-control-layers-list").append("<div>(*): no https</div>");
+}
+
 map.addLayer(baseLayers[getVal("wt.baseLayer", config.display.map)] || baseLayers[config.display.map]);
 map.on("baselayerchange", function(e) {
   ga('send', 'event', 'map', 'baselayer', e.name);
@@ -1061,9 +1074,6 @@ if (JSON.parse && JSON.stringify) {
 
 }
 restorePosition();
-
-$(".leaflet-control-layers-list").append("<div class='leaflet-control-layers-separator'></div>");
-$(".leaflet-control-layers-list").append("<div>(*): no https</div>");
 
 // http://www.datasciencetoolkit.org/developerdocs#coordinates2statistics API - free
 function elevateDSTK(pt, cb) {
