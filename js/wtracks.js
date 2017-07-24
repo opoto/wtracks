@@ -1032,8 +1032,14 @@ if (isHttpOk) {
 }
 
 map.addLayer(baseLayers[getVal("wt.baseLayer", config.display.map)] || baseLayers[config.display.map]);
+var layerInit = true;
 map.on("baselayerchange", function(e) {
-  ga('send', 'event', 'map', 'baselayer', e.name);
+  var eventType = 'change';
+  if (layerInit) {
+    eventType = 'init';
+    layerInit = false;
+  }
+  ga('send', 'event', 'map', eventType, e.name);
   saveValOpt("wt.baseLayer", e.name);
   $(".leaflet-control-layers").removeClass("leaflet-control-layers-expanded");
 });
