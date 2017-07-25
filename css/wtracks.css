@@ -265,7 +265,7 @@ a.button {
 .popupfield {
   width: 55px;
   display: inline-table;
-  vertical-align: top;
+  vertical-align: middle;
 }
 .popup-nameinput {
   width: 15em;
@@ -283,6 +283,16 @@ a.button {
   font-family: "Helvetica Neue",Arial,Helvetica,sans-serif;
   word-wrap: break-word;
   white-space: pre-wrap;
+}
+.rich-text {
+  vertical-align: middle;
+}
+div.trumbowyg-editor {
+  min-height: 200px;
+  padding: 5px;
+}
+.trumbowyg-box {
+  min-height: 200px;
 }
 
 #status {

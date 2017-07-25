@@ -239,7 +239,11 @@ function newWaypoint(latlng, name, desc) {
 
       // description
       label = L.DomUtil.create('div', "popupdiv", div);
-      label.innerHTML = "<span class='popupfield'>Desc:</span> ";
+      label.innerHTML = "<span class='popupfield'>Desc:</span>";
+      var richtxtlbl = L.DomUtil.create('label', "rich-text", label);
+      var richtxtcb = L.DomUtil.create('input', "rich-text", richtxtlbl);
+      richtxtcb.type = 'checkbox';
+      $(richtxtlbl).append("Rich text");
       var desc = L.DomUtil.create('textarea', "popup-descinput", label);
       desc.placeholder = "Textual/HTML description";
       $(desc).val(marker.options.desc ? marker.options.desc : "");
@@ -248,6 +252,31 @@ function newWaypoint(latlng, name, desc) {
         //descval = $('<div/>').text(descval).html();
         marker.options.desc = descval;
       };
+
+      var setRichDesc = function() {
+        $(desc).trumbowyg({
+            btns: [
+              'formatting',
+              ['strong', 'em', 'underline', 'removeformat'],
+              ['link', 'insertImage'],
+              'btnGrp-lists',
+              ['horizontalRule']
+            ],
+            autogrow: false
+        }).on('tbwchange', desc.onkeyup);
+      };
+
+      $(richtxtcb).change(function(){
+        if (isChecked(richtxtcb)) {
+          setRichDesc();
+        } else {
+          $(".popup-descinput").trumbowyg('destroy');
+        }
+      });
+      if (marker.options.desc && marker.options.desc.indexOf("<") > 0) {
+        setChecked(richtxtcb, 'checked');
+        setRichDesc();
+      }
 
     } else {
 
