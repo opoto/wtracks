@@ -503,7 +503,7 @@ function mergeRouteToTrack() {
   if (!route) return;
   var initlen = track.getLatLngs().length;
   var pts = route._selectedRoute ? route._selectedRoute.coordinates : [];
-  pts = L.PolyUtil.prune(pts, config.compressdefault);
+  pts = L.PolyPrune.prune(pts, config.compressdefault);
   ga('send', 'event', 'edit', 'merge', undefined, pts.length);
   route.remove();
   route = undefined;
@@ -623,7 +623,7 @@ $("#compress").click(function() {
   if (track) {
     setEditMode(EDIT_NONE);
     var pts = track.getLatLngs();
-    var pruned = L.PolyUtil.prune(pts, tolerance);
+    var pruned = L.PolyPrune.prune(pts, tolerance);
     var removedpts = (pts.length - pruned.length);
     ga('send', 'event', 'tool', 'compress', undefined, removedpts);
     if (removedpts > 0) {
