@@ -273,7 +273,7 @@ function newWaypoint(latlng, name, desc) {
           $(".popup-descinput").trumbowyg('destroy');
         }
       });
-      if (marker.options.desc && marker.options.desc.indexOf("<") > 0) {
+      if (marker.options.desc && marker.options.desc.indexOf("<") >= 0) {
         setChecked(richtxtcb, 'checked');
         setRichDesc();
       }
