@@ -254,7 +254,7 @@ function newWaypoint(latlng, name, desc) {
       };
 
       var setRichDesc = function() {
-        var h = $(".popup-descinput").height();
+        var h = $(desc).height();
         $(desc).attr('origheight', h);
         $(desc).trumbowyg({
             btns: [
