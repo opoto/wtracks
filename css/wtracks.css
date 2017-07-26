@@ -268,11 +268,11 @@ a.button {
   vertical-align: middle;
 }
 .popup-nameinput {
-  width: 15em;
+  width: 210px;
 }
 .popup-descinput {
-  width: 24em;
-  height: 10em;
+  width: 285px;
+  height: 120px;
 }
 .popup-name {
   font-weight: bold;

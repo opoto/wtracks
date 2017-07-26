@@ -254,7 +254,7 @@ function newWaypoint(latlng, name, desc) {
       };
 
       var setRichDesc = function() {
-        var h = $(desc).height();
+        var h = Math.max(120, $(desc).height());
         $(desc).attr('origheight', h);
         $(desc).trumbowyg({
             btns: [
