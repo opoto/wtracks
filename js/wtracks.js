@@ -254,6 +254,8 @@ function newWaypoint(latlng, name, desc) {
       };
 
       var setRichDesc = function() {
+        var h = $(".popup-descinput").height();
+        $(desc).attr('origheight', h);
         $(desc).trumbowyg({
             btns: [
               'formatting',
@@ -264,6 +266,7 @@ function newWaypoint(latlng, name, desc) {
             ],
             autogrow: false
         }).on('tbwchange', desc.onkeyup);
+        $("div.trumbowyg-editor, .trumbowyg-box").css('min-height', h);
       };
 
       $(richtxtcb).change(function(){
@@ -271,6 +274,7 @@ function newWaypoint(latlng, name, desc) {
           setRichDesc();
         } else {
           $(".popup-descinput").trumbowyg('destroy');
+          $(".popup-descinput").height($(".popup-descinput").attr('origheight'));
         }
       });
       if (marker.options.desc && marker.options.desc.indexOf("<") >= 0) {

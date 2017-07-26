@@ -288,11 +288,7 @@ a.button {
   vertical-align: middle;
 }
 div.trumbowyg-editor {
-  min-height: 200px;
   padding: 5px;
-}
-.trumbowyg-box {
-  min-height: 200px;
 }
 
 #status {
