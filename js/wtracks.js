@@ -265,8 +265,11 @@ function newWaypoint(latlng, name, desc) {
               ['horizontalRule']
             ],
             autogrow: false
-        }).on('tbwchange', desc.onkeyup);
-        $("div.trumbowyg-editor, .trumbowyg-box").css('min-height', h);
+        })
+        .on('tbwchange', desc.onkeyup)
+        .on('tbwinit', function() {
+          $("div.trumbowyg-editor, .trumbowyg-box").css('min-height', h);
+        });
       };
 
       $(richtxtcb).change(function(){
