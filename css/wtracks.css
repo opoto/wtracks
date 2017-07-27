@@ -284,6 +284,10 @@ a.button {
   word-wrap: break-word;
   white-space: pre-wrap;
 }
+.popup-desc p, .trumbowyg-editor p {
+    margin: 0 0 6px 0;
+}
+
 .rich-text {
   vertical-align: middle;
 }
