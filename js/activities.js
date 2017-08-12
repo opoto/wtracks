@@ -480,7 +480,7 @@ function importGeoJson(geojson) {
   refspeeds = sp.refspeeds;
   displaySpeedProfile(activity.speedprofile);
 }
-var fileloader = L.Util.fileLoader(undefined, {
+var fileloader = L.fileLoader(undefined, {
   layer: importGeoJson,
   addToMap: false,
   fileSizeLimit: 1024 * 1024,
