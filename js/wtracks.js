@@ -631,6 +631,7 @@ function setEditMode(mode) {
       break;
     case EDIT_MARKER:
       $("#edit-marker").addClass("control-selected");
+      $("#map").css("cursor", "url(img/marker-icon.cur),text");
       $("#map").css("cursor", "url(img/marker-icon.png) 7 25,text");
       editableWaypoints(true);
       break;
