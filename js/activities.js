@@ -267,8 +267,8 @@ function addRefSpeedLine(i) {
   var p = activity.speedprofile.parameters[i];
   $("#spformula table tbody").append("<tr><td></td><td></td></tr>");
   var tr = $("#spformula table tbody tr:last-of-type()")[0];
-  tr.children[0].append(refSpeedInput(p[0], i, 0));
-  tr.children[1].append(refSpeedInput(p[1], i, 1));
+  $(tr.children[0]).append(refSpeedInput(p[0], i, 0));
+  $(tr.children[1]).append(refSpeedInput(p[1], i, 1));
   var delrs = document.createElement("a");
   delrs.setAttribute("href", "#");
   delrs.setAttribute("class", "btn-link");
@@ -285,7 +285,7 @@ function addRefSpeedLine(i) {
     delRefSpeed(index);
     e.preventDefault();
   });
-  tr.children[1].append(delrs);
+  $(tr.children[1]).append(delrs);
 }
 
 function addRefSpeed() {
