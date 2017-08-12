@@ -241,7 +241,7 @@
         },
 
         onAdd: function (map) {
-            this.loader = L.fileLoader(map, this.options);
+            this.loader = L.FileLayer.fileLoader(map, this.options);
 
             this.loader.on('data:loaded', function (e) {
                 // Fit bounds after loading
@@ -330,9 +330,10 @@
         }
     });
 
-    L.FileLoader = FileLoader;
-    L.fileLoader = function (map, options) {
-        return new L.FileLoader(map, options);
+    L.FileLayer = {};
+    L.FileLayer.FileLoader = FileLoader;
+    L.FileLayer.fileLoader = function (map, options) {
+        return new L.FileLayer.FileLoader(map, options);
     };
 
     L.Control.FileLayerLoad = FileLayerLoad;
