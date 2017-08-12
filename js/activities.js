@@ -12,7 +12,7 @@ if (!activities) {
 
 /*** dummy track required for polystats ***/
 var track = L.polyline([]);
-var polystats = L.Util.polyStats(track, {
+var polystats = L.polyStats(track, {
   chrono: true
 });
 
@@ -41,7 +41,7 @@ function saveActivity(name, a) {
   }
   selectOption($("#activities"), name);
 
-  if (a.speedprofile.method == L.Util.PolyStats.REFSPEEDS) {
+  if (a.speedprofile.method == L.PolyStats.REFSPEEDS) {
     sortSpeedRefs(a.speedprofile.parameters);
     displayFormula(a.speedprofile.method);
   }
@@ -233,7 +233,7 @@ $("#activitynew").click(function() {
     ++index;
     activityname = "New#" + index;
   }
-  activity = createActivity("feet", L.Util.PolyStats.POLYNOMIAL, [1.2, -0.002, -0.002]);
+  activity = createActivity("feet", L.PolyStats.POLYNOMIAL, [1.2, -0.002, -0.002]);
   displayActivity();
 });
 
@@ -311,7 +311,7 @@ function genericSpFormula(method, defparams) {
 }
 
 var spFormula = {};
-spFormula[L.Util.PolyStats.REFSPEEDS] = {
+spFormula[L.PolyStats.REFSPEEDS] = {
   defaultFormulaParams: [
     [-35, 0.4722], [-20, 0.6944], [-12, 0.9722], [-10, 1.1111], [-6, 1.25],
     [-3, 1.25], [2, 1.1111], [6, 0.9722], [10, 0.8333], [19, 0.5555], [38, 0.2777]
@@ -336,21 +336,21 @@ spFormula[L.Util.PolyStats.REFSPEEDS] = {
     $("#spformula table tbody").scrollTop($("#spformula table tbody")[0].scrollHeight);
   }
 };
-spFormula[L.Util.PolyStats.LINEAR] = {
+spFormula[L.PolyStats.LINEAR] = {
   defaultFormulaParams: [0.2, 4],
   displayFormulaParams: function() {
     $("#spformula").html("speed = <input id='p0' type='text'/> * slope + <input id='p1' type='text'/>");
-    genericSpFormula(L.Util.PolyStats.LINEAR);
+    genericSpFormula(L.PolyStats.LINEAR);
   }
 };
-spFormula[L.Util.PolyStats.POWER] = {
+spFormula[L.PolyStats.POWER] = {
   defaultFormulaParams: [1, 2],
   displayFormulaParams: function() {
     $("#spformula").html("speed = <input id='p0' type='text'/> * slope ^ <input id='p1' type='text'/>");
-    genericSpFormula(L.Util.PolyStats.POWER);
+    genericSpFormula(L.PolyStats.POWER);
   }
 };
-spFormula[L.Util.PolyStats.POLYNOMIAL] = {
+spFormula[L.PolyStats.POLYNOMIAL] = {
   defaultFormulaParams: [1.1, -0.1, -0.001],
   displayFormulaParams: function() {
     var i = 0;
@@ -368,7 +368,7 @@ spFormula[L.Util.PolyStats.POLYNOMIAL] = {
       i++;
     }
     $("#spformula").html("speed = " + html);
-    genericSpFormula(L.Util.PolyStats.POLYNOMIAL);
+    genericSpFormula(L.PolyStats.POLYNOMIAL);
   }
 };
 
@@ -476,7 +476,7 @@ function updateMethod() {
 function importGeoJson(geojson) {
   importfnname = "computeSpeedProfileFromTrack";
   inputdata = geojson;
-  var sp = polystats[importfnname](inputdata, L.Util.PolyStats.REFSPEEDS);
+  var sp = polystats[importfnname](inputdata, L.PolyStats.REFSPEEDS);
   refspeeds = sp.refspeeds;
   displaySpeedProfile(activity.speedprofile);
 }
