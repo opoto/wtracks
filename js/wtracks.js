@@ -352,7 +352,6 @@ function prepareTrim() {
 
 function trimTrack(e) {
   var n = parseInt($("#trim-range").val());
-  ga('send', 'event', 'tool', 'trim', undefined, n);
   log("trimming " + n);
   $("#trim-txt").text(n + "/" + polytrim.getPolySize());
   $(".no-trim").prop('disabled', (n !== 0));
@@ -360,15 +359,20 @@ function trimTrack(e) {
 }
 
 function finishTrim() {
-  if (polytrim.getDirection() === polytrim.FROM_END) {
-    // From End
-    polystats.updateStatsFrom(track.getLatLngs().length - 1);
-  } else {
-    // From Start
-    polystats.updateStatsFrom(0);
+  var n = parseInt($("#trim-range").val());
+  if (n > 0) {
+    ga('send', 'event', 'tool', 'trim', undefined, n);
+    if (polytrim.getDirection() === polytrim.FROM_END) {
+      // From End
+      polystats.updateStatsFrom(track.getLatLngs().length - 1);
+    } else {
+      // From Start
+      polystats.updateStatsFrom(0);
+    }
+    saveState();
+    polytrim = undefined;
+    $("#trim-range").val(0);
   }
-  polytrim = undefined;
-  saveState();
 }
 
 $("#trim-range").on("change", trimTrack);
@@ -376,6 +380,10 @@ $("#trim-type").change(prepareTrim);
 
 /* ------------------------ MENU ---------------------------------- */
 
+function closeMenu() {
+  $("#menu").hide();
+  finishTrim();
+}
 $("#menu-button").click(function() {
   if (!$("#menu").is(":visible")) {
     setEditMode(EDIT_NONE);
@@ -384,14 +392,12 @@ $("#menu-button").click(function() {
     $("#menu").show();
     prepareTrim();
   } else {
-    $("#menu").hide();
-    finishTrim();
+    closeMenu();
   }
   return false;
 });
 $("#menu-close").click(function() {
-  $("#menu").hide();
-  finishTrim();
+  closeMenu();
   return false;
 });
 $("#track-new").click(function() {
@@ -549,6 +555,7 @@ function mergeRouteToTrack() {
   }
   elevate(pts, function() {
     polystats.updateStatsFrom(initlen);
+    saveState();
   });
 }
 
@@ -559,7 +566,7 @@ function setRouteStart(latlng) {
 
 function closeOverlays() {
   // close all
-  $("#menu").hide();
+  closeMenu();
   map.closePopup();
   hideElevation();
 }
@@ -667,6 +674,7 @@ $("#compress").click(function() {
       alert("Removed " + removedpts + " points out of " + pts.length + " (" + Math.round((removedpts / pts.length) * 100) + "%)");
       // switch to new values
       track.setLatLngs(pruned);
+      polystats.updateStatsFrom(0);
       saveState();
     } else {
       setStatus("Already optimized", { timeout: 3 });
@@ -1213,17 +1221,16 @@ function flatten() {
 }
 
 function revert() {
+  setStatus("Reverting..", { spinner: true });
   var points = track ? track.getLatLngs() : undefined;
   if (points && (points.length > 0)) {
-    setStatus("Reverting..", { spinner: true });
     var newpoints = [];
     for (var i = points.length - 1; i >= 0; i--) {
       newpoints.push(points[i]);
     }
     track.setLatLngs(newpoints);
-    polystats.updateStatsFrom(0);
-    clearStatus();
   }
+  clearStatus();
 }
 
 new L.Control.GeoSearch({
@@ -1362,6 +1369,7 @@ $("#flatten").click(function(e) {
   ga('send', 'event', 'tool', 'flatten', undefined, track.getLatLngs().length);
   $("#menu").hide();
   flatten();
+  polystats.updateStatsFrom(0);
   saveState();
   return false;
 });
@@ -1370,6 +1378,7 @@ $("#revert").click(function(e) {
   ga('send', 'event', 'tool', 'revert', undefined, track.getLatLngs().length);
   $("#menu").hide();
   revert();
+  polystats.updateStatsFrom(0);
   saveState();
   return false;
 });
