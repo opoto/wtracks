@@ -2079,6 +2079,21 @@ if (url) {
   restoreState();
 }
 
+var about = getVal("wt.about", undefined);
+var now = new Date();
+if (about) {
+  about = new Date(about);
+  if (now.getYear() != about.getYear()) {
+    // new year = new about !
+    about = undefined;
+  }
+}
+if (!about) {
+  storeVal("wt.about", now.toISOString());
+  $("#menu").show();
+  menu("about");
+}
+
 $(window).on("unload", function() {
   saveState();
 });
