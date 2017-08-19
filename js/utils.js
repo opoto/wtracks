@@ -118,66 +118,33 @@ function getJsonVal(name, defval) {
 
 /* ---------------------- GOOGLE ANALYTICS ------------------------- */
 
-var originGA;
-function wrappedGA() {
-  var args = ga.arguments;
-  try {
-    var i = 0;
-    var logStr = "ga(";
-    while (i < args.length) {
-      if (i > 0) {
-        logStr += ", ";
-      }
-      var argv = args[i++];
-      logStr += argv ? argv.toString() : "undefined";
-    }
-    logStr += ")";
-    log(logStr);
-  } catch (e) {
-    log(" !ERR")
-  }
-
-  originGA.apply(this, args);
-}
-
-// Log all google analytics calls
-function logGA() {
-  if (ga === wrappedGA) {
-    // already wrapped
-    return;
-  }
-  //EVENT: ga('send', 'event', [eventCategory], [eventAction], [eventLabel], [eventValue], [fieldsObject]);
-  originGA = ga;
-  window.ga = wrappedGA;
-}
-
 function initGoogleAnalytics(trackingid) {
+  var gaScriptUrl = 'https://www.google-analytics.com/analytics.js';
+  var gadbg = getVal("wt.ga.dbg", "0");
+  if (gadbg != '0') {
+    gaScriptUrl = 'https://www.google-analytics.com/analytics_debug.js';
+  }
+  /**/
   (function(i, s, o, g, r, a, m) {
     i['GoogleAnalyticsObject'] = r;
     i[r] = i[r] || function() {
-      (i[r].q = i[r].q || []).push(arguments)
+      (i[r].q = i[r].q || []).push(arguments);
     }, i[r].l = 1 * new Date();
     a = s.createElement(o),
       m = s.getElementsByTagName(o)[0];
     a.async = 1;
     a.src = g;
     m.parentNode.insertBefore(a, m);
-  })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
-
-  /* --------------- LOGS ?? ------------- */
-  var doLogGA = getLocalCode();
-  if (doLogGA) {
-    // loading of analytics.js is asynchronous, we wrap it several times:
-    logGA(); // now
-    setTimeout(logGA, 4000); // soon
-    setTimeout(logGA, 10000); // later
+  })(window, document, 'script', gaScriptUrl, 'ga');
+  if (gadbg === "2") {
+    window.ga_debug = {trace: true};
   }
-  /* ------------------------------------- */
-
   ga('create', trackingid, 'auto');
+  if (getVal("wt.ga.off","false") === 'true') {
+    ga('set', 'sendHitTask', null);
+  }
   ga('send', 'pageview');
 }
-
 
 /* ---------------------- EMAIL ------------------------- */
 /*
