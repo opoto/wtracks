@@ -2069,30 +2069,35 @@ $("#cfgsave").change(function(e) {
 });
 
 setChecked("#merge", false);
-var url = getParameterByName("url");
-if (url) {
-  ga('send', 'event', 'file', 'load-param');
-  var ext = getParameterByName("ext");
-  showLocation = LOC_NONE;
-  loadFromUrl(url, ext || undefined);
-} else {
-  restoreState();
-}
 
-var about = getVal("wt.about", undefined);
-var now = new Date();
-if (about) {
-  about = new Date(about);
-  if (now.getYear() != about.getYear()) {
-    // new year = new about !
-    about = undefined;
+$(document).ready(function() {
+  var url = getParameterByName("url");
+  if (url) {
+    ga('send', 'event', 'file', 'load-param');
+    var ext = getParameterByName("ext");
+    showLocation = LOC_NONE;
+    loadFromUrl(url, ext || undefined);
+  } else {
+    restoreState();
   }
-}
-if (!about) {
-  storeVal("wt.about", now.toISOString());
-  $("#menu").show();
-  menu("about");
-}
+
+  /* Show About dialog once a year */
+  var about = getVal("wt.about", undefined);
+  var now = new Date();
+  if (about) {
+    about = new Date(about);
+    if (now.getYear() != about.getYear()) {
+      // new year = new about !
+      about = undefined;
+    }
+  }
+  if (!about) {
+    storeVal("wt.about", now.toISOString());
+    $("#menu").show();
+    menu("about");
+  }
+
+});
 
 $(window).on("unload", function() {
   saveState();
