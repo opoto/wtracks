@@ -153,6 +153,7 @@ ul.menutab {
 ul.menutab li {
   float: left;
   border: 1px solid #ccc;
+  border-radius: 10px 10px 0 0;
 }
 
 /* Style the links inside the list items */
@@ -164,6 +165,7 @@ ul.menutab li a {
     text-decoration: none;
     transition: 0.3s;
     font-size: 14px;
+    border-radius: 9px 9px 0 0;
 }
 
 /* Change background color of links on hover */
