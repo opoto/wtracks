@@ -1079,12 +1079,15 @@ if (isHttpOk) {
 map.addLayer(baseLayers[getVal("wt.baseLayer", config.display.map)] || baseLayers[config.display.map]);
 var layerInit = true;
 map.on("baselayerchange", function(e) {
-  var eventType = 'change';
   if (layerInit) {
-    eventType = 'init';
+    // deffer to make sure GA is initialized
+    setTimeout(function(){
+      ga('send', 'event', 'map', 'init', e.name);
+    }, 2000);
     layerInit = false;
+  } else {
+    ga('send', 'event', 'map', 'change', e.name);
   }
-  ga('send', 'event', 'map', eventType, e.name);
   saveValOpt("wt.baseLayer", e.name);
   $(".leaflet-control-layers").removeClass("leaflet-control-layers-expanded");
 });
@@ -2048,9 +2051,13 @@ function menu(item, event) {
   if (event) {
     event.preventDefault();
   }
+  ga('send', 'event', 'menu', item);
 }
 $(".tablinks").click(function(event) {
   menu(event.target.id.replace("tab", ""), event);
+});
+$("#donate").click(function(event) {
+  ga('send', 'event', 'menu', 'donate');
 });
 
 

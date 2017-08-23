@@ -141,6 +141,7 @@ function initGoogleAnalytics(trackingid) {
   }
   ga('create', trackingid, 'auto');
   if (getVal("wt.ga.off","false") === 'true') {
+    log('Turning off GA reporting');
     ga('set', 'sendHitTask', null);
   }
   ga('send', 'pageview');
