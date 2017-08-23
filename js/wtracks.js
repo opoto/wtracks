@@ -389,7 +389,6 @@ $("#menu-button").click(function() {
     setEditMode(EDIT_NONE);
     setChecked("#merge", false);
     menu("file");
-    $("#menu").show();
     prepareTrim();
   } else {
     closeMenu();
@@ -850,6 +849,7 @@ $("#save-yes").click(function() {
 });
 $("#save-no").click(function() {
   saveInfo(false);
+  menu("config");
 });
 
 function restoreState() {
@@ -2044,6 +2044,7 @@ $("#prunedist").val(config.compressdefault);
 setStatus("Welcome to " + config.appname + "!", { timeout: 3 });
 
 function menu(item, event) {
+  $("#menu").show();
   $("#menu table").hide();
   $(".tablinks").removeClass("active");
   $("#tab" + item).addClass("active");
@@ -2100,7 +2101,6 @@ $(document).ready(function() {
   }
   if (!about) {
     storeVal("wt.about", now.toISOString());
-    $("#menu").show();
     menu("about");
   }
 
