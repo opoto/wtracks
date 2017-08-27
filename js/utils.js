@@ -173,6 +173,12 @@ function setEmailListener(selector, name, domain, subject) {
   });
 }
 
+/* ------------------------------ CORS URL  ---------------------------------*/
+function corsUrl(url) {
+    //return "https://cors-anywhere.herokuapp.com/" + url;
+    return config.corsproxy.url() + config.corsproxy.query + encodeURIComponent(url);
+}
+
 /* ------------------------------ Encoding ---------------------------------*/
 function n10dLocation() {
   var res = window.location.toString();

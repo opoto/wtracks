@@ -1209,6 +1209,28 @@ function elevateGoogle(points, cb) {
   });
 }
 
+// elevate 1 point with Geonames
+function elevate1Geonames(pt, cb) {
+  var url = "http://api.geonames.org/astergdem?username=" +
+    config.geonames.key() + "&lat=" + pt.lat + "&lng=" + pt.lng;
+
+  $.get({
+    url: corsUrl(url),
+    crossDomain: true,
+    success: function(res, status) {
+      if (status == "success") {
+        pt.alt = Math.round(res);
+        if (pt.alt < -1000) pt.alt = 0; // ocean
+        // callback
+        if (cb) cb();
+      }
+    }
+  }).fail(function(err) {
+    warn("elevate1Geonames failed: " + err);
+  });
+}
+
+
 // elevate 1 point with Google API, limited quota
 function elevate1Google(pt, cb) {
   var url =
@@ -1217,7 +1239,7 @@ function elevate1Google(pt, cb) {
 
   $.ajax({
     dataType: "json",
-    url: config.corsproxy.url() + config.corsproxy.query + encodeURIComponent(url),
+    url: corsUrl(url),
     crossDomain: true,
     success: function(res, status) {
       if (res.status == "OK") {
@@ -1532,7 +1554,7 @@ fileloader.on('data:error', function(e) {
 
 function loadFromUrl(url, ext, direct) {
   setStatus("Loading...", { "spinner": true });
-  var _url = direct ? url : config.corsproxy.url() + config.corsproxy.query + encodeURIComponent(url);
+  var _url = direct ? url : corsUrl(url);
   $.get(_url, function(data) {
     loadCount = 0;
     fileloader.loadData(data, url, ext);

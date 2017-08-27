@@ -69,7 +69,12 @@ var config = {
   },
   dropbox: {
     key: function() {
-      return strdecode("BMX%00%0B%0E%02B%10%0F%1E%09B%18G", "X%2F%5D%1D%22T%132%1C%17%1D%05y%5EJ")
+      return strdecode("BMX%00%0B%0E%02B%10%0F%1E%09B%18G", "X%2F%5D%1D%22T%132%1C%17%1D%05y%5EJ");
+    }
+  },
+  geonames: {
+    key: function() {
+      return strdecode("X%5B%05O%07%0E%05", "B9%18%0C%25E%0D");
     }
   },
   /*------------ activities  -----------*/
@@ -133,4 +138,4 @@ var config = {
     },
     vehicles: ["foot", "bike"]
   }
-}
+};
