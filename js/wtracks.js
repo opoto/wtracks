@@ -1129,14 +1129,12 @@ if (JSON.parse && JSON.stringify) {
 }
 restorePosition();
 
-// http://www.datasciencetoolkit.org/developerdocs#coordinates2statistics API - free
+// http://www.datasciencetoolkit.org/developerdocs#coordinates2statistics API - free, but http only
 function elevateDSTK(pt, cb) {
 
   var elevateDSTKerror = function(jqXHR, textStatus, errorThrown) {
     setStatus("Elevation failed", { timeout: 3, class: "status-error" });
     error('Error: ' + textStatus);
-    // callback
-    if (cb) cb(false);
   };
   var elevateDSTKcb = function(result) {
     var ok = isUndefined(result.error);
@@ -1144,7 +1142,7 @@ function elevateDSTK(pt, cb) {
       clearStatus();
       pt.alt = result[0].statistics.elevation.value;
       // callback
-      if (cb) cb(true);
+      if (cb) cb();
     } else {
       elevateDSTKerror(null, result.error);
     }
@@ -1186,6 +1184,8 @@ function elevateGoogle(points, cb) {
       }
     }
   }
+  ga('send', 'event', 'api', 'g.elevate', arguments.callee.caller.name, locations.length);
+
   var elevator = new google.maps.ElevationService();
   elevator.getElevationForLocations({
     'locations': locations
@@ -1200,14 +1200,38 @@ function elevateGoogle(points, cb) {
       } else {
         points.alt = results[0].elevation;
       }
+      // callback
+      if (cb) cb();
     } else {
       setStatus("Elevation failed", { timeout: 3, class: "status-error" });
       warn("elevation request not OK: " + status);
     }
-    // callback
-    if (cb) cb(status === 'OK');
   });
 }
+
+// elevate 1 point with Google API, limited quota
+function elevate1Google(pt, cb) {
+  var url =
+    "https://maps.google.com/maps/api/elevation/json?sensor=false&locations=" +
+    pt.lat + "," + pt.lng;
+
+  $.ajax({
+    dataType: "json",
+    url: config.corsproxy.url() + config.corsproxy.query + encodeURIComponent(url),
+    crossDomain: true,
+    success: function(res, status) {
+      if (res.status == "OK") {
+        pt.alt = Math.round(res.results[0].elevation);
+        // callback
+        if (cb) cb();
+      }
+    }
+  }).fail(function(err) {
+    warn("elevate1Google failed: " + err);
+  });
+}
+
+
 var elevate = elevateGoogle;
 var elevatePoint = elevateGoogle;
 
@@ -1359,7 +1383,7 @@ $("#edit-marker").click(function(e) {
   e.preventDefault();
 });
 
-$("#elevate").click(function(e) {
+function toolElevate(e) {
   ga('send', 'event', 'tool', 'elevate', undefined, track.getLatLngs().length);
   $("#menu").hide();
   if (track) elevate(track.getLatLngs(), function() {
@@ -1367,7 +1391,9 @@ $("#elevate").click(function(e) {
     saveState();
   });
   return false;
-});
+}
+$("#elevate").click(toolElevate);
+
 $("#flatten").click(function(e) {
   ga('send', 'event', 'tool', 'flatten', undefined, track.getLatLngs().length);
   $("#menu").hide();
@@ -1506,7 +1532,7 @@ fileloader.on('data:error', function(e) {
 
 function loadFromUrl(url, ext, direct) {
   setStatus("Loading...", { "spinner": true });
-  var _url = direct ? url : config.corsproxy.url() + config.corsproxy.query + url;
+  var _url = direct ? url : config.corsproxy.url() + config.corsproxy.query + encodeURIComponent(url);
   $.get(_url, function(data) {
     loadCount = 0;
     fileloader.loadData(data, url, ext);
@@ -1831,7 +1857,8 @@ map.on('editable:drawing:click', function(e) {
 map.on('editable:shape:new', function(e) {
   //console.log(e.type);
 });
-map.on('editable:vertex:new', function(e) {
+
+function newVertex(e) {
   var latlng = e.vertex.getLatLng();
   var prev = e.vertex.getPrevious();
   i = isUndefined(prev) ? 0 : prev.latlng.i + 1;
@@ -1843,21 +1870,27 @@ map.on('editable:vertex:new', function(e) {
       polystats.updateStatsFrom(i);
     });
   }
-});
-map.on('editable:vertex:dragend', function(e) {
+}
+map.on('editable:vertex:new', newVertex);
+
+function dragVertex(e) {
   var i = e.vertex.getLatLng().i;
   elevatePoint(e.vertex.getLatLng(), function() {
     polystats.updateStatsFrom(i);
   });
   //console.log(e.type + ": " + i);
-});
+}
+map.on('editable:vertex:dragend', dragVertex);
+
 map.on('editable:middlemarker:mousedown', function(e) {
   //console.log(e.type);
 });
-map.on('editable:dragend', function(e) {
+
+function dragMarker(e) {
   elevatePoint(e.layer.getLatLng());
-  //console.log(e.type);
-});
+  console.log(e.type);
+}
+map.on('editable:dragend', dragMarker);
 
 map.on('editable:vertex:deleted', function(e) {
   var i = e.latlng.i;
@@ -1912,7 +1945,7 @@ function checkGraphHopperCredit(e) {
   return true;
 }
 
-map.on('click', function(e) {
+function newMarker(e) {
 
   if (editMode == EDIT_MARKER) {
     ga('send', 'event', 'edit', 'new-marker');
@@ -1960,7 +1993,8 @@ map.on('click', function(e) {
   } else {
     closeOverlays();
   }
-});
+}
+map.on('click', newMarker);
 
 map.on('editable:vertex:click', function(e) {
 
