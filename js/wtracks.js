@@ -1130,7 +1130,7 @@ if (JSON.parse && JSON.stringify) {
 restorePosition();
 
 // http://www.datasciencetoolkit.org/developerdocs#coordinates2statistics API - free, but http only
-function elevateDSTK(pt, cb) {
+function elevate1DSTK(pt, cb) {
 
   var elevateDSTKerror = function(jqXHR, textStatus, errorThrown) {
     setStatus("Elevation failed", { timeout: 3, class: "status-error" });
@@ -1149,6 +1149,7 @@ function elevateDSTK(pt, cb) {
   };
 
   var apiUrl = "http://www.datasciencetoolkit.org/coordinates2statistics/" + pt.lat + "%2c" + pt.lng + "?statistics=elevation";
+  ga('send', 'event', 'api', 'dstk.elevate1', arguments.callee.caller.name, 1);
 
   $.ajax(apiUrl, {
     success: elevateDSTKcb,
@@ -1205,6 +1206,8 @@ function elevateGoogle(points, cb) {
     } else {
       setStatus("Elevation failed", { timeout: 3, class: "status-error" });
       warn("elevation request not OK: " + status);
+      // fallback: next time use geonames for single point elevation
+      elevatePoint = elevate1Geonames;
     }
   });
 }
@@ -1213,6 +1216,8 @@ function elevateGoogle(points, cb) {
 function elevate1Geonames(pt, cb) {
   var url = "http://api.geonames.org/astergdem?username=" +
     config.geonames.key() + "&lat=" + pt.lat + "&lng=" + pt.lng;
+
+  ga('send', 'event', 'api', 'geonames.elevate1', arguments.callee.caller.name, 1);
 
   $.get({
     url: corsUrl(url),
@@ -1236,6 +1241,9 @@ function elevate1Google(pt, cb) {
   var url =
     "https://maps.google.com/maps/api/elevation/json?sensor=false&locations=" +
     pt.lat + "," + pt.lng;
+
+
+  ga('send', 'event', 'api', 'g.elevate1', arguments.callee.caller.name, 1);
 
   $.ajax({
     dataType: "json",
