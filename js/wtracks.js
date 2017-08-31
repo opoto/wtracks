@@ -1149,7 +1149,8 @@ function elevate1DSTK(pt, cb) {
   };
 
   var apiUrl = "http://www.datasciencetoolkit.org/coordinates2statistics/" + pt.lat + "%2c" + pt.lng + "?statistics=elevation";
-  ga('send', 'event', 'api', 'dstk.elevate1', arguments.callee.caller.name, 1);
+  var callerName = arguments.callee && arguments.callee.caller ? arguments.callee.caller.name : elevate1DSTK.caller.name;
+  ga('send', 'event', 'api', 'dstk.elevate1', callerName, 1);
 
   $.ajax(apiUrl, {
     success: elevateDSTKcb,
@@ -1185,7 +1186,8 @@ function elevateGoogle(points, cb) {
       }
     }
   }
-  ga('send', 'event', 'api', 'g.elevate', arguments.callee.caller.name, locations.length);
+  var callerName = arguments.callee && arguments.callee.caller ? arguments.callee.caller.name : elevateGoogle.caller.name;
+  ga('send', 'event', 'api', 'g.elevate', callerName, locations.length);
 
   var elevator = new google.maps.ElevationService();
   elevator.getElevationForLocations({
@@ -1217,7 +1219,8 @@ function elevate1Geonames(pt, cb) {
   var url = "http://api.geonames.org/astergdem?username=" +
     config.geonames.key() + "&lat=" + pt.lat + "&lng=" + pt.lng;
 
-  ga('send', 'event', 'api', 'geonames.elevate1', arguments.callee.caller.name, 1);
+  var callerName = arguments.callee && arguments.callee.caller ? arguments.callee.caller.name : elevate1Geonames.caller.name;
+  ga('send', 'event', 'api', 'geonames.elevate1', callerName, 1);
 
   $.get({
     url: corsUrl(url),
@@ -1242,8 +1245,8 @@ function elevate1Google(pt, cb) {
     "https://maps.google.com/maps/api/elevation/json?sensor=false&locations=" +
     pt.lat + "," + pt.lng;
 
-
-  ga('send', 'event', 'api', 'g.elevate1', arguments.callee.caller.name, 1);
+  var callerName = arguments.callee && arguments.callee.caller ? arguments.callee.caller.name : elevate1Google.caller.name;
+  ga('send', 'event', 'api', 'g.elevate1', callerName, 1);
 
   $.ajax({
     dataType: "json",
