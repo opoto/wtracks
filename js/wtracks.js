@@ -1132,6 +1132,7 @@ restorePosition();
 // http://www.datasciencetoolkit.org/developerdocs#coordinates2statistics API - free, but http only
 function elevate1DSTK(pt, cb) {
 
+  var callerName = arguments.callee && arguments.callee.caller ? arguments.callee.caller.name : elevate1DSTK.caller.name;
   var elevateDSTKerror = function(jqXHR, textStatus, errorThrown) {
     setStatus("Elevation failed", { timeout: 3, class: "status-error" });
     error('Error: ' + textStatus);
@@ -1144,12 +1145,12 @@ function elevate1DSTK(pt, cb) {
       // callback
       if (cb) cb();
     } else {
+      ga('send', 'event', 'api', 'dstk.elevate1.ko', callerName, 1);
       elevateDSTKerror(null, result.error);
     }
   };
 
   var apiUrl = "http://www.datasciencetoolkit.org/coordinates2statistics/" + pt.lat + "%2c" + pt.lng + "?statistics=elevation";
-  var callerName = arguments.callee && arguments.callee.caller ? arguments.callee.caller.name : elevate1DSTK.caller.name;
   ga('send', 'event', 'api', 'dstk.elevate1', callerName, 1);
 
   $.ajax(apiUrl, {
@@ -1206,6 +1207,7 @@ function elevateGoogle(points, cb) {
       // callback
       if (cb) cb();
     } else {
+      ga('send', 'event', 'api', 'g.elevate.ko', callerName, locations.length);
       setStatus("Elevation failed", { timeout: 3, class: "status-error" });
       warn("elevation request not OK: " + status);
       // fallback: next time use geonames for single point elevation
@@ -1234,6 +1236,7 @@ function elevate1Geonames(pt, cb) {
       }
     }
   }).fail(function(err) {
+    ga('send', 'event', 'api', 'geonames.elevate1.ko', callerName, 1);
     warn("elevate1Geonames failed: " + err);
   });
 }
@@ -1260,6 +1263,7 @@ function elevate1Google(pt, cb) {
       }
     }
   }).fail(function(err) {
+    ga('send', 'event', 'api', 'g.elevate1.ko', callerName, 1);
     warn("elevate1Google failed: " + err);
   });
 }
