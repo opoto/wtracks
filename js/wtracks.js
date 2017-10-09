@@ -1173,7 +1173,7 @@ function elevateGoogle(points, cb) {
     locations = [points];
   } else {
     setStatus("Elevating..", { spinner: true });
-    inc = Math.round(Math.max(1, points.length / 512));
+    inc = Math.ceil(Math.max(1, points.length / 511)); // keep one for last point
     if (inc == 1) {
       locations = points;
     } else {
@@ -1182,7 +1182,7 @@ function elevateGoogle(points, cb) {
         locations.push(points[i]);
       }
       // make sure last point is included
-      if (i < points.length) {
+      if ((i < points.length) || (i-inc < (points.length - 1))) {
         locations.push(points[points.length - 1]);
       }
     }
@@ -1196,13 +1196,18 @@ function elevateGoogle(points, cb) {
   }, function(results, status) {
     if (status === 'OK') {
       clearStatus();
-      if (points.length) {
-        for (var i = 0; i < points.length; i += inc) {
-          var pos = i * inc;
-          points[pos < points.length ? pos : points.length].alt = results[i].elevation;
-        }
-      } else {
+      if (isUndefined(points.length)) {
+        // single point elevation
         points.alt = results[0].elevation;
+      } else {
+        for (var i = 0; i < results.length; i++) {
+          var pos = i * inc;
+          if (pos >= points.length) {
+            // we reached last point from track
+            pos = points.length - 1;
+          }
+          points[pos].alt = results[i].elevation;
+        }
       }
       // callback
       if (cb) cb();
