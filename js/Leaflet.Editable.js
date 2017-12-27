@@ -223,14 +223,23 @@
             }
         },
 
+        isChromeMobile: function() {
+            return navigator.userAgent.includes(" Chrome/") &&
+                navigator.userAgent.includes(" Mobile ");
+        },
+
         registerForDrawing: function (editor) {
             if (this._drawingEditor) this.unregisterForDrawing(this._drawingEditor);
             this.blockEvents();
             editor.reset();  // Make sure editor tools still receive events.
             this._drawingEditor = editor;
             this.map.on('mousemove touchmove', editor.onDrawingMouseMove, editor);
-            this.map.on('mousedown', this.onMousedown, this);
-            this.map.on('mouseup', this.onMouseup, this);
+            if (this.isChromeMobile()) {
+              this.map.on('click', this.onClick, this);
+            } else { // touchstart touchend ?
+              this.map.on('mousedown', this.onMousedown, this);
+              this.map.on('mouseup', this.onMouseup, this);
+            }
             L.DomUtil.addClass(this.map._container, this.options.drawingCSSClass);
             this.defaultMapCursor = this.map._container.style.cursor;
             this.map._container.style.cursor = this.options.drawingCursor;
@@ -243,8 +252,12 @@
             editor = editor || this._drawingEditor;
             if (!editor) return;
             this.map.off('mousemove touchmove', editor.onDrawingMouseMove, editor);
-            this.map.off('mousedown', this.onMousedown, this);
-            this.map.off('mouseup', this.onMouseup, this);
+            if (this.isChromeMobile()) {
+              this.map.off('click', this.onClick, this);
+            } else { // touchstart touchend ?
+              this.map.off('mousedown', this.onMousedown, this);
+              this.map.off('mouseup', this.onMouseup, this);
+            }
             if (editor !== this._drawingEditor) return;
             delete this._drawingEditor;
             if (editor._drawing) editor.cancelDrawing();
@@ -266,6 +279,11 @@
                 var distance = L.point(e.originalEvent.clientX, e.originalEvent.clientY).distanceTo(origin);
                 if (Math.abs(distance) < 9 * (window.devicePixelRatio || 1)) this._drawingEditor.onDrawingClick(e);
             }
+        },
+
+        onClick: function(e) {
+            this.onMousedown(e);
+            this.onMouseup(e);
         },
 
         // 🍂section Public methods
