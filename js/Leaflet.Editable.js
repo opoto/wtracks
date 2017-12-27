@@ -224,8 +224,7 @@
         },
 
         isChromeMobile: function() {
-            return navigator.userAgent.includes(" Chrome/") &&
-                navigator.userAgent.includes(" Mobile ");
+            return L.Browser.chrome && L.Browser.mobile;
         },
 
         registerForDrawing: function (editor) {
