@@ -51,6 +51,7 @@
   <script src="js/leaflet.polystats.js"></script>
 
   <script src="js/config.js"></script>
+  <script src="js/jscolor.min.js"></script>
   <script type="text/javascript" id="dropboxjs" data-app-key=""></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/dropbox.js/0.10.2/dropbox.min.js"></script>
   <script type="text/javascript">
@@ -257,8 +258,7 @@
           </div>
           <div>
             <span class="setting-name">Color:</span>
-            <input type="color" id="track-color" class="setting-value"/>
-            <span id="track-color-v" class="setting-value"></span>
+            <input id="track-color" class="setting-value jscolor {hash:true, zIndex:10001}"/>
           </div>
           <div>
             <span class="setting-name">Weight:</span>
