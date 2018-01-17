@@ -240,15 +240,35 @@
     <table id="menuconfig">
       <tr>
         <td>
-          <input id="cfgsave" class="no-trim" type="checkbox" />
-        </td>
-        <td>
           Locally save editor's state between sessions<br/>Privacy warning: state is shared with all users of this browser profile
-          <img id="cfgsavetxt" class="help-b" src="img/help.png" alt="help" />
           <p id="cfgsavetxt-help" class="help-p">
             Your WTracks editor status will be saved continuously in your browser local storage, so that when you close and reopen it later it will restore the same content.
           </p>
         </td>
+        <td>
+          <input id="cfgsave" class="no-trim" type="checkbox" />
+          <img id="cfgsavetxt" class="help-b" src="img/help.png" alt="help" />
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <div>
+            Track display options:
+          </div>
+          <div>
+            <span class="setting-name">Color:</span>
+            <input type="color" id="track-color" class="setting-value"/>
+            <span id="track-color-v" class="setting-value"></span>
+          </div>
+          <div>
+            <span class="setting-name">Weight:</span>
+            <input type="range" min="0" max="10" id="track-weight" class="setting-value"/>
+            <span id="track-weight-v" class="setting-value"></span>
+          </div>
+          <div>
+            <span class="setting-name">&nbsp;</span>
+            <button id="track-resetcolorweight" class="setting-value">Reset</button>
+          </div>
       </tr>
     </table>
     <table id="menuabout">

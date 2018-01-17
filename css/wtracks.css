@@ -111,6 +111,17 @@ body {
   margin: 15px 5px;
 }
 
+.setting-name {
+  margin-left: 25px;
+  width: 80px;
+  display: inline-block;
+}
+.setting-value {
+  margin-left: 5px;
+  width: 80px;
+  max-width: 80px;
+}
+
 .help-p {
   display: none;
   font-style: oblique;

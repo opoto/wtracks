@@ -13,7 +13,9 @@ var config = {
     // default display settings
     zoom: 14,
     map: "Sigma Cycle",
-    pos: { lat: "-17.857677", lng: "177.201950" }
+    pos: { lat: "-17.857677", lng: "177.201950" },
+    trackColor: "#ff0000",
+    trackWeight: 3
   },
   maxfilesize: 1024 * 1024, // 1GB
   compressdefault: 5,

@@ -59,6 +59,10 @@ function selectOption(select, optval) {
   jqselect.children(":selected").prop("selected", false);
   jqselect.children("option[value='" + optval + "']").prop("selected", true);
 }
+// get selected drop down option
+function getSelectedOption(select) {
+  return $(select).children(':selected').val();
+}
 
 // get checkbox status
 function isChecked(selector) {

@@ -44,8 +44,8 @@ var map = L.map('map', {
   editable: true,
   editOptions: {
     lineGuideOptions: {
-      color: "red",
-      weight: 4,
+      color: getVal("wt.trackColor", config.display.trackColor),
+      weight: getVal("wt.trackWeight", config.display.trackWeight),
       opacity: 0.5
     }
   }
@@ -157,7 +157,7 @@ loadActivities();
 selectOption(selectActivity, getVal("wt.activity", undefined));
 
 function getCurrentActivityName() {
-  return $("#activity").children(':selected').val();
+  return getSelectedOption("#activity");
 }
 
 function getCurrentActivity() {
@@ -173,6 +173,13 @@ $("#activity").change(function() {
 });
 
 /* ------------------------------------------------------------*/
+
+function updateTrackStyle() {
+  track.setStyle({
+    color: getVal("wt.trackColor", config.display.trackColor),
+    weight: getVal("wt.trackWeight", config.display.trackWeight)
+  });
+}
 
 function newTrack() {
   metadata = {};
@@ -195,7 +202,7 @@ function newTrack() {
   waypoints = L.featureGroup([]);
   editLayer.addLayer(waypoints);
   track = L.polyline([]);
-  track.setStyle({ color: "#F00", dashColor: "#F00", });
+  updateTrackStyle();
   editLayer.addLayer(track);
   polystats = L.polyStats(track, {
     chrono: true,
@@ -378,18 +385,50 @@ function finishTrim() {
 $("#trim-range").on("change", trimTrack);
 $("#trim-type").change(prepareTrim);
 
+$("#track-color").on("change", function(event){
+  var v = $("#track-color").val();
+  $("#track-color-v").text(v);
+  saveValOpt("wt.trackColor", v);
+  updateTrackStyle();
+});
+$("#track-weight").on("change", function(event){
+  var v = $("#track-weight").val();
+  $("#track-weight-v").text(v);
+  saveValOpt("wt.trackWeight", v);
+  updateTrackStyle();
+});
+$("#track-resetcolorweight").on("click", function(){
+  saveValOpt("wt.trackColor", config.display.trackColor);
+  saveValOpt("wt.trackWeight", config.display.trackWeight);
+  initTrackDisplaySettings();
+  updateTrackStyle();
+});
+function initTrackDisplaySettings() {
+  var v;
+  v = getVal("wt.trackColor", config.display.trackColor);
+  $("#track-color").val(v);
+  $("#track-color-v").text(v);
+  v = getVal("wt.trackWeight", config.display.trackWeight);
+  $("#track-weight").val(v);
+  $("#track-weight-v").text(v);
+}
+
 /* ------------------------ MENU ---------------------------------- */
 
 function closeMenu() {
   $("#menu").hide();
   finishTrim();
 }
+function initMenu() {
+  setEditMode(EDIT_NONE);
+  setChecked("#merge", false);
+  menu("file");
+  prepareTrim();
+  initTrackDisplaySettings();
+}
 $("#menu-button").click(function() {
   if (!$("#menu").is(":visible")) {
-    setEditMode(EDIT_NONE);
-    setChecked("#merge", false);
-    menu("file");
-    prepareTrim();
+    initMenu();
   } else {
     closeMenu();
   }
@@ -1584,7 +1623,7 @@ function loadFromUrl(url, ext, direct) {
 }
 
 function getLoadExt() {
-  var ext = $("#track-ext").children(':selected').val();
+  var ext = getSelectedOption("#track-ext");
   if (ext === "auto") {
     ext = undefined;
   }
@@ -2011,8 +2050,8 @@ function newMarker(e) {
           fitSelectedRoutes: false,
           lineOptions: {
             styles: [{
-              color: "red",
-              weight: 3,
+              color: getVal("wt.trackColor", config.display.trackColor),
+              weight: getVal("wt.trackWeight", config.display.trackWeight),
               opacity: 1
             }],
             addWaypoints: true
