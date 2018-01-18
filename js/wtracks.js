@@ -386,7 +386,7 @@ $("#trim-range").on("change", trimTrack);
 $("#trim-type").change(prepareTrim);
 
 $("#track-color").on("change", function(event){
-  var v = $("#track-color").val();
+  var v = $("#track-color").text();
   saveValOpt("wt.trackColor", v);
   updateTrackStyle();
 });
@@ -405,7 +405,7 @@ $("#track-resetcolorweight").on("click", function(){
 function initTrackDisplaySettings() {
   var v;
   v = getVal("wt.trackColor", config.display.trackColor);
-  $("#track-color").val(v);
+  $("#track-color").text(v);
   $("#track-color").css('background-color', v);
   v = getVal("wt.trackWeight", config.display.trackWeight);
   $("#track-weight").val(v);

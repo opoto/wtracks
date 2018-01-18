@@ -674,9 +674,10 @@ var jsc = {
 
 	dispatchChange : function (thisObj) {
 		if (thisObj.valueElement) {
-			if (jsc.isElementType(thisObj.valueElement, 'input')) {
+			// WTracks: we expect change on button too!
+			//if (jsc.isElementType(thisObj.valueElement, 'input')) {
 				jsc.fireEvent(thisObj.valueElement, 'change');
-			}
+			//}
 		}
 	},
 
