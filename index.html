@@ -241,21 +241,29 @@
     <table id="menuconfig">
       <tr>
         <td>
-          Locally save editor's state between sessions<br/>Privacy warning: state is shared with all users of this browser profile
+          <input id="cfgsave" class="no-trim" type="checkbox" />
+        </td>
+        <td>
+          Locally save editor's state between sessions
+          <img id="cfgsavetxt" class="help-b" src="img/help.png" alt="help" />
+          <br/>
+          Privacy warning: state is shared with all users of this browser profile
           <p id="cfgsavetxt-help" class="help-p">
             Your WTracks editor status will be saved continuously in your browser local storage, so that when you close and reopen it later it will restore the same content.
           </p>
         </td>
-        <td>
-          <input id="cfgsave" class="no-trim" type="checkbox" />
-          <img id="cfgsavetxt" class="help-b" src="img/help.png" alt="help" />
-        </td>
       </tr>
-      <tr>
+      <tr class="nobottomborder">
         <td colspan="2">
           <div>
             Track display options:
           </div>
+        </td>
+      </tr>
+      <tr class="notopborder">
+        <td>
+        </td>
+        <td>
           <div>
             <span class="setting-name">Color:</span>
             <input id="track-color" class="setting-value jscolor {hash:true, zIndex:10001}"/>
