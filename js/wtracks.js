@@ -40,16 +40,22 @@ function toggleHelp(e) {
 }
 $(".help-b").click(toggleHelp);
 
+function updateMapStyle() {
+  map.options.editOptions.lineGuideOptions.color =
+    getVal("wt.trackColor", config.display.trackColor);
+  map.options.editOptions.lineGuideOptions.weight =
+    getVal("wt.trackWeight", config.display.trackWeight);
+}
+
 var map = L.map('map', {
   editable: true,
   editOptions: {
     lineGuideOptions: {
-      color: getVal("wt.trackColor", config.display.trackColor),
-      weight: getVal("wt.trackWeight", config.display.trackWeight),
       opacity: 0.5
     }
   }
 });
+updateMapStyle();
 var track;
 var metadata;
 var waypoints;
@@ -389,18 +395,21 @@ $("#track-color").on("change", function(event){
   var v = $("#track-color").text();
   saveValOpt("wt.trackColor", v);
   updateTrackStyle();
+  updateMapStyle();
 });
 $("#track-weight").on("change", function(event){
   var v = $("#track-weight").val();
   $("#track-weight-v").text(v);
   saveValOpt("wt.trackWeight", v);
   updateTrackStyle();
+  updateMapStyle();
 });
 $("#track-resetcolorweight").on("click", function(){
   saveValOpt("wt.trackColor", config.display.trackColor);
   saveValOpt("wt.trackWeight", config.display.trackWeight);
   initTrackDisplaySettings();
   updateTrackStyle();
+  updateMapStyle();
 });
 function initTrackDisplaySettings() {
   var v;
