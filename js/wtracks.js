@@ -400,14 +400,19 @@ function finishTrim() {
 $("#trim-range").on("change", trimTrack);
 $("#trim-type").change(prepareTrim);
 
+/* --------------------------------------*/
+// Track display settings
+
 $("#track-color").on("change", function(event){
   var v = $("#track-color").text();
+  ga('send', 'event', 'setting', 'trackColor', v);
   saveValOpt("wt.trackColor", v);
   updateTrackStyle();
   updateMapStyle();
 });
 $("#track-weight").on("change", function(event){
   var v = $("#track-weight").val();
+  ga('send', 'event', 'setting', 'trackWeight', v);
   $("#track-weight-v").text(v);
   saveValOpt("wt.trackWeight", v);
   updateTrackStyle();
@@ -416,6 +421,7 @@ $("#track-weight").on("change", function(event){
 $("#track-resetcolorweight").on("click", function(){
   saveValOpt("wt.trackColor", config.display.trackColor);
   saveValOpt("wt.trackWeight", config.display.trackWeight);
+  ga('send', 'event', 'setting', 'trackReset');
   initTrackDisplaySettings();
   updateTrackStyle();
   updateMapStyle();
@@ -429,6 +435,9 @@ function initTrackDisplaySettings() {
   $("#track-weight").val(v);
   $("#track-weight-v").text(v);
 }
+
+/* --------------------------------------*/
+// API keys
 
 function showApiKey(name, value) {
   var useDefault = isUndefined(value);
@@ -455,10 +464,12 @@ function checkApikey(name) {
 }
 $("#ghkey-chk").on("change", function() {
   ghkey = checkApikey("ghkey");
+  ga('send', 'event', 'setting', 'ghkey', key ? 'set' : 'default');
   log("ghkey: " + ghkey);
 });
 $("#ggkey-chk").on("change", function() {
   ggkey = checkApikey("ggkey");
+  ga('send', 'event', 'setting', 'ggkey', key ? 'set' : 'default');
   log("ggkey: " + ggkey);
 });
 $("#ghkey-value").on("focusout", function() {
@@ -470,6 +481,7 @@ $("#ggkey-value").on("focusout", function() {
   log("ggkey: " + ggkey);
 });
 function resetApiKey(name) {
+  ga('send', 'event', 'setting', 'keys', 'reset');
   setChecked("#" + name + "-chk", false);
   $("#" + name + "-chk").change();
 }
