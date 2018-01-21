@@ -54,14 +54,6 @@
   <script src="js/jscolor.min.js"></script>
   <script type="text/javascript" id="dropboxjs" data-app-key=""></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/dropbox.js/0.10.2/dropbox.min.js"></script>
-  <script type="text/javascript">
-    // load Google Maps API
-    var key = config.google.mapsapikey();
-    $.getScript("https://maps.googleapis.com/maps/api/js" + (key ? "?key=" + key : ""))
-    // load Dropbox API
-    $("#dropboxjs").attr("data-app-key", config.dropbox.key());
-    $("#dropboxjs").attr("src", "https://www.dropbox.com/static/api/2/dropins.js");
-  </script>
   <link rel="stylesheet" href="css/wtracks.css" />
 </head>
 
@@ -276,6 +268,47 @@
           <div>
             <span class="setting-name">&nbsp;</span>
             <button id="track-resetcolorweight" class="setting-value">Reset</button>
+          </div>
+      </tr>
+      <tr class="nobottomborder">
+        <td colspan="2">
+          <div>
+            API keys:
+            <img id="keystxt" class="help-b" src="img/help.png" alt="help" />
+            <p id="keystxt-help" class="help-p">
+              Set your own API keys to bypass WTracks quota limits.
+              Keys will be stored in your browser. Do not use or click "Reset"
+              if you're not sure about how to use this.
+            </p>
+          </div>
+        </td>
+      </tr>
+      <tr class="notopborder">
+        <td>
+        </td>
+        <td>
+          <div>
+            <span class="setting-name">GraphHopper:</span>
+            <input id="ghkey-chk" class="no-trim" type="checkbox" />
+            <input id="ghkey-value" placeholder="Your GraphHopper key" class="setting-input" />
+            <img id="ghkeytxt" class="help-b" src="img/help.png" alt="help" />
+            <p id="ghkeytxt-help" class="help-p">
+              This key is used for the routing feature, which draws tracks along map roads.
+            </p>
+          </div>
+          <div>
+            <span class="setting-name">Google:</span>
+            <input id="ggkey-chk" class="no-trim" type="checkbox" />
+            <input id="ggkey-value" placeholder="Your Google API key" class="setting-input" />
+            <img id="ggkeytxt" class="help-b" src="img/help.png" alt="help" />
+            <p id="ggkeytxt-help" class="help-p">
+              This key is used for the elevation service, that get the elevation of each track point.
+              For this setting to be effective, check the "save editor state" option above and reload the page. 
+            </p>
+          </div>
+          <div>
+            <span class="setting-name">&nbsp;</span>
+            <button id="keys-reset" class="setting-value">Reset</button>
           </div>
       </tr>
     </table>

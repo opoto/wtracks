@@ -72,6 +72,15 @@ var EDIT_MARKER = 3;
 var EDIT_DEFAULT = EDIT_MANUAL_TRACK;
 var editMode = -1;
 
+var ghkey = getVal("wt.ghkey", undefined);
+var ggkey = getVal("wt.ggkey", undefined);
+
+// load Google Maps API
+var gk = ggkey ? ggkey : config.google.mapsapikey();
+gk = $.getScript("https://maps.googleapis.com/maps/api/js" + (gk ? "?key=" + gk : ""));
+// load Dropbox API
+$("#dropboxjs").attr("data-app-key", config.dropbox.key());
+$("#dropboxjs").attr("src", "https://www.dropbox.com/static/api/2/dropins.js");
 
 function setTrackName(name) {
   $("#track-name").text(name);
@@ -421,6 +430,54 @@ function initTrackDisplaySettings() {
   $("#track-weight-v").text(v);
 }
 
+function showApiKey(name, value) {
+  var useDefault = isUndefined(value);
+  var input = $("#" + name + "-value");
+  log(name + ": " + value);
+  setChecked("#" + name + "-chk", !useDefault);
+  input.val(useDefault ? "Using WTracks key" : value);
+  input.attr("disabled", useDefault);
+}
+function updateApiKey(name) {
+  var useDefault = !isChecked("#" + name + "-chk");
+  var key = useDefault ? undefined : $("#" + name + "-value").val();
+  // empty is considered undefined
+  key = (key === "") ? undefined : key;
+  saveValOpt("wt." + name, key);
+  return key;
+}
+function checkApikey(name) {
+  var useDefault = !isChecked("#" + name + "-chk");
+  $("#" + name + "-value").val(useDefault ? "Using WTracks key": "");
+  $("#" + name + "-value").attr("disabled", useDefault);
+  var key = updateApiKey(name);
+  return key;
+}
+$("#ghkey-chk").on("change", function() {
+  ghkey = checkApikey("ghkey");
+  log("ghkey: " + ghkey);
+});
+$("#ggkey-chk").on("change", function() {
+  ggkey = checkApikey("ggkey");
+  log("ggkey: " + ggkey);
+});
+$("#ghkey-value").on("focusout", function() {
+  ghkey = updateApiKey("ghkey");
+  log("ghkey: " + ghkey);
+});
+$("#ggkey-value").on("focusout", function() {
+  ggkey = updateApiKey("ggkey");
+  log("ggkey: " + ggkey);
+});
+function resetApiKey(name) {
+  setChecked("#" + name + "-chk", false);
+  $("#" + name + "-chk").change();
+}
+$("#keys-reset").on("click", function() {
+  resetApiKey("ghkey");
+  resetApiKey("ggkey");
+});
+
 /* ------------------------ MENU ---------------------------------- */
 
 function closeMenu() {
@@ -433,6 +490,8 @@ function initMenu() {
   menu("file");
   prepareTrim();
   initTrackDisplaySettings();
+  showApiKey("ghkey", ghkey);
+  showApiKey("ggkey", ggkey);
 }
 $("#menu-button").click(function() {
   if (!$("#menu").is(":visible")) {
@@ -2017,9 +2076,14 @@ function checkGraphHopperCredit(e) {
   var message;
   if (gh.credits < 0) {
     if (!isUnset(e)) {
-      ga('send', 'event', 'gh', 'wt-max');
+      if (e.status == 401) {
+        message = "Invalid GraphHopper API key, please fix in Settings";
+        ga('send', 'event', 'gh', 'invalid');
+      } else {
+        message = "WTracks's GraphHopper quota exceeded";
+        ga('send', 'event', 'gh', 'wt-max');
+      }
     }
-    message = "WTracks's GraphHopper quota exceeded";
   } else if (gh.credits >= MAX_GH_CREDITS) {
     message = "You exceeded your GraphHopper quota limit";
     if (!isUnset(e)) {
@@ -2034,6 +2098,9 @@ function checkGraphHopperCredit(e) {
   return true;
 }
 
+function getApiKey(name, defkey) {
+
+}
 function newMarker(e) {
 
   if (editMode == EDIT_MARKER) {
@@ -2048,7 +2115,10 @@ function newMarker(e) {
       } else {
         var fromPt = routeStart,
           toPt = e.latlng,
-          router = L.Routing.graphHopper(config.graphhopper.key(), { urlParameters: { vehicle: getCurrentActivity().vehicle } });
+          router = L.Routing.graphHopper(
+            ghkey ? ghkey : config.graphhopper.key(),
+            { urlParameters: { vehicle: getCurrentActivity().vehicle } }
+          );
         router.on("response", checkGraphHopperCredit);
         route = L.Routing.control({
           router: router,
