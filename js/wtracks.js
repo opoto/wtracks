@@ -100,8 +100,8 @@ function askTrackName() {
 }
 
 function validatePrompt() {
-  setTrackName($("#prompt-name").val());
-  metadata.desc = $("#prompt-desc").val();
+  setTrackName($("#prompt-name").val().trim());
+  metadata.desc = $("#prompt-desc").val().trim();
   saveState();
   closeTrackNamePrompt();
 }
@@ -251,7 +251,7 @@ function newWaypoint(latlng, name, desc) {
       name.placeholder = "Textual name";
       $(name).val(marker.options.title ? marker.options.title : "");
       name.onkeyup = function() {
-        var nameval = $(name).val();
+        var nameval = $(name).val().trim();
         nameval = $('<div/>').text(nameval).html();
         marker.options.title = nameval;
         var elt = marker.getElement();
@@ -449,7 +449,7 @@ function showApiKey(name, value) {
 }
 function updateApiKey(name) {
   var useDefault = !isChecked("#" + name + "-chk");
-  var key = useDefault ? undefined : $("#" + name + "-value").val();
+  var key = useDefault ? undefined : $("#" + name + "-value").val().trim();
   // empty is considered undefined
   key = (key === "") ? undefined : key;
   saveValOpt("wt." + name, key);
