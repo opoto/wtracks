@@ -2272,7 +2272,7 @@ function isStateSaved() {
 }
 $("#cfgsave").change(function(e) {
   var saveCfg = isStateSaved();
-  ga('send', 'event', 'config', saveCfg ? 'save-on' : 'save-off');
+  ga('send', 'event', 'setting', saveCfg ? 'save-on' : 'save-off');
   storeVal("wt.saveState", saveCfg ? "true" : "false");
   if (saveCfg) {
     saveState();
