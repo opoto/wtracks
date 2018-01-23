@@ -452,6 +452,9 @@ function updateApiKey(name) {
   var key = useDefault ? undefined : $("#" + name + "-value").val().trim();
   // empty is considered undefined
   key = (key === "") ? undefined : key;
+  var gav = useDefault ? -1 : key ? 1 : 0;
+  ga('send', 'event', 'setting', 'keys', name, gav);
+  log(name + "= " + key);
   saveValOpt("wt." + name, key);
   return key;
 }
@@ -464,21 +467,15 @@ function checkApikey(name) {
 }
 $("#ghkey-chk").on("change", function() {
   ghkey = checkApikey("ghkey");
-  ga('send', 'event', 'setting', 'ghkey', key ? 'set' : 'default');
-  log("ghkey: " + ghkey);
 });
 $("#ggkey-chk").on("change", function() {
   ggkey = checkApikey("ggkey");
-  ga('send', 'event', 'setting', 'ggkey', key ? 'set' : 'default');
-  log("ggkey: " + ggkey);
 });
 $("#ghkey-value").on("focusout", function() {
   ghkey = updateApiKey("ghkey");
-  log("ghkey: " + ghkey);
 });
 $("#ggkey-value").on("focusout", function() {
   ggkey = updateApiKey("ggkey");
-  log("ggkey: " + ggkey);
 });
 function resetApiKey(name) {
   ga('send', 'event', 'setting', 'keys', 'reset');
@@ -2067,6 +2064,7 @@ var MAX_GH_CREDITS = 200;
 
 function checkGraphHopperCredit(e) {
   var gh = getJsonVal("wt.gh", { credits: 0, reset: new Date(0) });
+  var message;
 
   // check GraphHopper response
   if (!isUnset(e)) {
@@ -2078,25 +2076,22 @@ function checkGraphHopperCredit(e) {
       gh.credits = 0;
     }
     if ((e.status >= 400) || (e.remaining === 0)) {
-      gh.credits = -1;
-    } else if (gh.credits >= 0) {
+      if (e.status == 401) {
+        message = "Invalid GraphHopper API key, please fix in Settings";
+        ga('send', 'event', 'gh', 'invalid');
+      } else {
+        ga('send', 'event', 'gh', 'wt-max');
+        gh.credits = -1;
+      }
+    } else if ((gh.credits >= 0) && isUndefined(ghkey)) {
       gh.credits += e.credits;
     }
     storeJsonVal("wt.gh", gh);
   }
 
-  var message;
   if (gh.credits < 0) {
-    if (!isUnset(e)) {
-      if (e.status == 401) {
-        message = "Invalid GraphHopper API key, please fix in Settings";
-        ga('send', 'event', 'gh', 'invalid');
-      } else {
-        message = "WTracks's GraphHopper quota exceeded";
-        ga('send', 'event', 'gh', 'wt-max');
-      }
-    }
-  } else if (gh.credits >= MAX_GH_CREDITS) {
+    message = "GraphHopper quota exceeded";
+  } else if ((gh.credits >= MAX_GH_CREDITS) && isUndefined(ghkey)) {
     message = "You exceeded your GraphHopper quota limit";
     if (!isUnset(e)) {
       ga('send', 'event', 'gh', 'user-max');
@@ -2110,9 +2105,6 @@ function checkGraphHopperCredit(e) {
   return true;
 }
 
-function getApiKey(name, defkey) {
-
-}
 function newMarker(e) {
 
   if (editMode == EDIT_MARKER) {
