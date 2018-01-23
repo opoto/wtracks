@@ -2080,8 +2080,13 @@ function checkGraphHopperCredit(e) {
         message = "Invalid GraphHopper API key, please fix in Settings";
         ga('send', 'event', 'gh', 'invalid');
       } else {
-        ga('send', 'event', 'gh', 'wt-max');
-        gh.credits = -1;
+        if (isUndefined(ghkey)) {
+          ga('send', 'event', 'gh', 'wt-max');
+          gh.credits = -1;
+        } else {
+          ga('send', 'event', 'gh', 'perso-max');
+          message = "Your GraphHopper API key exhausted its daily quota";
+        }
       }
     } else if ((gh.credits >= 0) && isUndefined(ghkey)) {
       gh.credits += e.credits;
@@ -2089,16 +2094,18 @@ function checkGraphHopperCredit(e) {
     storeJsonVal("wt.gh", gh);
   }
 
-  if (gh.credits < 0) {
-    message = "GraphHopper quota exceeded";
-  } else if ((gh.credits >= MAX_GH_CREDITS) && isUndefined(ghkey)) {
-    message = "You exceeded your GraphHopper quota limit";
-    if (!isUnset(e)) {
-      ga('send', 'event', 'gh', 'user-max');
-      setEditMode(EDIT_NONE);
+  if (isUndefined(ghkey)) {
+    if (gh.credits < 0) {
+      message = "WTracks exhausted its daily GraphHopper quota";
+    } else if (gh.credits >= MAX_GH_CREDITS) {
+      message = "You exhausted your daily GraphHopper quota";
+      if (!isUnset(e)) {
+        ga('send', 'event', 'gh', 'user-max');
+      }
     }
   }
   if (message) {
+    setEditMode(EDIT_NONE);
     showGraphHopperMessage(message);
     return false;
   }
