@@ -442,7 +442,7 @@ function initTrackDisplaySettings() {
 function showApiKey(name, value) {
   var useDefault = isUndefined(value);
   var input = $("#" + name + "-value");
-  log(name + ": " + value);
+  debug(name + ": " + value);
   setChecked("#" + name + "-chk", !useDefault);
   input.val(useDefault ? "Using WTracks key" : value);
   input.attr("disabled", useDefault);
@@ -454,7 +454,7 @@ function updateApiKey(name) {
   key = (key === "") ? undefined : key;
   var gav = useDefault ? -1 : key ? 1 : 0;
   ga('send', 'event', 'setting', 'keys', name, gav);
-  log(name + "= " + key);
+  debug(name + "= " + key + " (" + gav + ")");
   saveValOpt("wt." + name, key);
   return key;
 }
@@ -478,11 +478,11 @@ $("#ggkey-value").on("focusout", function() {
   ggkey = updateApiKey("ggkey");
 });
 function resetApiKey(name) {
-  ga('send', 'event', 'setting', 'keys', 'reset');
   setChecked("#" + name + "-chk", false);
   $("#" + name + "-chk").change();
 }
 $("#keys-reset").on("click", function() {
+  ga('send', 'event', 'setting', 'keys', 'reset');
   resetApiKey("ghkey");
   resetApiKey("ggkey");
 });

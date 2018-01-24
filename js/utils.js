@@ -1,4 +1,10 @@
 /* ----------------------- LOGGING SHORTCUTS -------------------------- */
+function debug(msg) {
+  if (console && console.debug) {
+    console.debug(msg);
+  }
+}
+
 function log(msg) {
   if (console && console.log) {
     console.log(msg);
