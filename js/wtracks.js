@@ -1277,8 +1277,87 @@ function elevate1DSTK(pt, cb) {
 
 }
 
-// Google elevation API - free upto 2500 req per day (max 512 points per req)
-function elevateGoogle(points, cb) {
+function googleElevationService(locations, points, inc, success, failure) {
+  var elevator = new google.maps.ElevationService();
+  elevator.getElevationForLocations({
+    'locations': locations
+  }, function(results, status) {
+    if (status === 'OK') {
+      if (isUndefined(points.length)) {
+        // single point elevation
+        points.alt = results[0].elevation;
+      } else {
+        for (var i = 0; i < results.length; i++) {
+          var pos = i * inc;
+          if (pos >= points.length) {
+            // we reached last point from track
+            pos = points.length - 1;
+          }
+          points[pos].alt = results[i].elevation;
+        }
+      }
+      success("g.elevate");
+    } else {
+      failed('g.elevate.ko');
+    }
+  });
+}
+
+// https://github.com/Jorl17/open-elevation
+function openElevationService(locations, points, inc, done, fail) {
+  var ajaxreq, i, len;
+  // GET is faster for small number of points (avoid OPTIONS preflight request)
+  if (locations.length < 20) {
+    // GET method
+    var strpts = "";
+    for (i = 0, len=locations.length; i < len; i++) {
+      if (i>0) strpts += "|";
+      strpts += locations[i].lat + "," + locations[i].lng;
+    }
+    ajaxreq = "https://api.open-elevation.com/api/v1/lookup?locations=" + strpts;
+  } else {
+    // POST method
+    var jsonreq = { locations: [] };
+    for (i = 0, len=locations.length; i < len; i++) {
+      jsonreq.locations.push(
+        {
+          "latitude": locations[i].lat,
+          "longitude": locations[i].lng
+        }
+      );
+    }
+    ajaxreq = {
+      url: "https://api.open-elevation.com/api/v1/lookup?locations=0,0",
+      method: "POST",
+      contentType: "application/json",
+      dataType: "json",
+      data: JSON.stringify(jsonreq)
+    };
+  }
+  $.ajax(ajaxreq)
+  .done(function(json) {
+    if (isUndefined(points.length)) {
+      // single point elevation
+      points.alt = json.results[0].elevation;
+    } else {
+      for (var i = 0; i < json.results.length; i++) {
+        var pos = i * inc;
+        if (pos >= points.length) {
+          // we reached last point from track
+          pos = points.length - 1;
+        }
+        points[pos].alt = json.results[i].elevation;
+      }
+    }
+    done("o.elevate");
+  })
+  .fail(function(err) {
+    fail('o.elevate.ko');
+  });
+}
+
+// multi-point elevation API
+function elevateMulti(points, cb) {
   if (!points || (points.length === 0)) {
     return;
   }
@@ -1302,38 +1381,21 @@ function elevateGoogle(points, cb) {
       }
     }
   }
-  var callerName = arguments.callee && arguments.callee.caller ? arguments.callee.caller.name : elevateGoogle.caller.name;
-  ga('send', 'event', 'api', 'g.elevate', callerName, locations.length);
-
-  var elevator = new google.maps.ElevationService();
-  elevator.getElevationForLocations({
-    'locations': locations
-  }, function(results, status) {
-    if (status === 'OK') {
+  var callerName = arguments.callee && arguments.callee.caller ? arguments.callee.caller.name : elevateMulti.caller.name;
+  multiElevationService(locations, points, inc,
+    function(eventName){
+      ga('send', 'event', 'api', eventName, callerName, locations.length);
       clearStatus();
-      if (isUndefined(points.length)) {
-        // single point elevation
-        points.alt = results[0].elevation;
-      } else {
-        for (var i = 0; i < results.length; i++) {
-          var pos = i * inc;
-          if (pos >= points.length) {
-            // we reached last point from track
-            pos = points.length - 1;
-          }
-          points[pos].alt = results[i].elevation;
-        }
-      }
       // callback
       if (cb) cb();
-    } else {
-      ga('send', 'event', 'api', 'g.elevate.ko', callerName, locations.length);
+    },
+    function(eventName){
+      ga('send', 'event', 'api', eventName, callerName, locations.length);
       setStatus("Elevation failed", { timeout: 3, class: "status-error" });
-      warn("elevation request not OK: " + status);
-      // fallback: next time use geonames for single point elevation
-      elevatePoint = elevate1Geonames;
-    }
-  });
+      warn("elevation request failed");
+      // fallback: next time use open-elevation service
+      multiElevationService = openElevationService;
+    });
 }
 
 // elevate 1 point with Geonames
@@ -1388,10 +1450,12 @@ function elevate1Google(pt, cb) {
   });
 }
 
-
-var elevate = elevateGoogle;
-var elevatePoint = elevateGoogle;
-
+// Select elevation service
+var elevate = elevateMulti;
+var elevatePoint = elevateMulti;
+var multiElevationService =
+      googleElevationService;
+      //openElevationService;
 
 function flatten() {
   setStatus("Flatening..", { spinner: true });
