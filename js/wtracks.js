@@ -1277,7 +1277,7 @@ function elevate1DSTK(pt, cb) {
 
 }
 
-function googleElevationService(locations, points, inc, success, failure) {
+function googleElevationService(locations, points, inc, done, fail) {
   var elevator = new google.maps.ElevationService();
   elevator.getElevationForLocations({
     'locations': locations
@@ -1296,9 +1296,9 @@ function googleElevationService(locations, points, inc, success, failure) {
           points[pos].alt = results[i].elevation;
         }
       }
-      success("g.elevate");
+      done("g.elevate");
     } else {
-      failed('g.elevate.ko');
+      fail('g.elevate.ko');
     }
   });
 }
@@ -1327,7 +1327,7 @@ function openElevationService(locations, points, inc, done, fail) {
       );
     }
     ajaxreq = {
-      url: "https://api.open-elevation.com/api/v1/lookup?locations=0,0",
+      url: "https://api.open-elevation.com/api/v1/lookup",
       method: "POST",
       contentType: "application/json",
       dataType: "json",
@@ -1357,7 +1357,7 @@ function openElevationService(locations, points, inc, done, fail) {
 }
 
 // multi-point elevation API
-function elevateMulti(points, cb) {
+function elevatePoints(points, cb) {
   if (!points || (points.length === 0)) {
     return;
   }
@@ -1381,8 +1381,12 @@ function elevateMulti(points, cb) {
       }
     }
   }
-  var callerName = arguments.callee && arguments.callee.caller ? arguments.callee.caller.name : elevateMulti.caller.name;
-  multiElevationService(locations, points, inc,
+  var callerName = arguments.callee && arguments.callee.caller ? arguments.callee.caller.name : elevatePoints.caller.name;
+  callElevationService(callerName, locations, points, inc, cb);
+}
+
+function callElevationService(callerName, locations, points, inc, cb) {
+  elevationService(locations, points, inc,
     function(eventName){
       ga('send', 'event', 'api', eventName, callerName, locations.length);
       clearStatus();
@@ -1391,10 +1395,15 @@ function elevateMulti(points, cb) {
     },
     function(eventName){
       ga('send', 'event', 'api', eventName, callerName, locations.length);
-      setStatus("Elevation failed", { timeout: 3, class: "status-error" });
-      warn("elevation request failed");
-      // fallback: next time use open-elevation service
-      multiElevationService = openElevationService;
+      if (eventName == "g.elevate.ko") {
+        // fallback: next time use open-elevation service
+        elevationService = openElevationService;
+        // and redo current elevation request immediality
+        callElevationService(callerName, locations, points, inc, cb);
+      } else {
+        setStatus("Elevation failed", { timeout: 3, class: "status-error" });
+        warn("elevation request failed");
+      }
     });
 }
 
@@ -1451,9 +1460,9 @@ function elevate1Google(pt, cb) {
 }
 
 // Select elevation service
-var elevate = elevateMulti;
-var elevatePoint = elevateMulti;
-var multiElevationService =
+var elevate = elevatePoints;
+var elevatePoint = elevatePoints;
+var elevationService =
       googleElevationService;
       //openElevationService;
 
