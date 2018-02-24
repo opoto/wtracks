@@ -1141,6 +1141,11 @@ function getProvider(name) {
       maxZoom: 18,
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> | <a href="http://wiki.openstreetmap.org/wiki/Hiking/mri">MRI</a>'
     });
+  } else if (name == 'mapants') {
+    p = L.tileLayer('http://wmts.mapant.fi/wmts_EPSG3857.php?z={z}&x={x}&y={y}', {
+        maxZoom: 19,
+        minZoom: 7,
+    attribution: '<a href="http://www.maanmittauslaitos.fi/en/digituotteet/laser-scanning-data" target="_blank">Laser scanning</a> and <a href="http://www.maanmittauslaitos.fi/en/digituotteet/topographic-database" target="_blank">topographic</a> data provided by the <a href="http://www.maanmittauslaitos.fi/en" target="_blank">National Land Survey of Finland</a> under the <a href="https://creativecommons.org/licenses/by/4.0/legalcode">Creative Commons license</a>.'});
   }
   if (!p) {
     p = getProvider("osm:std");
@@ -1168,6 +1173,7 @@ var baseLayers = {
   "ES IGN": getProvider("spain:ignraster"),
   "ES ICGC": getProvider("spain:icgc"),
   "EU HikingHuts": getProvider("eu:huts"),
+  "FI MapAnts": getProvider("mapants"),
 };
 var overlays = {
   "Hillshading": getProvider("wmf:hills"),
