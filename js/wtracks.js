@@ -995,208 +995,44 @@ function saveMapType() {
   saveValOpt("wt.maptype", map.getMapTypeId());
 }
 
-function getProvider(name) {
-  var p;
-  if (name == "opentopomap") {
-    p = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-      maxZoom: 17,
-      attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
-    });
-  } else if (name == "osm:std") {
-    p = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    });
-  } else if (name == "osm:hot") {
-    p = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    });
-  } else if (name == "tf:cycle") {
-    p = L.tileLayer('https://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=' + config.thunderforest.key(), {
-      maxZoom: 18,
-      attribution: '&copy; <a href="https://www.thunderforest.com/">Thunderforest</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    });
-
-  } else if (name == "sigma:cycle") {
-    p = L.tileLayer('https://tiles1.sigma-dc-control.com/layer5/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      attribution: '&copy; <a href="http://www.sigmasport.com/" target="_blank">SIGMA Sport &reg;</a> Map data <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>'
-    });
-  } else if (name == "tf:outdoors") {
-    p = L.tileLayer('https://{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=' + config.thunderforest.key(), {
-      maxZoom: 18,
-      attribution: '&copy; <a href="https://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    });
-  } else if (name == "wmf:hikebike") {
-    //p = L.tileLayer('http://{s}.tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png', {
-    p = L.tileLayer('https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png', {
-      maxZoom: 17,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    });
-  } else if (name == "esri:worldtopomap") {
-    p = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-      attribution: 'Tiles &copy; Esri &mdash; Esri and GIS Community'
-    });
-  } else if (name == "esri:worldstreetmap") {
-    p = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
-      attribution: 'Tiles &copy; Esri &mdash; Esri &amp; al.'
-    });
-  } else if (name == "mtbmap") {
-    p = L.tileLayer('http://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &amp; USGS'
-    });
-  } else if (name == "map1.eu") {
-    p = L.tileLayer('http://beta.map1.eu/tiles/{z}/{x}/{y}.jpg', {
-      maxZoom: 17,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &amp; <a href="http://map1.eu">map1.eu</a>'
-    });
-  } else if (name == 'google:roadmap') {
-    p = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-      maxZoom: 20,
-      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-      attribution: '&copy; Google'
-    });
-  } else if (name == 'google:terrain') {
-    p = L.tileLayer('https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', {
-      maxZoom: 20,
-      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-      attribution: '&copy; Google'
-    });
-  } else if (name == 'google:satellite') {
-    p = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-      maxZoom: 20,
-      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-      attribution: '&copy; Google'
-    });
-  } else if (name == 'google:hybrid') {
-    p = L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
-      maxZoom: 20,
-      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-      attribution: '&copy; Google'
-    });
-  } else if (name == 'wmf:hills') {
-    //p = L.tileLayer('http://{s}.tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png',{
-    p = L.tileLayer('https://tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png', {
-      maxZoom: 17,
-      attribution: 'Hillshading: SRTM3 v2 (<a href="https://www2.jpl.nasa.gov/srtm/">NASA</a>)'
-    });
-  } else if (name == 'lv:hike') {
-    p = L.tileLayer('http://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png', {
-      maxZoom: 17,
-      attribution: 'Hiking Routes: (<a href="http://hiking.lonvia.de">Lonvias Hiking Map</a>)'
-    });
-  } else if (name == 'lv:bike') {
-    p = L.tileLayer('http://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png', {
-      maxZoom: 17,
-      attribution: 'Cycling Routes: (<a href="http://cycling.lonvia.de">Lonvias Cycling Map</a>)'
-    });
-  } else if (name == 'fr:ignclassic') {
-    p = L.tileLayer.wtms(
-      "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts", {
-        layer: 'GEOGRAPHICALGRIDSYSTEMS.MAPS',
-        style: 'normal',
-        tilematrixSet: "PM",
-        format: 'image/jpeg',
-        attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
-      });
-  } else if (name == 'fr:ignexpress') {
-    p = L.tileLayer.wtms(
-      "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts", {
-        layer: 'GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN-EXPRESS.STANDARD',
-        style: 'normal',
-        tilematrixSet: "PM",
-        format: 'image/jpeg',
-        attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
-      });
-  } else if (name == 'fr:ignimagery') {
-    p = L.tileLayer.wtms(
-      "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts", {
-        layer: 'ORTHOIMAGERY.ORTHOPHOTOS',
-        style: 'normal',
-        tilematrixSet: "PM",
-        format: 'image/jpeg',
-        attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
-      });
-  } else if (name == 'spain:ignraster') {
-    // https://github.com/sigdeletras/Leaflet.Spain.WMS
-    p = L.tileLayer.wms('https://www.ign.es/wms-inspire/mapa-raster', {
-      layers: 'mtn_rasterizado',
-      format: 'image/png',
-      transparent: false,
-      continuousWorld: true,
-      attribution: '© <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
-    });
-  } else if (name == 'spain:icgc') {
-    p = L.tileLayer.wtms(
-      "https://geoserveis.icgc.cat/icc_mapesmultibase/noutm/wmts/service", {
-        layer: 'topo',
-        style: 'normal',
-        tilematrixSet: "GRID3857",
-        format: 'image/jpeg',
-        attribution: "&copy; Institut Cartogràfic i Geològic de Catalunya - ICGC"
-      });
-  } else if (name == 'eu:huts') {
-    p = L.tileLayer('//maps.refuges.info/hiking/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> | <a href="http://wiki.openstreetmap.org/wiki/Hiking/mri">MRI</a>'
-    });
-  } else if (name == 'mapants') {
-    p = L.tileLayer('https://wmts.mapant.fi/wmts_EPSG3857.php?z={z}&x={x}&y={y}', {
-        maxZoom: 19,
-        minZoom: 7,
-    attribution: '<a href="http://www.maanmittauslaitos.fi/en/digituotteet/laser-scanning-data" target="_blank">Laser scanning</a> and <a href="http://www.maanmittauslaitos.fi/en/digituotteet/topographic-database" target="_blank">topographic</a> data provided by the <a href="http://www.maanmittauslaitos.fi/en" target="_blank">National Land Survey of Finland</a> under the <a href="https://creativecommons.org/licenses/by/4.0/legalcode">Creative Commons license</a>.'});
-  }
-  if (!p) {
-    p = getProvider("osm:std");
+function getProvider(mapobj) {
+  var url = typeof mapobj.url == "string" ? mapobj.url : mapobj.url();
+  var p = null;
+  var protocol = url.split('/')[0];
+  // skip HTTP URLs when current is HTTPS
+  if (protocol.length == 0 || protocol == location.protocol) {
+    var tileCtor;
+    if (isUnset(mapobj.type)) {
+      tileCtor = L.tileLayer;
+    } else {
+      tileCtor = L.tileLayer[mapobj.type];
+    }
+    p = tileCtor(url, mapobj.options);
   }
   return p;
 }
 
-var baseLayers = {
-  "Open Topo": getProvider("opentopomap"),
-  "OpenStreetMap": getProvider("osm:std"),
-  "OpenCycleMap": getProvider("tf:cycle"),
-  "Outdoors": getProvider("tf:outdoors"),
-  "Sigma Cycle": getProvider("sigma:cycle"),
-  "OSM HOT": getProvider("osm:hot"),
-  "OSM HikeBike": getProvider("wmf:hikebike"),
-  "ESRI Topo": getProvider("esri:worldtopomap"),
-  "ESRI Street": getProvider("esri:worldstreetmap"),
-  "Google roads": getProvider('google:roadmap'),
-  "Google Terrain": getProvider('google:terrain'),
-  "Google Satellite": getProvider('google:satellite'),
-  "Google Hybrid": getProvider('google:hybrid'),
-  "FR IGN classic": getProvider("fr:ignclassic"),
-  "FR IGN express": getProvider("fr:ignexpress"),
-  //"FR IGN aerial": getProvider("fr:ignimagery")
-  "ES IGN": getProvider("spain:ignraster"),
-  "ES ICGC": getProvider("spain:icgc"),
-  "EU HikingHuts": getProvider("eu:huts"),
-  "FI MapAnts": getProvider("mapants"),
-};
-var overlays = {
-  "Hillshading": getProvider("wmf:hills"),
-};
-
-var isHttpOk = (window.location.protocol != "https:");
-if (isHttpOk) {
-  $.extend(baseLayers,{
-    "MTB (*)": getProvider("mtbmap"),
-    "Map1.eu (*)": getProvider("map1.eu")
-  });
-  $.extend(overlays,{
-    "Hiking Routes (*)": getProvider("lv:hike"),
-    "Cycling Routes (*)": getProvider("lv:bike")
-  });
+// Add background maps to base layers
+var baseLayers = {};
+for (var bl in config.maps) {
+  if (hasOwnProperty.call(config.maps, bl)) {
+    var tile = getProvider(config.maps[bl]);
+    if (tile) {
+      baseLayers[bl] = tile;
+    }
+  }
 }
-
+// Add background maps to base layers
+var overlays = {};
+for (var ovly in config.overlays) {
+  if (hasOwnProperty.call(config.overlays, ovly)) {
+    var tile = getProvider(config.overlays[ovly]);
+    if (tile) {
+      overlays[ovly] = tile;
+    }
+  }
+}
 L.control.layers(baseLayers, overlays).addTo(map);
-if (isHttpOk) {
-  $(".leaflet-control-layers-list").append("<div class='leaflet-control-layers-separator'></div>");
-  $(".leaflet-control-layers-list").append("<div>(*): no https</div>");
-}
-
 map.addLayer(baseLayers[getVal("wt.baseLayer", config.display.map)] || baseLayers[config.display.map]);
 var layerInit = true;
 map.on("baselayerchange", function(e) {

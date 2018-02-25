@@ -139,5 +139,220 @@ var config = {
       }
     },
     vehicles: ["foot", "bike"]
+  },
+  /* --------------------  MAPS -------------------------------- */
+  maps: {
+    "Open Topo": {
+      url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+      options : {
+        maxZoom: 17,
+        attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+      }
+    },
+    "OpenStreetMap": {
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      options : {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      }
+    },
+    "OSM Hot": {
+      url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+      options: {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      }
+    },
+    "OpenCycleMap": {
+      url: function() {
+        return 'https://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=' + config.thunderforest.key();
+      },
+      options: {
+        maxZoom: 18,
+        attribution: '&copy; <a href="https://www.thunderforest.com/">Thunderforest</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      }
+    },
+    "Sigma Cycle": {
+      url: 'https://tiles1.sigma-dc-control.com/layer5/{z}/{x}/{y}.png',
+      options: {
+        maxZoom: 18,
+        attribution: '&copy; <a href="http://www.sigmasport.com/" target="_blank">SIGMA Sport &reg;</a> Map data <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>'
+      }
+    },
+    "Outdoors": {
+      url: function() {
+        return 'https://{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=' + config.thunderforest.key();
+      },
+      options: {
+        maxZoom: 18,
+        attribution: '&copy; <a href="https://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      }
+    },
+    "OSM HikeBike": {
+      //'http://{s}.tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png'
+      url: 'https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png',
+      options: {
+        maxZoom: 17,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      }
+    },
+    "ESRI Topo": {
+      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+      options: {
+        attribution: 'Tiles &copy; Esri &mdash; Esri and GIS Community'
+      }
+    },
+    "ESRI Street": {
+      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+      options: {
+        attribution: 'Tiles &copy; Esri &mdash; Esri &amp; al.'
+      }
+    },
+    "MTB": {
+      url: 'http://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png',
+      options: {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &amp; USGS'
+      }
+    },
+    "Map1.eu": {
+      url: 'http://beta.map1.eu/tiles/{z}/{x}/{y}.jpg',
+      options: {
+        maxZoom: 17,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &amp; <a href="http://map1.eu">map1.eu</a>'
+      }
+    },
+    "Google Roads": {
+      url: 'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+      options: {
+        maxZoom: 20,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        attribution: '&copy; Google'
+      }
+    },
+    "Google Terrain": {
+      url: 'https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
+      options: {
+        maxZoom: 20,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        attribution: '&copy; Google'
+      }
+    },
+    "Google Satellite": {
+      url: 'https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+      options: {
+        maxZoom: 20,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        attribution: '&copy; Google'
+      }
+    },
+    "Google Hybrid": {
+      url: 'https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',
+      options:{
+        maxZoom: 20,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        attribution: '&copy; Google'
+      }
+    },
+    "FR IGN Classic": {
+      type: "wtms",
+      url: function() {
+        return "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts";
+      },
+      options: {
+        layer: 'GEOGRAPHICALGRIDSYSTEMS.MAPS',
+        style: 'normal',
+        tilematrixSet: "PM",
+        format: 'image/jpeg',
+        attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
+      }
+    },
+    "FR IGN Express": {
+      type: "wtms",
+      url: function() {
+        return "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts";
+      },
+      options: {
+        layer: 'GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN-EXPRESS.STANDARD',
+        style: 'normal',
+        tilematrixSet: "PM",
+        format: 'image/jpeg',
+        attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
+      }
+    },
+    /*
+    "FR IGN Satellite": {
+      type: "wtms",
+      url: "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts",
+      options: {
+          layer: 'ORTHOIMAGERY.ORTHOPHOTOS',
+          style: 'normal',
+          tilematrixSet: "PM",
+          format: 'image/jpeg',
+          attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
+        }
+    },
+    */
+    "SP IGN Raster": {
+      // https://github.com/sigdeletras/Leaflet.Spain.WMS
+      type: "wms",
+      url: 'https://www.ign.es/wms-inspire/mapa-raster',
+      options: {
+        layers: 'mtn_rasterizado',
+        format: 'image/png',
+        transparent: false,
+        continuousWorld: true,
+        attribution: '© <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+      }
+    },
+    "SP ICGC": {
+      type: "wtms",
+      url: "https://geoserveis.icgc.cat/icc_mapesmultibase/noutm/wmts/service",
+      options: {
+          layer: 'topo',
+          style: 'normal',
+          tilematrixSet: "GRID3857",
+          format: 'image/jpeg',
+          attribution: "&copy; Institut Cartogràfic i Geològic de Catalunya - ICGC"
+        }
+    },
+    "EU Huts": {
+      url:'//maps.refuges.info/hiking/{z}/{x}/{y}.png',
+      optns: {
+        maxZoom: 18,
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> | <a href="http://wiki.openstreetmap.org/wiki/Hiking/mri">MRI</a>'
+      }
+    },
+    "FI MapAnts": {
+      url: 'https://wmts.mapant.fi/wmts_EPSG3857.php?z={z}&x={x}&y={y}',
+      options: {
+        maxZoom: 19,
+        minZoom: 7,
+        attribution: '<a href="http://www.maanmittauslaitos.fi/en/digituotteet/laser-scanning-data" target="_blank">Laser scanning</a> and <a href="http://www.maanmittauslaitos.fi/en/digituotteet/topographic-database" target="_blank">topographic</a> data provided by the <a href="http://www.maanmittauslaitos.fi/en" target="_blank">National Land Survey of Finland</a> under the <a href="https://creativecommons.org/licenses/by/4.0/legalcode">Creative Commons license</a>.'
+      }
+    }
+  },
+  overlays: {
+    "Hills": {
+     //'http://{s}.tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png'
+     url: 'https://tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png',
+     options: {
+       maxZoom: 17,
+       attribution: 'Hillshading: SRTM3 v2 (<a href="https://www2.jpl.nasa.gov/srtm/">NASA</a>)'
+     }
+   },
+   "Hike": {
+     url: 'http://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png',
+     options: {
+       maxZoom: 17,
+       attribution: 'Hiking Routes: (<a href="http://hiking.lonvia.de">Lonvias Hiking Map</a>)'
+     }
+   },
+   "Bike": {
+     url: 'http://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png',
+     options: {
+       maxZoom: 17,
+       attribution: 'Cycling Routes: (<a href="http://cycling.lonvia.de">Lonvias Cycling Map</a>)'
+     }
+   }
   }
 };
