@@ -1337,7 +1337,8 @@ new L.Control.GeoSearch({
   position: 'topleft',
   showMarker: false,
   showPopup: true,
-  customIcon: false,
+  //customIcon: false,
+  customIcon: L.divIcon({html:'<span class="material-icons">&#xE8B6;</span>'}),
   retainZoomLevel: true,
   draggable: false
 }).addTo(map);
@@ -1354,7 +1355,7 @@ L.MyLocationControl = L.Control.extend({
 
     link.href = '#';
     link.title = 'My location';
-    link.innerHTML = '<span id="myloc" class="wtracks-control-icon">&nbsp;</span>';
+    link.innerHTML = '<span id="myloc" class="material-icons wtracks-control-icon">&#xE55C;</span>';
     //link.id = 'myloc';
     L.DomEvent.disableClickPropagation(link);
     L.DomEvent.on(link, 'click', L.DomEvent.stop)
@@ -1409,7 +1410,7 @@ L.EditControl = L.Control.extend({
 
     editopts.id = 'edit-tools';
     editopts.class = 'wtracks-control-icon';
-    editopts.innerHTML = '<a href="#" title="Manual Track" id="edit-manual"><span class="wtracks-control-icon">&nbsp;</span></a><a href="#" title="Auto Track" id="edit-auto"><span class="wtracks-control-icon">&nbsp;</span></a><a href="#" title="Waypoint" id="edit-marker"><span class="wtracks-control-icon">&nbsp;</span></a>';
+    editopts.innerHTML = '<a href="#" title="Manual Track" id="edit-manual"><span class="material-icons wtracks-control-icon">&#xE922;</span></a><a href="#" title="Auto Track" id="edit-auto"><span class="material-icons wtracks-control-icon">&#xE55D;</span></a><a href="#" title="Waypoint" id="edit-marker"><span class="material-icons wtracks-control-icon">&#xE55F;</span></a>';
 
     return container;
   }
@@ -1419,7 +1420,8 @@ L.EditorControl = L.EditControl.extend({
   options: {
     position: 'topleft',
     title: 'Toggle Edit',
-    html: '&#x270e;',
+//    html: '&#x270e;',
+    html: '<span class="material-icons">&#xE3C9;</span>',
     event: 'click'
   }
 });

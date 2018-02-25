@@ -153,6 +153,11 @@ table.form tr td:first-child {
   height: 280px;
 }
 
+.help-b {
+  font-size: 22px;
+  height: 20px;
+  overflow: hidden;
+}
 .help-p {
   display: none;
 }

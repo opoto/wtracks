@@ -19,6 +19,9 @@
   <script src="js/utils.js"></script>
   <script src="js/htmlEncode.js"></script>
 
+  <!-- Google Material design fontss -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+
   <link rel="stylesheet" href="//cdn.rawgit.com/Alex-D/Trumbowyg/v2.5.1/dist/ui/trumbowyg.min.css">
   <script src="//cdn.rawgit.com/Alex-D/Trumbowyg/v2.5.1/dist/trumbowyg.min.js"></script>
 
@@ -81,7 +84,7 @@
         </td>
         <td>
           <label><input type="checkbox" id="merge"/>Merge with current track</label>
-          <img id="mergetxt" class="help-b" src="img/help.png" alt="help" />
+          <span id="mergetxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <p id="mergetxt-help" class="help-p">
             Current edited track will not be discarded, it will be extended with the loaded one.
           </p>
@@ -98,7 +101,7 @@
             <option value="kml">KML</option>
             <option value="geojson">GeoJson</option>
           </select>
-          <img id="filetypetxt" class="help-b" src="img/help.png" alt="help" />
+          <span id="filetypetxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <p id="filetypetxt-help" class="help-p">
             If "Auto" is selected, the type of the file is selected based on the file extension.
           </p>
@@ -146,19 +149,19 @@
         <td>
           Download current track as a GPX file<br/>
           <label><input type="checkbox" id="as-route"/>As route</label>
-          <img id="routetxt" class="help-b" src="img/help.png" alt="help" />
+          <span id="routetxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <p id="routetxt-help" class="help-p">
             Check to save the track as a GPX route, instead of a GPX track segment.
           </p>
           <br/>
           <label><input type="checkbox" id="nometadata"/>Without metadata</label>
-          <img id="nometadatatxt" class="help-b" src="img/help.png" alt="help" />
+          <span id="nometadatatxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <p id="nometadatatxt-help" class="help-p">
             Check to save without GPX metadata.
           </p>
           <br/>
           <label><input type="checkbox" id="savetiming"/>Save computed timings</label>
-          <img id="savetimingtxt" class="help-b" src="img/help.png" alt="help" />
+          <span id="savetimingtxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <p id="savetimingtxt-help" class="help-p">
             Check to save in the GPX the timings computed by WTracks and displayed in the bottom banner of the page. Note that it will override any potential timing you may have previously recorded for this track.
           </p>
@@ -172,7 +175,7 @@
         </td>
         <td>
           Remove track points within a <input id="prunedist" type="text" size="2" value="5" /> meters band
-          <img id="compresstxt" class="help-b" src="img/help.png" alt="help" />
+          <span id="compresstxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <p id="compresstxt-help" class="help-p">
             Reduces track size without significantly changing track shape.
           </p>
@@ -184,7 +187,7 @@
         </td>
         <td>
           Add altitude information to some track points
-          <img id="elevatetxt" class="help-b" src="img/help.png" alt="help" />
+          <span id="elevatetxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <p id="elevatetxt-help" class="help-p">
             Uses external web service to get elevation of track points.
           </p>
@@ -196,7 +199,7 @@
         </td>
         <td>
           Remove altitude information from all track points
-          <img id="flattentxt" class="help-b" src="img/help.png" alt="help" />
+          <span id="flattentxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <p id="flattentxt-help" class="help-p">
             Resets elevation data for the whole track.
           </p>
@@ -208,7 +211,7 @@
         </td>
         <td>
           Reverts direction of the track
-          <img id="reverttxt" class="help-b" src="img/help.png" alt="help" />
+          <span id="reverttxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <p id="reverttxt-help" class="help-p">
             Inverts all track points so that start of the track becomes the end.
           </p>
@@ -223,7 +226,7 @@
         </td>
         <td>
           <input type="range" id="trim-range" min="0" step="1" value="0" />&nbsp;<span id="trim-txt"></span>
-          <img id="trimtxt" class="help-b" src="img/help.png" alt="help" />
+          <span id="trimtxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <p id="trimtxt-help" class="help-p">
             Move cursor to delete points from the start or the end of the track.
           </p>
@@ -237,7 +240,7 @@
         </td>
         <td>
           Locally save editor's state between sessions
-          <img id="cfgsavetxt" class="help-b" src="img/help.png" alt="help" />
+          <span id="cfgsavetxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <br/>
           Privacy warning: state is shared with all users of this browser profile
           <p id="cfgsavetxt-help" class="help-p">
@@ -250,6 +253,10 @@
         <td colspan="2">
           <div>
             Track display options:
+            <span id="trkopts" class="help-b material-icons" title="Help">&#xE8FD;</span>
+            <p id="trkopts-help" class="help-p">
+              Configure the color and width of your track on the map.
+            </p>
           </div>
         </td>
       </tr>
@@ -275,7 +282,7 @@
         <td colspan="2">
           <div>
             API keys:
-            <img id="keystxt" class="help-b" src="img/help.png" alt="help" />
+            <span id="keystxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
             <p id="keystxt-help" class="help-p">
               Set your own API keys to bypass WTracks quota limits.
               Keys will be stored in your browser. Do not use or click "Reset"
@@ -292,7 +299,7 @@
             <span class="setting-name">GraphHopper:</span>
             <input id="ghkey-chk" class="no-trim" type="checkbox" />
             <input id="ghkey-value" placeholder="Your GraphHopper key" class="setting-input" />
-            <img id="ghkeytxt" class="help-b" src="img/help.png" alt="help" />
+            <span id="ghkeytxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
             <p id="ghkeytxt-help" class="help-p">
               This key is used for the routing feature, which draws tracks along map roads.
               Get your API key from <a target="_blank" href="https://graphhopper.com/">GraphHopper</a>.
@@ -302,7 +309,7 @@
             <span class="setting-name">Google:</span>
             <input id="ggkey-chk" class="no-trim" type="checkbox" />
             <input id="ggkey-value" placeholder="Your Google API key" class="setting-input" />
-            <img id="ggkeytxt" class="help-b" src="img/help.png" alt="help" />
+            <span id="ggkeytxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
             <p id="ggkeytxt-help" class="help-p">
               This key is used for the elevation service, which gets the elevation of each track point.
               For this setting to be effective, check the "save editor state" option above and reload the page.
@@ -378,10 +385,10 @@
   <table id="tdisplay">
     <tr id="menu-bar">
       <td colspan="7">
-        <a href="#" id="menu-button" class="button"><img src="img/menu-icon.png" alt="menu"/></a>
+        <a href="#" id="menu-button" class="button"><span class="material-icons">&#xE5D2;</span></a>
         <span id="track-name-edit" class="link" title="Edit track details">
         <span class="title" id="track-name"></span>
-        <span class="symbol">&#9998;</span>
+        <span class="material-icons symbol">&#xE3C9;</span>
         </span>
         <span id="status">
         <span id="spinner" class="spinner">
@@ -397,14 +404,14 @@
       <td id="map" colspan="7"></td>
     </tr>
     <tr class="statistics">
-      <th><span class="hide-medium">Distance</span><span class="show-medium">&#x1f4cf;</span></th>
+      <th><span class="hide-medium">Distance</span><span class="material-icons show-medium">&#xE41C;</span></th>
       <td title='One Way'>
-        <span class="symbol">&#8594;</span> <span id="distow"></span>
+        <span class="material-icons symbol">&#xE31C;</span> <span id="distow"></span>
       </td>
       <td title='Round Trip'>
-        <span class="symbol">&#8646;</span> <span id="distrt"></span>
+        <span class="material-icons symbol">&#xE041;</span> <span id="distrt"></span>
       </td>
-      <th><span class="hide-medium">Alt. Max</span><span class="show-medium">&#x2197;</span></th>
+      <th><span class="hide-medium">Alt. Max</span><span class="material-icons show-medium">&#xE25A;</span></th>
       <td>
         &#9650; <span id="altmax"></span>
       </td>
@@ -413,10 +420,10 @@
     </tr>
     <tr class="statistics">
       <th>
-        <span class="hide-medium">Time</span><span class="show-medium">&#x1f550;</span>
+        <span class="hide-medium">Time</span><span class="show-medium material-icons">&#xE422;</span>
         <select id="activity" size="1"></select>
         <a href="activities.html" title="Edit activites">
-          <span class="symbol link">&#9998;</span>
+          <span class="material-icons symbol link">&#xE3C9;</span>
         </a>
       </th>
       <td title='One Way'>
@@ -425,7 +432,7 @@
       <td title='Round Trip'>
         <span id="timert"></span>
       </td>
-      <th><span class="hide-medium">Alt. Min</span><span class="show-medium">&#x2198;</span></th>
+      <th><span class="hide-medium">Alt. Min</span><span class="material-icons show-medium">&#xE258;</span></th>
       <td>
         &#9660; <span id="altmin"></span>
       </td>

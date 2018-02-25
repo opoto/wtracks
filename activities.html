@@ -8,6 +8,9 @@
   <meta name="viewport" content="width=device-width,height=device-height, user-scalable=no" />
   <META name="keywords" content="Leaflet, OpenStreetMap, GPX, GPS, speed, regression, GIS, outdoor">
   <link rel="manifest" href="./manifest.json">
+  <!-- Google Material design fontss -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+
   <title>Speed profile editor</title>
   <script src="js/jquery.min.js"></script>
   <script src="js/jquery.flot.min.js"></script>
@@ -31,7 +34,7 @@
       <h1>Activity Editor</h1>
       <p>
         Here you can edit the activities associated to your tracks.
-        <img id="intro" class="help-b" src="img/help.png" alt="help" />
+        <span id="intro" class="help-b material-icons" title="Help">&#xE8FD;</span>
       </p>
       <div id="intro-help" class="help-p">Activities have two characteristics:
         <ul>
@@ -63,7 +66,7 @@
         <button id="activityreset">Reset Defaults</button>
         <button id="activityexportall">Export All</button>
         <button id="activityimport">Import</button>
-        <img id="savingtxt" class="help-b" src="img/help.png" alt="help" />
+        <span id="savingtxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
       </div>
       <div class="text">
         <p id="savingtxt-help" class="help-p">
@@ -119,7 +122,7 @@
 
       <div class="text">
         <p>
-          <img id="computetxt" class="help-b" src="img/help.png" alt="help" />
+          <span id="computetxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
         </p>
         <p id="computetxt-help" class="help-p">
           Use our engine to compute a speed profile based on a recorded GPS track. This track should have elevation and timing data. Select the activity's speed profile type in the activity edition form above, upload your track below, optionally change the engine, and click "Compute" button. Don't forget to save your activity if you want to reuse it later.
