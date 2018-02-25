@@ -143,21 +143,21 @@ var config = {
   /* --------------------  MAPS -------------------------------- */
   maps: {
     "Open Topo": {
-      url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+      url: '//{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
       options : {
         maxZoom: 17,
         attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
       }
     },
     "OpenStreetMap": {
-      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       options : {
         maxZoom: 19,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       }
     },
     "OSM Hot": {
-      url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+      url: '//{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
       options: {
         maxZoom: 19,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -165,7 +165,7 @@ var config = {
     },
     "OpenCycleMap": {
       url: function() {
-        return 'https://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=' + config.thunderforest.key();
+        return '//{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=' + config.thunderforest.key();
       },
       options: {
         maxZoom: 18,
@@ -173,7 +173,7 @@ var config = {
       }
     },
     "Sigma Cycle": {
-      url: 'https://tiles1.sigma-dc-control.com/layer5/{z}/{x}/{y}.png',
+      url: '//tiles1.sigma-dc-control.com/layer5/{z}/{x}/{y}.png',
       options: {
         maxZoom: 18,
         attribution: '&copy; <a href="http://www.sigmasport.com/" target="_blank">SIGMA Sport &reg;</a> Map data <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>'
@@ -181,7 +181,7 @@ var config = {
     },
     "Outdoors": {
       url: function() {
-        return 'https://{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=' + config.thunderforest.key();
+        return '//{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=' + config.thunderforest.key();
       },
       options: {
         maxZoom: 18,
@@ -190,20 +190,20 @@ var config = {
     },
     "OSM HikeBike": {
       //'http://{s}.tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png'
-      url: 'https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png',
+      url: '//tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png',
       options: {
         maxZoom: 17,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       }
     },
     "ESRI Topo": {
-      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+      url: '//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
       options: {
         attribution: 'Tiles &copy; Esri &mdash; Esri and GIS Community'
       }
     },
     "ESRI Street": {
-      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+      url: '//server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
       options: {
         attribution: 'Tiles &copy; Esri &mdash; Esri &amp; al.'
       }
@@ -222,7 +222,7 @@ var config = {
       }
     },
     "Google Roads": {
-      url: 'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+      url: '//{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
       options: {
         maxZoom: 20,
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
@@ -230,7 +230,7 @@ var config = {
       }
     },
     "Google Terrain": {
-      url: 'https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
+      url: '//{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
       options: {
         maxZoom: 20,
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
@@ -238,7 +238,7 @@ var config = {
       }
     },
     "Google Satellite": {
-      url: 'https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+      url: '//{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
       options: {
         maxZoom: 20,
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
@@ -246,7 +246,7 @@ var config = {
       }
     },
     "Google Hybrid": {
-      url: 'https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',
+      url: '//{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',
       options:{
         maxZoom: 20,
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
@@ -295,7 +295,7 @@ var config = {
     "SP IGN Raster": {
       // https://github.com/sigdeletras/Leaflet.Spain.WMS
       type: "wms",
-      url: 'https://www.ign.es/wms-inspire/mapa-raster',
+      url: '//www.ign.es/wms-inspire/mapa-raster',
       options: {
         layers: 'mtn_rasterizado',
         format: 'image/png',
@@ -323,7 +323,7 @@ var config = {
       }
     },
     "FI MapAnts": {
-      url: 'https://wmts.mapant.fi/wmts_EPSG3857.php?z={z}&x={x}&y={y}',
+      url: '//wmts.mapant.fi/wmts_EPSG3857.php?z={z}&x={x}&y={y}',
       options: {
         maxZoom: 19,
         minZoom: 7,
@@ -334,7 +334,7 @@ var config = {
   overlays: {
     "Hills": {
      //'http://{s}.tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png'
-     url: 'https://tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png',
+     url: '//tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png',
      options: {
        maxZoom: 17,
        attribution: 'Hillshading: SRTM3 v2 (<a href="https://www2.jpl.nasa.gov/srtm/">NASA</a>)'
