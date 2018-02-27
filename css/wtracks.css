@@ -38,7 +38,6 @@ body {
 }
 
 .title {
-  margin-left: 10px;
   font-weight: bold;
 }
 
@@ -137,7 +136,7 @@ body {
   margin-left: 10px;
   font-size: 22px;
   height: 20px;
-  overflow: hidden;
+  vertical-align: middle;
 }
 
 
@@ -191,10 +190,14 @@ ul.menutab li a:hover {background-color: #ddd;}
 /* Create an active/current tablink class */
 ul.menutab li a:focus, .active {background-color: #ccc;}
 
+#menu-button span {
+  vertical-align: middle;
+}
+
 a.button {
   text-decoration: none;
   color: black;
-  padding: 5px;
+  margin: 0 10px;
 }
 
 .menu-close-button {
@@ -218,6 +221,7 @@ a.button {
 
 .symbol {
   font-size: inherit;
+  vertical-align: middle;
 }
 .link {
   cursor: pointer;
@@ -536,7 +540,6 @@ button:active, #track-upload-label:active {
 @media screen and (max-width: 480px) {
   .title {
     font-size: 90%;
-    margin-left: 0px;
   }
   .statistics th {
     display: none;

@@ -1421,7 +1421,7 @@ L.EditorControl = L.EditControl.extend({
     position: 'topleft',
     title: 'Toggle Edit',
 //    html: '&#x270e;',
-    html: '<span class="material-icons">&#xE3C9;</span>',
+    html: '<span class="material-icons wtracks-control-icon">&#xE3C9;</span>',
     event: 'click'
   }
 });
