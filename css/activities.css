@@ -154,9 +154,10 @@ table.form tr td:first-child {
 }
 
 .help-b {
-  font-size: 22px;
-  height: 20px;
-  overflow: hidden;
+  margin-left: 10px;
+  font-size: 20px;
+  vertical-align: middle;
+  color: #575757;
 }
 .help-p {
   display: none;
