@@ -39,8 +39,7 @@
         factory(window.L, window.toGeoJSON);
     }
 }(function fileLoaderFactory(L, toGeoJSON) {
-    var FileLoader = L.Class.extend({
-        includes: L.Mixin.Events,
+    var FileLoader = L.Layer.extend({
         options: {
             layer: L.geoJson,
             layerOptions: {},
@@ -309,7 +308,7 @@
             fileInput.type = 'file';
             fileInput.multiple = 'multiple';
             if (!this.options.formats) {
-                fileInput.accept = '.gpx,.kml,.geojson';
+                fileInput.accept = '.gpx,.kml,.json,.geojson';
             } else {
                 fileInput.accept = this.options.formats.join(',');
             }
