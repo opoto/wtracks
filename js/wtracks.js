@@ -33,6 +33,11 @@ function saveJsonValOpt(name, val) {
     storeJsonVal(name, val);
   }
 }
+/* folding settings */
+function toggleElement(e) {
+  $("." + this.id.slice(0, -1) + "-toggle").toggle();
+}
+$(".toggle").click(toggleElement);
 
 /* help buttons */
 function toggleHelp(e) {

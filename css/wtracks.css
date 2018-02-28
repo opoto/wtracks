@@ -263,7 +263,7 @@ a.button {
   border-radius: 4px;
   margin: auto;
   position: relative;
-  top: 5%;
+  vertical-align: middle;
 }
 .leaflet-default-icon-path {
 	background-image: url(../img/marker-icon.png);
@@ -478,6 +478,9 @@ button:active, #track-upload-label:active {
   background-color: #DDD;
 }
 
+.toggle-hidden {
+    display: none;
+}
 /* --------------------- Statistics ---------------------- */
 
 .statistics th, .statistics td {
@@ -497,6 +500,7 @@ button:active, #track-upload-label:active {
 .show-medium {
    display: none;
 }
+
 #activity {
   text-align: right;
 }
@@ -512,6 +516,9 @@ button:active, #track-upload-label:active {
   }
   .show-medium {
      display: initial;
+  }
+  .material-icons, .show-medium {
+    vertical-align: middle;
   }
   #edit-manual {
     background-position-x: 2px;
