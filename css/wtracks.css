@@ -274,6 +274,10 @@ a.button {
 .leaflet-control-geosearch input {
   font-size: 14px;
 }
+.toggle.material-icons {
+  vertical-align: middle;
+  font-size: 20px;;
+}
 
 .popupdiv {
   margin: 5px 0;
