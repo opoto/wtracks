@@ -197,7 +197,7 @@ a.button {
   margin: 0 10px;
 }
 
-.menu-close-button {
+.close-button {
   position: absolute;
   top: 0;
   right: 0;
@@ -212,7 +212,7 @@ a.button {
   font-weight: bold;
   background: transparent;
 }
-.menu-close-button:hover {
+.close-button:hover {
   color: #999;
 }
 

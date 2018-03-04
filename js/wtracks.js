@@ -125,23 +125,13 @@ function closeTrackNamePrompt() {
 function promptKeyEvent(event) {
   if (event.which == 27) {
     closeTrackNamePrompt();
-  } else if (event.keyCode == 13) {
+  } else if ((event.keyCode == 13) && (event.target.tagName != "TEXTAREA")) {
     validatePrompt();
   }
 }
 
-$("#prompt-name").keyup(function promptKeyEvent(event) {
-  if (event.which == 27) {
-    closeTrackNamePrompt();
-  } else if (event.keyCode == 13) {
-    validatePrompt();
-  }
-});
-$("#prompt-desc").keyup(function promptKeyEvent(event) {
-  if (event.which == 27) {
-    closeTrackNamePrompt();
-  }
-});
+$("#prompt-name").keyup(promptKeyEvent);
+$("#prompt-desc").keyup(promptKeyEvent);
 
 $("#prompt-ok").click(validatePrompt);
 $("#prompt-cancel").click(closeTrackNamePrompt);
@@ -251,6 +241,15 @@ mymapsInputs.on("input", function(evt) {
   }
 });
 
+mymapsInputs.keyup(function(event) {
+  if (event.which == 27) {
+    cancelMymapBox();
+    event.stopPropagation();
+  } else if (event.keyCode == 13) {
+    validateMymapBox();
+  }
+});
+
 function validateMymapBox(evt) {
   var valid = true;
   // check validity on displayed inputs
@@ -348,12 +347,10 @@ function resetMymap(evt) {
     changeBaseLayer($(v).text());
     v.remove();
   });
-  mymaps = { options: {}};
+  mymaps = {};
   ga('send', 'event', 'map', 'reset');
   saveJsonValOpt("wt.mymaps", undefined);
 }
-function importMymap(evt) {}
-function exportMymap(evt) {}
 
 $("#mymap-ok").click(validateMymapBox);
 $("#mymap-cancel").click(cancelMymapBox);
@@ -362,9 +359,78 @@ $("#mymap-add").click(addMymap);
 $("#mymap-edit").click(editMymap);
 $("#mymap-delete").click(deleteMymap);
 $("#mymap-reset").click(resetMymap);
-$("#mymap-import").click(importMymap);
-$("#mymap-export").click(exportMymap);
 $("input:radio[name=mymap-type]").change(changeMymapType);
+
+// ---------------- Import / export my maps
+
+function openExportMymaps(json) {
+  var json = JSON.stringify(mymaps);
+  var data = b64EncodeUnicode(json);
+  $("#input-text").text("Copy and share map data below (Ctrl+C & Enter):");
+  $("#input-ok").hide();
+  $("#input-val").val(data);
+  $("#input-box").show();
+  $("#input-val").focus();
+  $("#input-val").select();
+  ga('send', 'event', 'map', 'export', undefined, mymaps.length);
+}
+
+function openImportMymaps() {
+  $("#input-text").text("Paste exported map data (Ctrl+V & Enter):");
+  $("#input-val").val("");
+  $("#input-ok").show();
+  $("#input-box").show();
+  $("#input-val").focus();
+}
+
+
+function importMymaps() {
+  var data = $("#input-val").val();
+  var importedMymaps = JSON.parse(b64DecodeUnicode(data));
+  var imported = 0;
+  for (var name in importedMymaps) {
+    if (hasOwnProperty.call(importedMymaps, name)) {
+      var msg = mymaps[name] ? "Overwrite " : "Import ";
+      if (confirm(msg + name + "?")) {
+        changeMymapsItem(name, name);
+        changeBaseLayer(name, name, importedMymaps[name]);
+        mymaps[name] = importedMymaps[name];
+        imported++;
+      }
+    }
+  }
+  if (imported > 0) {
+    saveJsonValOpt("wt.mymaps", mymaps);
+    ga('send', 'event', 'map', 'import', undefined, imported);
+  }
+  $("#input-box").hide();
+}
+
+$("#input-close").click(function() {
+  $("#input-box").hide();
+});
+
+$("#input-val").keyup(function(event) {
+  if (event.which == 27) {
+    $("#input-box").hide();
+  } else if (event.keyCode == 13) {
+    var isImport = $("#input-ok").is(":visible");
+    $("#input-box").hide();
+    if (isImport) {
+      importMymaps();
+    }
+  }
+});
+
+$("#input-ok").click(importMymaps);
+
+$("#mymap-import").click(openImportMymaps);
+$("#mymap-export").click(openExportMymaps);
+
+if (!supportsBase64() || !JSON || !JSON.parse || !JSON.stringify) {
+  $("#mymap-import").attr("disabled", "disabled");
+  $("#mymap-export").attr("disabled", "disabled");
+}
 
 /* ----------------------------------------------------- */
 
@@ -905,10 +971,8 @@ function setRouteStart(latlng) {
 
 function closeOverlays() {
   // close all
-  closeMenu();
   map.closePopup();
   hideElevation();
-  cancelMymapBox();
 }
 
 function restartRoute() {
@@ -2313,6 +2377,7 @@ function newMarker(e) {
     }
   } else {
     closeOverlays();
+    closeMenu();
   }
 }
 map.on('click', newMarker);

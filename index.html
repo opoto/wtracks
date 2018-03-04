@@ -62,7 +62,7 @@
 
 <body>
   <div id="menu">
-    <div id="menu-header"><a id="menu-close" href="#" class="menu-close-button">×</a></div>
+    <div id="menu-header"><a id="menu-close" href="#" class="close-button">×</a></div>
     <ul class="menutab">
       <li><a href="#" class="tablinks" id="tabfile">File</a></li>
       <li><a href="#" class="tablinks" id="tabtools">Tools</a></li>
@@ -275,8 +275,8 @@
           </div>
           <div>
             <button id="mymap-reset" class="setting-value">Reset</button>
-            <button id="mymap-export" class="setting-value" style="display:none">Export</button>
-            <button id="mymap-import" class="setting-value" style="display:none">Import</button>
+            <button id="mymap-export" class="setting-value">Export</button>
+            <button id="mymap-import" class="setting-value">Import</button>
           </div>
       </tr>
       <tr class="nobottomborder">
@@ -473,6 +473,17 @@
           </td>
         </tr>
       </table>
+    </div>
+  </div>
+
+  <!-- Export/import Mymaps box -->
+  <div id="input-box" class="modal">
+    <!-- Modal content -->
+    <div class="prompt-content">
+      <a href="#" id="input-box-close" class="close-button">×</a>
+      <p id="input-text"></p>
+      <input id="input-val" type="text" size="50" value="" />
+      <button id="input-ok">Ok</button>
     </div>
   </div>
 
