@@ -137,7 +137,9 @@ body {
   font-size: 20px;
   color: #575757;
 }
-
+#mymap-box .help-b {
+  margin-left: 0;
+}
 
 #dropbox-chooser, #dropbox-saver {
   font-size: 11px;
@@ -401,6 +403,7 @@ div.trumbowyg-editor {
   text-align: right;
   vertical-align: top;
   padding-top: 5px;
+  min-width: 75px;
 }
 .prompt-content input[type=text], .prompt-content textarea  {
   width: 100%;

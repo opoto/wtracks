@@ -300,10 +300,12 @@ function validateMymapBox(evt) {
         mymaps[newname] = mymap;
       }
       changeBaseLayer(oldname, newname, mymap);
+      ga('send', 'event', 'map', 'edit');
     } else {
       addMymapsItem(newname);
       addBaseLayer(newname, mymap);
       mymaps[newname] = mymap;
+      ga('send', 'event', 'map', 'add');
     }
     saveJsonValOpt("wt.mymaps", mymaps);
   }
@@ -328,6 +330,7 @@ function deleteMymap(evt) {
         changeBaseLayer(mymapname);
       }
     }
+    ga('send', 'event', 'map', 'delete');
   }
 }
 
@@ -346,6 +349,7 @@ function resetMymap(evt) {
     v.remove();
   });
   mymaps = { options: {}};
+  ga('send', 'event', 'map', 'reset');
   saveJsonValOpt("wt.mymaps", undefined);
 }
 function importMymap(evt) {}

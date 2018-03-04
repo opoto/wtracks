@@ -257,7 +257,7 @@
             <span  class="toggle" id="mapstg3">Personal background maps:</span>
             <span id="mapopts" class="help-b material-icons" title="Help">&#xE8FD;</span>
             <p id="mapopts-help" class="help-p">
-              Configure your own map base layer.
+              Configure your own map backgrounds.
             </p>
           </div>
         </td>
@@ -409,7 +409,7 @@
         </tr>
         <tr>
           <td>Name: </td>
-          <td><input id="mymap-name" type="text" value="" required pattern="\S.*"/></td>
+          <td><input id="mymap-name" type="text" value="" required placeholder="Required" pattern="\S.*"/></td>
         </tr>
         <tr>
           <td>Type: </td>
@@ -420,8 +420,19 @@
           </td>
         </tr>
         <tr>
-          <td>URL: </td>
-          <td><input id="mymap-url" type="text" value="" required pattern="(http(s)?:)?\/\/\S+"/></td>
+          <td>
+            URL
+            <span id="mapurl" class="help-b material-icons" title="Help">&#xE8FD;</span>
+            :
+          </td>
+          <td>
+            <input id="mymap-url" type="text" value="" required placeholder="Required, https or // URL" pattern="(http(s)?:)?\/\/\S+"/>
+            <p id="mapurl-help" class="help-p">
+              Because this site is hosted using https, http URL will not work.
+              Your URL will not be sent to WTracks server. Only enter URL with credentials on your personal devices,
+              or uncheck the 'save editor state' if you use a shared/public device.
+            </p>
+          </td>
         </tr>
         <tr>
           <td>Zoom: </td>
@@ -432,11 +443,11 @@
         </tr>
         <tr class="map-wms">
           <td>Layers: </td>
-          <td><input id="mymap-layers" type="text" size="50" required value="\S.*" /></td>
+          <td><input id="mymap-layers" type="text" size="50" placeholder="Required" required value="\S.*" /></td>
         </tr>
         <tr class="map-wmts">
           <td>Layer: </td>
-          <td><input id="mymap-layer" type="text" size="50" required value="" /></td>
+          <td><input id="mymap-layer" type="text" size="50" placeholder="Required" required value="" /></td>
         </tr>
         <tr class="map-wms">
           <td>Styles: </td>
@@ -452,7 +463,7 @@
         </tr>
         <tr>
           <td><i class="material-icons symbol">&#xE90C;</i>: </td>
-          <td><input id="mymap-attr" type="text" size="50" value="" /></td>
+          <td><input id="mymap-attr" type="text" placeholder="Map attributions and copyright" size="50" value="" /></td>
         </tr>
         <tr>
           <td></td>
