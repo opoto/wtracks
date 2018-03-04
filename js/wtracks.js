@@ -364,15 +364,17 @@ $("input:radio[name=mymap-type]").change(changeMymapType);
 // ---------------- Import / export my maps
 
 function openExportMymaps() {
-  var json = JSON.stringify(mymaps);
-  var data = b64EncodeUnicode(json);
-  $("#input-text").text("Copy and share map data below (Ctrl+C & Enter):");
-  $("#input-ok").hide();
-  $("#input-val").val(data);
-  $("#input-box").show();
-  $("#input-val").focus();
-  $("#input-val").select();
-  ga('send', 'event', 'map', 'export', undefined, mymaps.length);
+  if (mymaps.length > 0) {
+    var json = JSON.stringify(mymaps);
+    var data = b64EncodeUnicode(json);
+    $("#input-text").text("Copy and share map data below (Ctrl+C & Enter):");
+    $("#input-ok").hide();
+    $("#input-val").val(data);
+    $("#input-box").show();
+    $("#input-val").focus();
+    $("#input-val").select();
+    ga('send', 'event', 'map', 'export', undefined, mymaps.length);
+  }
 }
 
 function openImportMymaps() {
