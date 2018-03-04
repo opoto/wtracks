@@ -363,7 +363,7 @@ $("input:radio[name=mymap-type]").change(changeMymapType);
 
 // ---------------- Import / export my maps
 
-function openExportMymaps(json) {
+function openExportMymaps() {
   var json = JSON.stringify(mymaps);
   var data = b64EncodeUnicode(json);
   $("#input-text").text("Copy and share map data below (Ctrl+C & Enter):");
@@ -390,10 +390,16 @@ function importMymaps() {
   var imported = 0;
   for (var name in importedMymaps) {
     if (hasOwnProperty.call(importedMymaps, name)) {
-      var msg = mymaps[name] ? "Overwrite " : "Import ";
+      var overwrite = mymaps[name];
+      var msg = overwrite ? "Overwrite " : "Import ";
       if (confirm(msg + name + "?")) {
-        changeMymapsItem(name, name);
-        changeBaseLayer(name, name, importedMymaps[name]);
+        if (overwrite) {
+          changeMymapsItem(name, name);
+          changeBaseLayer(name, name, importedMymaps[name]);
+        } else {
+          addMymapsItem(name);
+          addBaseLayer(name, importedMymaps[name]);
+        }
         mymaps[name] = importedMymaps[name];
         imported++;
       }
