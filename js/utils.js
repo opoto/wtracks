@@ -122,7 +122,13 @@ function getVal(name, defval) {
 
 function getJsonVal(name, defval) {
   var v = getVal(name);
-  var val = v && JSON && JSON.parse ? JSON.parse(v) : undefined;
+  var val;
+  try {
+    val = v && JSON && JSON.parse ? JSON.parse(v) : undefined;
+  } catch (ex) {
+    error("Invalid json preference for " + name);
+    v = undefined;
+  }
   return isUnset(v) ? defval : val;
 }
 
