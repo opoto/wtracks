@@ -419,7 +419,9 @@ input.invalid {
   border-width: 3px !important;
   background-color: #FFCEC1 !important;
 }
-
+.mapstg-toggle .material-icons {
+  padding: 0 10px;
+}
 .prompt-content textarea {
   height: 60px;
 }
