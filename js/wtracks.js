@@ -264,22 +264,22 @@ function validateMymapBox(evt) {
     //mymapsInputs.removeClass("invalid");
     $("#mymap-box").hide();
     var oldname = mymap.name;
-    var newname = $("#mymap-name").val();
+    var newname = $("#mymap-name").val().trim();
     mymap[name] = undefined;
-    mymap.url = $("#mymap-url").val();
+    mymap.url = $("#mymap-url").val().trim();
     mymap.type = $('input:radio[name=mymap-type]:checked').val();
-    mymap.options.minZoom= $("#mymap-minz").val();
-    mymap.options.maxZoom = $("#mymap-maxz").val();
+    mymap.options.minZoom= $("#mymap-minz").val().trim();
+    mymap.options.maxZoom = $("#mymap-maxz").val().trim();
     if (mymap.type == "wms") {
-      mymap.options.layers = $("#mymap-layers").val();
-      mymap.options.styles = $("#mymap-styles").val();
-      mymap.options.format = $("#mymap-format").val();
+      mymap.options.layers = $("#mymap-layers").val().trim();
+      mymap.options.styles = $("#mymap-styles").val().trim();
+      mymap.options.format = $("#mymap-format").val().trim();
     } else if (mymap.type == "wmts") {
-      mymap.options.layer = $("#mymap-layer").val();
-      mymap.options.style = $("#mymap-style").val();
-      mymap.options.format = $("#mymap-format").val();
+      mymap.options.layer = $("#mymap-layer").val().trim();
+      mymap.options.style = $("#mymap-style").val().trim();
+      mymap.options.format = $("#mymap-format").val().trim();
     }
-    mymap.options.attribution = $("#mymap-attr").val();
+    mymap.options.attribution = $("#mymap-attr").val().trim();
     if (oldname && mymaps[oldname]) {
       if (oldname != newname) {
         // rebuild object to preserve order
@@ -385,25 +385,29 @@ function openImportMymaps() {
 
 
 function importMymaps() {
-  var data = $("#input-val").val();
-  var importedMymaps = JSON.parse(b64DecodeUnicode(data));
   var imported = 0;
-  for (var name in importedMymaps) {
-    if (hasOwnProperty.call(importedMymaps, name)) {
-      var overwrite = mymaps[name];
-      var msg = overwrite ? "Overwrite " : "Import ";
-      if (confirm(msg + name + "?")) {
-        if (overwrite) {
-          changeMymapsItem(name, name);
-          changeBaseLayer(name, name, importedMymaps[name]);
-        } else {
-          addMymapsItem(name);
-          addBaseLayer(name, importedMymaps[name]);
+  try {
+    var data = $("#input-val").val().trim();
+    var importedMymaps = data ? JSON.parse(b64DecodeUnicode(data)) : {};
+    for (var name in importedMymaps) {
+      if (hasOwnProperty.call(importedMymaps, name)) {
+        var overwrite = mymaps[name];
+        var msg = overwrite ? "Overwrite " : "Import ";
+        if (confirm(msg + name + "?")) {
+          if (overwrite) {
+            changeMymapsItem(name, name);
+            changeBaseLayer(name, name, importedMymaps[name]);
+          } else {
+            addMymapsItem(name);
+            addBaseLayer(name, importedMymaps[name]);
+          }
+          mymaps[name] = importedMymaps[name];
+          imported++;
         }
-        mymaps[name] = importedMymaps[name];
-        imported++;
       }
     }
+  } catch (ex) {
+    error("Invalid import data");
   }
   if (imported > 0) {
     saveJsonValOpt("wt.mymaps", mymaps);
@@ -412,7 +416,7 @@ function importMymaps() {
   $("#input-box").hide();
 }
 
-$("#input-close").click(function() {
+$("#input-box-close").click(function() {
   $("#input-box").hide();
 });
 
