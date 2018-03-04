@@ -145,9 +145,224 @@ $("#prompt-desc").keyup(function promptKeyEvent(event) {
 
 $("#prompt-ok").click(validatePrompt);
 $("#prompt-cancel").click(closeTrackNamePrompt);
-
 $("#track-name-edit").click(promptTrackName);
 
+/* ----------------- My maps edition ------------------- */
+
+var selectMymaps = $("#mymaps-list")[0];
+var mymaps = getJsonVal("wt.mymaps", {});
+var mymap;
+
+function addBaseLayer(blname, bl) {
+  var blprovider = getProvider(bl);
+  if (blprovider) {
+    baseLayerControl.addBaseLayer(blprovider, blname);
+  }
+}
+function changeBaseLayer(oldname, newname, newlayer) {
+  for (var i = 0, len = baseLayerControl._layers.length; i < len; i++) {
+    var bl = baseLayerControl._layers[i];
+    if (bl.name == oldname) {
+      if (newname && newlayer) {
+        bl.name = newname;
+        bl.layer = getProvider(newlayer);
+        baseLayerControl._update();
+      } else {
+        baseLayerControl.removeLayer(bl.layer);
+      }
+      break;
+    }
+  }
+}
+
+function addMymapsItem(name) {
+  if (!selectMymaps.options[name]) {
+    addSelectOption(selectMymaps, name);
+  }
+}
+function changeMymapsItem(oldname, newname) {
+  $("#mymaps-list option").each(function(i, v) {
+    if (oldname == v.innerHTML) {
+      if (newname) {
+        var elt = $(v);
+        elt.val(newname);
+        elt.attr("name", newname);
+        elt.text(newname);
+      } else {
+        v.remove();
+      }
+      return false;
+    }
+  });
+}
+
+function listMymaps() {
+  if (mymaps) {
+    for (var m in mymaps) {
+      if (hasOwnProperty.call(mymaps, m)) {
+        addMymapsItem(m);
+      }
+    }
+  }
+}
+
+function openMymapBox() {
+  $("#mymap-name").val(mymap.name);
+  $("#mymap-url").val(mymap.url);
+  $("#mymap-minz").val(mymap.options.minZoom);
+  $("#mymap-maxz").val(mymap.options.maxZoom);
+  $("#mymap-layers").val(mymap.options.layers);
+  $("#mymap-layer").val(mymap.options.layer);
+  $("#mymap-styles").val(mymap.options.styles);
+  $("#mymap-style").val(mymap.options.style);
+  $("#mymap-format").val(mymap.options.format);
+  $("#mymap-attr").val(mymap.options.attribution);
+  $("#mymap-box input:radio[name=mymap-type][value=" + mymap.type + "]").prop('checked', true);
+  $("#mymap-box").show();
+  $("#mymap-name").focus();
+  changeMymapType();
+}
+
+function addMymap(evt) {
+  mymap = { options: {} };
+  openMymapBox();
+}
+
+function editMymap(evt) {
+  var mymapname = getSelectedOption(selectMymaps);
+  if (mymapname) {
+    mymap = mymaps[mymapname];
+    if (mymap) {
+      mymap.name = mymapname;
+      openMymapBox();
+    }
+  }
+}
+
+var mymapsInputs = $("#mymap-box input");
+mymapsInputs.on("invalid", function(evt) {
+  var invalidInput = $(evt.target);
+  invalidInput.addClass("invalid");
+  invalidInput.focus();
+});
+mymapsInputs.on("input", function(evt) {
+  if (evt.target.checkValidity()) {
+    $(evt.target).removeClass("invalid");
+  }
+});
+
+function validateMymapBox(evt) {
+  var valid = true;
+  // check validity on displayed inputs
+  $("#mymap-box input:visible").each(function(i, v) {
+    var display = $(v).css('display');
+    if ((display != "none") && (!v.checkValidity())) {
+      valid = false;
+      return false;
+    }
+  });
+  if (valid) {
+    //mymapsInputs.removeClass("invalid");
+    $("#mymap-box").hide();
+    var oldname = mymap.name;
+    var newname = $("#mymap-name").val();
+    mymap[name] = undefined;
+    mymap.url = $("#mymap-url").val();
+    mymap.type = $('input:radio[name=mymap-type]:checked').val();
+    mymap.options.minZoom= $("#mymap-minz").val();
+    mymap.options.maxZoom = $("#mymap-maxz").val();
+    if (mymap.type == "wms") {
+      mymap.options.layers = $("#mymap-layers").val();
+      mymap.options.styles = $("#mymap-styles").val();
+      mymap.options.format = $("#mymap-format").val();
+    } else if (mymap.type == "wmts") {
+      mymap.options.layer = $("#mymap-layer").val();
+      mymap.options.style = $("#mymap-style").val();
+      mymap.options.format = $("#mymap-format").val();
+    }
+    mymap.options.attribution = $("#mymap-attr").val();
+    if (oldname && mymaps[oldname]) {
+      if (oldname != newname) {
+        // rebuild object to preserve order
+        var tmp = {};
+        for (var m in mymaps) {
+          if (hasOwnProperty.call(mymaps, m)) {
+            if (m == oldname) {
+              tmp[newname] = mymap;
+            } else {
+              tmp[m] = mymaps[m];
+            }
+          }
+        }
+        mymaps = tmp;
+        changeMymapsItem(oldname, newname);
+      } else {
+        mymaps[newname] = mymap;
+      }
+      changeBaseLayer(oldname, newname, mymap);
+    } else {
+      addMymapsItem(newname);
+      addBaseLayer(newname, mymap);
+      mymaps[newname] = mymap;
+    }
+    saveJsonValOpt("wt.mymaps", mymaps);
+  }
+}
+
+function cancelMymapBox(evt) {
+  $("#mymap-box").hide();
+  mymapsInputs.removeClass("invalid");
+  mymap = undefined;
+}
+
+function deleteMymap(evt) {
+  var mymapname = getSelectedOption(selectMymaps);
+  if (mymapname) {
+    if (confirm("Delete " + mymapname + "?")) {
+      mymap = mymaps[mymapname];
+      if (mymap) {
+        mymaps[mymapname] = undefined;
+        saveJsonValOpt("wt.mymaps", mymaps);
+        // delete map in lists
+        changeMymapsItem(mymapname);
+        changeBaseLayer(mymapname);
+      }
+    }
+  }
+}
+
+function changeMymapType(evt) {
+  var type =  $('input:radio[name=mymap-type]:checked').val();
+  $(".map-wmts").hide();
+  $(".map-wms").hide();
+  if (type != "base") {
+    $(".map-" + type).show();
+  }
+}
+
+function resetMymap(evt) {
+  $("#mymaps-list option").each(function(i, v) {
+    changeBaseLayer($(v).text());
+    v.remove();
+  });
+  mymaps = { options: {}};
+  saveJsonValOpt("wt.mymaps", undefined);
+}
+function importMymap(evt) {}
+function exportMymap(evt) {}
+
+$("#mymap-ok").click(validateMymapBox);
+$("#mymap-cancel").click(cancelMymapBox);
+
+$("#mymap-add").click(addMymap);
+$("#mymap-edit").click(editMymap);
+$("#mymap-delete").click(deleteMymap);
+$("#mymap-reset").click(resetMymap);
+$("#mymap-import").click(importMymap);
+$("#mymap-export").click(exportMymap);
+$("input:radio[name=mymap-type]").change(changeMymapType);
+
+/* ----------------------------------------------------- */
 
 var selectActivity = $("#activity")[0];
 var activities;
@@ -506,6 +721,7 @@ function initMenu() {
   initTrackDisplaySettings();
   showApiKey("ghkey", ghkey);
   showApiKey("ggkey", ggkey);
+  listMymaps();
 }
 $("#menu-button").click(function() {
   if (!$("#menu").is(":visible")) {
@@ -688,6 +904,7 @@ function closeOverlays() {
   closeMenu();
   map.closePopup();
   hideElevation();
+  cancelMymapBox();
 }
 
 function restartRoute() {
@@ -994,6 +1211,7 @@ function clearSavedState() {
   storeVal("wt.overlays", undefined);
   storeVal("wt.activity", undefined);
   storeVal("wt.activities", undefined);
+  storeVal("wt.mymaps", undefined);
 }
 
 function saveMapType() {
@@ -1007,7 +1225,7 @@ function getProvider(mapobj) {
   // skip HTTP URLs when current is HTTPS
   if (protocol.length == 0 || protocol == location.protocol) {
     var tileCtor;
-    if (isUnset(mapobj.type)) {
+    if (isUnset(mapobj.type) || (mapobj.type == "base")) {
       tileCtor = L.tileLayer;
     } else {
       tileCtor = L.tileLayer[mapobj.type];
@@ -1027,6 +1245,12 @@ for (var bl in config.maps) {
     }
   }
 }
+for (var m in mymaps) {
+  if (hasOwnProperty.call(mymaps, m)) {
+    baseLayers[m] = getProvider(mymaps[m]);
+  }
+}
+
 // Add background maps to base layers
 var overlays = {};
 for (var ovly in config.overlays) {
@@ -1037,7 +1261,8 @@ for (var ovly in config.overlays) {
     }
   }
 }
-L.control.layers(baseLayers, overlays).addTo(map);
+var baseLayerControl = L.control.layers(baseLayers, overlays);
+baseLayerControl.addTo(map);
 map.addLayer(baseLayers[getVal("wt.baseLayer", config.display.map)] || baseLayers[config.display.map]);
 var layerInit = true;
 map.on("baselayerchange", function(e) {

@@ -254,7 +254,7 @@ var config = {
       }
     },
     "FR IGN Classic": {
-      type: "wtms",
+      type: "wmts",
       url: function() {
         return "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts";
       },
@@ -267,7 +267,7 @@ var config = {
       }
     },
     "FR IGN Express": {
-      type: "wtms",
+      type: "wmts",
       url: function() {
         return "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts";
       },
@@ -281,7 +281,7 @@ var config = {
     },
     /*
     "FR IGN Satellite": {
-      type: "wtms",
+      type: "wmts",
       url: "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts",
       options: {
           layer: 'ORTHOIMAGERY.ORTHOPHOTOS',
@@ -305,7 +305,7 @@ var config = {
       }
     },
     "SP ICGC": {
-      type: "wtms",
+      type: "wmts",
       url: "https://geoserveis.icgc.cat/icc_mapesmultibase/noutm/wmts/service",
       options: {
           layer: 'topo',
@@ -317,7 +317,7 @@ var config = {
     },
     "EU Huts": {
       url:'//maps.refuges.info/hiking/{z}/{x}/{y}.png',
-      optns: {
+      options: {
         maxZoom: 18,
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> | <a href="http://wiki.openstreetmap.org/wiki/Hiking/mri">MRI</a>'
       }

@@ -135,7 +135,6 @@ body {
 .help-b {
   margin-left: 10px;
   font-size: 20px;
-  vertical-align: middle;
   color: #575757;
 }
 
@@ -190,10 +189,6 @@ ul.menutab li a:hover {background-color: #ddd;}
 /* Create an active/current tablink class */
 ul.menutab li a:focus, .active {background-color: #ccc;}
 
-#menu-button span {
-  vertical-align: middle;
-}
-
 a.button {
   text-decoration: none;
   color: black;
@@ -221,7 +216,6 @@ a.button {
 
 .symbol {
   font-size: inherit;
-  vertical-align: middle;
 }
 .link {
   cursor: pointer;
@@ -263,7 +257,6 @@ a.button {
   border-radius: 4px;
   margin: auto;
   position: relative;
-  vertical-align: middle;
 }
 .leaflet-default-icon-path {
 	background-image: url(../img/marker-icon.png);
@@ -274,8 +267,10 @@ a.button {
 .leaflet-control-geosearch input {
   font-size: 14px;
 }
-.toggle.material-icons {
+.material-icons {
   vertical-align: middle;
+}
+.toggle.material-icons {
   font-size: 20px;;
 }
 
@@ -407,7 +402,7 @@ div.trumbowyg-editor {
   vertical-align: top;
   padding-top: 5px;
 }
-.prompt-content input, .prompt-content textarea  {
+.prompt-content input[type=text], .prompt-content textarea  {
   width: 100%;
   padding: 5px;
   box-sizing: border-box;
@@ -416,6 +411,15 @@ div.trumbowyg-editor {
   font-family: sans-serif;
   font-size: 100%;
 }
+#mymap-minz, #mymap-maxz, #mymapbox input[name=mymap-type] {
+  width: auto;
+}
+input.invalid {
+  border-color: #FF0000 !important;
+  border-width: 3px !important;
+  background-color: #FFCEC1 !important;
+}
+
 .prompt-content textarea {
   height: 60px;
 }
@@ -520,9 +524,6 @@ button:active, #track-upload-label:active {
   }
   .show-medium {
      display: initial;
-  }
-  .material-icons, .show-medium {
-    vertical-align: middle;
   }
   #edit-manual {
     background-position-x: 2px;
