@@ -420,6 +420,11 @@ div.trumbowyg-editor {
   font-family: sans-serif;
   font-size: 100%;
 }
+.prompt-content input[type=text]:focus, .prompt-content textarea:focus  {
+  outline: 1px solid #B0CBDE;
+  box-shadow: 0px 0px 2px 2px #B0CBDE;
+}
+
 #mymap-minz, #mymap-maxz, #mymapbox input[name=mymap-type] {
   width: auto;
 }
@@ -427,10 +432,14 @@ div.trumbowyg-editor {
   margin: 0 4px;
 }
 input.invalid {
-  border-color: #FF0000 !important;
-  border-width: 3px !important;
+  outline: 1px solid #FF0000;
+  border-color: 2px solid #FF0000 !important;
   background-color: #FFCEC1 !important;
 }
+input.invalid:focus {
+  box-shadow: 0px 0px 2px 2px #FF0000;
+}
+
 .mapstg-toggle .material-icons {
   padding: 0 10px;
 }
