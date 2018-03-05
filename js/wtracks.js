@@ -364,7 +364,7 @@ $("input:radio[name=mymap-type]").change(changeMymapType);
 // ---------------- Import / export my maps
 
 function openExportMymaps() {
-  if (mymaps.length > 0) {
+  if (!$.isEmptyObject(mymaps)) {
     var json = JSON.stringify(mymaps);
     var data = b64EncodeUnicode(json);
     $("#input-text").text("Copy and share map data below (Ctrl+C & Enter):");
