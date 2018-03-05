@@ -319,17 +319,15 @@ function cancelMymapBox(evt) {
 function deleteMymap(evt) {
   var mymapname = getSelectedOption(selectMymaps);
   if (mymapname) {
-    if (confirm("Delete " + mymapname + "?")) {
-      mymap = mymaps[mymapname];
-      if (mymap) {
-        mymaps[mymapname] = undefined;
-        saveJsonValOpt("wt.mymaps", mymaps);
-        // delete map in lists
-        changeMymapsItem(mymapname);
-        changeBaseLayer(mymapname);
-      }
+    mymap = mymaps[mymapname];
+    if (mymap && confirm("Delete " + mymapname + "?")) {
+      mymaps[mymapname] = undefined;
+      saveJsonValOpt("wt.mymaps", mymaps);
+      // delete map in lists
+      changeMymapsItem(mymapname);
+      changeBaseLayer(mymapname);
+      ga('send', 'event', 'map', 'delete');
     }
-    ga('send', 'event', 'map', 'delete');
   }
 }
 
@@ -343,13 +341,15 @@ function changeMymapType(evt) {
 }
 
 function resetMymap(evt) {
-  $("#mymaps-list option").each(function(i, v) {
-    changeBaseLayer($(v).text());
-    v.remove();
-  });
-  mymaps = {};
-  ga('send', 'event', 'map', 'reset');
-  saveJsonValOpt("wt.mymaps", undefined);
+  if (confirm("Delete all your personal maps?")) {
+    $("#mymaps-list option").each(function(i, v) {
+      changeBaseLayer($(v).text());
+      v.remove();
+    });
+    mymaps = {};
+    ga('send', 'event', 'map', 'reset');
+    saveJsonValOpt("wt.mymaps", undefined);
+  }
 }
 
 $("#mymap-ok").click(validateMymapBox);
