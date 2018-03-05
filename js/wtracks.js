@@ -421,6 +421,7 @@ function importMymaps() {
 
 $("#input-box-close").click(function() {
   $("#input-box").hide();
+  return false;
 });
 
 $("#input-val").keyup(function(event) {
