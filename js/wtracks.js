@@ -341,7 +341,8 @@ function changeMymapType(evt) {
 }
 
 function resetMymap(evt) {
-  if (confirm("Delete all your personal maps?")) {
+  if (!$.isEmptyObject(mymaps) &&
+      confirm("Delete all your personal maps?")) {
     $("#mymaps-list option").each(function(i, v) {
       changeBaseLayer($(v).text());
       v.remove();
