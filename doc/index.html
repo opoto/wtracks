@@ -8,9 +8,11 @@
 	<head>
 		<title>WTrack - Documentation</title>
 		<meta charset="utf-8" />
+		<link rel="shortcut icon" href="../img/favicon.ico" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="stylesheet" href="assets/css/main.css" />
-		<link rel="shortcut icon" href="../img/favicon.ico" />
+		<!-- Google Material design fonts -->
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
 	</head>
 	<body>
 
@@ -82,7 +84,7 @@
 						<div class="container">
 
 							<header>
-								<h2><span class="fa fa-magic">&nbsp;</span><span/>Features</h2>
+								<h2><span class="fa fa-magic">&nbsp;</span>Features</h2>
 							</header>
 
 							<h3>Edition tools</h3>
@@ -95,9 +97,8 @@
 
 							<h3>Statistics</h3>
 							<p>Real-time statistic data about your track</p>
-							</p>
 							<ul class="default">
-								<li>Distance: One way (&#8594;) and round-trip (&#8646;) lenght of the track</li>
+								<li>Distance: One way (<span class="material-icons symbol">&#xE31C;</span>) and round-trip (<span class="material-icons symbol">&#xE041;</span>) lenght of the track</li>
 								<li>Duration: Estimated duration (one way and round-trip) of the track itinary based on the activity type. This computation is based on elevation profile and my personal experience ;) [hopefully in the future it will be configurable]</li>
 								<li>Maximum and minimum altitudes of the track</li>
 								<li>Cumulated climbing and descent heights</li>
@@ -115,7 +116,6 @@
 
 							<h3>Elevate / Flatten</h3>
 							<p>Performs bulk operations on track points' elevation:</p>
-							</p>
 							<ul class="default">
 								<li>Elevate computes the elevation of each point of the track. If an elevation value was already stored, it is overridden with new computed value. Due to the elevation service payment fees, we limit the number of computed elevation values to 512 per track.</li>
 								<li>Flatten resets all track points' elevation to zero.</li>
@@ -135,7 +135,7 @@
 						<div class="container">
 
 							<header>
-								<h2><span class="fa fa-users">&nbsp;</span><span/>Third-parties libraries and services</h2>
+								<h2><span class="fa fa-users">&nbsp;</span>Third-parties libraries and services</h2>
 							</header>
 
 							<p>WTracks uses the following external components:</p>
@@ -149,13 +149,18 @@
 								<li><a href="https://graphhopper.com/">GraphHopper</a>: An online routing service.</li>
 								<li><a href="https://github.com/MrMufflon/Leaflet.Elevation">Leaflet.Elevation</a>: A Leaflet plugin to display an interactive height profile of a track.</li>
 								<li><a href="http://www.liedman.net/leaflet-routing-machine/">Leaflet Routing Machine</a>: A Leaflet plugin to add routing to a map.</li>
-								<li><a href="http://www.datasciencetoolkit.org/">Data Science Toolkit</a>: An online service to get the elevation of a latitude/longitude coordinate</li>
-								<li><a href="https://developers.google.com/maps/">Google Map APIs</a>: Online service to get bulk elevations of a latitude/longitude coordinates</li>
+								<li><a href="https://developers.google.com/maps/">Google Map APIs</a>: Online service to get elevations of latitude/longitude coordinates</li>
+								<li><a href="https://github.com/Jorl17/open-elevation">Open Elevation</a>: Online elevation service used when our Google quota is exhausted</li>
+								<!--li><a href="http://www.datasciencetoolkit.org/">Data Science Toolkit</a>: An online service to get the elevation of a latitude/longitude coordinate</li-->
 								<li><a href="https://freegeoip.net">freegeoip.net</a>: an online service to search the geolocation of IP addresses, so that we can center the map on your current location</li>
+								<li><a href="http://jscolor.com/">jscolor Color Picker</a>: The color picker widget to configure the track color</li>
 								<li><a href="https://silktide.com/tools/cookie-consent/">Cookie Consent</a>: to get your consent about storing cookies.</li>
-								<li><a href="https://www.browserstack.com/">BrowserStack</a>: Cross-browser testing tool, kindly offering free plans to Open Source projects :)<img id="browserstack-logo" src="images/browserstack-logo.png"></li>
+								<li>
+									<a href="https://www.browserstack.com/">BrowserStack</a>: Cross-browser testing tool, kindly offering free plans to Open Source projects :)
+									<img id="browserstack-logo" alt="browserstack" src="images/browserstack-logo.png"/>
+								</li>
 							</ul>
-							<span class="fa fa-hand-peace-o"></span><p >Thanks to all of those who contribute to these awesome projects!</p>
+							<span class="fa fa-hand-peace-o">&nbsp;</span><p >Thanks to all of those who contribute to these awesome projects!</p>
 
 						</div>
 					</section>
@@ -165,7 +170,7 @@
 						<div class="container">
 
 							<header>
-								<h2><span class="fa fa-shield">&nbsp;</span><span/>Privacy</h2>
+								<h2><span class="fa fa-shield">&nbsp;</span>Privacy</h2>
 							</header>
 
 							<p>WTrack is a client-side application! The server only provides the files (web pages, images, scripts, stylesheets) that will be processed by your browser. Once these files are loaded, your browser doesn't use the server anymore, all the application runs in your browser, there is no more communication with our server during execution. Our server is hence not even aware of your activity. However the application uses some <a href="#3rdparties">third-party services</a> that interact with backend servers, such as the one providing the map images, the elevation data, or geolocation.</p>
@@ -183,9 +188,9 @@
 							</header>
 
 							<p>WTrack is a "hobby" project, developped in my free time, please consider it with indulgence :)</p>
-							<p><span class="fa fa-pencil"></span> Feel free to <a id="email" href="#">send me comments</a></p>
+							<p><span class="fa fa-pencil">&nbsp;</span> Feel free to <a id="email" href="#">send me comments</a></p>
 
-							<p><span class="fa fa-github-alt"></span> The application code is available on <a href="https://github.com/opoto/wtracks">GitHub</a>, where you can file issues and suggestions.</p>
+							<p><span class="fa fa-github-alt">&nbsp;</span> The application code is available on <a href="https://github.com/opoto/wtracks">GitHub</a>, where you can file issues and suggestions.</p>
 
 						</div>
 					</section>

@@ -109,7 +109,10 @@ body {
 #menu #about-logo {
   margin: 15px 5px;
 }
-
+#menuabout a:link, #menuabout a:visited {
+  text-decoration: none;
+  color: #1992ca;
+}
 .setting-name {
   width: 110px;
   display: inline-block;
@@ -420,10 +423,6 @@ div.trumbowyg-editor {
   font-family: sans-serif;
   font-size: 100%;
 }
-.prompt-content input[type=text]:focus, .prompt-content textarea:focus  {
-  outline: 1px solid #B0CBDE;
-  box-shadow: 0px 0px 2px 2px #B0CBDE;
-}
 
 #mymap-minz, #mymap-maxz, #mymapbox input[name=mymap-type] {
   width: auto;
@@ -451,12 +450,12 @@ input.invalid:focus {
   margin-top: 10px;
   width: 80px;
 }
-#prompt-ok {
+.ok-btn {
   font-weight: bold;
   margin-left: auto;
   margin-right: 10px;
 }
-#prompt-cancel {
+.cancel-btn {
   margin-right: auto;
 }
 .prompt-title {
@@ -468,6 +467,14 @@ input.invalid:focus {
   padding-bottom: 15px;
   font-weight: bold;
   text-align: center;
+}
+
+button:active, button:focus,
+input:active, input:focus,
+select:active, select:focus,
+textarea:focus {
+  outline: 1px solid #B0CBDE;
+  box-shadow: 0px 0px 2px 2px #B0CBDE;
 }
 
 /* ---------------------------------------------------- */

@@ -2129,10 +2129,10 @@ function getLatLngPopupContent(latlng, deletefn, toadd) {
     altinput.type = "text";
     altinput.placeholder = "Numeric altitude";
     altinput.size = "5";
-    $(altinput).val(isUndefined(latlng.alt) || !$.isNumeric(latlng.alt) ? "" : latlng.alt);
+    $(altinput).val(isUndefined(latlng.alt) || !isNumeric(latlng.alt) ? "" : latlng.alt);
     altinput.onkeyup = function() {
       try {
-        latlng.alt = $.isNumeric(altinput.value) ? parseFloat(altinput.value) : undefined;
+        latlng.alt = isNumeric(altinput.value) ? parseFloat(altinput.value) : undefined;
       } catch (e) {}
     };
     p = L.DomUtil.create("span", "", p);

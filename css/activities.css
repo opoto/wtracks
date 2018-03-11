@@ -15,6 +15,13 @@ h2 {
   padding-left: 5px;
 }
 
+.material-icons {
+  vertical-align: middle;
+}
+.symbol {
+  font-size: inherit;
+}
+
 /* The Modal (background) */
 .modal {
   display: none; /* Hidden by default */

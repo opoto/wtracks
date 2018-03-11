@@ -39,6 +39,10 @@ function isSafari() {
   return /^((?!chrome|android|ubuntu).)*safari/i.test(navigator.userAgent);
 }
 
+function isNumeric(obj) {
+  return isFinite(String(obj));
+}
+
 /* ----------------------- LOGGING SHORTCUTS -------------------------- */
 /* Extract URL parameters from current location */
 function getParameterByName(name, defaultValue) {
