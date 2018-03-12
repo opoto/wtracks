@@ -48,6 +48,13 @@
 		-webkit-text-size-adjust: none;
 	}
 
+	.material-icons {
+	  vertical-align: middle;
+	}
+	.symbol {
+	  font-size: inherit;
+	}
+
 /* Box Model */
 
 	*, *:before, *:after {

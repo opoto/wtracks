@@ -415,7 +415,7 @@
         <tr>
           <td>Type: </td>
           <td>
-            <label><input name="mymap-type" type="radio" value="base" checked/> Base</label>
+            <label><input name="mymap-type" type="radio" value="base" checked="checked"/> Base</label>
             <label><input name="mymap-type" type="radio" value="wms"/> WMS</label>
             <label><input name="mymap-type" type="radio" value="wmts"/> WMTS</label>
           </td>
@@ -510,17 +510,17 @@
       <td colspan="7">
         <a href="#" id="menu-button" class="button"><span class="material-icons">&#xE5D2;</span></a>
         <span id="track-name-edit" class="link" title="Edit track details">
-        <span class="title" id="track-name"></span>
-        <span class="material-icons symbol">&#xE3C9;</span>
+          <span class="title" id="track-name"></span>
+          <span class="material-icons symbol">&#xE3C9;</span>
         </span>
-        <span id="status">
-        <span id="spinner" class="spinner">
-          <div class="bounce1"></div>
-          <div class="bounce2"></div>
-          <div class="bounce3"></div>
-        </span>
-        <span id="status-msg"></span>
-        </span>
+        <div id="status">
+          <div id="spinner" class="spinner">
+            <div class="bounce1"></div>
+            <div class="bounce2"></div>
+            <div class="bounce3"></div>
+          </div>
+          <span id="status-msg"></span>
+        </div>
       </td>
     </tr>
     <tr id="map-row">
