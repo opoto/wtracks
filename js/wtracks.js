@@ -203,6 +203,7 @@ function openMymapBox() {
   $("#mymap-maxz").val(mymap.options.maxZoom);
   $("#mymap-layers").val(mymap.options.layers);
   $("#mymap-layer").val(mymap.options.layer);
+  $("#mymap-tilematrixSet").val(mymap.options.tilematrixSet);
   $("#mymap-styles").val(mymap.options.styles);
   $("#mymap-style").val(mymap.options.style);
   $("#mymap-format").val(mymap.options.format);
@@ -276,6 +277,7 @@ function validateMymapBox(evt) {
       mymap.options.format = $("#mymap-format").val().trim();
     } else if (mymap.type == "wmts") {
       mymap.options.layer = $("#mymap-layer").val().trim();
+      mymap.options.tilematrixSet = $("#mymap-tilematrixSet").val().trim();
       mymap.options.style = $("#mymap-style").val().trim();
       mymap.options.format = $("#mymap-format").val().trim();
     }
