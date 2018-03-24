@@ -60,8 +60,8 @@ L.TileLayer.WMTS = L.TileLayer.extend({
       wmtsParams.width = wmtsParams.height = tileSize;
     }
     for (var i in options) {
-      // all keys that are not TileLayer options go to WMTS params
-      if (!this.options.hasOwnProperty(i) && i!="matrixIds") {
+      // all keys that are not TileLayer or attribution options go to WMTS params
+      if (!this.options.hasOwnProperty(i) && i!="matrixIds" && i!="attribution") {
         wmtsParams[i] = options[i];
       }
     }
