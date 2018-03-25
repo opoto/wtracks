@@ -204,6 +204,7 @@ function openMymapBox() {
   $("#mymap-layers").val(mymap.options.layers);
   $("#mymap-layer").val(mymap.options.layer);
   $("#mymap-tilematrixSet").val(mymap.options.tilematrixSet);
+  $("#mymap-crs").val(mymap.options.crs);
   $("#mymap-styles").val(mymap.options.styles);
   $("#mymap-style").val(mymap.options.style);
   $("#mymap-format").val(mymap.options.format);
@@ -273,6 +274,7 @@ function validateMymapBox(evt) {
     mymap.options.maxZoom = $("#mymap-maxz").val().trim();
     if (mymap.type == "wms") {
       mymap.options.layers = $("#mymap-layers").val().trim();
+      mymap.options.crs = $("#mymap-crs").val().trim();
       mymap.options.styles = $("#mymap-styles").val().trim();
       mymap.options.format = $("#mymap-format").val().trim();
     } else if (mymap.type == "wmts") {
@@ -1302,6 +1304,42 @@ function saveMapType() {
   saveValOpt("wt.maptype", map.getMapTypeId());
 }
 
+var CrsValues = [
+  null,
+  L.CRS.EPSG3395,
+  L.CRS.EPSG3857,
+  L.CRS.EPSG4326,
+  L.CRS.EPSG900913
+];
+
+function getCrsFromName(crsname) {
+  for (var i = CrsValues.length - 1; i >=0; i--) {
+    var crs = CrsValues[i];
+    if (crs && crs.code == crsname) {
+      return crs;
+    }
+  }
+  return undefined;
+}
+
+function getCrsName(crs) {
+  for (var i = CrsValues.length - 1; i >=0; i--) {
+    if (CrsValues[i] == crs) {
+      return CrsValues[i] ? CrsValues[i].code : "";
+    }
+  }
+  return undefined;
+}
+
+crsSelect = $("#mymap-crs")[0];
+function initCrsSelector() {
+  for (var i = CrsValues.length - 1; i >=0; i--) {
+    var crs = CrsValues[i];
+    addSelectOption(crsSelect, crs ? crs.code : "");
+  }
+}
+initCrsSelector();
+
 function getProvider(mapobj) {
   var url = typeof mapobj.url == "string" ? mapobj.url : mapobj.url();
   var p = null;
@@ -1309,12 +1347,17 @@ function getProvider(mapobj) {
   // skip HTTP URLs when current is HTTPS
   if (protocol.length == 0 || protocol == location.protocol) {
     var tileCtor;
+    var mapopts = mapobj.options;
     if (isUnset(mapobj.type) || (mapobj.type == "base")) {
       tileCtor = L.tileLayer;
     } else {
       tileCtor = L.tileLayer[mapobj.type];
+      if (mapobj.type == "wms" && mapopts.crs) {
+        mapopts = Object.assign({}, mapopts);
+        mapopts.crs = getCrsFromName(mapopts.crs);
+      }
     }
-    p = tileCtor(url, mapobj.options);
+    p = tileCtor(url, mapopts);
   }
   return p;
 }
