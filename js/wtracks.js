@@ -828,6 +828,7 @@ $("#track-new").click(function() {
   newTrack();
   setEditMode(EDIT_MANUAL_TRACK);
   saveState();
+  closeMenu();
 });
 $("#menu-track").click(function() {
   $(".collapsable-track").toggle();
@@ -951,6 +952,7 @@ $("#track-download").click(function() {
   );
   saveAs(blob, getTrackName() + ".gpx");
   clearStatus();
+  closeMenu();
 });
 
 function editableWaypoints(editable) {
@@ -1931,6 +1933,7 @@ function importGeoJson(geojson) {
   clearStatus();
   polystats.updateStatsFrom(0);
   saveState();
+  closeMenu();
   return editLayer;
 }
 
