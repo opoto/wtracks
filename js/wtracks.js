@@ -898,12 +898,11 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
       pttag = "trkpt";
     }
     var j = 0;
-    var saveTiming = isChecked("#savetiming");
     now = now.getTime();
     while (j < latlngs.length) {
       var pt = latlngs[j];
       var time;
-      if (saveTiming) {
+      if (savetime) {
         time = new Date(now + (pt.chrono * 1000));
       } else {
         time = pt.time;
@@ -933,8 +932,9 @@ function getConfirmedTrackName() {
 function getTrackGPX(doConfirmName) {
   var asroute = isChecked("#as-route");
   var nometadata = isChecked("#nometadata");
+  var savetime = isChecked("#savetiming");
   var trackname = doConfirmName ? getConfirmedTrackName() : getTrackName();
-  return getGPX(trackname, /*savealt*/ false, /*savetime*/ false, asroute, nometadata);
+  return getGPX(trackname, /*savealt*/ false, savetime, asroute, nometadata);
 }
 
 $("#track-download").click(function() {
