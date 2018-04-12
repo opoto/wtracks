@@ -15,7 +15,9 @@ var config = {
     map: "Sigma Cycle",
     pos: { lat: "-17.857677", lng: "177.201950" },
     trackColor: "#FF0000",
-    trackWeight: 3
+    trackWeight: 3,
+    ovlTrackColor: "#FFAAAA",
+    ovlTrackWeight: 2
   },
   maxfilesize: 1024 * 1024, // 1GB
   compressdefault: 5,

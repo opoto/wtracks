@@ -500,6 +500,13 @@ function updateTrackStyle() {
   });
 }
 
+function updateOverlayTrackStyle(line) {
+  line.setStyle({
+    color: getVal("wt.ovlTrackColor", config.display.ovlTrackColor),
+    weight: getVal("wt.ovlTrackWeight", config.display.ovlTrackWeight)
+  });
+}
+
 function newTrack() {
   metadata = {};
   if (track) {
@@ -533,7 +540,7 @@ function newTrack() {
   showStats();
 }
 
-function newWaypoint(latlng, name, desc) {
+function newWaypoint(latlng, name, desc, wptLayer) {
 
   function deleteMarker(e) {
     waypoints.removeLayer(marker);
@@ -650,14 +657,16 @@ function newWaypoint(latlng, name, desc) {
     alt: name,
     icon: markerIcon
   });
-  waypoints.addLayer(marker);
+  wptLayer.addLayer(marker);
 
-  marker.on("click", function() {
-    pop = L.popup()
-      .setLatLng(marker.getLatLng())
-      .setContent(getMarkerPopupContent(marker))
-      .openOn(map);
-  });
+  if (wptLayer == waypoints) {
+    marker.on("click", function() {
+      pop = L.popup()
+        .setLatLng(marker.getLatLng())
+        .setContent(getMarkerPopupContent(marker))
+        .openOn(map);
+    });
+  }
 
   return marker;
 }
@@ -800,6 +809,7 @@ function closeMenu() {
 function initMenu() {
   setEditMode(EDIT_NONE);
   setChecked("#merge", false);
+  setChecked("#asoverlay", false);
   menu("file");
   prepareTrim();
   initTrackDisplaySettings();
@@ -1854,12 +1864,20 @@ function importGeoJson(geojson) {
   $("#edit-tools").hide();
   var bounds;
   var merge = loadCount > 0 ||  isChecked("#merge");
+  var asOverlay = isChecked("#asoverlay");
   loadCount++;
-  if (!merge) {
+  if (!merge && !asOverlay) {
     newTrack();
     bounds = L.latLngBounds([]);
   } else {
     bounds = L.latLngBounds(track.getLatLngs());
+  }
+  var wptLayer;
+  if (asOverlay) {
+    wptLayer = L.featureGroup([]);
+    editLayer.addLayer(wptLayer);
+  } else {
+    wptLayer = waypoints;
   }
 
   function newPoint(coord, time, i) {
@@ -1877,18 +1895,28 @@ function importGeoJson(geojson) {
     return point;
   }
 
-  function importLine(name, coords, times) {
-    var v = track.getLatLngs();
-    if ((v.length === 0) && (metadata.name == NEW_TRACK_NAME)) {
-      setTrackName(name);
+  function importLine(name, coords, times, asOverlay) {
+    var v, line;
+    if (!asOverlay) {
+      line = track;
+      v = track.getLatLngs();
+      if ((v.length === 0) && (metadata.name == NEW_TRACK_NAME)) {
+        setTrackName(name);
+      }
+    } else {
+      line = L.polyline([]);
+      v = line.getLatLngs();
+      editLayer.addLayer(line);
+      updateOverlayTrackStyle(line);
     }
+
     // import polyline vertexes
     for (var i = 0; i < coords.length; i++) {
       v.push(newPoint(coords[i], times ? times[i] : undefined, i));
     }
 
-    track.setLatLngs(v);
-    bounds.extend(track.getBounds());
+    line.setLatLngs(v);
+    bounds.extend(line.getBounds());
   }
 
   if ((track.getLatLngs.length === 0) && (geojson.metadata)) {
@@ -1905,20 +1933,20 @@ function importGeoJson(geojson) {
         name = f.properties.name ? f.properties.name : NEW_TRACK_NAME;
         coords = f.geometry.coordinates;
         times = f.properties.coordTimes && (f.properties.coordTimes.length == coords.length) ? f.properties.coordTimes : undefined;
-        importLine(name, coords, times);
+        importLine(name, coords, times, asOverlay);
       }
       if (f.geometry.type === "MultiLineString") {
         name = f.properties.name ? f.properties.name : NEW_TRACK_NAME;
         for (var i = 0; i < f.geometry.coordinates.length; i++) {
           coords = f.geometry.coordinates[i];
           times = f.properties.coordTimes[i] && (f.properties.coordTimes[i].length == coords.length) ? f.properties.coordTimes[i] : undefined;
-          importLine(name, coords, times);
+          importLine(name, coords, times, asOverlay);
         }
       } else if (f.geometry.type === "Point") {
         // import marker
         coords = f.geometry.coordinates;
         var latlng = newPoint(coords);
-        newWaypoint(latlng, f.properties.name, f.properties.description || f.properties.desc);
+        newWaypoint(latlng, f.properties.name, f.properties.description || f.properties.desc, wptLayer);
         bounds.extend(latlng);
       }
     }
@@ -1930,6 +1958,7 @@ function importGeoJson(geojson) {
   polystats.updateStatsFrom(0);
   saveState();
   closeMenu();
+  track.bringToFront();
   return editLayer;
 }
 
@@ -2389,7 +2418,7 @@ function newMarker(e) {
 
   if (editMode == EDIT_MARKER) {
     ga('send', 'event', 'edit', 'new-marker');
-    var marker = newWaypoint(e.latlng);
+    var marker = newWaypoint(e.latlng, "", "", waypoints);
     elevatePoint(e.latlng);
     marker.enableEdit();
   } else if (editMode == EDIT_AUTO_TRACK) {
