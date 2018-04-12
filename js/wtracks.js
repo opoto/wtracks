@@ -1,10 +1,6 @@
 if (config.google && config.google.analyticsid) {
   initGoogleAnalytics(config.google.analyticsid());
 }
-if (config.email) {
-  setEmailListener(config.email.selector, config.email.name,
-    config.email.domain, config.email.subject);
-}
 
 function setStatus(msg, options) {
   $("#status-msg").text(msg);
