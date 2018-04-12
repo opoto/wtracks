@@ -1919,7 +1919,9 @@ function importGeoJson(geojson) {
     bounds.extend(line.getBounds());
   }
 
-  if ((track.getLatLngs.length === 0) && (geojson.metadata)) {
+  if ((track.getLatLngs.length === 0) &&
+      (geojson.metadata) &&
+      !asOverlay) {
     metadata = geojson.metadata;
     if (metadata.name) {
       setTrackName(metadata.name);

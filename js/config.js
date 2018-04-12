@@ -17,7 +17,7 @@ var config = {
     trackColor: "#FF0000",
     trackWeight: 3,
     ovlTrackColor: "#FFAAAA",
-    ovlTrackWeight: 2
+    ovlTrackWeight: 3
   },
   maxfilesize: 1024 * 1024, // 1GB
   compressdefault: 5,
