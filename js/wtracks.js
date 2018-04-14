@@ -1159,6 +1159,7 @@ function joinSegments() {
     segmentClickListener({target: seg1});
     saveState();
     setStatus("Joined " + count + " segments", { timeout: 3 });
+    ga('send', 'event', 'tool', 'join', undefined, count);
   } else {
     setStatus("No segments to join", { timeout: 3 });
   }
@@ -1918,6 +1919,7 @@ $(".statistics").click(function(e) {
 
 function segmentClickListener(event) {
     if (event.target != track) {
+      ga('send', 'event', 'edit', 'segmentSwitch');
       if (track) {
         updateOverlayTrackStyle(track);
       }
@@ -1949,6 +1951,7 @@ function importGeoJson(geojson) {
     bounds = L.latLngBounds(track.getLatLngs());
   }
   var wptLayer = waypoints;
+  var initLayers = editLayer.getLayers().length;
 
   function newPoint(coord, time, i) {
     var point = L.latLng(coord[1], coord[0]);
@@ -2031,6 +2034,10 @@ function importGeoJson(geojson) {
   saveState();
   closeMenu();
   track.bringToFront();
+  var addedLayers = editLayer.getLayers().length - initLayers;
+  if (addedLayers) {
+    ga('send', 'event', 'file', 'loadSegment', undefined, addedLayers);
+  }
   return editLayer;
 }
 
