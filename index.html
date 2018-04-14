@@ -87,10 +87,10 @@
             Current edited track will not be discarded, it will be extended with the loaded one.
           </p>
           <br/>
-          <label><input type="checkbox" id="asoverlay"/>As overlay (not editable)</label>
-          <span id="asoverlaytxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
-          <p id="asoverlaytxt-help" class="help-p">
-            Loaded track will be displayed in the background, not editable.
+          <label><input type="checkbox" id="joinonload"/>Join loaded segments</label>
+          <span id="joinonloadtxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <p id="joinonloadtxt-help" class="help-p">
+            If loaded track contains multiple segments, they will automatically be joined.
           </p>
         </td>
       </tr>
@@ -218,6 +218,18 @@
           <span id="reverttxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <p id="reverttxt-help" class="help-p">
             Inverts all track points so that start of the track becomes the end.
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <button id="join" class="no-trim">Join segments</button>
+        </td>
+        <td>
+          Combines all segments into a single one
+          <span id="jointxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <p id="jointxt-help" class="help-p">
+            Removes separation between all track segments in the editor.
           </p>
         </td>
       </tr>

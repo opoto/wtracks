@@ -124,6 +124,11 @@ function getVal(name, defval) {
   return isUnset(v) ? defval : v;
 }
 
+function getBoolVal(name, defval) {
+  var v = getVal(name, defval);
+  return v && v == "true";
+}
+
 function getJsonVal(name, defval) {
   var v = getVal(name);
   var val;
@@ -160,7 +165,7 @@ function initGoogleAnalytics(trackingid) {
     window.ga_debug = {trace: true};
   }
   ga('create', trackingid, 'auto');
-  if (getVal("wt.ga.off","false") === 'true') {
+  if (getBoolVal("wt.ga.off", false)) {
     log('Turning off GA reporting');
     ga('set', 'sendHitTask', null);
   }

@@ -500,8 +500,8 @@ function updateTrackStyle() {
   });
 }
 
-function updateOverlayTrackStyle(line) {
-  line.setStyle({
+function updateOverlayTrackStyle(segment) {
+  segment.setStyle({
     color: getVal("wt.ovlTrackColor", config.display.ovlTrackColor),
     weight: getVal("wt.ovlTrackWeight", config.display.ovlTrackWeight)
   });
@@ -528,6 +528,7 @@ function newTrack() {
   waypoints = L.featureGroup([]);
   editLayer.addLayer(waypoints);
   track = L.polyline([]);
+  track.on('click', segmentClickListener);
   updateTrackStyle();
   editLayer.addLayer(track);
   polystats = L.polyStats(track, {
@@ -809,7 +810,7 @@ function closeMenu() {
 function initMenu() {
   setEditMode(EDIT_NONE);
   setChecked("#merge", false);
-  setChecked("#asoverlay", false);
+  setChecked("#joinonload", getBoolVal("wt.joinOnLoad", true));
   menu("file");
   prepareTrim();
   initTrackDisplaySettings();
@@ -865,48 +866,11 @@ function LatLngToGPX(latlng, gpxelt, name, time, desc) {
   return gpx;
 }
 
-function getGPX(trackname, savealt, savetime, asroute, nometadata) {
-
+function getSegmentGPX(segment, ptindent, pttag, savetime) {
   var now = new Date();
-  var gpx = '<\?xml version="1.0" encoding="UTF-8" standalone="no" \?>\n';
-  gpx += '<gpx creator="' + config.appname + '" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" version="1.1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">\n';
-  if (!nometadata) {
-    gpx += "<metadata>\n";
-    gpx += "  <name>" + trackname + "</name>\n";
-    gpx += "  <desc>" + (metadata.desc ? metadata.desc : "") + "</desc>\n";
-    gpx += "  <author><name>" + config.appname + "</name></author>\n";
-    gpx += "  <link href='" + window.location.href + "'>\n";
-    gpx += "    <text>" + config.appname + "</text>\n";
-    gpx += "    <type>text/html</type>\n";
-    gpx += "  </link>\n";
-    gpx += "  <time>" + now.toISOString() + "</time>\n";
-    var sw = map.getBounds().getSouthWest();
-    var ne = map.getBounds().getNorthEast();
-    gpx += '  <bounds minlat="' + Math.min(sw.lat, ne.lat) + '" minlon="' + Math.min(sw.lng, ne.lng) + '" maxlat="' + Math.max(sw.lat, ne.lat) + '" maxlon="' + Math.max(sw.lng, ne.lng) + '"/>\n';
-    gpx += "</metadata>\n";
-  }
-  var wpts = waypoints ? waypoints.getLayers() : undefined;
-  if (wpts && wpts.length > 0) {
-    var i = 0;
-    while (i < wpts.length) {
-      var wpt = wpts[i];
-      gpx += LatLngToGPX(wpt.getLatLng(), "wpt", wpt.options.title, wpt.getLatLng().time, wpt.options.desc);
-      i++;
-    }
-  }
-  var latlngs = track ? track.getLatLngs() : undefined;
+  var gpx = "";
+  var latlngs = segment ? segment.getLatLngs() : undefined;
   if (latlngs && latlngs.length > 0) {
-    var xmlname = "<name>" + trackname + "</name>";
-    var ptindent = "  ";
-    var pttag;
-    if (asroute) {
-      gpx += "<rte>" + xmlname + "\n";
-      pttag = "rtept";
-    } else {
-      gpx += "<trk>" + xmlname + "\n  <trkseg>\n";
-      ptindent += "  ";
-      pttag = "trkpt";
-    }
     var j = 0;
     now = now.getTime();
     while (j < latlngs.length) {
@@ -920,13 +884,73 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
       gpx += ptindent + LatLngToGPX(pt, pttag, undefined, time);
       j++;
     }
-    if (asroute) {
-      gpx += "</rte>\n";
-    } else {
-      gpx += "  </trkseg>\n</trk>\n";
+  }
+  return gpx;
+}
+
+function getGPX(trackname, savealt, savetime, asroute, nometadata) {
+
+  var now = new Date();
+  var xmlname = "<name>" + trackname + "</name>";
+  var gpx = '<\?xml version="1.0" encoding="UTF-8" standalone="no" \?>\n';
+  gpx += '<gpx creator="' + config.appname + '" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" version="1.1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">\n';
+  if (!nometadata) {
+    gpx += "<metadata>\n";
+    gpx += "  " + xmlname + "\n";
+    gpx += "  <desc>" + (metadata.desc ? metadata.desc : "") + "</desc>\n";
+    gpx += "  <author><name>" + config.appname + "</name></author>\n";
+    gpx += "  <link href='" + window.location.href + "'>\n";
+    gpx += "    <text>" + config.appname + "</text>\n";
+    gpx += "    <type>text/html</type>\n";
+    gpx += "  </link>\n";
+    gpx += "  <time>" + now.toISOString() + "</time>\n";
+    var sw = map.getBounds().getSouthWest();
+    var ne = map.getBounds().getNorthEast();
+    gpx += '  <bounds minlat="' + Math.min(sw.lat, ne.lat) + '" minlon="' + Math.min(sw.lng, ne.lng) + '" maxlat="' + Math.max(sw.lat, ne.lat) + '" maxlon="' + Math.max(sw.lng, ne.lng) + '"/>\n';
+    gpx += "</metadata>\n";
+  }
+
+  // Waypoints
+  var wpts = waypoints ? waypoints.getLayers() : undefined;
+  if (wpts && wpts.length > 0) {
+    var i = 0;
+    while (i < wpts.length) {
+      var wpt = wpts[i];
+      gpx += LatLngToGPX(wpt.getLatLng(), "wpt", wpt.options.title, wpt.getLatLng().time, wpt.options.desc);
+      i++;
     }
   }
-  gpx += "</gpx>\n";
+
+  var ptindent, pttag, wraptag, segtag;
+  if (asroute) {
+    ptindent = "  ";
+    wratag = "rte";
+    pttag = "rtept";
+  } else {
+    ptindent = "    ";
+    wraptag = "trk";
+    pttag = "trkpt";
+    segtag = "trkseg"
+  }
+
+  gpx += "<" + wraptag + ">" + xmlname + "\n";
+  // for each segment
+  var layers = editLayer.getLayers();
+  for (var l = 0, len = layers.length; l < len; l++) {
+    var segment = layers[l];
+    // check if it is a polyline
+    if (segment.getLatLngs) {
+      if (segtag) {
+        gpx += "  <" + segtag + ">\n";
+      }
+      gpx += getSegmentGPX(segment, ptindent, pttag, savetime);
+      if (segtag) {
+        gpx += "  </" + segtag + ">\n";
+      }
+    }
+  }
+
+  gpx += "</" + wraptag + "></gpx>\n";
   return gpx;
 }
 
@@ -1111,6 +1135,37 @@ $("#compress").click(function() {
     }
   }
 });
+
+function joinSegments() {
+  var
+    seg1,
+    count = 0,
+    layers = editLayer.getLayers();
+  for (var i = 0, len = layers.length; i < len; i++) {
+    var segment = layers[i];
+    // check if it is a polyline
+    if (segment.getLatLngs) {
+      count++;
+      if (!seg1) {
+        seg1 = segment;
+      } else {
+        seg1.setLatLngs(seg1.getLatLngs().concat(segment.getLatLngs()));
+        segment.remove();
+      }
+    }
+  }
+  if (count > 1) {
+    track = null;
+    segmentClickListener({target: seg1});
+    saveState();
+    setStatus("Joined " + count + " segments", { timeout: 3 });
+  } else {
+    setStatus("No segments to join", { timeout: 3 });
+  }
+}
+
+
+$("#join").click(joinSegments);
 
 function getMyIpLocation() {
   log("Getting location from IP address");
@@ -1306,6 +1361,9 @@ function clearSavedState() {
   storeVal("wt.activity", undefined);
   storeVal("wt.activities", undefined);
   storeVal("wt.mymaps", undefined);
+  storeVal("wt.trackColor", undefined);
+  storeVal("wt.trackWeight", undefined);
+  storeVal("wt.joinOnLoad", undefined);
 }
 
 function saveMapType() {
@@ -1858,27 +1916,39 @@ $(".statistics").click(function(e) {
   }
 });
 
+function segmentClickListener(event) {
+    if (event.target != track) {
+      if (track) {
+        updateOverlayTrackStyle(track);
+      }
+      track = event.target;
+      track.bringToFront();
+      updateTrackStyle();
+      polystats = L.polyStats(track, {
+        chrono: true,
+        speedProfile: getCurrentActivity().speedprofile,
+        onUpdate: showStats,
+      });
+      polystats.updateStatsFrom(0);
+    }
+}
+
 function importGeoJson(geojson) {
 
   setStatus("Loading..", { spinner: true });
   $("#edit-tools").hide();
   var bounds;
   var merge = loadCount > 0 ||  isChecked("#merge");
-  var asOverlay = isChecked("#asoverlay");
+  var joinOnLoad = isChecked("#joinonload");
+  saveValOpt("wt.joinOnLoad", joinOnLoad);
   loadCount++;
-  if (!merge && !asOverlay) {
+  if (!merge) {
     newTrack();
     bounds = L.latLngBounds([]);
   } else {
     bounds = L.latLngBounds(track.getLatLngs());
   }
-  var wptLayer;
-  if (asOverlay) {
-    wptLayer = L.featureGroup([]);
-    editLayer.addLayer(wptLayer);
-  } else {
-    wptLayer = waypoints;
-  }
+  var wptLayer = waypoints;
 
   function newPoint(coord, time, i) {
     var point = L.latLng(coord[1], coord[0]);
@@ -1895,19 +1965,20 @@ function importGeoJson(geojson) {
     return point;
   }
 
-  function importLine(name, coords, times, asOverlay) {
-    var v, line;
-    if (!asOverlay) {
-      line = track;
+  function importSegment(name, coords, times, joinOnLoad) {
+    var v, segment;
+    if (joinOnLoad || track.getLatLngs().length == 0) {
+      segment = track;
       v = track.getLatLngs();
       if ((v.length === 0) && (metadata.name == NEW_TRACK_NAME)) {
         setTrackName(name);
       }
     } else {
-      line = L.polyline([]);
-      v = line.getLatLngs();
-      editLayer.addLayer(line);
-      updateOverlayTrackStyle(line);
+      segment = L.polyline([]);
+      v = segment.getLatLngs();
+      editLayer.addLayer(segment);
+      updateOverlayTrackStyle(segment);
+      segment.on('click', segmentClickListener);
     }
 
     // import polyline vertexes
@@ -1915,13 +1986,12 @@ function importGeoJson(geojson) {
       v.push(newPoint(coords[i], times ? times[i] : undefined, i));
     }
 
-    line.setLatLngs(v);
-    bounds.extend(line.getBounds());
+    segment.setLatLngs(v);
+    bounds.extend(segment.getBounds());
   }
 
-  if ((track.getLatLngs.length === 0) &&
-      (geojson.metadata) &&
-      !asOverlay) {
+  if ((track.getLatLngs().length === 0) &&
+      (geojson.metadata)) {
     metadata = geojson.metadata;
     if (metadata.name) {
       setTrackName(metadata.name);
@@ -1935,14 +2005,14 @@ function importGeoJson(geojson) {
         name = f.properties.name ? f.properties.name : NEW_TRACK_NAME;
         coords = f.geometry.coordinates;
         times = f.properties.coordTimes && (f.properties.coordTimes.length == coords.length) ? f.properties.coordTimes : undefined;
-        importLine(name, coords, times, asOverlay);
+        importSegment(name, coords, times, joinOnLoad);
       }
       if (f.geometry.type === "MultiLineString") {
         name = f.properties.name ? f.properties.name : NEW_TRACK_NAME;
         for (var i = 0; i < f.geometry.coordinates.length; i++) {
           coords = f.geometry.coordinates[i];
-          times = f.properties.coordTimes[i] && (f.properties.coordTimes[i].length == coords.length) ? f.properties.coordTimes[i] : undefined;
-          importLine(name, coords, times, asOverlay);
+          times = f.properties.coordTimes && f.properties.coordTimes[i] && (f.properties.coordTimes[i].length == coords.length) ? f.properties.coordTimes[i] : undefined;
+          importSegment(name, coords, times, joinOnLoad);
         }
       } else if (f.geometry.type === "Point") {
         // import marker
