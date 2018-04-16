@@ -779,7 +779,6 @@ var trackUISetting = trackUI.trk;
 
 $("input:radio[name=track-type]").on("change", function(event){
   var t = $("input:radio[name=track-type]:checked").val();
-  log("trackUI: " + t);
   trackUISetting = trackUI[t];
   initTrackDisplaySettings();
 });
