@@ -1993,12 +1993,9 @@ function importGeoJson(geojson) {
     bounds.extend(segment.getBounds());
   }
 
-  if ((track.getLatLngs().length === 0) &&
-      (geojson.metadata)) {
-    metadata = geojson.metadata;
-    if (metadata.name) {
-      setTrackName(metadata.name);
-    }
+  if ((track.getLatLngs().length === 0) && (geojson.metadata)) {
+    metadata = geojson.metadata ? geojson.metadata : {};
+    setTrackName(metadata.name ? metadata.name : NEW_TRACK_NAME);
   }
 
   L.geoJson(geojson, {
