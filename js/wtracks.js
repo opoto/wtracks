@@ -495,16 +495,26 @@ $("#activity").change(function() {
 
 function updateTrackStyle() {
   track.setStyle({
-    color: getVal("wt.trackColor", config.display.trackColor),
-    weight: getVal("wt.trackWeight", config.display.trackWeight)
+    color: trackUI.trk.getColor(),
+    weight: trackUI.trk.getWeight()
   });
 }
 
 function updateOverlayTrackStyle(segment) {
   segment.setStyle({
-    color: getVal("wt.ovlTrackColor", config.display.ovlTrackColor),
-    weight: getVal("wt.ovlTrackWeight", config.display.ovlTrackWeight)
+    color: trackUI.ovl.getColor(),
+    weight: trackUI.ovl.getWeight()
   });
+}
+function updateAllOverlayTrackStyle() {
+  var layers = editLayer.getLayers();
+  for (var l = 0, len = layers.length; l < len; l++) {
+    var segment = layers[l];
+    // check if it is a polyline
+    if (segment.getLatLngs && (segment != track)) {
+      updateOverlayTrackStyle(segment);
+    }
+  }
 }
 
 function newTrack() {
@@ -717,35 +727,85 @@ $("#trim-type").change(prepareTrim);
 /* --------------------------------------*/
 // Track display settings
 
+var trackUI = {
+  trk: {
+    getDefaultColor : function() {
+      return config.display.trackColor;
+    },
+    getColor : function() {
+      return getVal("wt.trackColor", trackUI.trk.getDefaultColor());
+    },
+    setColor : function(v) {
+      saveValOpt("wt.trackColor", v);
+      updateTrackStyle();
+      updateMapStyle();
+    },
+    getDefaultWeight : function() {
+      return config.display.trackWeight;
+    },
+    getWeight : function() {
+      return getVal("wt.trackWeight", trackUI.trk.getDefaultWeight());
+    },
+    setWeight : function(v) {
+      saveValOpt("wt.trackWeight", v);
+      updateTrackStyle();
+      updateMapStyle();
+    }
+  },
+  ovl: {
+    getDefaultColor : function() {
+      return config.display.ovlTrackColor;
+    },
+    getColor : function() {
+      return getVal("wt.ovlTrackColor", trackUI.ovl.getDefaultColor());
+    },
+    setColor : function(v) {
+      saveValOpt("wt.ovlTrackColor", v);
+      updateAllOverlayTrackStyle();
+    },
+    getDefaultWeight : function() {
+      return config.display.ovlTrackWeight;
+    },
+    getWeight : function() {
+      return getVal("wt.ovlTrackWeight", trackUI.ovl.getDefaultWeight());
+    },
+    setWeight : function(v) {
+      saveValOpt("wt.ovlTrackWeight", v);
+      updateAllOverlayTrackStyle();
+    }
+  }
+};
+var trackUISetting = trackUI.trk;
+
+$("input:radio[name=track-type]").on("change", function(event){
+  var t = $("input:radio[name=track-type]:checked").val();
+  log("trackUI: " + t);
+  trackUISetting = trackUI[t];
+  initTrackDisplaySettings();
+});
 $("#track-color").on("change", function(event){
   var v = $("#track-color").text();
   ga('send', 'event', 'setting', 'trackColor', v);
-  saveValOpt("wt.trackColor", v);
-  updateTrackStyle();
-  updateMapStyle();
+  trackUISetting.setColor(v);
 });
 $("#track-weight").on("change", function(event){
   var v = $("#track-weight").val();
   ga('send', 'event', 'setting', 'trackWeight', v);
   $("#track-weight-v").text(v);
-  saveValOpt("wt.trackWeight", v);
-  updateTrackStyle();
-  updateMapStyle();
+  trackUISetting.setWeight(v);
 });
 $("#track-resetcolorweight").on("click", function(){
-  saveValOpt("wt.trackColor", config.display.trackColor);
-  saveValOpt("wt.trackWeight", config.display.trackWeight);
+  trackUISetting.setColor(trackUISetting.getDefaultColor());
+  trackUISetting.setWeight(trackUISetting.getDefaultWeight());
   ga('send', 'event', 'setting', 'trackReset');
   initTrackDisplaySettings();
-  updateTrackStyle();
-  updateMapStyle();
 });
 function initTrackDisplaySettings() {
   var v;
-  v = getVal("wt.trackColor", config.display.trackColor);
+  v = trackUISetting.getColor();
   $("#track-color").text(v);
   $("#track-color").css('background-color', v);
-  v = getVal("wt.trackWeight", config.display.trackWeight);
+  v = trackUISetting.getWeight();
   $("#track-weight").val(v);
   $("#track-weight-v").text(v);
 }
