@@ -950,13 +950,13 @@ function getSegmentGPX(segment, ptindent, pttag, savetime) {
 function getGPX(trackname, savealt, savetime, asroute, nometadata) {
 
   var now = new Date();
-  var xmlname = "<name>" + trackname + "</name>";
+  var xmlname = "<name>" + htmlEncode(trackname, false, 0) + "</name>";
   var gpx = '<\?xml version="1.0" encoding="UTF-8" standalone="no" \?>\n';
   gpx += '<gpx creator="' + config.appname + '" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" version="1.1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">\n';
   if (!nometadata) {
     gpx += "<metadata>\n";
     gpx += "  " + xmlname + "\n";
-    gpx += "  <desc>" + (metadata.desc ? metadata.desc : "") + "</desc>\n";
+    gpx += "  <desc>" + (metadata.desc ? htmlEncode(metadata.desc, false, 0) : "") + "</desc>\n";
     gpx += "  <author><name>" + config.appname + "</name></author>\n";
     gpx += "  <link href='" + window.location.href + "'>\n";
     gpx += "    <text>" + config.appname + "</text>\n";
