@@ -983,7 +983,7 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
   var ptindent, pttag, wraptag, segtag;
   if (asroute) {
     ptindent = "  ";
-    wratag = "rte";
+    wraptag = "rte";
     pttag = "rtept";
   } else {
     ptindent = "    ";
