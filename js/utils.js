@@ -33,6 +33,15 @@ function isUnset(v) {
   return (typeof v === "undefined") || (v === null);
 }
 
+/* ----------------------- Html encode/decode ---------------------- */
+
+function htmlEncode(txt) {
+    return $('<div/>').text(txt).html();
+}
+function htmlDecode(html) {
+    return $('<div/>').html(html).text();
+}
+
 /* ----------------------- Testing safari browser ---------------------- */
 
 function isSafari() {

@@ -574,7 +574,6 @@ function newWaypoint(latlng, name, desc, wptLayer) {
       $(name).val(marker.options.title ? marker.options.title : "");
       name.onkeyup = function() {
         var nameval = $(name).val().trim();
-        nameval = $('<div/>').text(nameval).html();
         marker.options.title = nameval;
         var elt = marker.getElement();
         elt.title = nameval;
@@ -593,7 +592,6 @@ function newWaypoint(latlng, name, desc, wptLayer) {
       $(desc).val(marker.options.desc ? marker.options.desc : "");
       desc.onkeyup = function() {
         var descval = $(desc).val();
-        //descval = $('<div/>').text(descval).html();
         marker.options.desc = descval;
       };
 
@@ -910,10 +908,10 @@ function LatLngToGPX(latlng, gpxelt, name, time, desc) {
   var gpx = "<" + gpxelt;
   gpx += " lat=\"" + latlng.lat + "\" lon=\"" + latlng.lng + "\">";
   if (name) {
-    gpx += "<name>" + htmlEncode(name, false, 0) + "</name>";
+    gpx += "<name>" + htmlEncode(name) + "</name>";
   }
   if (desc) {
-    gpx += "<desc>" + htmlEncode(desc, false, 0) + "</desc>";
+    gpx += "<desc>" + htmlEncode(desc) + "</desc>";
   }
   if (latlng.alt) {
     gpx += "<ele>" + latlng.alt + "</ele>";
@@ -950,13 +948,13 @@ function getSegmentGPX(segment, ptindent, pttag, savetime) {
 function getGPX(trackname, savealt, savetime, asroute, nometadata) {
 
   var now = new Date();
-  var xmlname = "<name>" + htmlEncode(trackname, false, 0) + "</name>";
+  var xmlname = "<name>" + htmlEncode(trackname) + "</name>";
   var gpx = '<\?xml version="1.0" encoding="UTF-8" standalone="no" \?>\n';
   gpx += '<gpx creator="' + config.appname + '" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" version="1.1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">\n';
   if (!nometadata) {
     gpx += "<metadata>\n";
     gpx += "  " + xmlname + "\n";
-    gpx += "  <desc>" + (metadata.desc ? htmlEncode(metadata.desc, false, 0) : "") + "</desc>\n";
+    gpx += "  <desc>" + (metadata.desc ? htmlEncode(metadata.desc) : "") + "</desc>\n";
     gpx += "  <author><name>" + config.appname + "</name></author>\n";
     gpx += "  <link href='" + window.location.href + "'>\n";
     gpx += "    <text>" + config.appname + "</text>\n";
