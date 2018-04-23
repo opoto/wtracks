@@ -206,7 +206,7 @@ function setEmailListener(selector, name, domain, subject) {
     return false;
   });
 }
-if (config.email) {
+if (config.email && config.email.selector) {
   setEmailListener(config.email.selector, config.email.name,
     config.email.domain, config.email.subject);
 }
