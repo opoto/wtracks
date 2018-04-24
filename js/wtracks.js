@@ -506,6 +506,7 @@ function updateOverlayTrackStyle(segment) {
     weight: trackUI.ovl.getWeight()
   });
 }
+
 function updateAllOverlayTrackStyle() {
   var layers = editLayer.getLayers();
   for (var l = 0, len = layers.length; l < len; l++) {
@@ -515,6 +516,21 @@ function updateAllOverlayTrackStyle() {
       updateOverlayTrackStyle(segment);
     }
   }
+}
+
+function newSegment() {
+  if (track) {
+    if (track.getLatLngs().length == 0) {
+      // current track is empty, don't create another one
+      return track;
+    }
+    updateOverlayTrackStyle(track);
+  }
+  track = L.polyline([]);
+  editLayer.addLayer(track);
+  track.on('click', segmentClickListener);
+  updateTrackStyle();
+  return track;
 }
 
 function newTrack() {
@@ -537,10 +553,7 @@ function newTrack() {
   editLayer = L.layerGroup([]).addTo(map);
   waypoints = L.featureGroup([]);
   editLayer.addLayer(waypoints);
-  track = L.polyline([]);
-  track.on('click', segmentClickListener);
-  updateTrackStyle();
-  editLayer.addLayer(track);
+  newSegment();
   polystats = L.polyStats(track, {
     chrono: true,
     speedProfile: getCurrentActivity().speedprofile,
@@ -894,6 +907,13 @@ $("#track-new").click(function() {
   saveState();
   closeMenu();
 });
+$("#segment-new").click(function() {
+  ga('send', 'event', 'edit', 'new-segment');
+  newSegment();
+  setEditMode(EDIT_MANUAL_TRACK);
+  saveState();
+  closeMenu();
+});
 $("#menu-track").click(function() {
   $(".collapsable-track").toggle();
 });
@@ -987,7 +1007,7 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
     ptindent = "    ";
     wraptag = "trk";
     pttag = "trkpt";
-    segtag = "trkseg"
+    segtag = "trkseg";
   }
 
   gpx += "<" + wraptag + ">" + xmlname + "\n";
@@ -1974,9 +1994,11 @@ $(".statistics").click(function(e) {
   }
 });
 
-function segmentClickListener(event) {
+function segmentClickListener(event, noGaEvent) {
     if (event.target != track) {
-      ga('send', 'event', 'edit', 'segmentSwitch');
+      if (!noGaEvent) {
+        ga('send', 'event', 'edit', 'segmentSwitch');
+      }
       if (track) {
         updateOverlayTrackStyle(track);
       }
@@ -1989,6 +2011,9 @@ function segmentClickListener(event) {
         onUpdate: showStats,
       });
       polystats.updateStatsFrom(0);
+      return true;
+    } else {
+      return false;
     }
 }
 
@@ -2009,6 +2034,7 @@ function importGeoJson(geojson) {
   }
   var wptLayer = waypoints;
   var initLayers = editLayer.getLayers().length;
+  var activeTrack;
 
   function newPoint(coord, time, i) {
     var point = L.latLng(coord[1], coord[0]);
@@ -2026,19 +2052,15 @@ function importGeoJson(geojson) {
   }
 
   function importSegment(name, coords, times, joinOnLoad) {
-    var v, segment;
+    var v;
     if (joinOnLoad || track.getLatLngs().length == 0) {
-      segment = track;
-      v = track.getLatLngs();
-      if ((v.length === 0) && (metadata.name == NEW_TRACK_NAME)) {
-        setTrackName(name);
-      }
+      activeTrack = track;
     } else {
-      segment = L.polyline([]);
-      v = segment.getLatLngs();
-      editLayer.addLayer(segment);
-      updateOverlayTrackStyle(segment);
-      segment.on('click', segmentClickListener);
+      newSegment();
+    }
+    v = track.getLatLngs();
+    if ((v.length === 0) && (metadata.name == NEW_TRACK_NAME)) {
+      setTrackName(name);
     }
 
     // import polyline vertexes
@@ -2046,8 +2068,8 @@ function importGeoJson(geojson) {
       v.push(newPoint(coords[i], times ? times[i] : undefined, i));
     }
 
-    segment.setLatLngs(v);
-    bounds.extend(segment.getBounds());
+    track.setLatLngs(v);
+    bounds.extend(track.getBounds());
   }
 
   if ((track.getLatLngs().length === 0) && (geojson.metadata)) {
@@ -2084,10 +2106,11 @@ function importGeoJson(geojson) {
     map.fitBounds(bounds);
   }
   clearStatus();
-  polystats.updateStatsFrom(0);
+  if (!segmentClickListener({ target: activeTrack })) {
+    polystats.updateStatsFrom(0);
+  }
   saveState();
   closeMenu();
-  track.bringToFront();
   var addedLayers = editLayer.getLayers().length - initLayers;
   if (addedLayers) {
     ga('send', 'event', 'file', 'loadSegment', undefined, addedLayers);
