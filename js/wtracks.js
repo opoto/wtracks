@@ -2034,7 +2034,7 @@ function importGeoJson(geojson) {
   }
   var wptLayer = waypoints;
   var initLayers = editLayer.getLayers().length;
-  var activeTrack;
+  var activeTrack = track;
 
   function newPoint(coord, time, i) {
     var point = L.latLng(coord[1], coord[0]);
@@ -2054,7 +2054,7 @@ function importGeoJson(geojson) {
   function importSegment(name, coords, times, joinOnLoad) {
     var v;
     if (joinOnLoad || track.getLatLngs().length == 0) {
-      activeTrack = track;
+      // extend current 'track'
     } else {
       newSegment();
     }
