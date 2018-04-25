@@ -481,7 +481,7 @@ function getCurrentActivityName() {
 
 function getCurrentActivity() {
   var res = getCurrentActivityName();
-  log("activity: " + res);
+  //log("activity: " + res);
   saveValOpt("wt.activity", res);
   return activities[res];
 }
@@ -1233,7 +1233,7 @@ function joinSegments() {
   }
   if (count > 1) {
     track = null;
-    segmentClickListener({target: seg1});
+    segmentClickListener({target: seg1}, true);
     saveState();
     setStatus("Joined " + count + " segments", { timeout: 3 });
     ga('send', 'event', 'tool', 'join', undefined, count);
@@ -2106,7 +2106,7 @@ function importGeoJson(geojson) {
     map.fitBounds(bounds);
   }
   clearStatus();
-  if (!segmentClickListener({ target: activeTrack })) {
+  if (!segmentClickListener({ target: activeTrack }, true)) {
     polystats.updateStatsFrom(0);
   }
   saveState();
