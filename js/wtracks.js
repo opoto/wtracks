@@ -1228,6 +1228,7 @@ function joinSegments() {
       } else {
         seg1.setLatLngs(seg1.getLatLngs().concat(segment.getLatLngs()));
         segment.remove();
+        segment.removeFrom(editLayer);
       }
     }
   }
