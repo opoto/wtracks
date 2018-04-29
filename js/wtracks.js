@@ -658,7 +658,7 @@ function newWaypoint(latlng, name, desc, wptLayer) {
 
 
     var latlng = marker.getLatLng();
-    var markerDiv = getLatLngPopupContent(latlng, deleteMarker, div);
+    var markerDiv = getLatLngPopupContent(latlng, deleteMarker, undefined, div);
     return markerDiv;
   }
 
@@ -2345,10 +2345,11 @@ function getTrackPointPopupContent(latlng) {
 
 }
 
-function getLatLngPopupContent(latlng, deletefn, toadd) {
+function getLatLngPopupContent(latlng, deletefn, splitfn, toadd) {
   var div = document.createElement("div");
+  var p;
 
-  var p = L.DomUtil.create("div", "popupdiv", div);
+  p = L.DomUtil.create("div", "popupdiv", div);
   p.innerHTML = "<span class='popupfield'>Position:</span> " + latlng.lat + "," + latlng.lng;
 
   if (editMode != EDIT_NONE) {
@@ -2379,12 +2380,24 @@ function getLatLngPopupContent(latlng, deletefn, toadd) {
   }
 
   if (editMode != EDIT_NONE) {
-    p = L.DomUtil.create("div", "popupdiv", div);
-    var del = L.DomUtil.create('a', "", p);
-    del.href = "#";
-    del.title = "Delete";
-    del.innerHTML = "<span class='popupfield'>DELETE</span>";
-    del.onclick = deletefn;
+    // Delete button
+    p = L.DomUtil.create("div", "popupdiv ptbtn", div);
+    var btn = L.DomUtil.create('a', "", p);
+    btn.href = "#";
+    btn.title = "Delete";
+    btn.innerHTML = "<span class='popupfield'>DELETE</span>";
+    btn.onclick = deletefn;
+
+    if (splitfn) {
+      // Split button
+      p = L.DomUtil.create("div", "popupdiv ptbtn", div);
+      p.id = "split";
+      btn = L.DomUtil.create('a', "", p);
+      btn.href = "#";
+      btn.title = "Split segment from this point";
+      btn.innerHTML = "<span class='popupfield'>SPLIT</span>";
+      btn.onclick = splitfn;
+    }
   }
 
   return div;
@@ -2633,6 +2646,18 @@ map.on('editable:vertex:click', function(e) {
     map.closePopup(pop);
     event.preventDefault();
   }
+  function splitSegment(event) {
+    setEditMode(EDIT_NONE);
+    var i = e.latlng.i;
+    var seg1 = track.getLatLngs().slice(0,i),
+        seg2 = track.getLatLngs().slice(i);
+    track.setLatLngs(seg1);
+    newSegment();
+    track.setLatLngs(seg2);
+    setEditMode(EDIT_MANUAL_TRACK);
+    map.closePopup(pop);
+    event.preventDefault();
+  }
 
   if (e.originalEvent.shiftKey) {
     // shortcut to delete a vertex
@@ -2646,9 +2671,15 @@ map.on('editable:vertex:click', function(e) {
   }
   e.cancel();
   var div = getTrackPointPopupContent(e.latlng);
+  var splitfn,
+      i = e.latlng.i,
+      len = track.getLatLngs().length;
+  if ((i>1) & (i<len-1)) {
+    splitfn = splitSegment;
+  }
   var pop = L.popup()
     .setLatLng(e.latlng)
-    .setContent(getLatLngPopupContent(e.latlng, deleteTrackPoint, div))
+    .setContent(getLatLngPopupContent(e.latlng, deleteTrackPoint, splitfn, div))
     .openOn(map);
   $(".leaflet-popup-close-button").click(function(e) {
     track.editor.continueForward();

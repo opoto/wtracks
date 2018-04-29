@@ -293,6 +293,13 @@ a.button {
   display: inline-table;
   vertical-align: middle;
 }
+.ptbtn {
+  display: inline-table;
+  text-align: center;
+}
+.ptbtnlast {
+  text-align: right;
+}
 .popup-nameinput {
   width: 210px;
 }
