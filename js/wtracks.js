@@ -2385,7 +2385,7 @@ function getLatLngPopupContent(latlng, deletefn, splitfn, toadd) {
     var btn = L.DomUtil.create('a', "", p);
     btn.href = "#";
     btn.title = "Delete";
-    btn.innerHTML = "<span class='popupfield'>DELETE</span>";
+    btn.innerHTML = "<span class='popupfield'><i class='material-icons'>&#xE872;</i></span>";
     btn.onclick = deletefn;
 
     if (splitfn) {
@@ -2395,7 +2395,7 @@ function getLatLngPopupContent(latlng, deletefn, splitfn, toadd) {
       btn = L.DomUtil.create('a', "", p);
       btn.href = "#";
       btn.title = "Split segment from this point";
-      btn.innerHTML = "<span class='popupfield'>SPLIT</span>";
+      btn.innerHTML = "<span class='popupfield'><i class='material-icons'>&#xE14E;</i></span>";
       btn.onclick = splitfn;
     }
   }
@@ -2517,7 +2517,7 @@ map.on('editable:middlemarker:mousedown', function(e) {
 
 function dragMarker(e) {
   elevatePoint(e.layer.getLatLng());
-  console.log(e.type);
+  //console.log(e.type);
 }
 map.on('editable:dragend', dragMarker);
 
@@ -2540,7 +2540,7 @@ function checkGraphHopperCredit(e) {
 
   // check GraphHopper response
   if (!isUnset(e)) {
-    log("GraphHopper credits: " + e.credits);
+    //log("GraphHopper credits: " + e.credits);
     var now = new Date();
     var resetDate = new Date(now.getTime() + (e.reset * 1000));
     if (resetDate > Date.parse(gh.reset)) {

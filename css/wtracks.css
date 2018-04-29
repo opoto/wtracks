@@ -293,12 +293,15 @@ a.button {
   display: inline-table;
   vertical-align: middle;
 }
+.popupdiv a {
+  padding: 5px;
+}
 .ptbtn {
   display: inline-table;
   text-align: center;
 }
-.ptbtnlast {
-  text-align: right;
+.ptbtn a {
+  color: black;
 }
 .popup-nameinput {
   width: 210px;
@@ -517,14 +520,6 @@ button:active, #track-upload-label:active {
    position: absolute;
    z-index: -1;
 }
-
-.popupdiv a {
-  padding: 5px;
-}
-.popupdiv a:hover, .popupdiv a:active {
-  background-color: #DDD;
-}
-
 .toggle-hidden {
     display: none;
 }
