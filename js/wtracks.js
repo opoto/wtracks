@@ -1476,8 +1476,8 @@ function getCrsName(crs) {
   return undefined;
 }
 
-crsSelect = $("#mymap-crs")[0];
 function initCrsSelector() {
+  var crsSelect = $("#mymap-crs")[0];
   for (var i = CrsValues.length - 1; i >=0; i--) {
     var crs = CrsValues[i];
     addSelectOption(crsSelect, crs ? crs.code : "");
