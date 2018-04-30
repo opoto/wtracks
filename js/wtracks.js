@@ -1944,6 +1944,7 @@ $("body").keydown(function(event) {
 L.DomEvent.disableClickPropagation(L.DomUtil.get("edit-manual"));
 L.DomEvent.disableClickPropagation(L.DomUtil.get("edit-auto"));
 L.DomEvent.disableClickPropagation(L.DomUtil.get("edit-marker"));
+L.DomEvent.disableClickPropagation(L.DomUtil.get("delete-segment"));
 $("#edit-manual").click(function(e) {
   ga('send', 'event', 'edit', 'manual');
   //$("#edit-tools").hide();
@@ -1964,21 +1965,27 @@ $("#edit-marker").click(function(e) {
   e.preventDefault();
 });
 $("#delete-segment").click(function(e) {
-  if (!confirm("Delete current segment?")) {
+  if ((track.getLatLngs().length == 0)
+    || !confirm("Delete current segment?")) {
     return;
   }
   ga('send', 'event', 'edit', 'delete-segment');
+  deleteSegment(track);
+  e.preventDefault();
+});
+
+function deleteSegment(segment) {
   setEditMode(EDIT_NONE);
-  editLayer.removeLayer(track);
-  if (editLayer.getLayers().length > 1) {
+  if (editLayer.getLayers().length > 2) {
+    editLayer.removeLayer(segment);
     segmentClickListener({ target: editLayer.getLayers()[1] }, true)
   } else {
-    newSegment();
+    segment.setLatLngs([]);
+    polystats.updateStatsFrom(0);
     setEditMode(EDIT_MANUAL_TRACK);
   }
   saveState();
-  e.preventDefault();
-});
+}
 
 function toolElevate(e) {
   ga('send', 'event', 'tool', 'elevate', undefined, track.getLatLngs().length);
@@ -2019,7 +2026,7 @@ $(".statistics").click(function(e) {
 function segmentClickListener(event, noGaEvent) {
     if (event.target != track) {
       if (!noGaEvent) {
-        ga('send', 'event', 'edit', 'segmentSwitch');
+        ga('send', 'event', 'edit', 'switch-segment');
       }
       if (track) {
         updateOverlayTrackStyle(track);
