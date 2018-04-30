@@ -518,7 +518,7 @@ function updateAllOverlayTrackStyle() {
   }
 }
 
-function newSegment() {
+function newSegment(noStats) {
   if (track) {
     if (track.getLatLngs().length == 0) {
       // current track is empty, don't create another one
@@ -529,6 +529,14 @@ function newSegment() {
   track = L.polyline([]);
   editLayer.addLayer(track);
   track.on('click', segmentClickListener);
+  if (!noStats) {
+    polystats = L.polyStats(track, {
+      chrono: true,
+      speedProfile: getCurrentActivity().speedprofile,
+      onUpdate: showStats,
+    });
+    showStats();
+  }
   updateTrackStyle();
   return track;
 }
@@ -554,14 +562,8 @@ function newTrack() {
   waypoints = L.featureGroup([]);
   editLayer.addLayer(waypoints);
   newSegment();
-  polystats = L.polyStats(track, {
-    chrono: true,
-    speedProfile: getCurrentActivity().speedprofile,
-    onUpdate: showStats,
-  });
   setTrackName(NEW_TRACK_NAME);
   //  setEditMode(EDIT_NONE);
-  showStats();
 }
 
 function newWaypoint(latlng, name, desc, wptLayer) {
@@ -1912,7 +1914,10 @@ L.EditControl = L.Control.extend({
 
     editopts.id = 'edit-tools';
     editopts.class = 'wtracks-control-icon';
-    editopts.innerHTML = '<a href="#" title="Manual Track" id="edit-manual"><span class="material-icons wtracks-control-icon">&#xE922;</span></a><a href="#" title="Auto Track" id="edit-auto"><span class="material-icons wtracks-control-icon">&#xE55D;</span></a><a href="#" title="Waypoint" id="edit-marker"><span class="material-icons wtracks-control-icon">&#xE55F;</span></a>';
+    editopts.innerHTML = '<a href="#" title="Manual Track" id="edit-manual"><span class="material-icons wtracks-control-icon">&#xE922;</span></a>' +
+    '<a href="#" title="Auto Track" id="edit-auto"><span class="material-icons wtracks-control-icon">&#xE55D;</span></a>' +
+    '<a href="#" title="Waypoint" id="edit-marker"><span class="material-icons wtracks-control-icon">&#xE55F;</span></a>' +
+    '<a href="#" title="Delete segment" id="delete-segment"><span class="material-icons wtracks-control-icon">&#xE872;</span></a>';
 
     return container;
   }
@@ -1956,6 +1961,22 @@ $("#edit-marker").click(function(e) {
   ga('send', 'event', 'edit', 'marker');
   //$("#edit-tools").hide();
   setEditMode(EDIT_MARKER);
+  e.preventDefault();
+});
+$("#delete-segment").click(function(e) {
+  if (!confirm("Delete current segment?")) {
+    return;
+  }
+  ga('send', 'event', 'edit', 'delete-segment');
+  setEditMode(EDIT_NONE);
+  editLayer.removeLayer(track);
+  if (editLayer.getLayers().length > 1) {
+    segmentClickListener({ target: editLayer.getLayers()[1] }, true)
+  } else {
+    newSegment();
+    setEditMode(EDIT_MANUAL_TRACK);
+  }
+  saveState();
   e.preventDefault();
 });
 
@@ -2011,7 +2032,10 @@ function segmentClickListener(event, noGaEvent) {
         speedProfile: getCurrentActivity().speedprofile,
         onUpdate: showStats,
       });
-      polystats.updateStatsFrom(0);
+      if (!track.stats) {
+        polystats.updateStatsFrom(0);
+      }
+      showStats();
       return true;
     } else {
       return false;
@@ -2054,10 +2078,11 @@ function importGeoJson(geojson) {
 
   function importSegment(name, coords, times, joinOnLoad) {
     var v;
+
     if (joinOnLoad || track.getLatLngs().length == 0) {
       // extend current 'track'
     } else {
-      newSegment();
+      newSegment(true);
     }
     v = track.getLatLngs();
     if ((v.length === 0) && (metadata.name == NEW_TRACK_NAME)) {
@@ -2647,13 +2672,17 @@ map.on('editable:vertex:click', function(e) {
     event.preventDefault();
   }
   function splitSegment(event) {
+    ga('send', 'event', 'edit', 'split-segment');
     setEditMode(EDIT_NONE);
     var i = e.latlng.i;
     var seg1 = track.getLatLngs().slice(0,i),
         seg2 = track.getLatLngs().slice(i);
     track.setLatLngs(seg1);
+    polystats.updateStatsFrom(0);
     newSegment();
     track.setLatLngs(seg2);
+    polystats.updateStatsFrom(0);
+    saveState();
     setEditMode(EDIT_MANUAL_TRACK);
     map.closePopup(pop);
     event.preventDefault();
