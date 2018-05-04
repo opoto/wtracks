@@ -606,6 +606,9 @@ button:active, #track-upload-label:active {
   #trim-txt {
     font-size: 10px;
   }
+  #join, #segment-new {
+    font-size: 60%;
+  }
 }
 
 /** hide routing and file controls **/
