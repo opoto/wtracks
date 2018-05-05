@@ -2181,9 +2181,15 @@ fileloader.on('data:error', function(e) {
 function loadFromUrl(url, ext, noproxy) {
   setStatus("Loading...", { "spinner": true });
   var _url = noproxy ? url : corsUrl(url);
-  $.get(_url, function(data) {
-    loadCount = 0;
-    fileloader.loadData(data, url, ext);
+  $.ajax({
+    url: _url,
+    xhrFields: {
+      withCredentials: true
+    },
+    success: function(data) {
+      loadCount = 0;
+      fileloader.loadData(data, url, ext);
+    }
   }).fail(function(resp) {
     setStatus("Failed: " + resp.statusText, { 'class': 'status-error', 'timeout': 3 });
   });
