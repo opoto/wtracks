@@ -2178,9 +2178,9 @@ fileloader.on('data:error', function(e) {
   setStatus("Failed: check file and type", { 'class': 'status-error', 'timeout': 3 });
 });
 
-function loadFromUrl(url, ext, direct) {
+function loadFromUrl(url, ext, noproxy) {
   setStatus("Loading...", { "spinner": true });
-  var _url = direct ? url : corsUrl(url);
+  var _url = noproxy ? url : corsUrl(url);
   $.get(_url, function(data) {
     loadCount = 0;
     fileloader.loadData(data, url, ext);
@@ -2814,8 +2814,9 @@ $(document).ready(function() {
   if (url) {
     ga('send', 'event', 'file', 'load-param');
     var ext = getParameterByName("ext");
+    var noproxy = getParameterByName("noproxy");
     showLocation = LOC_NONE;
-    loadFromUrl(url, ext || undefined);
+    loadFromUrl(url, ext || undefined, noproxy || undefined);
   } else {
     restoreState();
   }
