@@ -2827,19 +2827,21 @@ $(document).ready(function() {
     restoreState();
   }
 
-  /* Show About dialog once a year */
+  /* Show About dialog if not show since a while */
   var about = getVal("wt.about", undefined);
   var now = new Date();
+  const SIX_MONTHS = Math.round(1000*60*60*24*30.5*6); // 6 months in ms
   if (about) {
-    about = new Date(about);
-    if (now.getYear() != about.getYear()) {
-      // new year = new about !
+    about = new Date(about).getTime();
+    if (now.getTime() > about + SIX_MONTHS) {
+      // reset about tag
       about = undefined;
     }
   }
   if (!about) {
     storeVal("wt.about", now.toISOString());
-    menu("about");
+    // wait for potential urlparam to be loaded
+    setTimeout(function(){ menu("about"); }, 4000);
   }
 
 });
