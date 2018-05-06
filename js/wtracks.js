@@ -2146,7 +2146,7 @@ function importGeoJson(geojson) {
   closeMenu();
   var addedLayers = editLayer.getLayers().length - initLayers;
   if (addedLayers) {
-    ga('send', 'event', 'file', 'loadSegment', undefined, addedLayers);
+    ga('send', 'event', 'file', 'load-segment', undefined, addedLayers);
   }
   return editLayer;
 }
@@ -2818,11 +2818,12 @@ setChecked("#merge", false);
 $(document).ready(function() {
   var url = getParameterByName("url");
   if (url) {
-    ga('send', 'event', 'file', 'load-param');
+    ga('send', 'event', 'file', 'load-urlparam');
     var ext = getParameterByName("ext");
     var noproxy = getParameterByName("noproxy");
     showLocation = LOC_NONE;
     loadFromUrl(url, ext || undefined, noproxy || undefined);
+    setEditMode(EDIT_NONE);
   } else {
     restoreState();
   }
