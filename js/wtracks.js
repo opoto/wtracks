@@ -912,13 +912,6 @@ $("#track-new").click(function() {
   saveState();
   closeMenu();
 });
-$("#segment-new").click(function() {
-  ga('send', 'event', 'edit', 'new-segment');
-  newSegment();
-  setEditMode(EDIT_MANUAL_TRACK);
-  saveState();
-  closeMenu();
-});
 $("#menu-track").click(function() {
   $(".collapsable-track").toggle();
 });
@@ -1540,7 +1533,7 @@ for (var ovly in config.overlays) {
 }
 var baseLayerControl = L.control.layers(baseLayers, overlays);
 baseLayerControl.addTo(map);
-L.control.scale().addTo(map);
+L.control.scale({updateWhenIdle: true}).addTo(map);
 
 map.addLayer(baseLayers[getVal("wt.baseLayer", config.display.map)] || baseLayers[config.display.map]);
 var layerInit = true;
@@ -1921,8 +1914,9 @@ L.EditControl = L.Control.extend({
     editopts.class = 'wtracks-control-icon';
     editopts.innerHTML = '<a href="#" title="Manual Track" id="edit-manual"><span class="material-icons wtracks-control-icon">&#xE922;</span></a>' +
     '<a href="#" title="Auto Track" id="edit-auto"><span class="material-icons wtracks-control-icon">&#xE55D;</span></a>' +
-    '<a href="#" title="Waypoint" id="edit-marker"><span class="material-icons wtracks-control-icon">&#xE55F;</span></a>' +
-    '<a href="#" title="Delete segment" id="delete-segment"><span class="material-icons wtracks-control-icon">&#xE872;</span></a>';
+    '<a href="#" title="Add segment" id="add-segment"><span class="material-icons wtracks-control-icon">add_circle</span></a>' +
+    '<a href="#" title="Delete segment" id="delete-segment"><span class="material-icons wtracks-control-icon">remove_circle</span></a>' +
+    '<a href="#" title="Waypoint" id="edit-marker"><span class="material-icons wtracks-control-icon">&#xE55F;</span></a>';
 
     return container;
   }
@@ -1949,6 +1943,7 @@ $("body").keydown(function(event) {
 L.DomEvent.disableClickPropagation(L.DomUtil.get("edit-manual"));
 L.DomEvent.disableClickPropagation(L.DomUtil.get("edit-auto"));
 L.DomEvent.disableClickPropagation(L.DomUtil.get("edit-marker"));
+L.DomEvent.disableClickPropagation(L.DomUtil.get("add-segment"));
 L.DomEvent.disableClickPropagation(L.DomUtil.get("delete-segment"));
 $("#edit-manual").click(function(e) {
   ga('send', 'event', 'edit', 'manual');
@@ -1969,6 +1964,15 @@ $("#edit-marker").click(function(e) {
   setEditMode(EDIT_MARKER);
   e.preventDefault();
 });
+$("#add-segment").click(function() {
+  ga('send', 'event', 'edit', 'new-segment');
+  setEditMode(EDIT_NONE);
+  newSegment();
+  setEditMode(EDIT_MANUAL_TRACK);
+  saveState();
+  e.preventDefault();
+});
+
 $("#delete-segment").click(function(e) {
   if ((track.getLatLngs().length == 0)
     || !confirm("Delete current segment?")) {
@@ -1976,6 +1980,7 @@ $("#delete-segment").click(function(e) {
   }
   ga('send', 'event', 'edit', 'delete-segment');
   deleteSegment(track);
+  saveState();
   e.preventDefault();
 });
 

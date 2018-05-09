@@ -71,15 +71,10 @@
           <button id="track-new" title="Start a new track from scratch">New Track</button>
         </td>
         <td>
-          Discard current editor content and start a new track
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <button id="segment-new" title="Add new segment to current track">New Segment</button>
-        </td>
-        <td>
-          Add a new segment to current track
+          <span id="newtracktxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <p id="newtracktxt-help" class="help-p">
+            Discard current editor content and start a new track
+          </p>
         </td>
       </tr>
       <tr class="nobottomborder">
@@ -87,13 +82,13 @@
           <span>Load file:</span>
         </td>
         <td>
-          <label><input type="checkbox" id="merge"/>Merge with current track</label>
+          <label><input type="checkbox" id="merge"/>Merge</label>
           <span id="mergetxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <p id="mergetxt-help" class="help-p">
             Current edited track will not be discarded, it will be extended with the loaded one.
           </p>
           <br/>
-          <label><input type="checkbox" id="joinonload"/>Join loaded segments</label>
+          <label><input type="checkbox" id="joinonload"/>Join segments</label>
           <span id="joinonloadtxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <p id="joinonloadtxt-help" class="help-p">
             If loaded track contains multiple segments, they will automatically be joined.
@@ -137,7 +132,7 @@
           <label><input id="noproxy" type="checkbox" /> No proxy </label>
           <span id="noproxytxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <p id="noproxytxt-help" class="help-p">
-            Load without going through a CORS proxy. Check if target server supports cross-origin requests, and if you want to use your browser session to fecth the file.
+            Load without going through a CORS proxy. Check if target server accepts cross-origin requests, and if you want to use your browser session to fecth the file.
           </p>
         </td>
       </tr>
@@ -149,12 +144,12 @@
           </button>
         </td>
         <td>
-          Load a track from your Dropbox
+          Load from your Dropbox
         </td>
       </tr>
       <tr>
         <td>
-          <button id="track-download" title="Download current track as a GPX file">Save</button>
+          <button id="track-download" title="Download as a GPX file">Save</button>
           <!-- br/>
           <button id="dropbox-saver" title="Save track in your Dropbox">
             <span id="dropbox-logo"></span>
@@ -162,7 +157,7 @@
           </button -->
         </td>
         <td>
-          Download current track as a GPX file<br/>
+          Download as a GPX file<br/>
           <label><input type="checkbox" id="as-route"/>As route</label>
           <span id="routetxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <p id="routetxt-help" class="help-p">
@@ -175,7 +170,7 @@
             Check to save without GPX metadata.
           </p>
           <br/>
-          <label><input type="checkbox" id="savetiming"/>Save computed timings</label>
+          <label><input type="checkbox" id="savetiming"/>Save computed times</label>
           <span id="savetimingtxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <p id="savetimingtxt-help" class="help-p">
             Check to save in the GPX the timings computed by WTracks and displayed in the bottom banner of the page. Note that it will override any potential timing you may have previously recorded for this track.
@@ -201,7 +196,7 @@
           <button id="elevate" class="no-trim">Elevate</button>
         </td>
         <td>
-          Add altitude information to some track points
+          Add altitude information
           <span id="elevatetxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <p id="elevatetxt-help" class="help-p">
             Uses external web service to get elevation of track points.
@@ -213,7 +208,7 @@
           <button id="flatten" class="no-trim">Flatten</button>
         </td>
         <td>
-          Remove altitude information from all track points
+          Remove altitude information
           <span id="flattentxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <p id="flattentxt-help" class="help-p">
             Resets elevation data for the whole track.
@@ -225,7 +220,7 @@
           <button id="revert" class="no-trim">Revert</button>
         </td>
         <td>
-          Reverts direction of the track
+          Revert track direction
           <span id="reverttxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <p id="reverttxt-help" class="help-p">
             Inverts all track points so that start of the track becomes the end.
@@ -237,7 +232,7 @@
           <button id="join" class="no-trim">Join segments</button>
         </td>
         <td>
-          Combines all segments into a single one
+          Combine segments
           <span id="jointxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <p id="jointxt-help" class="help-p">
             Removes separation between all track segments in the editor.
