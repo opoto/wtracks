@@ -2181,16 +2181,20 @@ fileloader.on('data:error', function(e) {
 function loadFromUrl(url, ext, noproxy) {
   setStatus("Loading...", { "spinner": true });
   var _url = noproxy ? url : corsUrl(url);
-  $.ajax({
+  var req = {
     url: _url,
-    xhrFields: {
-      withCredentials: true
-    },
     success: function(data) {
       loadCount = 0;
       fileloader.loadData(data, url, ext);
     }
-  }).fail(function(resp) {
+  };
+  if (noproxy) {
+    req.xhrFields = {
+      withCredentials: true
+    };
+  }
+
+  $.ajax(req).fail(function(resp) {
     setStatus("Failed: " + resp.statusText, { 'class': 'status-error', 'timeout': 3 });
   });
 }
