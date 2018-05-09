@@ -563,7 +563,10 @@ function newTrack() {
   editLayer.addLayer(waypoints);
   newSegment();
   setTrackName(NEW_TRACK_NAME);
-  //  setEditMode(EDIT_NONE);
+  // reset URL if it contains query parameters
+  if (window.location.search && window.history && window.history.pushState) {
+    window.history.pushState({}, document.title, window.location.pathname);
+  }
 }
 
 function newWaypoint(latlng, name, desc, wptLayer) {
