@@ -1540,6 +1540,8 @@ for (var ovly in config.overlays) {
 }
 var baseLayerControl = L.control.layers(baseLayers, overlays);
 baseLayerControl.addTo(map);
+L.control.scale().addTo(map);
+
 map.addLayer(baseLayers[getVal("wt.baseLayer", config.display.map)] || baseLayers[config.display.map]);
 var layerInit = true;
 map.on("baselayerchange", function(e) {
