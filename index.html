@@ -133,7 +133,12 @@
           <button id="track-get" title="Load a file from the internet">Get from: </button>
         </td>
         <td>
-          <input id="track-get-url" placeholder="https://... (track URL)" type="url" />
+          <input id="track-get-url" placeholder="https://... (track URL)" type="url" /><br/>
+          <label><input id="noproxy" type="checkbox" /> No proxy </label>
+          <span id="noproxytxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <p id="noproxytxt-help" class="help-p">
+            Load without going through a CORS proxy. Check if target server supports cross-origin requests, and if you want to use your browser session to fecth the file.
+          </p>
         </td>
       </tr>
       <tr class="notopborder">
@@ -542,7 +547,7 @@
     </div>
   </div>
 
-  <table id="tdisplay">
+  <table id="tdisplay" title="Click to see elevation profile">
     <tr id="menu-bar">
       <td colspan="7">
         <a href="#" id="menu-button" class="button"><span class="material-icons">&#xE5D2;</span></a>

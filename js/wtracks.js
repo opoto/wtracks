@@ -2210,7 +2210,8 @@ $("#track-get").click(function() {
   }
   ga('send', 'event', 'file', 'load-url');
   setEditMode(EDIT_NONE);
-  loadFromUrl(url, getLoadExt());
+  var noproxy = isChecked("#noproxy");
+  loadFromUrl(url, getLoadExt(), noproxy);
 });
 $("#track-get-url").keypress(function(e) {
   if (e.which == 13) {
