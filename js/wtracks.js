@@ -1533,7 +1533,32 @@ for (var ovly in config.overlays) {
 }
 var baseLayerControl = L.control.layers(baseLayers, overlays);
 baseLayerControl.addTo(map);
-L.control.scale({updateWhenIdle: true}).addTo(map);
+
+// ------------ SCALE
+
+var scaleCtrl;
+var scaleOptions = getVal("wt.scaleOpts", 0);
+
+function updateScaleControl(event) {
+  log("scale");
+  if (scaleCtrl) {
+    scaleCtrl.remove();
+  }
+  if (event) {
+    // toggle between 0, 1 ad 2
+    scaleOptions = (scaleOptions + 1) % 3;
+    saveValOpt("wt.scaleOpts", scaleOptions);
+  }
+  scaleCtrl = L.control.scale({
+    updateWhenIdle: true,
+    metric: scaleOptions < 2,
+    imperial: (scaleOptions % 2) == 0});
+  scaleCtrl.addTo(map);
+  $(".leaflet-control-scale").click(updateScaleControl);
+}
+updateScaleControl();
+
+// ----------------------
 
 map.addLayer(baseLayers[getVal("wt.baseLayer", config.display.map)] || baseLayers[config.display.map]);
 var layerInit = true;
