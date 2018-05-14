@@ -1540,7 +1540,9 @@ var scaleCtrl;
 var scaleOptions = getVal("wt.scaleOpts", 0);
 
 function updateScaleControl(event) {
-  log("scale");
+  if (event && (editMode != EDIT_NONE)) {
+    return;
+  }
   if (scaleCtrl) {
     scaleCtrl.remove();
   }
