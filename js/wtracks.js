@@ -1939,8 +1939,14 @@ L.EditControl = L.Control.extend({
     editopts.class = 'wtracks-control-icon';
     editopts.innerHTML = '<a href="#" title="Manual Track" id="edit-manual"><span class="material-icons wtracks-control-icon">&#xE922;</span></a>' +
     '<a href="#" title="Auto Track" id="edit-auto"><span class="material-icons wtracks-control-icon">&#xE55D;</span></a>' +
-    '<a href="#" title="Add segment" id="add-segment"><span class="material-icons wtracks-control-icon">add_circle</span></a>' +
-    '<a href="#" title="Delete segment" id="delete-segment"><span class="material-icons wtracks-control-icon">remove_circle</span></a>' +
+    '<a href="#" title="Add segment" id="add-segment">' +
+      '<span class="material-icons wtracks-control-icon segment-icon">&#xe6e1</span>' +
+      '<span class="material-icons wtracks-control-icon add-segment-icon">&#xe145</span>' +
+    '</a>' +
+    '<a href="#" title="Delete segment" id="delete-segment">' +
+      '<span class="material-icons wtracks-control-icon segment-icon">&#xe6e1</span>' +
+      '<span class="material-icons wtracks-control-icon delete-segment-icon">&#xe14c</span>' +
+    '</a>' +
     '<a href="#" title="Waypoint" id="edit-marker"><span class="material-icons wtracks-control-icon">&#xE55F;</span></a>';
 
     return container;

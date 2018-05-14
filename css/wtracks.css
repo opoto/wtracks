@@ -269,6 +269,23 @@ a.button {
   margin: auto;
   position: relative;
 }
+.segment-icon {
+  margin-top: -8px;
+  font-size: 18px;
+}
+.add-segment-icon {
+  font-size: 18px;
+  margin-left: -26px;
+  color: green;
+  margin-top: 10px;
+}
+.delete-segment-icon {
+  font-size: 18px;
+  margin-left: -26px;
+  color: red;
+  margin-top: 10px;
+}
+
 .leaflet-default-icon-path {
 	background-image: url(../img/marker-icon.png);
 }
