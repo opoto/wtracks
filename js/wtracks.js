@@ -2466,7 +2466,7 @@ function getLatLngPopupContent(latlng, deletefn, splitfn, toadd) {
     altinput.type = "text";
     altinput.placeholder = "Numeric altitude";
     altinput.size = "5";
-    $(altinput).val(isUndefined(latlng.alt) || !isNumeric(latlng.alt) ? "" : latlng.alt);
+    $(altinput).val(isUndefined(latlng.alt) || !isNumeric(latlng.alt) ? "" : Math.round(latlng.alt));
     altinput.onkeyup = function() {
       try {
         latlng.alt = isNumeric(altinput.value) ? parseFloat(altinput.value) : undefined;
@@ -2477,7 +2477,7 @@ function getLatLngPopupContent(latlng, deletefn, splitfn, toadd) {
   } else {
     if (!isUndefined(latlng.alt)) {
       p = L.DomUtil.create("div", "popupdiv", div);
-      p.innerHTML = "<span class='popupfield'>Altitude:</span> " + latlng.alt + "m";
+      p.innerHTML = "<span class='popupfield'>Altitude:</span> " + Math.round(latlng.alt) + "m";
     }
   }
 
