@@ -569,7 +569,7 @@ function newTrack() {
   }
 }
 
-function newWaypoint(latlng, name, desc, wptLayer) {
+function newWaypoint(latlng, properties, wptLayer) {
 
   function deleteMarker(e) {
     waypoints.removeLayer(marker);
@@ -658,8 +658,20 @@ function newWaypoint(latlng, name, desc, wptLayer) {
         var popupDesc = L.DomUtil.create('pre', "popup-desc", div);
         popupDesc.innerHTML = marker.options.desc;
       }
+
     }
 
+    // cmt
+    if (marker.options.cmt) {
+      var popupCmt = L.DomUtil.create('pre', "popup-desc", div);
+      popupCmt.innerHTML = marker.options.cmt;
+    }
+
+    // time
+    if (marker.options.time) {
+      var popupTime = L.DomUtil.create('pre', "popup-desc", div);
+      popupTime.innerHTML = marker.options.time;
+    }
 
 
     var latlng = marker.getLatLng();
@@ -678,12 +690,15 @@ function newWaypoint(latlng, name, desc, wptLayer) {
     shadowSize: [26, 26],
     shadowAnchor: [8, 26]
   });
-  var marker = L.marker(latlng, {
-    title: name,
-    desc: desc,
-    alt: name,
+  var wptOpts = {
+    title: properties.name || "",
+    alt: properties.name || "",
+    desc: properties.desc || properties.description || "",
+    cmt: properties.cmt || undefined,
+    time: properties.time || undefined,
     icon: markerIcon
-  });
+  };
+  var marker = L.marker(latlng, wptOpts);
   wptLayer.addLayer(marker);
 
   if (wptLayer == waypoints) {
@@ -921,21 +936,24 @@ $("#menu-tools").click(function() {
 
 /* ------------------------ EXPORT GPX ---------------------------------- */
 
-function LatLngToGPX(latlng, gpxelt, name, time, desc) {
+function LatLngToGPX(latlng, gpxelt, properties) {
 
   var gpx = "<" + gpxelt;
   gpx += " lat=\"" + latlng.lat + "\" lon=\"" + latlng.lng + "\">";
-  if (name) {
-    gpx += "<name>" + htmlEncode(name) + "</name>";
+  if (properties.title) {
+    gpx += "<name>" + htmlEncode(properties.title) + "</name>";
   }
-  if (desc) {
-    gpx += "<desc>" + htmlEncode(desc) + "</desc>";
+  if (properties.desc) {
+    gpx += "<desc>" + htmlEncode(properties.desc) + "</desc>";
   }
-  if (latlng.alt) {
+  if (!isNaN(latlng.alt)) {
     gpx += "<ele>" + latlng.alt + "</ele>";
   }
-  if (time) {
-    gpx += "<time>" + (typeof time === "string" ? time : time.toISOString()) + "</time>";
+  if (properties.cmt) {
+    gpx += "<cmt>" + htmlEncode(properties.cmt) + "</cmt>";
+  }
+  if (properties.time) {
+    gpx += "<time>" + (properties.time.toISOString ? properties.time.toISOString() : properties.time) + "</time>";
   }
   gpx += "</" + gpxelt + ">\n";
   return gpx;
@@ -956,7 +974,7 @@ function getSegmentGPX(segment, ptindent, pttag, savetime) {
       } else {
         time = pt.time;
       }
-      gpx += ptindent + LatLngToGPX(pt, pttag, undefined, time);
+      gpx += ptindent + LatLngToGPX(pt, pttag, { 'time': time });
       j++;
     }
   }
@@ -991,7 +1009,7 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
     var i = 0;
     while (i < wpts.length) {
       var wpt = wpts[i];
-      gpx += LatLngToGPX(wpt.getLatLng(), "wpt", wpt.options.title, wpt.getLatLng().time, wpt.options.desc);
+      gpx += LatLngToGPX(wpt.getLatLng(), "wpt", wpt.options);
       i++;
     }
   }
@@ -2175,7 +2193,7 @@ function importGeoJson(geojson) {
         // import marker
         coords = f.geometry.coordinates;
         var latlng = newPoint(coords);
-        newWaypoint(latlng, f.properties.name, f.properties.description || f.properties.desc, wptLayer);
+        newWaypoint(latlng, f.properties, wptLayer);
         bounds.extend(latlng);
       }
     }
@@ -2676,7 +2694,7 @@ function newMarker(e) {
 
   if (editMode == EDIT_MARKER) {
     ga('send', 'event', 'edit', 'new-marker');
-    var marker = newWaypoint(e.latlng, "", "", waypoints);
+    var marker = newWaypoint(e.latlng, {name: "New waypoint"}, waypoints);
     elevatePoint(e.latlng);
     marker.enableEdit();
   } else if (editMode == EDIT_AUTO_TRACK) {
