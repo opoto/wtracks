@@ -36,9 +36,24 @@
         statics: {
             /**
              * Pruning function
-             * It removes points located less then "tolerance" meters from the track between its adjacent points
+             * Removes points located less than a given distance from the track between its adjacent points.
+             * Possible options:
+             *  - tolerance: distance in meters (default is 5)
+             *  - useAlt: use altitude to compute 3D distance (default is true)
              */
-            prune : function(latlngs, tolerance) {
+            prune : function(latlngs, options) {
+
+                var tolerance = 5;
+                var useAlt = true;
+                if (options) {
+                  if (!isNaN(options.tolerance)) {
+                    tolerance = options.tolerance;
+                  }
+                  if (typeof(options.useAlt) == typeof(true)) {
+                    useAlt = options.useAlt;
+                  }
+                }
+
                 var initlen = latlngs.length; // initial number of points
                 var pruned = [];
 
@@ -55,24 +70,44 @@
 
                     var xDelta = endLine.lng - startLine.lng;
                     var yDelta = endLine.lat - startLine.lat;
+                    // we need all points to have altitude to compute 3D distance
+                    var zDelta = !useAlt || isNaN(endLine.alt) ||
+                      isNaN(startLine.alt) || isNaN(latlng.alt) ?
+                      undefined : (endLine.alt - startLine.alt);
+                    var closestPoint;
 
                     if ((xDelta === 0) && (yDelta === 0)) {
                         // startLine and endLine are the same point, return distance from this point
-                        return latlng.distanceTo(startLine);
+                        closestPoint = L.latLng(startLine.lat, startLine.lng);
+                        if (!isNaN(zDelta)) {
+                          closestPoint.alt = startLine.alt + zDelta / 2;
+                        }
                     }
 
                     var u = ((latlng.lng - startLine.lng) * xDelta + (latlng.lat - startLine.lat) * yDelta) / (xDelta * xDelta + yDelta * yDelta);
 
-                    var closestPoint;
                     if (u < 0) {
                         closestPoint = startLine;
                     } else if (u > 1) {
                         closestPoint = endLine;
                     } else {
                         closestPoint = L.latLng(startLine.lat + u * yDelta, startLine.lng + u * xDelta);
+                        if (!isNaN(zDelta)) {
+                          closestPoint.alt = startLine.alt + u * zDelta;
+                        }
                     }
 
-                    return latlng.distanceTo(closestPoint);
+                    var dist2d = latlng.distanceTo(closestPoint);
+                    var dist3d;
+                    if (!isNaN(zDelta)) {
+                      var zDeltaClosest = closestPoint.alt - latlng.alt;
+                      dist3d = Math.sqrt(Math.pow(dist2d,2) + Math.pow(zDeltaClosest,2));
+                    }
+
+                    // return 3D distance if it could be computed, otherwise 2D
+                    //console.log("2D: " + dist2d);
+                    //console.log("3D: " + dist3d);
+                    return isNaN(dist3d) ? dist2d : dist3d;
                 }
 
 

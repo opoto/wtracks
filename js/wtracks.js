@@ -1075,7 +1075,7 @@ function mergeRouteToTrack() {
   if (!route) return;
   var initlen = track.getLatLngs().length;
   var pts = route._selectedRoute ? route._selectedRoute.coordinates : [];
-  pts = L.PolyPrune.prune(pts, config.compressdefault);
+  pts = L.PolyPrune.prune(pts, { tolerance: config.compressdefault, useAlt: true });
   ga('send', 'event', 'edit', 'merge', undefined, pts.length);
   route.remove();
   route = undefined;
@@ -1183,20 +1183,22 @@ $("#compress").click(function() {
   // get & check input value
   var prunedist = $("#prunedist");
   var input = prunedist.val().trim();
-  var tolerance;
+  var toleranceV;
   if (input) {
-    tolerance = parseFloat(input);
+    toleranceV = parseFloat(input);
   }
-  if ((tolerance === undefined) || isNaN(tolerance)) {
+  if ((toleranceV === undefined) || isNaN(toleranceV)) {
     alert("Enter distance in meters");
     prunedist.focus();
     return;
   }
 
+  var useAltV = isChecked("#prunealt");
+
   if (track) {
     setEditMode(EDIT_NONE);
     var pts = track.getLatLngs();
-    var pruned = L.PolyPrune.prune(pts, tolerance);
+    var pruned = L.PolyPrune.prune(pts, { tolerance: toleranceV, useAlt: useAltV });
     var removedpts = (pts.length - pruned.length);
     ga('send', 'event', 'tool', 'compress', undefined, removedpts);
     if (removedpts > 0) {
