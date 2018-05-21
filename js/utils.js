@@ -1,4 +1,5 @@
 /* ----------------------- LOGGING SHORTCUTS -------------------------- */
+
 function debug(msg) {
   if (console && console.debug) {
     console.debug(msg);
@@ -23,7 +24,11 @@ function warn(msg) {
   }
 }
 
-/* ----------------------- Testing undefined and null value ---------------------- */
+/* ----------------------- Testing values and types ---------------------- */
+
+function isNumeric(obj) {
+  return isFinite(String(obj));
+}
 
 function isUndefined(v) {
   return typeof v === "undefined";
@@ -42,18 +47,14 @@ function htmlDecode(html) {
     return $('<div/>').html(html).text();
 }
 
-/* ----------------------- Testing safari browser ---------------------- */
+/* ----------------------- Browser utilities ---------------------- */
 
+// is current bowser safari?
 function isSafari() {
   return /^((?!chrome|android|ubuntu).)*safari/i.test(navigator.userAgent);
 }
 
-function isNumeric(obj) {
-  return isFinite(String(obj));
-}
-
-/* ----------------------- LOGGING SHORTCUTS -------------------------- */
-/* Extract URL parameters from current location */
+// Extract URL parameters from current location
 function getParameterByName(name, defaultValue) {
   name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
   var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
@@ -61,7 +62,7 @@ function getParameterByName(name, defaultValue) {
   return results === null ? (isUnset(defaultValue) ? defaultValue : "") : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
-// --------- Drop down menu utils
+/* ------------------ Drop down menu utils -------------------- */
 
 // add a drop down menu item
 function addSelectOption(select, optval) {
@@ -92,6 +93,7 @@ function setChecked(selector, val) {
   $(selector).prop('checked', val);
 }
 /* ----------------------- Local storage -------------------------- */
+
 // Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent
 window.cookieconsent_options = {
   "message": "This website uses cookies to ensure you get the best experience on our website",
