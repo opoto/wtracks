@@ -2027,8 +2027,8 @@ $("#add-segment").click(function() {
 });
 
 $("#delete-segment").click(function(e) {
-  if ((track.getLatLngs().length == 0)
-    || !confirm("Delete current segment?")) {
+  if ((track.getLatLngs().length == 0) ||
+    !confirm("Delete current segment?")) {
     return;
   }
   ga('send', 'event', 'edit', 'delete-segment');
@@ -2041,7 +2041,7 @@ function deleteSegment(segment) {
   setEditMode(EDIT_NONE);
   if (editLayer.getLayers().length > 2) {
     editLayer.removeLayer(segment);
-    segmentClickListener({ target: editLayer.getLayers()[1] }, true)
+    segmentClickListener({ target: editLayer.getLayers()[1] }, true);
   } else {
     segment.setLatLngs([]);
     polystats.updateStatsFrom(0);
@@ -2899,7 +2899,7 @@ $(document).ready(function() {
   /* Show About dialog if not show since a while */
   var about = getVal("wt.about", undefined);
   var now = new Date();
-  const SIX_MONTHS = Math.round(1000*60*60*24*30.5*6); // 6 months in ms
+  var SIX_MONTHS = Math.round(1000*60*60*24*30.5*6); // 6 months in ms
   if (about) {
     about = new Date(about).getTime();
     if (now.getTime() > about + SIX_MONTHS) {
