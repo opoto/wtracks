@@ -1432,12 +1432,17 @@ $("#save-yes").click(function() {
 });
 $("#save-no").click(function() {
   saveInfo(false);
-  menu("config");
+  menu("settings");
+  var saveSetting = $("#menusettings tr:first-of-type");
+  saveSetting.addClass("highlight");
+  setTimeout(function(){
+    saveSetting.removeClass("highlight");
+  }, 10000);
 });
 
-function restoreState() {
+function restoreState(showInfo) {
   var isSaving = getVal("wt.saveState", null);
-  if (isUnset(isSaving)) {
+  if (isUnset(isSaving) && showInfo) {
     $("#save-info").show();
   } else {
     setChecked("#cfgsave", isSaving == "true");
@@ -1449,22 +1454,23 @@ function restoreState() {
 }
 
 function clearSavedState() {
-  storeVal("wt.gpx", undefined);
-  storeVal("wt.poslat", undefined);
-  storeVal("wt.poslng", undefined);
-  storeVal("wt.editMode", undefined);
-  storeVal("wt.baseLayer", undefined);
-  storeVal("wt.overlays", undefined);
   storeVal("wt.activity", undefined);
   storeVal("wt.activities", undefined);
+  storeVal("wt.baseLayer", undefined);
+  storeVal("wt.editMode", undefined);
+  storeVal("wt.ggkey", undefined);
+  storeVal("wt.ghkey", undefined);
+  storeVal("wt.gpx", undefined);
+  storeVal("wt.joinOnLoad", undefined);
   storeVal("wt.mymaps", undefined);
+  storeVal("wt.overlays", undefined);
+  storeVal("wt.ovlTrackColor", undefined);
+  storeVal("wt.ovlTrackWeight", undefined);
+  storeVal("wt.poslat", undefined);
+  storeVal("wt.poslng", undefined);
+  storeVal("wt.scaleOpts", undefined);
   storeVal("wt.trackColor", undefined);
   storeVal("wt.trackWeight", undefined);
-  storeVal("wt.joinOnLoad", undefined);
-}
-
-function saveMapType() {
-  saveValOpt("wt.maptype", map.getMapTypeId());
 }
 
 var CrsValues = [
@@ -1669,7 +1675,13 @@ function elevate1DSTK(pt, cb) {
 }
 
 function googleElevationService(locations, points, inc, done, fail) {
-  var elevator = new google.maps.ElevationService();
+  var elevator;
+  try {
+    elevator = new google.maps.ElevationService();
+  } catch (e) {
+    // Google elevation service not available, cancel
+    return;
+  }
   elevator.getElevationForLocations({
     'locations': locations
   }, function(results, status) {
@@ -2884,6 +2896,10 @@ $("#cfgsave").change(function(e) {
 setChecked("#merge", false);
 
 $(document).ready(function() {
+
+  // get visit info
+  var about = getVal("wt.about", undefined);
+
   var url = getParameterByName("url");
   if (url) {
     ga('send', 'event', 'file', 'load-urlparam');
@@ -2893,22 +2909,33 @@ $(document).ready(function() {
     loadFromUrl(url, ext || undefined, noproxy || undefined);
     setEditMode(EDIT_NONE);
   } else {
-    restoreState();
+    restoreState(about);
   }
 
-  /* Show About dialog if not show since a while */
-  var about = getVal("wt.about", undefined);
+  /* Show About dialog if not shown since a while */
   var now = new Date();
-  var SIX_MONTHS = Math.round(1000*60*60*24*30.5*6); // 6 months in ms
+  var ONE_MONTH = Math.round(1000*60*60*24*30.5); // 1 month in ms
+  var FIRST_VISIT = "1";
+  var showAbout = false;
+  var resetAbout = false;
   if (about) {
-    about = new Date(about).getTime();
-    if (now.getTime() > about + SIX_MONTHS) {
-      // reset about tag
-      about = undefined;
+    if (about == FIRST_VISIT) {
+      resetAbout = true;
+    } else {
+      about = new Date(about).getTime();
+      if (now.getTime() > about + 6 * ONE_MONTH) {
+        resetAbout = true;
+        showAbout = true;
+      }
     }
+  } else {
+    storeVal("wt.about", FIRST_VISIT);
   }
-  if (!about) {
-    storeVal("wt.about", now.toISOString());
+  if (resetAbout) {
+    // reset about tag
+    storeVal("wt.about", new Date(now - 5 * ONE_MONTH).toISOString());
+  }
+  if (showAbout) {
     // wait for potential urlparam to be loaded
     setTimeout(function(){ menu("about"); }, 4000);
   }

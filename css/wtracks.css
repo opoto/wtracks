@@ -236,6 +236,17 @@ a.button {
   color: red;
 }
 
+.highlight{
+	animation:yellowBlink 1s infinite;
+}
+@keyframes yellowBlink {
+	0%{		background-color: #f4f3b5;	}
+	25%{	background-color: #f7f583;	}
+	50%{	background-color: #fffa00;	}
+	75%{	background-color: #f7f583;	}
+	100%{	background-color: #f4f3b5;	}
+}
+
 .leaflet-bar {
   font-size: 16pt;
 }
