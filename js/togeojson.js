@@ -83,9 +83,14 @@ var toGeoJSON = (function() {
     if (typeof XMLSerializer !== 'undefined') {
         /* istanbul ignore next */
         serializer = new XMLSerializer();
-    // only require xmldom in a node environment
-    } else if (typeof exports === 'object' && typeof process === 'object' && !process.browser) {
-        serializer = new (require('xmldom').XMLSerializer)();
+    } else {
+        var isNodeEnv = (typeof process === 'object' && !process.browser);
+        var isTitaniumEnv = (typeof Titanium === 'object');
+        if (typeof exports === 'object' && (isNodeEnv || isTitaniumEnv)) {
+            serializer = new (require('xmldom').XMLSerializer)();
+        } else {
+            throw new Error('Unable to initialize serializer');
+        }
     }
     function xml2str(str) {
         // IE9 will create a new XMLSerializer but it'll crash immediately.
@@ -235,6 +240,14 @@ var toGeoJSON = (function() {
                     if (style) {
                         if (!lineStyle) lineStyle = get1(style, 'LineStyle');
                         if (!polyStyle) polyStyle = get1(style, 'PolyStyle');
+                        var iconStyle = get1(style, 'IconStyle');
+                        if (iconStyle) {
+                            var icon = get1(iconStyle, 'Icon');
+                            if (icon) {
+                                var href = nodeVal(get1(icon, 'href'));
+                                if (href) properties.icon = href;
+                            }
+                        }
                     }
                 }
                 if (description) properties.description = description;
@@ -302,13 +315,15 @@ var toGeoJSON = (function() {
                 tracks = get(doc, 'trk'),
                 routes = get(doc, 'rte'),
                 waypoints = get(doc, 'wpt'),
-                metadata = get(doc, 'metadata'),
+                metadata = get(doc, 'metadata'), // Olivier
                 // a feature collection
                 gj = fc(),
                 feature;
+            // Olivier
             if (metadata && metadata[0]) {
               gj.metadata = getMetadata(metadata[0]);
             }
+            //
             for (i = 0; i < tracks.length; i++) {
                 feature = getTrack(tracks[i]);
                 if (feature) gj.features.push(feature);
@@ -320,6 +335,7 @@ var toGeoJSON = (function() {
             for (i = 0; i < waypoints.length; i++) {
                 gj.features.push(getPoint(waypoints[i]));
             }
+            // Olivier
             function getMetadata(metadata) {
               var md = {};
               var item = metadata.firstElementChild;
@@ -328,6 +344,13 @@ var toGeoJSON = (function() {
                 item = item.nextElementSibling;
               }
               return md;
+            }
+            //
+            function initializeArray(arr, size) {
+                for (var h = 0; h < size; h++) {
+                    arr.push(null);
+                }
+                return arr;
             }
             function getPoints(node, pointname) {
                 var pts = get(node, pointname),
@@ -340,7 +363,10 @@ var toGeoJSON = (function() {
                     var c = coordPair(pts[i]);
                     line.push(c.coordinates);
                     if (c.time) times.push(c.time);
-                    if (c.heartRate) heartRates.push(c.heartRate);
+                    if (c.heartRate || heartRates.length) {
+                        if (!heartRates.length) initializeArray(heartRates, i);
+                        heartRates.push(c.heartRate || null);
+                    }
                 }
                 return {
                     line: line,
@@ -359,7 +385,18 @@ var toGeoJSON = (function() {
                     if (line) {
                         if (line.line) track.push(line.line);
                         if (line.times && line.times.length) times.push(line.times);
-                        if (line.heartRates && line.heartRates.length) heartRates.push(line.heartRates);
+                        if (heartRates.length || (line.heartRates && line.heartRates.length)) {
+                            if (!heartRates.length) {
+                                for (var s = 0; s < i; s++) {
+                                    heartRates.push(initializeArray([], track[s].length));
+                                }
+                            }
+                            if (line.heartRates && line.heartRates.length) {
+                                heartRates.push(line.heartRates);
+                            } else {
+                                heartRates.push(initializeArray([], line.line.length || 0));
+                            }
+                        }
                     }
                 }
                 if (track.length === 0) return;
