@@ -2253,7 +2253,7 @@ fileloader.on('data:error', function(e) {
   setStatus("Failed: check file and type", { 'class': 'status-error', 'timeout': 3 });
 });
 
-function loadFromUrl(url, ext, noproxy) {
+function loadFromUrl(url, ext, noproxy, withCredentials) {
   setStatus("Loading...", { "spinner": true });
   var _url = noproxy ? url : corsUrl(url);
   var req = {
@@ -2263,7 +2263,7 @@ function loadFromUrl(url, ext, noproxy) {
       fileloader.loadData(data, url, ext);
     }
   };
-  if (noproxy) {
+  if (withCredentials) {
     req.xhrFields = {
       withCredentials: true
     };
@@ -2290,7 +2290,7 @@ $("#track-get").click(function() {
   ga('send', 'event', 'file', 'load-url');
   setEditMode(EDIT_NONE);
   var noproxy = isChecked("#noproxy");
-  loadFromUrl(url, getLoadExt(), noproxy);
+  loadFromUrl(url, getLoadExt(), noproxy, noproxy);
 });
 $("#track-get-url").keypress(function(e) {
   if (e.which == 13) {
@@ -2906,7 +2906,7 @@ $(document).ready(function() {
     var ext = getParameterByName("ext");
     var noproxy = getParameterByName("noproxy");
     showLocation = LOC_NONE;
-    loadFromUrl(url, ext || undefined, noproxy || undefined);
+    loadFromUrl(url, ext || undefined, noproxy || undefined, noproxy || undefined);
     setEditMode(EDIT_NONE);
   } else {
     restoreState(about);
