@@ -73,6 +73,20 @@ var EDIT_MARKER = 3;
 var EDIT_DEFAULT = EDIT_MANUAL_TRACK;
 var editMode = -1;
 
+
+var MARKER_ICON = L.icon({
+  iconUrl: 'img/marker-icon.png',
+  iconRetinaUrl: 'img/marker-icon-2x.png',
+  iconSize: [16, 26],
+  iconAnchor: [8, 26],
+  popupAnchor: [0, 0],
+  shadowUrl: 'img/marker-shadow.png',
+  shadowRetinaUrl: 'img/marker-shadow-2x.png',
+  shadowSize: [26, 26],
+  shadowAnchor: [8, 26]
+});
+
+
 var ghkey = getVal("wt.ghkey", undefined);
 var ggkey = getVal("wt.ggkey", undefined);
 
@@ -679,24 +693,13 @@ function newWaypoint(latlng, properties, wptLayer) {
     return markerDiv;
   }
 
-  var markerIcon = L.icon({
-    iconUrl: 'img/marker-icon.png',
-    iconRetinaUrl: 'img/marker-icon-2x.png',
-    iconSize: [16, 26],
-    iconAnchor: [8, 26],
-    popupAnchor: [0, 0],
-    shadowUrl: 'img/marker-shadow.png',
-    shadowRetinaUrl: 'img/marker-shadow-2x.png',
-    shadowSize: [26, 26],
-    shadowAnchor: [8, 26]
-  });
   var wptOpts = {
     title: properties.name || "",
     alt: properties.name || "",
     desc: properties.desc || properties.description || "",
     cmt: properties.cmt || undefined,
     time: properties.time || undefined,
-    icon: markerIcon
+    icon: MARKER_ICON
   };
   var marker = L.marker(latlng, wptOpts);
   wptLayer.addLayer(marker);
@@ -2395,17 +2398,18 @@ $("#dropbox-saver").click(function(e) {
 
 /* ------------ */
 
+var MAX_ROUTE_WPTS = 2;
+
 function newRouteWaypoint(i, waypoint, n) {
 
   function getRouteWaypoinContent(latlng, index) {
     var div = document.createElement("div");
 
-    p = L.DomUtil.create("div", "popupdiv", div);
+    p = L.DomUtil.create("div", "popupdiv ptbtn", div);
     var del = L.DomUtil.create('a', "", p);
-    del.class = "sympol red";
     del.href = "#";
     del.title = "Delete";
-    del.innerHTML = "<span class='popupfield'>DELETE</span>";
+    del.innerHTML = "<span class='popupfield'><i class='material-icons'>&#xE872;</i></span>";
     del.onclick = function(e) {
       var wpts = route.getWaypoints();
       if (wpts.length > 2) {
@@ -2421,12 +2425,18 @@ function newRouteWaypoint(i, waypoint, n) {
     return div;
   }
 
+  var nwpts = route ? route.getWaypoints().length : 0;
+  if (nwpts > MAX_ROUTE_WPTS) {
+    ga('send', 'event', 'error', 'route-pts-overlimit', location.toString() + ", " + navigator.userAgent, nwpts);
+  }
+
   if ((track.getLatLngs().length > 0) && (i === 0)) {
     // no start marker for routes that continue an existing track
     return undefined;
   }
   var marker = L.marker(waypoint.latLng, {
-    draggable: true
+    draggable: true,
+    icon: MARKER_ICON
   });
 
   marker.on("click", function(e) {
@@ -2741,7 +2751,7 @@ function newMarker(e) {
       }
     } else {
       var wpts = route.getWaypoints();
-      if (wpts.length == 2) { // up to 4 with free version
+      if (wpts.length >= MAX_ROUTE_WPTS) { // up to 4 with free version
         mergeRouteToTrack();
         restartRoute();
         map.fireEvent("click", { latlng: e.latlng });
