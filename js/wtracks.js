@@ -1412,6 +1412,19 @@ function saveTrack() {
   }
 }
 
+function saveSettings() {
+  saveValOpt("wt.ggkey", ggkey);
+  saveValOpt("wt.ghkey", ghkey);
+  // TODO
+  //saveValOpt("wt.joinOnLoad", undefined);
+  //saveValOpt("wt.mymaps", undefined);
+  //saveValOpt("wt.overlays", undefined);
+  saveValOpt("wt.ovlTrackColor", ovlTrackColor);
+  saveValOpt("wt.ovlTrackWeight", ovlTrackWeight);
+  saveValOpt("wt.scaleOpts", scaleOptions);
+  saveValOpt("wt.trackColor", trackColor);
+  saveValOpt("wt.trackWeight", trackWeight);
+}
 function saveState() {
   if (isStateSaved()) {
     saveTrack();
@@ -2837,6 +2850,7 @@ $("#cfgsave").change(function(e) {
   storeVal("wt.saveState", saveCfg ? "true" : "false");
   if (saveCfg) {
     saveState();
+    saveSettings();
   } else {
     clearSavedState();
   }
