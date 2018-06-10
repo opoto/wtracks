@@ -42,10 +42,15 @@ function toggleHelp(e) {
 $(".help-b").click(toggleHelp);
 
 function updateMapStyle() {
-  map.options.editOptions.lineGuideOptions.color =
-    getVal("wt.trackColor", config.display.trackColor);
-  map.options.editOptions.lineGuideOptions.weight =
-    getVal("wt.trackWeight", config.display.trackWeight);
+  if (!map.editTools) {
+    // editor not yet intialized
+    map.options.editOptions.lineGuideOptions.color = trackColor;
+    map.options.editOptions.lineGuideOptions.weight = trackWeight;
+  } else {
+    // update editor
+    map.editTools.forwardLineGuide.options.color = trackColor;
+    map.editTools.forwardLineGuide.options.weight = trackWeight;
+  }
 }
 
 var map = L.map('map', {
@@ -56,7 +61,7 @@ var map = L.map('map', {
     }
   }
 });
-updateMapStyle();
+
 var track;
 var metadata;
 var waypoints;
@@ -761,15 +766,20 @@ $("#trim-type").change(prepareTrim);
 /* --------------------------------------*/
 // Track display settings
 
+var trackColor;
+var trackWeight;
+var ovlTrackColor;
+var ovlTrackWeight;
 var trackUI = {
   trk: {
     getDefaultColor : function() {
       return config.display.trackColor;
     },
     getColor : function() {
-      return getVal("wt.trackColor", trackUI.trk.getDefaultColor());
+      return trackColor;
     },
     setColor : function(v) {
+      trackColor = v;
       saveValOpt("wt.trackColor", v);
       updateTrackStyle();
       updateMapStyle();
@@ -778,9 +788,10 @@ var trackUI = {
       return config.display.trackWeight;
     },
     getWeight : function() {
-      return getVal("wt.trackWeight", trackUI.trk.getDefaultWeight());
+      return trackWeight;
     },
     setWeight : function(v) {
+      trackWeight = v;
       saveValOpt("wt.trackWeight", v);
       updateTrackStyle();
       updateMapStyle();
@@ -791,9 +802,10 @@ var trackUI = {
       return config.display.ovlTrackColor;
     },
     getColor : function() {
-      return getVal("wt.ovlTrackColor", trackUI.ovl.getDefaultColor());
+      return ovlTrackColor;
     },
     setColor : function(v) {
+      ovlTrackColor = v;
       saveValOpt("wt.ovlTrackColor", v);
       updateAllOverlayTrackStyle();
     },
@@ -801,15 +813,21 @@ var trackUI = {
       return config.display.ovlTrackWeight;
     },
     getWeight : function() {
-      return getVal("wt.ovlTrackWeight", trackUI.ovl.getDefaultWeight());
+      return ovlTrackWeight;
     },
     setWeight : function(v) {
+      ovlTrackWeight = v;
       saveValOpt("wt.ovlTrackWeight", v);
       updateAllOverlayTrackStyle();
     }
   }
 };
 var trackUISetting = trackUI.trk;
+trackColor = getVal("wt.trackColor", trackUI.trk.getDefaultColor());
+trackWeight = getVal("wt.trackWeight", trackUI.trk.getDefaultWeight());
+ovlTrackColor = getVal("wt.ovlTrackColor", trackUI.ovl.getDefaultColor());
+ovlTrackWeight = getVal("wt.ovlTrackWeight", trackUI.ovl.getDefaultWeight());
+updateMapStyle();
 
 $("input:radio[name=track-type]").on("change", function(event){
   var t = $("input:radio[name=track-type]:checked").val();
@@ -1869,8 +1887,8 @@ function elevate1Google(pt, cb) {
 var elevate = elevatePoints;
 var elevatePoint = elevatePoints;
 var elevationService =
-      googleElevationService;
-      //openElevationService;
+      //googleElevationService;
+      openElevationService;
 
 function flatten() {
   setStatus("Flatening..", { spinner: true });
@@ -2032,7 +2050,7 @@ $("#edit-marker").click(function(e) {
   setEditMode(EDIT_MARKER);
   e.preventDefault();
 });
-$("#add-segment").click(function() {
+$("#add-segment").click(function(e) {
   ga('send', 'event', 'edit', 'new-segment');
   setEditMode(EDIT_NONE);
   newSegment();
@@ -2739,8 +2757,8 @@ function newMarker(e) {
           fitSelectedRoutes: false,
           lineOptions: {
             styles: [{
-              color: getVal("wt.trackColor", config.display.trackColor),
-              weight: getVal("wt.trackWeight", config.display.trackWeight),
+              color: trackColor,
+              weight: trackWeight,
               opacity: 1
             }],
             addWaypoints: true
