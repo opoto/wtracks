@@ -817,7 +817,7 @@ $("input:radio[name=track-type]").on("change", function(event){
   initTrackDisplaySettings();
 });
 $("#track-color").on("change", function(event){
-  var v = $("#track-color").text();
+  var v = $("#track-color").val();
   ga('send', 'event', 'setting', 'trackColor', v);
   trackUISetting.setColor(v);
 });
@@ -836,8 +836,8 @@ $("#track-resetcolorweight").on("click", function(){
 function initTrackDisplaySettings() {
   var v;
   v = trackUISetting.getColor();
-  $("#track-color").text(v);
-  $("#track-color").css('background-color', v);
+  $("#track-color").val(v);
+  $("#track-color-picker")[0].jscolor.fromString(v);
   v = trackUISetting.getWeight();
   $("#track-weight").val(v);
   $("#track-weight-v").text(v);

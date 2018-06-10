@@ -226,7 +226,7 @@ a.button {
 }
 
 .symbol {
-  font-size: inherit;
+  font-size: 16px;
 }
 .link {
   cursor: pointer;

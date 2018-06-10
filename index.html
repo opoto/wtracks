@@ -327,7 +327,10 @@
           </div>
           <div>
             <span class="setting-name">Color:</span>
-            <button id="track-color" class="setting-value jscolor {hash:true, zIndex:10001}"></button>
+            <button id="track-color-picker" class='setting-value jscolor {"valueElement":"track-color", "hash":true, "zIndex":10001}'>
+              <i class="material-icons symbol">colorize</i>
+            </button>
+            <input id="track-color" class="hidden"/>
           </div>
           <div>
             <span class="setting-name">Weight:</span>
