@@ -1662,39 +1662,10 @@ if (JSON.parse && JSON.stringify) {
 }
 restorePosition();
 
-// http://www.datasciencetoolkit.org/developerdocs#coordinates2statistics API - free, but http only
-function elevate1DSTK(pt, cb) {
+// ---------------------------------------------------------------------------
+// Elevation service
 
-  var callerName = arguments.callee && arguments.callee.caller ? arguments.callee.caller.name : elevate1DSTK.caller.name;
-  var elevateDSTKerror = function(jqXHR, textStatus, errorThrown) {
-    setStatus("Elevation failed", { timeout: 3, class: "status-error" });
-    error('Error: ' + textStatus);
-  };
-  var elevateDSTKcb = function(result) {
-    var ok = isUndefined(result.error);
-    if (ok) {
-      clearStatus();
-      pt.alt = result[0].statistics.elevation.value;
-      // callback
-      if (cb) cb();
-    } else {
-      ga('send', 'event', 'api', 'dstk.elevate1.ko', callerName, 1);
-      elevateDSTKerror(null, result.error);
-    }
-  };
-
-  var apiUrl = "http://www.datasciencetoolkit.org/coordinates2statistics/" + pt.lat + "%2c" + pt.lng + "?statistics=elevation";
-  ga('send', 'event', 'api', 'dstk.elevate1', callerName, 1);
-
-  $.ajax(apiUrl, {
-    success: elevateDSTKcb,
-    error: elevateDSTKerror,
-    dataType: 'jsonp',
-    crossDomain: true
-  });
-
-}
-
+// Google elevation API
 function googleElevationService(locations, points, inc, done, fail) {
   var elevator;
   try {
@@ -1831,64 +1802,14 @@ function callElevationService(callerName, locations, points, inc, cb) {
     });
 }
 
-// elevate 1 point with Geonames
-function elevate1Geonames(pt, cb) {
-  var url = "http://api.geonames.org/astergdem?username=" +
-    config.geonames.key() + "&lat=" + pt.lat + "&lng=" + pt.lng;
-
-  var callerName = arguments.callee && arguments.callee.caller ? arguments.callee.caller.name : elevate1Geonames.caller.name;
-  ga('send', 'event', 'api', 'geonames.elevate1', callerName, 1);
-
-  $.get({
-    url: corsUrl(url),
-    crossDomain: true,
-    success: function(res, status) {
-      if (status == "success") {
-        pt.alt = Math.round(res);
-        if (pt.alt < -1000) pt.alt = 0; // ocean
-        // callback
-        if (cb) cb();
-      }
-    }
-  }).fail(function(err) {
-    ga('send', 'event', 'api', 'geonames.elevate1.ko', callerName, 1);
-    warn("elevate1Geonames failed: " + err);
-  });
-}
-
-
-// elevate 1 point with Google API, limited quota
-function elevate1Google(pt, cb) {
-  var url =
-    "https://maps.google.com/maps/api/elevation/json?sensor=false&locations=" +
-    pt.lat + "," + pt.lng;
-
-  var callerName = arguments.callee && arguments.callee.caller ? arguments.callee.caller.name : elevate1Google.caller.name;
-  ga('send', 'event', 'api', 'g.elevate1', callerName, 1);
-
-  $.ajax({
-    dataType: "json",
-    url: corsUrl(url),
-    crossDomain: true,
-    success: function(res, status) {
-      if (res.status == "OK") {
-        pt.alt = Math.round(res.results[0].elevation);
-        // callback
-        if (cb) cb();
-      }
-    }
-  }).fail(function(err) {
-    ga('send', 'event', 'api', 'g.elevate1.ko', callerName, 1);
-    warn("elevate1Google failed: " + err);
-  });
-}
-
 // Select elevation service
 var elevate = elevatePoints;
 var elevatePoint = elevatePoints;
 var elevationService =
-      //googleElevationService;
-      openElevationService;
+      googleElevationService;
+      //openElevationService;
+
+// ---------------------------------------------------------------------------
 
 function flatten() {
   setStatus("Flatening..", { spinner: true });
