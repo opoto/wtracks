@@ -91,7 +91,7 @@ var MARKER_ICON = L.icon({
   shadowAnchor: [8, 26]
 });
 
-
+var joinOnLoad = getBoolVal("wt.joinOnLoad", true);
 var ghkey = getVal("wt.ghkey", undefined);
 var ggkey = getVal("wt.ggkey", undefined);
 
@@ -921,7 +921,7 @@ function closeMenu() {
 function initMenu() {
   setEditMode(EDIT_NONE);
   setChecked("#merge", false);
-  setChecked("#joinonload", getBoolVal("wt.joinOnLoad", true));
+  setChecked("#joinonload", joinOnLoad);
   menu("file");
   prepareTrim();
   initTrackDisplaySettings();
@@ -1415,10 +1415,9 @@ function saveTrack() {
 function saveSettings() {
   saveValOpt("wt.ggkey", ggkey);
   saveValOpt("wt.ghkey", ghkey);
-  // TODO
-  //saveValOpt("wt.joinOnLoad", undefined);
-  //saveValOpt("wt.mymaps", undefined);
-  //saveValOpt("wt.overlays", undefined);
+  saveValOpt("wt.joinOnLoad", joinOnLoad);
+  saveJsonValOpt("wt.mymaps", mymaps);
+  saveJsonValOpt("wt.overlays", getOverlays());
   saveValOpt("wt.ovlTrackColor", ovlTrackColor);
   saveValOpt("wt.ovlTrackWeight", ovlTrackWeight);
   saveValOpt("wt.scaleOpts", scaleOptions);
@@ -2079,14 +2078,17 @@ function segmentClickListener(event, noGaEvent) {
     }
 }
 
+$("#joinonload").change(function(e) {
+  joinOnLoad = isChecked("#joinonload");
+  saveValOpt("wt.joinOnLoad", joinOnLoad);  
+});
+
 function importGeoJson(geojson) {
 
   setStatus("Loading..", { spinner: true });
   $("#edit-tools").hide();
   var bounds;
   var merge = loadCount > 0 ||  isChecked("#merge");
-  var joinOnLoad = isChecked("#joinonload");
-  saveValOpt("wt.joinOnLoad", joinOnLoad);
   loadCount++;
   if (!merge) {
     newTrack();
@@ -2113,7 +2115,7 @@ function importGeoJson(geojson) {
     return point;
   }
 
-  function importSegment(name, coords, times, joinOnLoad) {
+  function importSegment(name, coords, times) {
     var v;
 
     if (joinOnLoad || track.getLatLngs().length == 0) {
@@ -2147,14 +2149,14 @@ function importGeoJson(geojson) {
         name = f.properties.name ? f.properties.name : NEW_TRACK_NAME;
         coords = f.geometry.coordinates;
         times = f.properties.coordTimes && (f.properties.coordTimes.length == coords.length) ? f.properties.coordTimes : undefined;
-        importSegment(name, coords, times, joinOnLoad);
+        importSegment(name, coords, times);
       }
       if (f.geometry.type === "MultiLineString") {
         name = f.properties.name ? f.properties.name : NEW_TRACK_NAME;
         for (var i = 0; i < f.geometry.coordinates.length; i++) {
           coords = f.geometry.coordinates[i];
           times = f.properties.coordTimes && f.properties.coordTimes[i] && (f.properties.coordTimes[i].length == coords.length) ? f.properties.coordTimes[i] : undefined;
-          importSegment(name, coords, times, joinOnLoad);
+          importSegment(name, coords, times);
         }
       } else if (f.geometry.type === "Point") {
         // import marker
