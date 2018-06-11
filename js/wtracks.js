@@ -91,10 +91,6 @@ var MARKER_ICON = L.icon({
   shadowAnchor: [8, 26]
 });
 
-var joinOnLoad = getBoolVal("wt.joinOnLoad", true);
-var ghkey = getVal("wt.ghkey", undefined);
-var ggkey = getVal("wt.ggkey", undefined);
-
 // load Google Maps API
 var gk = ggkey ? ggkey : config.google.mapsapikey();
 gk = $.getScript("https://maps.googleapis.com/maps/api/js" + (gk ? "?key=" + gk : ""));
@@ -154,8 +150,8 @@ $("#track-name-edit").click(promptTrackName);
 
 /* ----------------- My maps edition ------------------- */
 
-var selectMymaps = $("#mymaps-list")[0];
 var mymaps = getJsonVal("wt.mymaps", {});
+var selectMymaps = $("#mymaps-list")[0];
 var mymap;
 
 function addBaseLayer(blname, bl) {
@@ -287,12 +283,12 @@ function validateMymapBox(evt) {
     mymap.type = $('input:radio[name=mymap-type]:checked').val();
     mymap.options.minZoom= $("#mymap-minz").val().trim();
     mymap.options.maxZoom = $("#mymap-maxz").val().trim();
-    if (mymap.type == "wms") {
+    if (mymap.type === "wms") {
       mymap.options.layers = $("#mymap-layers").val().trim();
       mymap.options.crs = $("#mymap-crs").val().trim();
       mymap.options.styles = $("#mymap-styles").val().trim();
       mymap.options.format = $("#mymap-format").val().trim();
-    } else if (mymap.type == "wmts") {
+    } else if (mymap.type === "wmts") {
       mymap.options.layer = $("#mymap-layer").val().trim();
       mymap.options.tilematrixSet = $("#mymap-tilematrixSet").val().trim();
       mymap.options.style = $("#mymap-style").val().trim();
@@ -381,6 +377,8 @@ $("#mymap-delete").click(deleteMymap);
 $("#mymap-reset").click(resetMymap);
 $("input:radio[name=mymap-type]").change(changeMymapType);
 
+listMymaps();
+
 // ---------------- Import / export my maps
 
 function openExportMymaps() {
@@ -468,10 +466,9 @@ if (!supportsBase64() || !JSON || !JSON.parse || !JSON.stringify) {
 /* ----------------------------------------------------- */
 
 var selectActivity = $("#activity")[0];
-var activities;
+var activities = getJsonVal("wt.activities");
 
 function loadActivities() {
-  activities = getJsonVal("wt.activities");
   if (!activities) {
     activities = config.activities.defaults;
     saveJsonValOpt("wt.activities", activities);
@@ -484,7 +481,7 @@ function loadActivities() {
       }
     }
   }
-  // remove deleted activites
+  // remove deleted activities
   $("#activity option").each(function(i, v) {
     if (!activities[v.innerHTML]) {
       v.remove();
@@ -864,6 +861,9 @@ function initTrackDisplaySettings() {
 /* --------------------------------------*/
 // API keys
 
+var ghkey = getVal("wt.ghkey", undefined);
+var ggkey = getVal("wt.ggkey", undefined);
+
 function showApiKey(name, value) {
   var useDefault = isUndefined(value);
   var input = $("#" + name + "-value");
@@ -872,6 +872,7 @@ function showApiKey(name, value) {
   input.val(useDefault ? "Using WTracks key" : value);
   input.attr("disabled", useDefault);
 }
+
 function updateApiKey(name) {
   var useDefault = !isChecked("#" + name + "-chk");
   var key = useDefault ? undefined : $("#" + name + "-value").val().trim();
@@ -883,6 +884,7 @@ function updateApiKey(name) {
   saveValOpt("wt." + name, key);
   return key;
 }
+
 function checkApikey(name) {
   var useDefault = !isChecked("#" + name + "-chk");
   $("#" + name + "-value").val(useDefault ? "Using WTracks key": "");
@@ -890,6 +892,7 @@ function checkApikey(name) {
   var key = updateApiKey(name);
   return key;
 }
+
 $("#ghkey-chk").on("change", function() {
   ghkey = checkApikey("ghkey");
 });
@@ -902,15 +905,20 @@ $("#ghkey-value").on("focusout", function() {
 $("#ggkey-value").on("focusout", function() {
   ggkey = updateApiKey("ggkey");
 });
+
 function resetApiKey(name) {
   setChecked("#" + name + "-chk", false);
   $("#" + name + "-chk").change();
 }
+
 $("#keys-reset").on("click", function() {
   ga('send', 'event', 'setting', 'keys', 'reset');
   resetApiKey("ghkey");
   resetApiKey("ggkey");
 });
+
+showApiKey("ghkey", ghkey);
+showApiKey("ggkey", ggkey);
 
 /* ------------------------ MENU ---------------------------------- */
 
@@ -918,17 +926,14 @@ function closeMenu() {
   $("#menu").hide();
   finishTrim();
 }
+
 function initMenu() {
   setEditMode(EDIT_NONE);
   setChecked("#merge", false);
-  setChecked("#joinonload", joinOnLoad);
   menu("file");
   prepareTrim();
-  initTrackDisplaySettings();
-  showApiKey("ghkey", ghkey);
-  showApiKey("ggkey", ggkey);
-  listMymaps();
 }
+
 $("#menu-button").click(function() {
   if (!$("#menu").is(":visible")) {
     initMenu();
@@ -1282,8 +1287,11 @@ function joinSegments() {
   }
 }
 
-
 $("#join").click(joinSegments);
+
+var joinOnLoad = false; // deactivate while we restore saved GPX
+
+// geolocation
 
 function getMyIpLocation() {
   log("Getting location from IP address");
@@ -1413,17 +1421,21 @@ function saveTrack() {
 }
 
 function saveSettings() {
+  saveValOpt("wt.activity", getCurrentActivityName());
+  saveJsonValOpt("wt.activities", activities);
+  saveValOpt("wt.baseLayer", baseLayer);
   saveValOpt("wt.ggkey", ggkey);
   saveValOpt("wt.ghkey", ghkey);
   saveValOpt("wt.joinOnLoad", joinOnLoad);
   saveJsonValOpt("wt.mymaps", mymaps);
-  saveJsonValOpt("wt.overlays", getOverlays());
+  saveJsonValOpt("wt.overlaysOn", overlaysOn);
   saveValOpt("wt.ovlTrackColor", ovlTrackColor);
   saveValOpt("wt.ovlTrackWeight", ovlTrackWeight);
   saveValOpt("wt.scaleOpts", scaleOptions);
   saveValOpt("wt.trackColor", trackColor);
   saveValOpt("wt.trackWeight", trackWeight);
 }
+
 function saveState() {
   if (isStateSaved()) {
     saveTrack();
@@ -1478,7 +1490,7 @@ function restoreState(showInfo) {
   if (isUnset(isSaving) && showInfo) {
     $("#save-info").show();
   } else {
-    setChecked("#cfgsave", isSaving == "true");
+    setChecked("#cfgsave", isSaving === "true");
   }
   if (!restoreTrack()) {
     restorePosition();
@@ -1496,7 +1508,7 @@ function clearSavedState() {
   storeVal("wt.gpx", undefined);
   storeVal("wt.joinOnLoad", undefined);
   storeVal("wt.mymaps", undefined);
-  storeVal("wt.overlays", undefined);
+  storeVal("wt.overlaysOn", undefined);
   storeVal("wt.ovlTrackColor", undefined);
   storeVal("wt.ovlTrackWeight", undefined);
   storeVal("wt.poslat", undefined);
@@ -1543,18 +1555,18 @@ function initCrsSelector() {
 initCrsSelector();
 
 function getProvider(mapobj) {
-  var url = typeof mapobj.url == "string" ? mapobj.url : mapobj.url();
+  var url = typeof mapobj.url === "string" ? mapobj.url : mapobj.url();
   var p = null;
   var protocol = url.split('/')[0];
   // skip HTTP URLs when current is HTTPS
   if (protocol.length == 0 || protocol == location.protocol) {
     var tileCtor;
     var mapopts = mapobj.options;
-    if (isUnset(mapobj.type) || (mapobj.type == "base")) {
+    if (isUnset(mapobj.type) || (mapobj.type === "base")) {
       tileCtor = L.tileLayer;
     } else {
       tileCtor = L.tileLayer[mapobj.type];
-      if (mapobj.type == "wms" && mapopts.crs) {
+      if (mapobj.type === "wms" && mapopts.crs) {
         mapopts = Object.assign({}, mapopts);
         mapopts.crs = getCrsFromName(mapopts.crs);
       }
@@ -1621,38 +1633,36 @@ updateScaleControl();
 
 // ----------------------
 
-map.addLayer(baseLayers[getVal("wt.baseLayer", config.display.map)] || baseLayers[config.display.map]);
+var baseLayer = getVal("wt.baseLayer", config.display.map);
+map.addLayer(baseLayers[baseLayer] || baseLayers[config.display.map]);
 var layerInit = true;
+
 map.on("baselayerchange", function(e) {
+  baseLayer = e.name;
   if (layerInit) {
     // deffer to make sure GA is initialized
     setTimeout(function(){
-      ga('send', 'event', 'map', 'init', e.name);
+      ga('send', 'event', 'map', 'init', baseLayer);
     }, 2000);
     layerInit = false;
   } else {
-    ga('send', 'event', 'map', 'change', e.name);
+    ga('send', 'event', 'map', 'change', baseLayer);
   }
-  saveValOpt("wt.baseLayer", e.name);
+  saveValOpt("wt.baseLayer", baseLayer);
   $(".leaflet-control-layers").removeClass("leaflet-control-layers-expanded");
 });
 
-function getOverlays() {
-  var v = getJsonVal("wt.overlays");
-  return v || {};
-}
+var overlaysOn = getJsonVal("wt.overlaysOn", {});
 
 function setOverlay(name, yesno) {
-  var cfg = getOverlays();
-  cfg[name] = yesno;
-  saveJsonValOpt("wt.overlays", cfg);
+  overlaysOn[name] = yesno;
+  saveJsonValOpt("wt.overlaysOn", overlaysOn);
 }
 
 if (JSON.parse && JSON.stringify) {
 
-  var cfg = getOverlays();
-  for (var name in cfg) {
-    if (cfg.hasOwnProperty(name) && cfg[name]) {
+  for (var name in overlaysOn) {
+    if (overlaysOn.hasOwnProperty(name) && overlaysOn[name]) {
       var ol = overlays[name];
       if (ol) {
         map.addLayer(overlays[name]);
@@ -1802,7 +1812,7 @@ function callElevationService(callerName, locations, points, inc, cb) {
     },
     function(eventName){
       ga('send', 'event', 'api', eventName, callerName, locations.length);
-      if (eventName == "g.elevate.ko") {
+      if (eventName === "g.elevate.ko") {
         // fallback: next time use open-elevation service
         elevationService = openElevationService;
         // and redo current elevation request immediality
@@ -2077,11 +2087,6 @@ function segmentClickListener(event, noGaEvent) {
       return false;
     }
 }
-
-$("#joinonload").change(function(e) {
-  joinOnLoad = isChecked("#joinonload");
-  saveValOpt("wt.joinOnLoad", joinOnLoad);  
-});
 
 function importGeoJson(geojson) {
 
@@ -2904,6 +2909,16 @@ $(document).ready(function() {
     // wait for potential urlparam to be loaded
     setTimeout(function(){ menu("about"); }, 4000);
   }
+
+  initTrackDisplaySettings();
+
+  // Persist joinOnLoad option
+  joinOnLoad = getBoolVal("wt.joinOnLoad", true);
+  setChecked("#joinonload", joinOnLoad);
+  $("#joinonload").change(function(e) {
+    joinOnLoad = isChecked("#joinonload");
+    saveValOpt("wt.joinOnLoad", joinOnLoad);
+  });
 
 });
 
