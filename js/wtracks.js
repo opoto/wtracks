@@ -1104,6 +1104,66 @@ $("#track-download").click(function() {
   closeMenu();
 });
 
+//---------------------------------------------------
+// Share
+
+$("#track-share").click(function() {
+  closeMenu();
+  $("#share-ask").show();
+  $("#share-processing").hide();
+  $("#share-done").hide();
+  $("#share-val").val("");
+  $("#share-box").show();
+  $("#share-start").focus();
+});
+function closeShareBox(){
+  $("#share-box").hide();
+}
+$("#share-box-close").click(closeShareBox);
+$("#share-cancel").click(closeShareBox);
+$("#share-ok").click(closeShareBox);
+
+function uploadClicked(){
+  $("#share-ask").hide();
+  $("#share-processing").show();
+  uploadAndShare(
+    function (data) {
+      var url = window.location.toString();
+      if (url.substr(url.length-1) != "/") {
+        url += "/";
+      }
+      $("#share-val").val(url + "?ext=gpx&url=" + encodeURI(data + ".txt"));
+      $("#share-processing").hide();
+      $("#share-done").show();
+      $("#share-val").focus();
+      $("#share-val").select();
+    }, function(error) {
+      setStatus("Failed: " + error, { timeout: 5, class: "status-error" });
+      $("#share-box").hide();
+    });
+}
+
+$("#share-start").click(uploadClicked);
+$("#share-start").keyup(function(event) {
+  if (event.which == 27) {
+    closeShareBox();
+    event.stopPropagation();
+  }
+});
+
+function uploadAndShare(onDone, onFail) {
+  $.post( "http://dpaste.com/api/v2/",
+     { "content": getTrackGPX(),
+        "title": getTrackName(),
+        "poster": "WTracks",
+        "syntax": "xml",
+        "expiry_days": 60
+  }).done(onDone)
+  .fail(onFail);
+}
+
+//---------------------------------------------------
+
 function editableWaypoints(editable) {
   var wpts = waypoints.getLayers();
   for (var i = 0; i < wpts.length; i++) {

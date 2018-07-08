@@ -155,7 +155,7 @@
           Load from your Dropbox
         </td>
       </tr>
-      <tr>
+      <tr class="nobottomborder">
         <td>
           <button id="track-download" title="Download as a GPX file">Save</button>
           <!-- br/>
@@ -185,6 +185,14 @@
           <p id="savetimingtxt-help" class="help-p">
             Check to save in the GPX the timings computed by WTracks and displayed in the bottom banner of the page. Note that it will override any potential timing you may have previously recorded for this track.
           </p>
+        </td>
+      </tr>
+      <tr class="notopborder">
+        <td>
+          <button id="track-share" title="Share through a link" class="hidden">Share</button>
+        </td>
+        <td>
+          <span class="hidden">Share current track</span>
         </td>
       </tr>
     </table>
@@ -536,6 +544,32 @@
       <p id="input-text"></p>
       <input id="input-val" type="text" size="50" value="" />
       <button id="input-ok" class="ok-btn">Ok</button>
+    </div>
+  </div>
+
+  <!-- Share track box box -->
+  <div id="share-box" class="modal">
+    <!-- Modal content -->
+    <div class="prompt-content">
+      <div class="box-header"><a id="share-box-close" href="#" class="close-button">×</a></div>
+      <div id="share-ask">
+        <p>Click button below to anonymously upload your track to a <a href="http://dpaste.com" target="_blank">server</a> and get a shareable link to reopen it. The server will keep your file during 2 months, after which it will be deleted and the link will not be valid anymore.</p>
+        <button id="share-start" class="ok-btn">Upload</button>
+        <button id="share-cancel" class="cancel-btn">Cancel</button>
+      </div>
+      <div id="share-processing">
+        <p>Uploading, please wait...</p>
+        <div id="share-spinner" class="spinner">
+          <div class="bounce1"></div>
+          <div class="bounce2"></div>
+          <div class="bounce3"></div>
+        </div>
+      </div>
+      <div id="share-done">
+        <p>Copy and share the link below to repoen current track.</p>
+        <input id="share-val" type="text" size="50" value="" />
+        <button id="share-ok" class="ok-btn">Close</button>
+      </div>
     </div>
   </div>
 

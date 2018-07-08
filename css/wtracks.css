@@ -109,7 +109,7 @@ body {
 #menu #about-logo {
   margin: 15px 5px;
 }
-#menuabout a:link, #menuabout a:visited {
+#menuabout a:link, #menuabout a:visited, #share-ask a:link, #share-ask a:visited {
   text-decoration: none;
   color: #1992ca;
 }
@@ -220,6 +220,11 @@ a.button {
   cursor: pointer;
 }
 #input-box .close-button {
+  position: inherit;
+  float: right;
+  padding: 0;
+}
+#share-box .close-button {
   position: inherit;
   float: right;
   padding: 0;
