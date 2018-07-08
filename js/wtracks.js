@@ -1127,12 +1127,12 @@ function uploadClicked(){
   $("#share-ask").hide();
   $("#share-processing").show();
   uploadAndShare(
-    function (data) {
+    function (fileurl) {
       var url = window.location.toString();
       if (url.substr(url.length-1) != "/") {
         url += "/";
       }
-      $("#share-val").val(url + "?ext=gpx&url=" + encodeURI(data + ".txt"));
+      $("#share-val").val(url + "?ext=gpx&url=" + encodeURI(fileurl));
       $("#share-processing").hide();
       $("#share-done").show();
       $("#share-val").focus();
@@ -1158,8 +1158,9 @@ function uploadAndShare(onDone, onFail) {
         "poster": "WTracks",
         "syntax": "xml",
         "expiry_days": 60
-  }).done(onDone)
-  .fail(onFail);
+  }).done(function(data) {
+    onDone(data + ".txt")}
+  ).fail(onFail);
 }
 
 //---------------------------------------------------
