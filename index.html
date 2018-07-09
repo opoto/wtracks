@@ -124,7 +124,9 @@
         <td>
           <label id="track-upload-label">
             <input type="file" name="track" id="track-upload" multiple="multiple" accept=".gpx,.kml,.geojson"/>
-            <span>Select</span>
+            <span>
+              Select
+            </span>
           </label>
         </td>
         <td>
@@ -133,7 +135,9 @@
       </tr>
       <tr class="nobottomborder notopborder">
         <td>
-          <button id="track-get" title="Load a file from the internet">Get from: </button>
+          <button id="track-get" title="Load a file from the internet">
+            Get from:
+          </button>
         </td>
         <td>
           <input id="track-get-url" placeholder="https://... (track URL)" type="url" /><br/>
@@ -157,7 +161,9 @@
       </tr>
       <tr class="nobottomborder">
         <td>
-          <button id="track-download" title="Download as a GPX file">Save</button>
+          <button id="track-download" title="Download as a GPX file">
+            Save
+          </button>
           <!-- br/>
           <button id="dropbox-saver" title="Save track in your Dropbox">
             <span id="dropbox-logo"></span>
@@ -189,10 +195,12 @@
       </tr>
       <tr class="notopborder">
         <td>
-          <button id="track-share" title="Share through a link" class="hidden">Share</button>
+          <button id="track-share" title="Share through a link">
+            Share
+          </button>
         </td>
         <td>
-          <span class="hidden">Share current track</span>
+          Share current track
         </td>
       </tr>
     </table>
@@ -553,7 +561,11 @@
     <div class="prompt-content">
       <div class="box-header"><a id="share-box-close" href="#" class="close-button">×</a></div>
       <div id="share-ask">
-        <p>Click button below to anonymously upload your track to a <a href="http://dpaste.com" target="_blank">server</a> and get a shareable link to reopen it. The server will keep your file during 2 months, after which it will be deleted and the link will not be valid anymore.</p>
+        <p>
+          Click button below to anonymously upload your track and get a shareable link to reopen it.<br/>
+          <i class="material-icons">info</i> Your file will be stored on a <a href="https://friendpaste.com/about" target="_blank">third-party server (friendpaste)</a> without any guarantee of availability. Make sure to keep a copy of the file on your own.
+          <!-- The server will keep your file during 2 months, after which it will be deleted and the link will not be valid anymore.-->
+        </p>
         <button id="share-start" class="ok-btn">Upload</button>
         <button id="share-cancel" class="cancel-btn">Cancel</button>
       </div>

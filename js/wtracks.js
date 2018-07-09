@@ -1132,26 +1132,33 @@ function uploadClicked(){
       if (url.substr(url.length-1) != "/") {
         url += "/";
       }
-      $("#share-val").val(url + "?ext=gpx&url=" + encodeURI(fileurl));
+      $("#share-val").val(url + "?ext=gpx&noproxy=true&url=" + encodeURI(fileurl));
       $("#share-processing").hide();
       $("#share-done").show();
       $("#share-val").focus();
       $("#share-val").select();
     }, function(error) {
-      setStatus("Failed: " + error, { timeout: 5, class: "status-error" });
+      var errmsg = error.statusText ? error.statusText : error;
+      setStatus("Failed: " + errmsg, { timeout: 5, class: "status-error" });
       $("#share-box").hide();
     });
 }
 
 $("#share-start").click(uploadClicked);
-$("#share-start").keyup(function(event) {
+
+function closeShareBoxOnEscape(event) {
   if (event.which == 27) {
     closeShareBox();
     event.stopPropagation();
   }
-});
+}
+$("#share-start").keyup(closeShareBoxOnEscape);
+$("#share-cancel").keyup(closeShareBoxOnEscape);
+$("#share-val").keyup(closeShareBoxOnEscape);
+$("#share-ok").keyup(closeShareBoxOnEscape);
 
-function uploadAndShare(onDone, onFail) {
+/*
+function dpasteUploadAndShare(onDone, onFail) {
   $.post( "http://dpaste.com/api/v2/",
      { "content": getTrackGPX(),
         "title": getTrackName(),
@@ -1162,6 +1169,50 @@ function uploadAndShare(onDone, onFail) {
     onDone(data + ".txt")}
   ).fail(onFail);
 }
+
+function htputUploadAndShare(onDone, onFail) {
+  var id = Math.random().toString(36).substring(2);
+  var sharedurl = "https://htput.com/" + id;
+  $.ajax({
+    url: sharedurl,
+    type: 'PUT',
+    dataType: "json",
+    data: getTrackGPX(),
+  }).done(function(resp) {
+    if (resp.status === "ok") {
+      onDone(sharedurl + ".txt");
+    } else {
+      onFail(resp.error_msg);
+    }
+  }).fail(onFail);
+}
+*/
+
+function friendpasteUploadAndShare(onDone, onFail) {
+  var id = Math.random().toString(36).substring(2);
+  $.ajax({
+    method: "POST",
+    url: "https://www.friendpaste.com/",
+    dataType: "json",
+    contentType:"application/json; charset=utf-8",
+    data: JSON.stringify({
+      "title": getTrackName(),
+      "snippet": getTrackGPX(),
+      "language": "xml"
+    })
+  }).done(function(resp) {
+    if (resp.ok) {
+      onDone(resp.url + "/raw");
+    } else {
+      onFail(resp.reason);
+    }
+  }).fail(onFail);
+}
+
+var uploadAndShare =
+        friendpasteUploadAndShare
+        //htputUploadAndShare;
+        //dpasteUploadAndShare;
 
 //---------------------------------------------------
 
