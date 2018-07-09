@@ -1944,12 +1944,14 @@ var elevationService =
 
 // ---------------------------------------------------------------------------
 
-function flatten() {
-  setStatus("Flatening..", { spinner: true });
+function cleanup(toclean) {
+  setStatus("Cleaning up..", { spinner: true });
   var points = track ? track.getLatLngs() : undefined;
   if (points && (points.length > 0)) {
     for (var i = 0; i < points.length; i++) {
-      points[i].alt = 0;
+      for (var j = 0; j < toclean.length; j++) {
+        points[i][toclean[j]] = undefined;
+      }
     }
   }
   clearStatus();
@@ -2148,10 +2150,21 @@ function toolElevate(e) {
 }
 $("#elevate").click(toolElevate);
 
-$("#flatten").click(function(e) {
-  ga('send', 'event', 'tool', 'flatten', undefined, track.getLatLngs().length);
+$("#cleanup").click(function(e) {
+  var toclean = [];
+  if (isChecked("#cleanupalt")) {
+    toclean.push("alt")
+  }
+  if (isChecked("#cleanuptime")) {
+    toclean.push("time")
+  }
+  if (toclean.length == 0) {
+    // nothing to clean
+    return;
+  }
+  ga('send', 'event', 'tool', 'cleanup', undefined, toclean.toString());
   $("#menu").hide();
-  flatten();
+  cleanup(toclean);
   polystats.updateStatsFrom(0);
   saveState();
   return false;
