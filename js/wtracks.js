@@ -1129,6 +1129,7 @@ function uploadClicked(){
   uploadAndShare(
     function (fileurl) {
       var url = window.location.toString();
+      url = url.replace(/index\.html(#)*$/,"");
       if (url.substr(url.length-1) != "/") {
         url += "/";
       }
