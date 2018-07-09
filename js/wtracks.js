@@ -1189,7 +1189,6 @@ function htputUploadAndShare(onDone, onFail) {
 */
 
 function friendpasteUploadAndShare(onDone, onFail) {
-  var id = Math.random().toString(36).substring(2);
   $.ajax({
     method: "POST",
     url: "https://www.friendpaste.com/",
@@ -1202,7 +1201,7 @@ function friendpasteUploadAndShare(onDone, onFail) {
     })
   }).done(function(resp) {
     if (resp.ok) {
-      onDone(resp.url + "/raw");
+      onDone(resp.url + "/raw&rev=" + resp.rev);
     } else {
       onFail(resp.reason);
     }
