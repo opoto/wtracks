@@ -1129,11 +1129,11 @@ function uploadClicked(){
   uploadAndShare(
     function (fileurl) {
       var url = window.location.toString();
-      url = url.replace(/#*$/,"");
-      url = url.replace(/index\.html$/,"");
-      url = url.replace(/\/*$/,"");
-      url += "/";
-      $("#share-val").val(url + "?ext=gpx&noproxy=true&url=" + encodeURI(fileurl));
+      url = url.replace(/#+.*$/,""); // remove fragment
+      url = url.replace(/\?.*$/,""); // remove parameters
+      url = url.replace(/index\.html$/,""); // remove index.html
+      url = url.replace(/\/*$/,"/"); // keep 1 and only 1 trailing /
+      $("#share-val").val(url + "?ext=gpx&noproxy=true&url=" + encodeURIComponent(fileurl));
       $("#share-processing").hide();
       $("#share-done").show();
       $("#share-val").focus();
@@ -1202,7 +1202,7 @@ function friendpasteUploadAndShare(onDone, onFail) {
     })
   }).done(function(resp) {
     if (resp.ok) {
-      onDone(resp.url + "/raw&rev=" + resp.rev);
+      onDone(resp.url + "/raw?rev=" + resp.rev);
     } else {
       onFail(resp.reason);
     }
