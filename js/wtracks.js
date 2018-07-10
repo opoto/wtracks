@@ -1129,10 +1129,10 @@ function uploadClicked(){
   uploadAndShare(
     function (fileurl) {
       var url = window.location.toString();
-      url = url.replace(/index\.html(#)*$/,"");
-      if (url.substr(url.length-1) != "/") {
-        url += "/";
-      }
+      url = url.replace(/#*$/,"");
+      url = url.replace(/index\.html$/,"");
+      url = url.replace(/\/*$/,"");
+      url += "/";
       $("#share-val").val(url + "?ext=gpx&noproxy=true&url=" + encodeURI(fileurl));
       $("#share-processing").hide();
       $("#share-done").show();
