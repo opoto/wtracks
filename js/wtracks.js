@@ -1130,16 +1130,16 @@ function uploadClicked(){
   $("#share-processing").show();
   uploadAndShare(
     getTrackName(), gpx,
-    function (fileurl) {
+    function (gpxurl, rawgpxurl) {
       var url = window.location.toString();
       url = url.replace(/#+.*$/,""); // remove fragment
       url = url.replace(/\?.*$/,""); // remove parameters
       url = url.replace(/index\.html$/,""); // remove index.html
       url = url.replace(/\/*$/,"/"); // keep 1 and only 1 trailing /
-      url = url + "?ext=gpx&noproxy=true&url=" + encodeURIComponent(fileurl);
+      url = url + "?ext=gpx&noproxy=true&url=" + encodeURIComponent(rawgpxurl);
       $("#share-val").val(url);
       $("#share-open").attr("href", url);
-      $("#share-view").attr("href", fileurl);
+      $("#share-view").attr("href", gpxurl);
       $("#share-processing").hide();
       $("#share-done").show();
       $("#share-val").focus();
@@ -1173,7 +1173,7 @@ function dpasteUploadAndShare(name, gpx, onDone, onFail) {
         "syntax": "xml",
         "expiry_days": 60
   }).done(function(data) {
-    onDone(data + ".txt")}
+    onDone(data, data + ".txt")}
   ).fail(onFail);
 }
 
@@ -1187,7 +1187,7 @@ function htputUploadAndShare(name, gpx, onDone, onFail) {
     data: gpx,
   }).done(function(resp) {
     if (resp.status === "ok") {
-      onDone(sharedurl + ".txt");
+      onDone(sharedurl, sharedurl + ".txt");
     } else {
       onFail(resp.error_msg);
     }
@@ -1208,7 +1208,7 @@ function friendpasteUploadAndShare(name, gpx, onDone, onFail) {
     })
   }).done(function(resp) {
     if (resp.ok) {
-      onDone(resp.url + "/raw?rev=" + resp.rev);
+      onDone(resp.url + "?rev=" + resp.rev, resp.url + "/raw?rev=" + resp.rev);
     } else {
       onFail(resp.reason);
     }
