@@ -1438,7 +1438,7 @@ var
   LOC_NONE = 0,
   LOC_ONCE = 1,
   LOC_CONTINUOUS = 2,
-  showLocation = LOC_NONE;
+  showLocation = LOC_ONCE;
 
 function removeMyLocMarker() {
   if (showLocation == LOC_CONTINUOUS) {
@@ -1570,7 +1570,7 @@ function restoreEditMode() {
 function restorePosition() {
   var defpos = getSavedPosition(config.display.pos.lat, config.display.pos.lng);
   showLocation = LOC_ONCE;
-  setLocation(defpos); // required to initialize map
+  setLocation(defpos);
 }
 
 function restoreTrack() {
@@ -1800,7 +1800,7 @@ if (JSON.parse && JSON.stringify) {
   });
 
 }
-restorePosition();
+setLocation({lat: 0, lng: 0}); // required to initialize map
 
 // ---------------------------------------------------------------------------
 // Elevation service
