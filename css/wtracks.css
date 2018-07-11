@@ -109,7 +109,9 @@ body {
 #menu #about-logo {
   margin: 15px 5px;
 }
-#menuabout a:link, #menuabout a:visited, #share-ask a:link, #share-ask a:visited {
+#menuabout a:link, #menuabout a:visited,
+#share-ask a:link, #share-ask a:visited,
+#share-done a:link, #share-done a:visited {
   text-decoration: none;
   color: #1992ca;
 }

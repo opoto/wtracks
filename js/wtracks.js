@@ -1124,16 +1124,22 @@ $("#share-cancel").click(closeShareBox);
 $("#share-ok").click(closeShareBox);
 
 function uploadClicked(){
+  var gpx = getTrackGPX(true);
+  ga('send', 'event', 'file', 'share', undefined, Math.round(gpx.length / 1000));
   $("#share-ask").hide();
   $("#share-processing").show();
   uploadAndShare(
+    getTrackName(), gpx,
     function (fileurl) {
       var url = window.location.toString();
       url = url.replace(/#+.*$/,""); // remove fragment
       url = url.replace(/\?.*$/,""); // remove parameters
       url = url.replace(/index\.html$/,""); // remove index.html
       url = url.replace(/\/*$/,"/"); // keep 1 and only 1 trailing /
-      $("#share-val").val(url + "?ext=gpx&noproxy=true&url=" + encodeURIComponent(fileurl));
+      url = url + "?ext=gpx&noproxy=true&url=" + encodeURIComponent(fileurl);
+      $("#share-val").val(url);
+      $("#share-open").attr("href", url);
+      $("#share-view").attr("href", fileurl);
       $("#share-processing").hide();
       $("#share-done").show();
       $("#share-val").focus();
@@ -1159,10 +1165,10 @@ $("#share-val").keyup(closeShareBoxOnEscape);
 $("#share-ok").keyup(closeShareBoxOnEscape);
 
 /*
-function dpasteUploadAndShare(onDone, onFail) {
+function dpasteUploadAndShare(name, gpx, onDone, onFail) {
   $.post( "http://dpaste.com/api/v2/",
-     { "content": getTrackGPX(),
-        "title": getTrackName(),
+     { "content": gpx,
+        "title": name,
         "poster": "WTracks",
         "syntax": "xml",
         "expiry_days": 60
@@ -1171,14 +1177,14 @@ function dpasteUploadAndShare(onDone, onFail) {
   ).fail(onFail);
 }
 
-function htputUploadAndShare(onDone, onFail) {
+function htputUploadAndShare(name, gpx, onDone, onFail) {
   var id = Math.random().toString(36).substring(2);
   var sharedurl = "https://htput.com/" + id;
   $.ajax({
     url: sharedurl,
     type: 'PUT',
     dataType: "json",
-    data: getTrackGPX(),
+    data: gpx,
   }).done(function(resp) {
     if (resp.status === "ok") {
       onDone(sharedurl + ".txt");
@@ -1189,15 +1195,15 @@ function htputUploadAndShare(onDone, onFail) {
 }
 */
 
-function friendpasteUploadAndShare(onDone, onFail) {
+function friendpasteUploadAndShare(name, gpx, onDone, onFail) {
   $.ajax({
     method: "POST",
     url: "https://www.friendpaste.com/",
     dataType: "json",
     contentType:"application/json; charset=utf-8",
     data: JSON.stringify({
-      "title": getTrackName(),
-      "snippet": getTrackGPX(),
+      "title": name,
+      "snippet": gpx,
       "language": "xml"
     })
   }).done(function(resp) {
@@ -1210,7 +1216,7 @@ function friendpasteUploadAndShare(onDone, onFail) {
 }
 
 var uploadAndShare =
-        friendpasteUploadAndShare
+        friendpasteUploadAndShare;
         //htputUploadAndShare;
         //dpasteUploadAndShare;
 
