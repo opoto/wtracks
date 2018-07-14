@@ -1604,11 +1604,8 @@ $("#save-no").click(function() {
 });
 
 function restoreState(showInfo) {
-  var isSaving = getVal("wt.saveState", null);
-  if (isUnset(isSaving) && showInfo) {
+  if (!isStateSaved() && showInfo) {
     $("#save-info").show();
-  } else {
-    setChecked("#cfgsave", isSaving === "true");
   }
   if (!restoreTrack()) {
     restorePosition();
@@ -2143,7 +2140,6 @@ function deleteSegment(segment) {
     polystats.updateStatsFrom(0);
     setEditMode(EDIT_MANUAL_TRACK);
   }
-  saveState();
 }
 
 function toolElevate(e) {
@@ -3000,6 +2996,9 @@ $(document).ready(function() {
 
   // get visit info
   var about = getVal("wt.about", undefined);
+  // get saving status
+  var isSaving = getVal("wt.saveState", null);
+  setChecked("#cfgsave", isSaving === "true");
 
   var url = getParameterByName("url");
   if (url) {
