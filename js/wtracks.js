@@ -2165,11 +2165,11 @@ $("#cleanup").click(function(e) {
   if (isChecked("#cleanuptime")) {
     toclean.push("time")
   }
-  if (toclean.length == 0) {
+  if (toclean.length == 0 || !track.getLatLngs().length) {
     // nothing to clean
     return;
   }
-  ga('send', 'event', 'tool', 'cleanup', undefined, toclean.toString());
+  ga('send', 'event', 'tool', 'cleanup', toclean.toString(), track.getLatLngs().length);
   $("#menu").hide();
   cleanup(toclean);
   polystats.updateStatsFrom(0);
