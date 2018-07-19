@@ -1164,22 +1164,22 @@ $("#share-cancel").keyup(closeShareBoxOnEscape);
 $("#share-val").keyup(closeShareBoxOnEscape);
 $("#share-ok").keyup(closeShareBoxOnEscape);
 
-/*
+/**/
 function dpasteUploadAndShare(name, gpx, onDone, onFail) {
-  $.post( "http://dpaste.com/api/v2/",
+  $.post( "//dpaste.com/api/v2/",
      { "content": gpx,
         "title": name,
         "poster": "WTracks",
         "syntax": "xml",
         "expiry_days": 60
   }).done(function(data) {
-    onDone(data, data + ".txt")}
-  ).fail(onFail);
+    onDone(data, data + ".txt");
+  }).fail(onFail);
 }
 
 function htputUploadAndShare(name, gpx, onDone, onFail) {
   var id = Math.random().toString(36).substring(2);
-  var sharedurl = "https://htput.com/" + id;
+  var sharedurl = "//htput.com/" + id;
   $.ajax({
     url: sharedurl,
     type: 'PUT',
@@ -1187,18 +1187,18 @@ function htputUploadAndShare(name, gpx, onDone, onFail) {
     data: gpx,
   }).done(function(resp) {
     if (resp.status === "ok") {
-      onDone(sharedurl, sharedurl + ".txt");
+      onDone(sharedurl, sharedurl);
     } else {
       onFail(resp.error_msg);
     }
   }).fail(onFail);
 }
-*/
+/**/
 
 function friendpasteUploadAndShare(name, gpx, onDone, onFail) {
   $.ajax({
     method: "POST",
-    url: "https://www.friendpaste.com/",
+    url: "//www.friendpaste.com/",
     dataType: "json",
     contentType:"application/json; charset=utf-8",
     data: JSON.stringify({
@@ -1219,6 +1219,20 @@ var uploadAndShare =
         friendpasteUploadAndShare;
         //htputUploadAndShare;
         //dpasteUploadAndShare;
+
+try {
+  var sharenames = ['friendpaste', 'htput', 'dpaste'];
+  var sharefuncs = [friendpasteUploadAndShare, htputUploadAndShare, dpasteUploadAndShare];
+  var sharename = getVal("wt.share", sharenames[0]);
+  var setshare = getParameterByName("share");
+  if (setshare && sharenames.includes(setshare)) {
+    sharename = setshare;
+    storeVal("wt.share", sharename);
+  }
+  uploadAndShare = sharefuncs[sharenames.indexOf(sharename)];
+} catch (ex) {
+  error(ex);
+}
 
 //---------------------------------------------------
 
@@ -1631,6 +1645,7 @@ function clearSavedState() {
   storeVal("wt.scaleOpts", undefined);
   storeVal("wt.trackColor", undefined);
   storeVal("wt.trackWeight", undefined);
+  storeVal("wt.share", undefined);
 }
 
 var CrsValues = [
