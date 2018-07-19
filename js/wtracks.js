@@ -1442,7 +1442,7 @@ function getMyIpLocation() {
   var geoapi = "//extreme-ip-lookup.com/json/?callback=setMyIpLocation";
   $.getScript(geoapi)
     .fail(function(jqxhr, settings, exception) {
-      warn("freegeoip request failed");
+      warn("ip geolocation request failed");
     });
 }
 
