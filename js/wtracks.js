@@ -2183,10 +2183,10 @@ $("#elevate").click(toolElevate);
 $("#cleanup").click(function(e) {
   var toclean = [];
   if (isChecked("#cleanupalt")) {
-    toclean.push("alt")
+    toclean.push("alt");
   }
   if (isChecked("#cleanuptime")) {
-    toclean.push("time")
+    toclean.push("time");
   }
   if (toclean.length == 0 || !track.getLatLngs().length) {
     // nothing to clean
