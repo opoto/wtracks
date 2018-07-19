@@ -26,6 +26,7 @@ body {
   left: 0;
   z-index: 1000;
   padding: 0 5px;
+  background: #efefef;
   background: rgba(255, 255, 255, 0.7);
 }
 
@@ -94,7 +95,7 @@ body {
 #menu td:first-child {
   vertical-align: top;
 }
-#menu #menufile td:first-child {
+#menufile td:first-child {
   min-width: 80px;
 }
 #menu td:first-child button {
@@ -103,10 +104,10 @@ body {
 #menu td:nth-child(2) {
   padding-right: 10px;
 }
-#menu #track-get-url {
+#track-get-url {
   width:95%;
 }
-#menu #about-logo {
+#about-logo {
   margin: 15px 5px;
 }
 #menuabout a:link, #menuabout a:visited,
@@ -126,7 +127,6 @@ body {
 .setting-input {
   margin-left: 5px;
   width: 180px;
-  disabled: disabled;
 }
 
 .help-p {
@@ -316,8 +316,8 @@ a.button {
 .material-icons {
   vertical-align: middle;
 }
-.toggle.material-icons {
-  font-size: 20px;;
+.toggle .material-icons {
+  font-size: 20px;
 }
 
 .popupdiv {
@@ -446,7 +446,7 @@ div.trumbowyg-editor {
   border: 2px solid #333;
   width: 80%; /* Could be more or less, depending on screen size */
   border-radius: 10px;
-  box-shadow: 0px 0px 10px 10px rgba(237,237,237,1);
+  box-shadow: 0 0 10px 10px rgba(237,237,237,1);
   max-width: 500px;
 }
 .prompt-content table {
@@ -478,12 +478,11 @@ div.trumbowyg-editor {
   margin: 0 4px;
 }
 input.invalid {
-  outline: 1px solid #FF0000;
-  border-color: 2px solid #FF0000 !important;
+  border: 2px solid #FF0000 !important;
   background-color: #FFCEC1 !important;
 }
 input.invalid:focus {
-  box-shadow: 0px 0px 2px 2px #FF0000;
+  box-shadow: 0 0 2px 2px #FF0000;
 }
 
 .mapstg-toggle .material-icons {
@@ -521,7 +520,7 @@ input:active, input:focus,
 select:active, select:focus,
 textarea:focus {
   outline: 1px solid #B0CBDE;
-  box-shadow: 0px 0px 2px 2px #B0CBDE;
+  box-shadow: 0 0 2px 2px #B0CBDE;
 }
 
 /* ---------------------------------------------------- */
@@ -594,18 +593,6 @@ button:active, #track-upload-label:active {
   .show-medium {
      display: initial;
   }
-  #edit-manual {
-    background-position-x: 2px;
-    background-position-y: 2px;
-  }
-  #edit-auto {
-    background-position-x: -23px;
-    background-position-y: 2px;
-  }
-  #edit-marker {
-    background-position-x: -49px;
-    background-position-y: 2px;
-  }
 
   .statistics tr {
     line-height: 18px;
@@ -613,7 +600,7 @@ button:active, #track-upload-label:active {
   .elevation {
     position: fixed;
     bottom: 75px;
-    right: 0px;
+    right: 0;
   }
 }
 
