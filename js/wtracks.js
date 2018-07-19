@@ -1439,8 +1439,8 @@ var joinOnLoad = false; // deactivate while we restore saved GPX
 
 function getMyIpLocation() {
   log("Getting location from IP address");
-  var geoapi = "https://freegeoip.net/json/?callback=";
-  $.getScript(geoapi + "setMyIpLocation")
+  var geoapi = "//extreme-ip-lookup.com/json/?callback=setMyIpLocation";
+  $.getScript(geoapi)
     .fail(function(jqxhr, settings, exception) {
       warn("freegeoip request failed");
     });
@@ -1448,8 +1448,8 @@ function getMyIpLocation() {
 
 function setMyIpLocation(res) {
   setLocation({
-    lat: res.latitude,
-    lng: res.longitude
+    lat: res.lat,
+    lng: res.lon
   }, false);
 }
 
