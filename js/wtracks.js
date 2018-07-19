@@ -1128,7 +1128,7 @@ function uploadClicked(){
   ga('send', 'event', 'file', 'share', undefined, Math.round(gpx.length / 1000));
   $("#share-ask").hide();
   $("#share-processing").show();
-  uploadAndShare(
+  share.func(
     getTrackName(), gpx,
     function (gpxurl, rawgpxurl) {
       var url = window.location.toString();
@@ -1215,24 +1215,36 @@ function friendpasteUploadAndShare(name, gpx, onDone, onFail) {
   }).fail(onFail);
 }
 
-var uploadAndShare =
-        friendpasteUploadAndShare;
-        //htputUploadAndShare;
-        //dpasteUploadAndShare;
-
-try {
-  var sharenames = ['friendpaste', 'htput', 'dpaste'];
-  var sharefuncs = [friendpasteUploadAndShare, htputUploadAndShare, dpasteUploadAndShare];
-  var sharename = getVal("wt.share", sharenames[0]);
-  var setshare = getParameterByName("share");
-  if (setshare && sharenames.includes(setshare)) {
-    sharename = setshare;
-    storeVal("wt.share", sharename);
+var shares = {
+  "friendpaste": {
+    "name": "FriendPaste",
+    "web": "https://friendpaste.com/",
+    "func": friendpasteUploadAndShare
+  },
+  "htput": {
+    "name": "HTPut",
+    "web": "http://htput.com/",
+    "func": htputUploadAndShare
+  },
+  "dpaste": {
+    "name": "DPaste",
+    "web": "http://dpaste.com/",
+    "func": dpasteUploadAndShare
   }
-  uploadAndShare = sharefuncs[sharenames.indexOf(sharename)];
-} catch (ex) {
-  error(ex);
+};
+
+var setshare = getParameterByName("share");
+if (setshare) {
+  if (shares[setshare]) {
+    storeVal("wt.share", setshare);
+  } else {
+    storeVal("wt.share", undefined);
+  }
 }
+var sharename = getVal("wt.share", undefined);
+var share = sharename ? shares[sharename] : shares[Object.keys(shares)[0]];
+$("#share-name").text(share.name);
+$("#share-web").attr("href", share.web);
 
 //---------------------------------------------------
 
