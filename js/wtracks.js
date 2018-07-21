@@ -1575,7 +1575,7 @@ function saveSettings() {
   saveJsonValOpt("wt.overlaysOn", overlaysOn);
   saveValOpt("wt.ovlTrackColor", ovlTrackColor);
   saveValOpt("wt.ovlTrackWeight", ovlTrackWeight);
-  saveValOpt("wt.scaleOpts", scaleOptions);
+  saveValOpt("wt.lengthUnit", lengthUnit);
   saveValOpt("wt.trackColor", trackColor);
   saveValOpt("wt.trackWeight", trackWeight);
 }
@@ -1654,7 +1654,7 @@ function clearSavedState() {
   storeVal("wt.ovlTrackWeight", undefined);
   storeVal("wt.poslat", undefined);
   storeVal("wt.poslng", undefined);
-  storeVal("wt.scaleOpts", undefined);
+  storeVal("wt.lengthUnit", undefined);
   storeVal("wt.trackColor", undefined);
   storeVal("wt.trackWeight", undefined);
   storeVal("wt.share", undefined);
@@ -1746,32 +1746,6 @@ for (var ovly in config.overlays) {
 }
 var baseLayerControl = L.control.layers(baseLayers, overlays);
 baseLayerControl.addTo(map);
-
-// ------------ SCALE
-
-var scaleCtrl;
-var scaleOptions = getVal("wt.scaleOpts", 0);
-
-function updateScaleControl(event) {
-  if (event && (editMode != EDIT_NONE)) {
-    return;
-  }
-  if (scaleCtrl) {
-    scaleCtrl.remove();
-  }
-  if (event) {
-    // toggle between 0, 1 ad 2
-    scaleOptions = (scaleOptions + 1) % 3;
-    saveValOpt("wt.scaleOpts", scaleOptions);
-  }
-  scaleCtrl = L.control.scale({
-    updateWhenIdle: true,
-    metric: scaleOptions < 2,
-    imperial: (scaleOptions % 2) == 0});
-  scaleCtrl.addTo(map);
-  $(".leaflet-control-scale").click(updateScaleControl);
-}
-updateScaleControl();
 
 // ----------------------
 
@@ -2565,6 +2539,101 @@ function newRouteWaypoint(i, waypoint, n) {
 }
 
 
+// ------------ Length Unit
+
+var LENGTH_UNIT_METER = 0;
+var LENGTH_UNIT_IMPERIAL = 1;
+
+var lengthUnit = getNumVal("wt.lengthUnit", LENGTH_UNIT_METER);
+
+function altUnit() {
+  return lengthUnit === LENGTH_UNIT_METER ? " m" : " ft";
+}
+
+function alt2txt(alt, noUnits) {
+  if (alt === undefined) {
+    return "?";
+  } else {
+    if (lengthUnit === LENGTH_UNIT_IMPERIAL) {
+      alt = alt / 0.3048;
+    }
+    alt = Math.round(alt);
+    return noUnits ? alt : alt + altUnit();
+  }
+}
+
+function txt2alt(alt) {
+  alt = parseFloat(alt);
+  if (lengthUnit === LENGTH_UNIT_IMPERIAL) {
+    alt = alt * 0.3048;
+  }
+  return alt;
+}
+
+function dist2txt(dist, noUnits) {
+  var unit = "m";
+  var roundFactor = 1;
+  if (lengthUnit === LENGTH_UNIT_IMPERIAL) {
+    dist = dist / 0.9144;
+    unit = "yd";
+    if (dist > 2000) {
+      dist *= 0.000568182;
+      unit = "mi";
+      roundFactor = 10;
+    }
+  } else {
+    if (dist > 2000) {
+      dist /= 1000;
+      unit = "km";
+      roundFactor = 10;
+    }
+  }
+  dist = Math.round(dist * roundFactor) / roundFactor;
+  return noUnits ? dist : dist + " " + unit;
+}
+
+// ------------ Scale control and unit toggling
+
+var scaleCtrl;
+
+function updateScaleControl(event) {
+  if (event && (editMode != EDIT_NONE)) {
+    return;
+  }
+  if (scaleCtrl) {
+    scaleCtrl.remove();
+  }
+  if (event) {
+    // toggle between 0 and 1
+    lengthUnit = (lengthUnit + 1) % 2;
+    saveValOpt("wt.lengthUnit", lengthUnit);
+    showStats();
+  }
+  scaleCtrl = L.control.scale({
+    updateWhenIdle: true,
+    metric: lengthUnit === LENGTH_UNIT_METER,
+    imperial: lengthUnit === LENGTH_UNIT_IMPERIAL
+  });
+  scaleCtrl.addTo(map);
+  $(".leaflet-control-scale").click(updateScaleControl);
+  $(".leaflet-control-scale").attr("title", "Click to switch between metric and imperial units");
+}
+updateScaleControl();
+
+// --------------- Time
+
+
+function time2txt(time) {
+  var strTime = "";
+  if (time >= 3600) strTime += Math.floor(time / 3600) + " h ";
+  time %= 3600;
+  if (time >= 60) strTime += Math.floor(time / 60) + " m ";
+  time %= 60;
+  strTime += Math.round(time) + " s";
+  return strTime;
+}
+
+// ---------------- Popups
 
 function getTrackPointPopupContent(latlng) {
   var div = L.DomUtil.create('div', "popupdiv"),
@@ -2600,19 +2669,19 @@ function getLatLngPopupContent(latlng, deletefn, splitfn, toadd) {
     var altinput = L.DomUtil.create('input', "", p);
     altinput.type = "text";
     altinput.placeholder = "Numeric altitude";
-    altinput.size = "5";
-    $(altinput).val(isUndefined(latlng.alt) || !isNumeric(latlng.alt) ? "" : Math.round(latlng.alt));
+    altinput.class = altinput.className = "atlInput";
+    $(altinput).val(isUndefined(latlng.alt) || !isNumeric(latlng.alt) ? "" : alt2txt(latlng.alt, true));
     altinput.onkeyup = function() {
       try {
-        latlng.alt = isNumeric(altinput.value) ? parseFloat(altinput.value) : undefined;
+        latlng.alt = isNumeric(altinput.value) ? txt2alt(altinput.value) : undefined;
       } catch (e) {}
     };
     p = L.DomUtil.create("span", "", p);
-    p.innerHTML = "m";
+    p.innerHTML = altUnit();
   } else {
     if (!isUndefined(latlng.alt)) {
       p = L.DomUtil.create("div", "popupdiv", div);
-      p.innerHTML = "<span class='popupfield'>Altitude:</span> " + Math.round(latlng.alt) + "m";
+      p.innerHTML = "<span class='popupfield'>Altitude:</span> " + alt2txt(latlng.alt);
     }
   }
 
@@ -2644,35 +2713,6 @@ function getLatLngPopupContent(latlng, deletefn, splitfn, toadd) {
   return div;
 }
 
-function alt2txt(alt) {
-  if (alt === undefined) {
-    return "?";
-  } else {
-    alt = Math.round(alt);
-    return alt + "m";
-  }
-}
-
-
-function dist2txt(dist) {
-  dist = Math.round(dist);
-  if (dist > 5000) {
-    return (dist / 1000).toFixed(1) + "km";
-  } else {
-    return dist + "m";
-  }
-}
-
-function time2txt(time) {
-  var strTime = "";
-  if (time >= 3600) strTime += Math.floor(time / 3600) + "h";
-  time %= 3600;
-  if (time >= 60) strTime += Math.floor(time / 60) + "m";
-  time %= 60;
-  strTime += Math.round(time) + "s";
-  return strTime;
-}
-
 function showStats() {
   var pts = track ? track.getLatLngs() : undefined;
   if (pts && pts.length > 0) {
@@ -2698,7 +2738,6 @@ function showStats() {
     $("#descent").text("-" + alt2txt(0));
   }
 }
-
 
 map.on('popupclose', function(e) {
   //console.log(e.type);
@@ -2954,8 +2993,9 @@ function toggleElevation(e) {
           right: 10,
           bottom: 25,
           left: 40
-        },
+        }
       } : {};
+      options.imperial = lengthUnit === LENGTH_UNIT_IMPERIAL;
       var el = L.control.elevation(options);
       var gjl = L.geoJson(track.toGeoJSON(), {
         onEachFeature: el.addData.bind(el)

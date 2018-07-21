@@ -328,6 +328,9 @@ a.button {
   display: inline-table;
   vertical-align: middle;
 }
+.atlInput {
+  width: 3em;
+}
 .popupdiv a {
   padding: 5px;
 }

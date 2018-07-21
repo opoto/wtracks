@@ -135,6 +135,11 @@ function getVal(name, defval) {
   return isUnset(v) ? defval : v;
 }
 
+function getNumVal(name, defval) {
+  var v = getVal(name, defval);
+  return v && parseFloat(v);
+}
+
 function getBoolVal(name, defval) {
   var v = getVal(name, defval);
   return v && v == "true";
