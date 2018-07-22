@@ -34,6 +34,7 @@
 							<ul>
 								<li><a href="#top" id="top-link" class="skel-layers-ignoreHref"><span class="icon fa-home">Intro</span></a></li>
 								<li><a href="#features" id="features-link" class="skel-layers-ignoreHref"><span class="icon fa-magic">Features</span></a></li>
+								<li><a href="#settings" id="settings-link" class="skel-layers-ignoreHref"><span class="icon fa-sliders">Settings</span></a></li>
 								<li><a href="#3rdparties" id="3rdparties-link" class="skel-layers-ignoreHref"><span class="icon fa-users">3rd Parties</span></a></li>
 								<li><a href="#privacy" id="privacy-link" class="skel-layers-ignoreHref"><span class="icon fa-shield">Privacy</span></a></li>
 							</ul>
@@ -65,6 +66,7 @@
 								<p>It features:</p>
 								<ul class="default">
 									<li>Step-by-step track edition</li>
+									<li>Multi-segment track management</li>
 									<li>Automated track edition using routing engine</li>
 									<li>Named waypoints</li>
 									<li>Useful track edition tools, such as compress, elevate and trim</li>
@@ -92,8 +94,8 @@
 							<ul class="default">
 								<li>Step-by-step edition: Click on map to create new track points, move points by dragging them, and create intermediate points by clicking on grayed markers. Click on a marker to get detailed information about this track step, and get the option to delete it.</li>
 								<li>Routing edition: Click on map to set the starting point and destination, the routing engine will automically compute the track following map constraints. Click on the route to create intermediate waypoints that you may drag around.</li>
+								<li>Open and edit multi-segment tracks. Create and delete segments using the "+" and "-" icons in the edition tools. Use the "Join Segments" tool to combine all segments into a single one. Split a segment in two by clicking on the scissors (<i class='material-icons'>&#xE14E;</i>) in a track point popup dialog.</li>
 								<li>Create named waypoints: Click on map to set points of interest. Click on a waypoint to edit its name.</li>
-								<li>Open and edit multi-segment tracks. Click on "New Segment" in "File" menu tab to start a new segment. Use the "Join Segments" tool to combine all segments into a single one. Split a segment in two by clicking on the scissors (<i class='material-icons'>&#xE14E;</i>) in a track point popup dialog. Delete a segment by clicking the trash icon (<i class='material-icons'>&#xE872;</i>) in the edition tools menu.</li>
 							</ul>
 
 							<h3>Statistics</h3>
@@ -115,14 +117,17 @@
 							<p>This tools looks at each point in a track, and measures its distance from the line between the previous and next points. If this distance is smaller than the configurable value (eg 5 meters) then the point is deleted.</p>
 							<p><img src="images/compress.png" alt="compress" /></p>
 
-							<h3>Elevate / Flatten</h3>
+							<h3>Elevate / Cleanup</h3>
 							<p>Performs bulk operations on track points' elevation:</p>
 							<ul class="default">
 								<li>Elevate computes the elevation of each point of the track. If an elevation value was already stored, it is overridden with new computed value. Due to the elevation service payment fees, we limit the number of computed elevation values to 512 per track.</li>
-								<li>Flatten resets all track points' elevation to zero.</li>
+								<li>Cleanup selectively deletes each track point's elevation and time data.</li>
 							</ul>
 							<p>You can display a graphical interactive height profile of your track by clicking on the statistic table at the bottom of the map.</p>
 							<p><img src="images/elevation.png" alt="elevation"/></p>
+
+							<h3>Revert</h3>
+							<p>Inverts a track so that start point becomes the end point.</p>
 
 							<h3>Trim</h3>
 							<p>Trimming is an easy way to quickly delete track points at the beggining or at the end of your track. Select which end of the track you want to trim, then use the slider to define the number of points to remove. The map shows the result in real-time.</p>
@@ -131,8 +136,28 @@
 						</div>
 					</section>
 
+					<!-- Settings -->
+						<section id="settings" class="three">
+							<div class="container">
+
+								<header>
+									<h2><span class="fa fa-sliders">&nbsp;</span>Settings</h2>
+								</header>
+
+								<h3>Rich configuration settings</h3>
+								<ul class="default">
+									<li>Persistent settings: Activate persistence of your settings so that your browser stores your WTracks preferences, and restores them on each of your visits. See <a href="#privacy">privacy section</a> for more details.</li>
+									<li>Personal background map: Define your own map backgrounds in WMS or WMTS format.</li>
+									<li>Track display: Define the color and width of the track on the map.</li>
+									<li>API keys: Set and use your own Google and GraphHopper API keys in order to overcome the WTracks quota limit.</li>
+									<li>Distance Unit: click on the scale icon on the bottom left of the map to switch between metric and imperial units.</li>
+								</ul>
+
+							</div>
+						</section>
+
 					<!-- 3rd parties -->
-					<section id="3rdparties" class="three">
+					<section id="3rdparties" class="four">
 						<div class="container">
 
 							<header>
@@ -168,7 +193,7 @@
 					</section>
 
 					<!-- Privacy -->
-					<section id="privacy" class="three">
+					<section id="privacy" class="five">
 						<div class="container">
 
 							<header>
@@ -182,7 +207,7 @@
 					</section>
 
 					<!-- Contact -->
-					<section id="contact" class="four">
+					<section id="contact" class="six">
 						<div class="container">
 
 							<header>
