@@ -927,18 +927,21 @@ function closeMenu() {
   finishTrim();
 }
 
-function initMenu() {
+function openMenu() {
   setEditMode(EDIT_NONE);
   setChecked("#merge", false);
   menu("file");
   prepareTrim();
 }
+function isMenuVisible() {
+  return $("#menu").is(":visible");
+}
 
 $("#menu-button").click(function() {
-  if (!$("#menu").is(":visible")) {
-    initMenu();
-  } else {
+  if (isMenuVisible()) {
     closeMenu();
+  } else {
+    openMenu();
   }
   return false;
 });
@@ -1980,6 +1983,7 @@ function revert() {
 new L.Control.GeoSearch({
   provider: new L.GeoSearch.Provider.OpenStreetMap(),
   position: 'topleft',
+  searchLabel: "Enter place name (f)",
   showMarker: false,
   showPopup: true,
   //customIcon: false,
@@ -1999,7 +2003,7 @@ L.MyLocationControl = L.Control.extend({
       link = L.DomUtil.create('a', '', container);
 
     link.href = '#';
-    link.title = 'My location';
+    link.title = 'My location (l)';
     link.innerHTML = '<span id="myloc" class="material-icons wtracks-control-icon">&#xE55C;</span>';
     //link.id = 'myloc';
     L.DomEvent.disableClickPropagation(link);
@@ -2055,8 +2059,8 @@ L.EditControl = L.Control.extend({
 
     editopts.id = 'edit-tools';
     editopts.class = 'wtracks-control-icon';
-    editopts.innerHTML = '<a href="#" title="Manual Track" id="edit-manual"><span class="material-icons wtracks-control-icon">&#xE922;</span></a>' +
-    '<a href="#" title="Auto Track" id="edit-auto"><span class="material-icons wtracks-control-icon">&#xE55D;</span></a>' +
+    editopts.innerHTML = '<a href="#" title="Manual Track (e)" id="edit-manual"><span class="material-icons wtracks-control-icon">&#xE922;</span></a>' +
+    '<a href="#" title="AUto Track (a)" id="edit-auto"><span class="material-icons wtracks-control-icon">&#xE55D;</span></a>' +
     '<a href="#" title="Add segment" id="add-segment">' +
       '<span class="material-icons wtracks-control-icon segment-icon">&#xe6e1</span>' +
       '<span class="material-icons wtracks-control-icon add-segment-icon">&#xe145</span>' +
@@ -2065,7 +2069,7 @@ L.EditControl = L.Control.extend({
       '<span class="material-icons wtracks-control-icon segment-icon">&#xe6e1</span>' +
       '<span class="material-icons wtracks-control-icon delete-segment-icon">&#xe14c</span>' +
     '</a>' +
-    '<a href="#" title="Waypoint" id="edit-marker"><span class="material-icons wtracks-control-icon">&#xE55F;</span></a>';
+    '<a href="#" title="Waypoint (w)" id="edit-marker"><span class="material-icons wtracks-control-icon">&#xE55F;</span></a>';
 
     return container;
   }
@@ -2082,9 +2086,59 @@ L.EditorControl = L.EditControl.extend({
 });
 map.addControl(new L.EditorControl());
 
+function isUserInputOngoing() {
+  var elt = document.activeElement;
+  var tag = elt ? elt.tagName.toLowerCase() : undefined;
+  if ((tag == "input") || (tag == "textarea")) {
+    return true;
+  }
+  return false;
+}
+
+function openedOverlays() {
+  return $(".overlay:visible").length;
+}
+
 $("body").keydown(function(event) {
-  if (event.which == 27) {
-    setEditMode(EDIT_NONE);
+  // number of currently opened overlays
+  nOverlays = openedOverlays();
+  // ignore control keys
+  if (event.which == 17) return;
+  // close menu on escape
+  if ((event.which == 27) && (nOverlays == 1) && isMenuVisible()) {
+    closeMenu();
+  }
+  // ignore if an overlay is open
+  if (nOverlays > 0) return;
+  switch (event.which) {
+    case 27: // escape - exit edition
+      setEditMode(EDIT_NONE);
+      break;
+    case 69: // 'e' - edit
+      setEditMode(EDIT_MANUAL_TRACK);
+      break;
+    case 65: // 'a' - auto
+      setEditMode(EDIT_AUTO_TRACK);
+      break;
+    case 87: // 'w' - waypoint
+      setEditMode(EDIT_MARKER);
+      break;
+    case 70: // 'f' - find address
+      $(".glass")[0].click();
+      return false;
+      break;
+    case 76: // 'l' - my location
+      showLocation = LOC_ONCE;
+      gotoMyLocation();
+      break;
+    case 77: // 'm' - my location
+      if (!isMenuVisible()) {
+        openMenu();
+      }
+      break;
+    case 113: // 'F2' - rename
+      promptTrackName();
+      break;
   }
 });
 
@@ -2492,7 +2546,7 @@ var MAX_ROUTE_WPTS = 2;
 function newRouteWaypoint(i, waypoint, n) {
 
   function getRouteWaypoinContent(latlng, index) {
-    var div = document.createElement("div");
+    var div = document.createElement("div overlay");
 
     p = L.DomUtil.create("div", "popupdiv ptbtn", div);
     var del = L.DomUtil.create('a', "", p);
@@ -2674,7 +2728,7 @@ function getTrackPointPopupContent(latlng) {
 }
 
 function getLatLngPopupContent(latlng, deletefn, splitfn, toadd) {
-  var div = document.createElement("div");
+  var div = L.DomUtil.create("div", "overlay");
   var p;
 
   p = L.DomUtil.create("div", "popupdiv", div);

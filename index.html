@@ -65,7 +65,7 @@
 </head>
 
 <body>
-  <div id="menu">
+  <div id="menu" class="overlay">
     <div class="box-header"><a id="menu-close" href="#" class="close-button">×</a></div>
     <ul class="menutab">
       <li><a href="#" class="tablinks" id="tabfile">File</a></li>
@@ -437,7 +437,7 @@
   </div>
 
   <!-- Prompt box -->
-  <div id="prompt" class="modal">
+  <div id="prompt" class="modal overlay">
     <!-- Modal content -->
     <div class="prompt-content">
       <table>
@@ -464,7 +464,7 @@
   </div>
 
   <!-- Perso Map Box -->
-  <div id="mymap-box" class="modal">
+  <div id="mymap-box" class= "modal overlay">
     <!-- Modal content -->
     <div class="prompt-content">
       <table>
@@ -549,7 +549,7 @@
   </div>
 
   <!-- Export/import Mymaps box -->
-  <div id="input-box" class="modal">
+  <div id="input-box" class= "modal overlay">
     <!-- Modal content -->
     <div class="prompt-content">
       <div class="box-header"><a id="input-box-close" href="#" class="close-button">×</a></div>
@@ -560,7 +560,7 @@
   </div>
 
   <!-- Share track box box -->
-  <div id="share-box" class="modal">
+  <div id="share-box" class= "modal overlay">
     <!-- Modal content -->
     <div class="prompt-content">
       <div class="box-header"><a id="share-box-close" href="#" class="close-button">×</a></div>
@@ -594,7 +594,7 @@
   </div>
 
   <!-- Prompt box -->
-  <div id="save-info" class="modal">
+  <div id="save-info" class= "modal overlay">
     <!-- Modal content -->
     <div class="prompt-content">
       <div class="prompt-title">Save status between sessions</div>
@@ -613,8 +613,8 @@
   <table id="tdisplay">
     <tr id="menu-bar">
       <td colspan="7">
-        <a href="#" id="menu-button" class="button"><span class="material-icons">&#xE5D2;</span></a>
-        <span id="track-name-edit" class="link" title="Edit track details">
+        <a href="#" id="menu-button" title="menu (m)" class="button"><span class="material-icons">&#xE5D2;</span></a>
+        <span id="track-name-edit" class="link" title="Edit track details (F2)">
           <span class="title" id="track-name"></span>
           <span class="material-icons symbol">&#xE3C9;</span>
         </span>
