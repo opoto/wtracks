@@ -2629,7 +2629,12 @@ function updateScaleControl(event) {
   });
   scaleCtrl.addTo(map);
   $(".leaflet-control-scale").click(updateScaleControl);
-  $(".leaflet-control-scale").attr("title", "Click to switch between metric and imperial units");
+  $(".leaflet-control-scale").on("mouseenter", function(e) {
+    $("#scale-ctrl-help").show(100);
+  });
+  $(".leaflet-control-scale").on("mouseout", function(e) {
+    $("#scale-ctrl-help").hide(800);
+  });
 }
 updateScaleControl();
 

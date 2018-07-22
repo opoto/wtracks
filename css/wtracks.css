@@ -362,6 +362,17 @@ a.button {
     margin: 0 0 6px 0;
 }
 
+#scale-ctrl-help {
+  display: none;
+  position: absolute;
+  bottom: 70px;
+  left: 10px;
+  z-index: 1000;
+  padding: 0 10px;
+  background: #fff;
+  background: rgba(255, 255, 255, 0.5);
+}
+
 .rich-text {
   vertical-align: middle;
 }
