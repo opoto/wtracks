@@ -928,6 +928,7 @@ function closeMenu() {
 }
 
 function openMenu() {
+  if (isMenuVisible()) return;
   setEditMode(EDIT_NONE);
   setChecked("#merge", false);
   menu("file");
@@ -2109,10 +2110,14 @@ $("body").keydown(function(event) {
     closeMenu();
   }
   // ignore if an overlay is open
-  if (nOverlays > 0) return;
+  if ((nOverlays > 0) || isUserInputOngoing()) return;
   switch (event.which) {
     case 27: // escape - exit edition
-      setEditMode(EDIT_NONE);
+      if (editMode == EDIT_NONE) {
+        openMenu();
+      } else {
+        setEditMode(EDIT_NONE);
+      }
       break;
     case 69: // 'e' - edit
       setEditMode(EDIT_MANUAL_TRACK);
@@ -2132,12 +2137,13 @@ $("body").keydown(function(event) {
       gotoMyLocation();
       break;
     case 77: // 'm' - my location
-      if (!isMenuVisible()) {
-        openMenu();
-      }
+      openMenu();
       break;
     case 113: // 'F2' - rename
       promptTrackName();
+      break;
+    case 85: // 'u' - unit system
+      updateUnitSystem(1);
       break;
   }
 });
@@ -2661,7 +2667,7 @@ function dist2txt(dist, noUnits) {
 
 var scaleCtrl;
 
-function updateScaleControl(event) {
+function updateUnitSystem(event) {
   if (event && (editMode != EDIT_NONE)) {
     return;
   }
@@ -2682,7 +2688,7 @@ function updateScaleControl(event) {
     imperial: isImperial()
   });
   scaleCtrl.addTo(map);
-  $(".leaflet-control-scale").click(updateScaleControl);
+  $(".leaflet-control-scale").click(updateUnitSystem);
   $(".leaflet-control-scale").on("mouseenter", function(e) {
     $("#scale-ctrl-help").show(100);
   });
@@ -2690,7 +2696,7 @@ function updateScaleControl(event) {
     $("#scale-ctrl-help").hide(800);
   });
 }
-updateScaleControl();
+updateUnitSystem();
 
 // --------------- Time
 
