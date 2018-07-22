@@ -1380,7 +1380,9 @@ $("#compress").click(function() {
     prunedist.focus();
     return;
   }
-
+  if (isImperial()) {
+    prunedist *= 0.9144;
+  }
   var useAltV = isChecked("#prunealt");
 
   if (track) {
@@ -2541,20 +2543,29 @@ function newRouteWaypoint(i, waypoint, n) {
 
 // ------------ Length Unit
 
-var LENGTH_UNIT_METER = 0;
+var LENGTH_UNIT_METRIC = 0;
 var LENGTH_UNIT_IMPERIAL = 1;
 
-var lengthUnit = getNumVal("wt.lengthUnit", LENGTH_UNIT_METER);
+var defaultLengthUnit = window.navigator.language === "en-US" ?
+  LENGTH_UNIT_IMPERIAL : LENGTH_UNIT_METRIC;
+var lengthUnit = getNumVal("wt.lengthUnit", defaultLengthUnit);
+
+function isMetric() {
+  return lengthUnit === LENGTH_UNIT_METRIC;
+}
+function isImperial() {
+  return lengthUnit === LENGTH_UNIT_IMPERIAL;
+}
 
 function altUnit() {
-  return lengthUnit === LENGTH_UNIT_METER ? " m" : " ft";
+  return isMetric() ? " m" : " ft";
 }
 
 function alt2txt(alt, noUnits) {
   if (alt === undefined) {
     return "?";
   } else {
-    if (lengthUnit === LENGTH_UNIT_IMPERIAL) {
+    if (isImperial()) {
       alt = alt / 0.3048;
     }
     alt = Math.round(alt);
@@ -2564,7 +2575,7 @@ function alt2txt(alt, noUnits) {
 
 function txt2alt(alt) {
   alt = parseFloat(alt);
-  if (lengthUnit === LENGTH_UNIT_IMPERIAL) {
+  if (isImperial()) {
     alt = alt * 0.3048;
   }
   return alt;
@@ -2573,7 +2584,7 @@ function txt2alt(alt) {
 function dist2txt(dist, noUnits) {
   var unit = "m";
   var roundFactor = 1;
-  if (lengthUnit === LENGTH_UNIT_IMPERIAL) {
+  if (isImperial()) {
     dist = dist / 0.9144;
     unit = "yd";
     if (dist > 2000) {
@@ -2607,12 +2618,14 @@ function updateScaleControl(event) {
     // toggle between 0 and 1
     lengthUnit = (lengthUnit + 1) % 2;
     saveValOpt("wt.lengthUnit", lengthUnit);
+    ga('send', 'event', 'setting', 'lengthUnit', undefined, lengthUnit);
     showStats();
   }
+  $(".distUnit").text(isMetric() ? "meter" : "yard");
   scaleCtrl = L.control.scale({
     updateWhenIdle: true,
-    metric: lengthUnit === LENGTH_UNIT_METER,
-    imperial: lengthUnit === LENGTH_UNIT_IMPERIAL
+    metric: isMetric(),
+    imperial: isImperial()
   });
   scaleCtrl.addTo(map);
   $(".leaflet-control-scale").click(updateScaleControl);
@@ -2995,7 +3008,7 @@ function toggleElevation(e) {
           left: 40
         }
       } : {};
-      options.imperial = lengthUnit === LENGTH_UNIT_IMPERIAL;
+      options.imperial = isImperial();
       var el = L.control.elevation(options);
       var gjl = L.geoJson(track.toGeoJSON(), {
         onEachFeature: el.addData.bind(el)
