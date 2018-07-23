@@ -2987,7 +2987,7 @@ function newMarker(e) {
           restartRoute();
           map.fireEvent("click", { latlng: e.latlng });
         } catch(err) {
-          ga('send', 'event', 'error', 'merge-route-failed', err.toString(), wpts.length);
+          ga('send', 'event', 'error', 'merge-route-failed', err.toString() + ", " + navigator.userAgent, wpts.length);
         }
       } else {
         wpts.push({ latLng: e.latlng });
