@@ -2982,9 +2982,13 @@ function newMarker(e) {
     } else {
       var wpts = route.getWaypoints();
       if (wpts.length >= MAX_ROUTE_WPTS) { // up to 4 with free version
-        mergeRouteToTrack();
-        restartRoute();
-        map.fireEvent("click", { latlng: e.latlng });
+        try {
+          mergeRouteToTrack();
+          restartRoute();
+          map.fireEvent("click", { latlng: e.latlng });
+        } catch(err) {
+          ga('send', 'event', 'error', 'merge-route-failed', err.toString(), wpts.length);
+        }
       } else {
         wpts.push({ latLng: e.latlng });
         route.setWaypoints(wpts);
