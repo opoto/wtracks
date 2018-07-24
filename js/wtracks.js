@@ -2666,6 +2666,8 @@ function dist2txt(dist, noUnits) {
 // ------------ Scale control and unit toggling
 
 var scaleCtrl;
+var scaleCtrlTimeout;
+var scaleCtrlPopups = getNumVal("wt.scaleCtrlPopups", config.scaleCtrlPopups);
 
 function updateUnitSystem(event) {
   if (event && (editMode != EDIT_NONE)) {
@@ -2690,10 +2692,23 @@ function updateUnitSystem(event) {
   scaleCtrl.addTo(map);
   $(".leaflet-control-scale").click(updateUnitSystem);
   $(".leaflet-control-scale").on("mouseenter", function(e) {
-    $("#scale-ctrl-help").show(100);
-  });
-  $(".leaflet-control-scale").on("mouseout", function(e) {
-    $("#scale-ctrl-help").hide(800);
+    // cancel after number of displays
+    if (scaleCtrlPopups < 1) {
+      if (scaleCtrlPopups == 0) {
+        scaleCtrlPopups--;
+        // after number of visits the popup will not be displayed anymore
+        saveValOpt("wt.scaleCtrlPopups", Math.max(1, getNumVal("wt.scaleCtrlPopups", config.scaleCtrlPopups) - 2));
+      }
+      return;
+    }
+    // cancel if already being displayed
+    if (scaleCtrlTimeout) return;
+    scaleCtrlTimeout = setTimeout(function(){
+      scaleCtrlTimeout = undefined;
+      $("#scale-ctrl-help").hide(800);
+    }, 3000);
+    scaleCtrlPopups--;
+    $("#scale-ctrl-help").show(200);
   });
 }
 updateUnitSystem();

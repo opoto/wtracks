@@ -20,6 +20,7 @@ var config = {
     ovlTrackWeight: 3
   },
   maxfilesize: 1024 * 1024, // 1GB
+  scaleCtrlPopups: 10,
   compressdefault: 5,
   thunderforest: {
     key: function() {
