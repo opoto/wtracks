@@ -38,8 +38,21 @@ body {
   font-size: 14pt;
 }
 
+#track-name-edit {
+  position: absolute;
+  width: 85%;
+}
+
 .title {
   font-weight: bold;
+  display: inline-block;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow: inherit;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  max-width: 90%;
+  max-height: 1em;
 }
 
 .hidden {
@@ -383,7 +396,12 @@ div.trumbowyg-editor {
 #status {
   float: right;
   margin: 0 10px 0 0;
-  display: inline;
+  display: block;
+  position: fixed;
+  padding-left: 20px;
+  top: 3px;
+  right: 0;
+  background: #ddd;
 }
 #status-msg{
 }
@@ -601,6 +619,9 @@ button:active, #track-upload-label:active {
 }
 /* for 680px or less */
 @media screen and (max-width: 680px) {
+  .title {
+    font-size: 90%;
+  }
   .hide-medium {
      display: none;
   }
@@ -629,7 +650,7 @@ button:active, #track-upload-label:active {
 /* for 480px or less */
 @media screen and (max-width: 480px) {
   .title {
-    font-size: 90%;
+    max-width: 80%;
   }
   .statistics th {
     display: none;

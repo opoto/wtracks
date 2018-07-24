@@ -100,6 +100,7 @@ $("#dropboxjs").attr("src", "https://www.dropbox.com/static/api/2/dropins.js");
 
 function setTrackName(name) {
   $("#track-name").text(name);
+  $("#track-name").attr("title", name + " - Click to edit (F2)");
   document.title = config.appname + " - " + name;
   metadata.name = name;
 }
