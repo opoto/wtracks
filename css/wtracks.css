@@ -616,6 +616,14 @@ button:active, #track-upload-label:active {
     bottom: 75px;
     right: 0;
   }
+
+  .unit {
+    font-size: 80%;
+  }
+  .unit-space {
+    font-size: 10%;
+  }
+
 }
 
 /* for 480px or less */

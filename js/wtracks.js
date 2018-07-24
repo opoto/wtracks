@@ -2618,7 +2618,8 @@ function isImperial() {
 }
 
 function altUnit() {
-  return isMetric() ? " m" : " ft";
+  var unit = isMetric() ? "m" : "ft";
+  return unitSpan(true, unit, false);
 }
 
 function alt2txt(alt, noUnits) {
@@ -2660,7 +2661,7 @@ function dist2txt(dist, noUnits) {
     }
   }
   dist = Math.round(dist * roundFactor) / roundFactor;
-  return noUnits ? dist : dist + " " + unit;
+  return noUnits ? dist : dist + unitSpan(true, unit, false);
 }
 
 // ------------ Scale control and unit toggling
@@ -2715,14 +2716,25 @@ updateUnitSystem();
 
 // --------------- Time
 
+function unitSpan(spaceBefore, unitTxt, spaceAfter) {
+  var res = "";
+  if (spaceBefore) {
+    res += "<span class='unit-space'> </span>";
+  }
+  res += "<span class='unit'>" + unitTxt + "</span>";
+  if (spaceAfter) {
+    res += "<span class='unit-space'> </span>";
+  }
+  return res;
+}
 
 function time2txt(time) {
   var strTime = "";
-  if (time >= 3600) strTime += Math.floor(time / 3600) + " h ";
+  if (time >= 3600) strTime += Math.floor(time / 3600) + unitSpan(true, "h", true);
   time %= 3600;
-  if (time >= 60) strTime += Math.floor(time / 60) + " m ";
+  if (time >= 60) strTime += Math.floor(time / 60) + unitSpan(true, "m", true);
   time %= 60;
-  strTime += Math.round(time) + " s";
+  strTime += Math.round(time) + unitSpan(true, "s", false);
   return strTime;
 }
 
@@ -2812,23 +2824,23 @@ function showStats() {
     var last = pts[pts.length - 1];
     var first = pts[0];
     var stats = track.stats;
-    $("#distow").text(dist2txt(last.dist));
-    $("#distrt").text(dist2txt(2 * last.dist));
-    $("#timeow").text(time2txt(last.chrono));
-    $("#timert").text(time2txt(first.chrono_rt));
-    $("#altmin").text(alt2txt(stats.minalt));
-    $("#altmax").text(alt2txt(stats.maxalt));
-    $("#climbing").text("+" + alt2txt(stats.climbing));
-    $("#descent").text(alt2txt(stats.descent));
+    $("#distow").html(dist2txt(last.dist));
+    $("#distrt").html(dist2txt(2 * last.dist));
+    $("#timeow").html(time2txt(last.chrono));
+    $("#timert").html(time2txt(first.chrono_rt));
+    $("#altmin").html(alt2txt(stats.minalt));
+    $("#altmax").html(alt2txt(stats.maxalt));
+    $("#climbing").html("+" + alt2txt(stats.climbing));
+    $("#descent").html(alt2txt(stats.descent));
   } else {
-    $("#distow").text(dist2txt(0));
-    $("#distrt").text(dist2txt(0));
-    $("#timeow").text(time2txt(0));
-    $("#timert").text(time2txt(0));
-    $("#altmin").text(alt2txt(0));
-    $("#altmax").text(alt2txt(0));
-    $("#climbing").text("+" + alt2txt(0));
-    $("#descent").text("-" + alt2txt(0));
+    $("#distow").html(dist2txt(0));
+    $("#distrt").html(dist2txt(0));
+    $("#timeow").html(time2txt(0));
+    $("#timert").html(time2txt(0));
+    $("#altmin").html(alt2txt(0));
+    $("#altmax").html(alt2txt(0));
+    $("#climbing").html("+" + alt2txt(0));
+    $("#descent").html("-" + alt2txt(0));
   }
 }
 
