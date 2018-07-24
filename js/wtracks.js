@@ -1129,10 +1129,10 @@ $("#share-cancel").click(closeShareBox);
 $("#share-ok").click(closeShareBox);
 
 function uploadClicked(){
-  var gpx = getTrackGPX(true);
-  ga('send', 'event', 'file', 'share', undefined, Math.round(gpx.length / 1000));
   $("#share-ask").hide();
   $("#share-processing").show();
+  var gpx = getTrackGPX(true);
+  ga('send', 'event', 'file', 'share', undefined, Math.round(gpx.length / 1000));
   share.func(
     getTrackName(), gpx,
     function (gpxurl, rawgpxurl) {
@@ -2062,7 +2062,7 @@ L.EditControl = L.Control.extend({
     editopts.id = 'edit-tools';
     editopts.class = 'wtracks-control-icon';
     editopts.innerHTML = '<a href="#" title="Manual Track (e)" id="edit-manual"><span class="material-icons wtracks-control-icon">&#xE922;</span></a>' +
-    '<a href="#" title="AUto Track (a)" id="edit-auto"><span class="material-icons wtracks-control-icon">&#xE55D;</span></a>' +
+    '<a href="#" title="Auto Track (a)" id="edit-auto"><span class="material-icons wtracks-control-icon">&#xE55D;</span></a>' +
     '<a href="#" title="Add segment" id="add-segment">' +
       '<span class="material-icons wtracks-control-icon segment-icon">&#xe6e1</span>' +
       '<span class="material-icons wtracks-control-icon add-segment-icon">&#xe145</span>' +
@@ -2157,7 +2157,6 @@ L.DomEvent.disableClickPropagation(L.DomUtil.get("add-segment"));
 L.DomEvent.disableClickPropagation(L.DomUtil.get("delete-segment"));
 $("#edit-manual").click(function(e) {
   ga('send', 'event', 'edit', 'manual');
-  //$("#edit-tools").hide();
   setEditMode(EDIT_MANUAL_TRACK);
   e.preventDefault();
 });
@@ -2170,7 +2169,6 @@ $("#edit-auto").click(function(e) {
 });
 $("#edit-marker").click(function(e) {
   ga('send', 'event', 'edit', 'marker');
-  //$("#edit-tools").hide();
   setEditMode(EDIT_MARKER);
   e.preventDefault();
 });
@@ -2539,10 +2537,20 @@ var dropboxSaveOptions = {
   }
 };
 $("#dropbox-saver").click(function(e) {
-  dropboxSaveOptions.files[0].filename = getConfirmedTrackName() + ".png";
+  var name = getConfirmedTrackName();
+  dropboxSaveOptions.files[0].filename = name + ".gpx";
   var gpx = getTrackGPX(false);
-  dropboxSaveOptions.files[0].url = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAMCAYAAABvEu28AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AEEFQYCyiuo9AAAABxJREFUKM9jZGBg+M9ABcDEMAoIAcbRwB7JgQ0A/wcDB9ggv60AAAAASUVORK5CYII=";
-  Dropbox.save(dropboxSaveOptions);
+  share.func(
+    name, gpx,
+    function (gpxurl, rawgpxurl) {
+      ga('send', 'event', 'file', 'save-dropbox', undefined, Math.round(gpx.length / 1000));
+      dropboxSaveOptions.files[0].url = rawgpxurl;
+      Dropbox.save(dropboxSaveOptions);
+    }, function(error) {
+      var errmsg = error.statusText ? error.statusText : error;
+      setStatus("Failed: " + errmsg, { timeout: 5, class: "status-error" });
+    }
+  );
 });
 
 
