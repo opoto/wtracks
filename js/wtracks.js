@@ -1133,7 +1133,7 @@ function uploadClicked(){
   $("#share-processing").show();
   var gpx = getTrackGPX(true);
   ga('send', 'event', 'file', 'share', undefined, Math.round(gpx.length / 1000));
-  share.func(
+  share.upload(
     getTrackName(), gpx,
     function (gpxurl, rawgpxurl) {
       var url = window.location.toString();
@@ -1169,8 +1169,7 @@ $("#share-cancel").keyup(closeShareBoxOnEscape);
 $("#share-val").keyup(closeShareBoxOnEscape);
 $("#share-ok").keyup(closeShareBoxOnEscape);
 
-/**/
-function dpasteUploadAndShare(name, gpx, onDone, onFail) {
+function dpasteUpload(name, gpx, onDone, onFail) {
   $.post( "//dpaste.com/api/v2/",
      { "content": gpx,
         "title": name,
@@ -1182,8 +1181,11 @@ function dpasteUploadAndShare(name, gpx, onDone, onFail) {
   }).fail(onFail);
 }
 
-function htputUploadAndShare(name, gpx, onDone, onFail) {
-  var id = Math.random().toString(36).substring(2);
+function htputUpload(name, gpx, onDone, onFail) {
+  function getId() {
+    return Math.random().toString(36).substring(2);
+  }
+  var id = getId() + "-" + getId();
   var sharedurl = "//htput.com/" + id;
   $.ajax({
     url: sharedurl,
@@ -1192,15 +1194,32 @@ function htputUploadAndShare(name, gpx, onDone, onFail) {
     data: gpx,
   }).done(function(resp) {
     if (resp.status === "ok") {
-      onDone(sharedurl, sharedurl);
+      sharedurl = window.location.protocol + sharedurl;
+      onDone(sharedurl, sharedurl, resp.pass);
     } else {
       onFail(resp.error_msg);
     }
   }).fail(onFail);
 }
-/**/
+function htputDelete(url, rawurl, passcode, onDone, onFail) {
+  $.ajax({
+    url: url,
+    type: 'PUT',
+    headers: {
+      "Htput-pass": passcode
+    },
+    dataType: "json",
+    data: "deleted",
+  }).done(function(resp) {
+    if (onDone && resp.status === "ok") {
+      onDone();
+    } else if (onFail) {
+      onFail(resp.error_msg);
+    }
+  }).fail(onFail);
+}
 
-function friendpasteUploadAndShare(name, gpx, onDone, onFail) {
+function friendpasteUpload(name, gpx, onDone, onFail) {
   $.ajax({
     method: "POST",
     url: "//www.friendpaste.com/",
@@ -1209,6 +1228,7 @@ function friendpasteUploadAndShare(name, gpx, onDone, onFail) {
     data: JSON.stringify({
       "title": name,
       "snippet": gpx,
+      "password": "moncode",
       "language": "xml"
     })
   }).done(function(resp) {
@@ -1220,21 +1240,48 @@ function friendpasteUploadAndShare(name, gpx, onDone, onFail) {
   }).fail(onFail);
 }
 
+function fileioUpload(name, gpx, onDone, onFail) {
+  $.post( "//file.io/?expires=1d", { "text": gpx }
+  ).done(function(resp) {
+    if (resp.success) {
+      onDone(resp.link, resp.link);
+    } else {
+      onFail(resp.message);
+    }
+  }).fail(onFail);
+}
+
+// for shares who cannot delete
+function noDelete() {
+    warn("Delete of temp sharing no implemented");
+}
+// silently does nothing
+function nop() {}
+
 var shares = {
   "friendpaste": {
     "name": "FriendPaste",
     "web": "https://friendpaste.com/",
-    "func": friendpasteUploadAndShare
+    "upload": friendpasteUpload,
+    "delete": noDelete
   },
   "htput": {
     "name": "HTPut",
     "web": "http://htput.com/",
-    "func": htputUploadAndShare
+    "upload": htputUpload,
+    "delete": htputDelete
   },
   "dpaste": {
     "name": "DPaste",
     "web": "http://dpaste.com/",
-    "func": dpasteUploadAndShare
+    "upload": dpasteUpload,
+    "delete": noDelete
+  },
+  "fileio": {
+    "name": "file.io",
+    "web": "http://file.io/",
+    "upload": fileioUpload,
+    "delete": nop // no need to delete
   }
 };
 
@@ -1250,6 +1297,8 @@ var sharename = getVal("wt.share", undefined);
 var share = sharename ? shares[sharename] : shares[Object.keys(shares)[0]];
 $("#share-name").text(share.name);
 $("#share-web").attr("href", share.web);
+
+var dropboxTempShare = shares.fileio;
 
 //---------------------------------------------------
 
@@ -2503,21 +2552,15 @@ $("#dropbox-chooser").click(function(e) {
 });
 
 var dropboxSaveOptions = {
-  files: [
-    {
-      url: "",
-      filename: "",
-      mode: "overwrite",
-      autorename: false,
-      }
-    ],
+  files: [{}], // to be completed when uploading
 
   // Success is called once all files have been successfully added to the user's
   // Dropbox, although they may not have synced to the user's devices yet.
-  success: function(res) {
+  success: function() {
     // Indicate to the user that the files have been saved.
-    setStatus(response || "File saved", { timeout: 3 });
+    setStatus("File saved in your Dropbox", { timeout: 3 });
     $("#menu").hide();
+    dropboxSaveOptions.deleteTemp();
   },
 
   // Progress is called periodically to update the application on the progress
@@ -2527,24 +2570,43 @@ var dropboxSaveOptions = {
   progress: function(progress) {},
 
   // Cancel is called if the user presses the Cancel button or closes the Saver.
-  cancel: function() {},
+  cancel: function() {
+    dropboxSaveOptions.deleteTemp();
+  },
 
   // Error is called in the event of an unexpected response from the server
   // hosting the files, such as not being able to find a file. This callback is
   // also called if there is an error on Dropbox or if the user is over quota.
   error: function(errorMessage) {
     setStatus(errorMessage || "Failed", { timeout: 5, class: "status-error" });
+    dropboxSaveOptions.deleteTemp();
+  },
+
+  deleteTemp: function(res) {
+    dropboxTempShare.delete(
+      dropboxSaveOptions.gpxurl,
+      dropboxSaveOptions.files[0].url,
+      dropboxSaveOptions.passcode,
+      nop, function(msg) {
+        warn("Failed to delete temp share");
+      }
+    );
   }
+
 };
+
 $("#dropbox-saver").click(function(e) {
   var name = getConfirmedTrackName();
-  dropboxSaveOptions.files[0].filename = name + ".gpx";
   var gpx = getTrackGPX(false);
-  share.func(
+  dropboxTempShare.upload(
     name, gpx,
-    function (gpxurl, rawgpxurl) {
+    function (gpxurl, rawgpxurl, passcode) {
+      log("temp share: " + rawgpxurl);
       ga('send', 'event', 'file', 'save-dropbox', undefined, Math.round(gpx.length / 1000));
+      dropboxSaveOptions.files[0].filename = name + ".gpx";
       dropboxSaveOptions.files[0].url = rawgpxurl;
+      dropboxSaveOptions.gpxurl = gpxurl;
+      dropboxSaveOptions.passcode = passcode;
       Dropbox.save(dropboxSaveOptions);
     }, function(error) {
       var errmsg = error.statusText ? error.statusText : error;
@@ -2552,7 +2614,6 @@ $("#dropbox-saver").click(function(e) {
     }
   );
 });
-
 
 /* ------------ */
 
