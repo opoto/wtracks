@@ -129,6 +129,19 @@ body {
   text-decoration: none;
   color: #1992ca;
 }
+#share-qrimg {
+  display: block;
+  margin: 0 auto 10px auto;
+  outline: 1px solid #FFF;
+  box-shadow: 0px 0px 10px 10px #FFF;
+}
+.share-item .material-icons  {
+  color: black;
+}
+.share-item img {
+  border: 0;
+  vertical-align: middle;
+}
 .setting-name {
   width: 110px;
   display: inline-block;
@@ -628,7 +641,12 @@ button:active, #track-upload-label:active {
   .show-medium {
      display: initial;
   }
-
+  .share-item {
+    margin-left: 40px;
+    display: block;
+    line-height: 24px;
+    vertical-align: middle;
+  }
   .statistics tr {
     line-height: 18px;
   }

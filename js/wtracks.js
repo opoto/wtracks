@@ -1146,6 +1146,9 @@ function uploadClicked(){
       $("#share-open").attr("href", url);
       $("#share-view").attr("href", gpxurl);
       $("#share-processing").hide();
+      $("#share-links").show();
+      $("#share-qrcode").hide();
+      $("#share-qrimg").attr("src", config.qrCodeService + encodeURIComponent(url + "&qr=1"));
       $("#share-done").show();
       $("#share-val").focus();
       $("#share-val").select();
@@ -1155,8 +1158,20 @@ function uploadClicked(){
       $("#share-box").hide();
     });
 }
+function showQRCode(e){
+  $("#share-links").hide();
+  $("#share-qrcode").show();
+  return false;
+}
+function hideQRCode(e){
+  $("#share-links").show();
+  $("#share-qrcode").hide();
+  return false;
+}
 
 $("#share-start").click(uploadClicked);
+$("#share-viewqr").click(showQRCode);
+$("#share-back").click(hideQRCode);
 
 function closeShareBoxOnEscape(event) {
   if (event.which == 27) {
@@ -3249,6 +3264,10 @@ $(document).ready(function() {
   var url = getParameterByName("url");
   if (url) {
     ga('send', 'event', 'file', 'load-urlparam');
+    var qr = getParameterByName("qr");
+    if (qr === "1") {
+      ga('send', 'event', 'file', 'load-qrcode');
+    }
     var ext = getParameterByName("ext");
     var noproxy = getParameterByName("noproxy");
     showLocation = LOC_NONE;
