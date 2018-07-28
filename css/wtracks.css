@@ -129,19 +129,7 @@ body {
   text-decoration: none;
   color: #1992ca;
 }
-#share-qrimg {
-  display: block;
-  margin: 0 auto 10px auto;
-  outline: 1px solid #FFF;
-  box-shadow: 0px 0px 10px 10px #FFF;
-}
-.share-item .material-icons  {
-  color: black;
-}
-.share-item img {
-  border: 0;
-  vertical-align: middle;
-}
+
 .setting-name {
   width: 110px;
   display: inline-block;
@@ -252,6 +240,7 @@ a.button {
   float: right;
   padding: 0;
 }
+
 #share-box .close-button {
   position: inherit;
   float: right;
@@ -265,8 +254,19 @@ a.button {
 #share-links input {
   width: 90%;
 }
+.share-item .material-icons  {
+  color: black;
+}
 #share-viewqr {
   float: right;
+  padding-top: 3px;
+}
+#share-qrimg {
+  display: block;
+  margin: 0 auto 10px auto;
+  outline: 1px solid #FFF;
+  box-shadow: 0px 0px 10px 10px #FFF;
+
 }
 .text-bottom {
   vertical-align: bottom;
@@ -678,10 +678,8 @@ button:active, #track-upload-label:active {
     max-width: 80%;
   }
   .share-item {
-    margin-left: 40px;
+    margin-bottom: 10px;
     display: block;
-    line-height: 24px;
-    vertical-align: middle;
   }
   .statistics th {
     display: none;
