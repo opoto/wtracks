@@ -39,7 +39,7 @@
    }).done(function(resp) {
      if (resp.status === "ok") {
        sharedurl = window.location.protocol + sharedurl;
-       onDone(sharedurl, sharedurl, resp.pass);
+       onDone(sharedurl, sharedurl + "?contentType=text/plain", resp.pass);
      } else {
        onFail(resp.error_msg);
      }
@@ -48,12 +48,11 @@
  function htputDelete(url, rawurl, passcode, onDone, onFail) {
    $.ajax({
      url: url,
-     type: 'PUT',
+     type: 'DELETE',
      headers: {
        "Htput-pass": passcode
      },
-     dataType: "json",
-     data: "deleted",
+     dataType: "json"
    }).done(function(resp) {
      if (onDone && resp.status === "ok") {
        onDone();

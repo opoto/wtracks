@@ -1226,7 +1226,7 @@ $("#share-name").text(share.name);
 $("#share-web").attr("href", share.web);
 
 // fileio automatically deletes paste after download, perfect for dropbox use case
-var dropboxTempShare = pastesLib.fileio;
+var dropboxTempShare = sharename ? pastesLib[sharename] : pastesLib.fileio;
 
 //---------------------------------------------------
 
