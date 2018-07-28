@@ -254,16 +254,26 @@ function strxor(s, k) {
   return enc;
 }
 
-function strencode(s, k) {
-  return encodeURIComponent(strxor(s, k));
+function getEncodeParams(s1, s2) {
+  var islocal = (window.location.toString().indexOf("file:") === 0) ||
+    (window.location.toString().indexOf(".dev.local:") > 0);
+  var res = {
+    k: islocal ? getLocalCode() : n10dLocation()
+  }
+  if (s1 || s2) {
+    res.s = islocal ? s2 : s1;
+  }
+  return res;
+}
+
+function strencode(s) {
+  var param = getEncodeParams();
+  return encodeURIComponent(strxor(s, param.k));
 }
 
 function strdecode(s1, s2) {
-  var islocal = (window.location.toString().indexOf("file:") === 0) ||
-    (window.location.toString().indexOf(".dev.local:") > 0);
-  var s = islocal ? s2 : s1;
-  var k = islocal ? getLocalCode() : n10dLocation();
-  return s ? strxor(decodeURIComponent(s), k ? k : "") : s;
+  var param = getEncodeParams(s1, s2);
+  return param.s ? strxor(decodeURIComponent(param.s), param.k ? param.k : "") : param.s;
 }
 
 // Base 64 encoding / decoding

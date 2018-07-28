@@ -59,6 +59,8 @@
   <script src="js/leaflet.polytrim.js"></script>
   <script src="js/leaflet.polystats.js"></script>
 
+  <script src="js/encdec.js"></script>
+
   <script src="js/jscolor.min.js"></script>
   <script type="text/javascript" id="dropboxjs" data-app-key=""></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/dropbox.js/0.10.2/dropbox.min.js"></script>
@@ -566,11 +568,11 @@
     <div class="prompt-content">
       <div class="box-header"><a id="share-box-close" href="#" class="close-button">×</a></div>
       <div id="share-ask">
-        <p>
-          Click button below to anonymously upload your track and get a shareable link to reopen it.<br/>
-          <i class="material-icons">info</i> Your file will be stored on a <a id="share-web" href="#" target="_blank">third-party server (<span id="share-name"></span>)</a> without any guarantee of availability. Make sure to keep a copy of the file on your own.
-          <!-- The server will keep your file during 2 months, after which it will be deleted and the link will not be valid anymore.-->
+        <p>Click button below to anonymously upload your track to the cloud and get a shareable link to reopen it. <span id="shareenctxt" class="help-b material-icons" title="Help">&#xE8FD;</span></p>
+        <p id="shareenctxt-help" class="help-p">
+          Your file will be stored on a <a id="share-web" href="#" target="_blank">third-party server (<span id="share-name"></span>)</a> without any guarantee of availability. Make sure to keep a copy of the file on your own.
         </p>
+        <p class="if-encrypt hidden"><label><i class="material-icons">security</i> <input id="share-enc" type="checkbox"/> Check to encrypt your file on the cloud for strong privacy</label></p>
         <button id="share-start" class="ok-btn">Upload</button>
         <button id="share-cancel" class="cancel-btn">Cancel</button>
       </div>

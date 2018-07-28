@@ -1120,6 +1120,9 @@ $("#track-share").click(function() {
   $("#share-val").val("");
   $("#share-box").show();
   $("#share-start").focus();
+  if (isCryptoSupported()) {
+    $(".if-encrypt").show();
+  }
 });
 function closeShareBox(){
   $("#share-box").hide();
@@ -1132,6 +1135,28 @@ function uploadClicked(){
   $("#share-ask").hide();
   $("#share-processing").show();
   var gpx = getTrackGPX(true);
+  var keyparam = "";
+  if (isChecked("#share-enc")) {
+    var pwd = Math.random().toString(36).substring(2);
+    aesGcmEncrypt(gpx, pwd)
+    .then(function(cipher) {
+      log("iv  : " + cipher.iv);
+      log("pwd : " + pwd);
+      keyparam = "&key=" + strencode("01" + cipher.iv + pwd);
+      gpx = cipher.ciphertext;
+      ga('send', 'event', 'file', 'encrypt', undefined, Math.round(gpx.length / 1000));
+      shareGpx(gpx, keyparam);
+    })
+    .catch(function(err) {
+      setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
+      $("#share-box").hide();
+    });
+  } else {
+    shareGpx(gpx, keyparam);
+  }
+}
+
+function shareGpx(gpx, keyparam) {
   ga('send', 'event', 'file', 'share', undefined, Math.round(gpx.length / 1000));
   share.upload(
     getTrackName(), gpx,
@@ -1141,7 +1166,7 @@ function uploadClicked(){
       url = url.replace(/\?.*$/,""); // remove parameters
       url = url.replace(/index\.html$/,""); // remove index.html
       url = url.replace(/\/*$/,"/"); // keep 1 and only 1 trailing /
-      url = url + "?ext=gpx&noproxy=true&url=" + encodeURIComponent(rawgpxurl);
+      url = url + "?ext=gpx&noproxy=true&url=" + encodeURIComponent(rawgpxurl) + keyparam;
       $("#share-val").val(url);
       $("#share-open").attr("href", url);
       $("#share-view").attr("href", gpxurl);
@@ -1158,6 +1183,7 @@ function uploadClicked(){
       $("#share-box").hide();
     });
 }
+
 function showQRCode(e){
   $("#share-links").hide();
   $("#share-qrcode").show();
@@ -2468,17 +2494,42 @@ fileloader.on('data:error', function(e) {
   setStatus("Failed: check file and type", { 'class': 'status-error', 'timeout': 3 });
 });
 
-function loadFromUrl(url, ext, noproxy, withCredentials) {
+function loadFromUrl(url, options) {
+  if (!options) {
+    options = {};
+  }
   setStatus("Loading...", { "spinner": true });
-  var _url = noproxy ? url : corsUrl(url);
+  var _url = options.noproxy ? url : corsUrl(url);
   var req = {
     url: _url,
     success: function(data) {
       loadCount = 0;
-      fileloader.loadData(data, url, ext);
+      if (options.key) {
+        if (!isCryptoSupported()) {
+          setStatus("Your browser does not support encrypted files", { timeout: 5, class: "status-error" });
+          return;
+        }
+        var key = encodeURIComponent(options.key);
+        var deckey = strdecode(key, key);
+        var v = deckey.substring(0,2); // version, ignored for now
+        var iv = deckey.substring(2,26);
+        var pwd = deckey.substring(26);
+        log("iv  : " + iv);
+        log("pwd : " + pwd);
+        ga('send', 'event', 'file', 'decrypt', undefined, Math.round(data.length / 1000));
+        aesGcmDecrypt(data, iv, pwd)
+        .then(function(gpx) {
+          fileloader.loadData(gpx, url, options.ext);
+        })
+        .catch(function(err) {
+          setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
+        });
+      } else {
+        fileloader.loadData(data, url, options.ext);
+      }
     }
   };
-  if (withCredentials) {
+  if (options.withCredentials) {
     req.xhrFields = {
       withCredentials: true
     };
@@ -2505,7 +2556,11 @@ $("#track-get").click(function() {
   ga('send', 'event', 'file', 'load-url');
   setEditMode(EDIT_NONE);
   var noproxy = isChecked("#noproxy");
-  loadFromUrl(url, getLoadExt(), noproxy, noproxy);
+  loadFromUrl(url, {
+    ext: getLoadExt(),
+    noproxy: noproxy,
+    withCredentials: noproxy
+  });
 });
 $("#track-get-url").keypress(function(e) {
   if (e.which == 13) {
@@ -2538,7 +2593,10 @@ var dropboxLoadOptions = {
   success: function(files) {
     $("#menu").hide();
     ga('send', 'event', 'file', 'load-dropbox');
-    loadFromUrl(files[0].link, getLoadExt(), true);
+    loadFromUrl(files[0].link, {
+      ext: getLoadExt(),
+      noproxy: true
+    });
   },
 
   // Optional. Called when the user closes the dialog without selecting a file
@@ -3268,10 +3326,13 @@ $(document).ready(function() {
     if (qr === "1") {
       ga('send', 'event', 'file', 'load-qrcode');
     }
-    var ext = getParameterByName("ext");
-    var noproxy = getParameterByName("noproxy");
     showLocation = LOC_NONE;
-    loadFromUrl(url, ext || undefined, noproxy || undefined, noproxy || undefined);
+    loadFromUrl(url, {
+      ext: getParameterByName("ext"),
+      noproxy: getParameterByName("noproxy"),
+      withCredentials: getParameterByName("noproxy"),
+      key: getParameterByName("key")
+    });
     setEditMode(EDIT_NONE);
   } else {
     restoreState(about);

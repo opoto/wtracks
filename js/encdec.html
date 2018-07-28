@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv="x-ua-compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,height=device-height, user-scalable=no" />
+  <meta name="description" content="Encryption / decvryption library">
+  <title>EncDec lib</title>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+</head>
+
+<body>
+  <table>
+    <tr>
+      <td>Clear text</td>
+      <td><input id="txt" type="text" size="120" value="this is my secret message"/></td>
+    </tr>
+    <tr>
+      <td>Password</td>
+      <td><input id="pwd" type="text" value="p4ssw0rd"/></td>
+    </tr>
+    <tr>
+      <td><button id="encBtn">Encrypt</button></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>IV</td>
+      <td><input id="iv" type="text" size="120" value=""/></td>
+    </tr>
+    <tr>
+      <td>Encrypted</td>
+      <td><input id="enc" type="text" size="120" value=""/></td>
+    </tr>
+    <tr>
+      <td><button id="decBtn">Decrypt</button></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Decrypted</td>
+      <td><input id="dec" type="text" size="120" value=""/></td>
+    </tr>
+  </table>
+  <div id="log"></div>
+  <script src="encdec.js"></script>
+  <script>
+
+if (isCryptoSupported()) {
+  $("#encBtn").click(doEncrypt);
+  $("#decBtn").click(doDecrypt);
+} else {
+  $("#log").append("<p>ERROR: crypto is not supported</p>");
+  $("#encBtn").attr("disabled", "disabled");
+  $("#decBtn").attr("disabled", "disabled");
+}
+
+async function doEncrypt() {
+  var txt = $("#txt").val(),
+      pwd = $("#pwd").val();
+  $("#log").html("");
+  $("#iv").val("");
+  $("#enc").val("");
+  try {
+    cipher = await aesGcmEncrypt(txt, pwd);
+    $("#iv").val(cipher.iv);
+    $("#enc").val(cipher.ciphertext);
+  } catch (err) {
+    $("#log").append("<p>ERROR: " + err + "</p>");
+  }
+}
+async function doDecrypt() {
+  var iv = $("#iv").val(),
+      enc = $("#enc").val(),
+      pwd = $("#pwd").val();
+  $("#log").html("");
+  $("#dec").val("");
+  try {
+    plaintext = await aesGcmDecrypt(enc, iv, pwd);
+    $("#dec").val(plaintext);
+  } catch (err) {
+    $("#log").append("<p>ERROR: " + err + "</p>");
+  }
+}
+
+  </script>
+</body>
+
+</html>

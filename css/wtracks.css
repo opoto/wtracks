@@ -257,7 +257,9 @@ a.button {
   float: right;
   padding: 0;
 }
-
+.text-bottom {
+  vertical-align: bottom;
+}
 .symbol {
   font-size: 16px;
 }
