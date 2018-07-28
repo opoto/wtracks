@@ -1142,8 +1142,8 @@ function uploadClicked(){
     var pwd = Math.random().toString(36).substring(2);
     aesGcmEncrypt(gpx, pwd)
     .then(function(cipher) {
-      log("iv  : " + cipher.iv);
-      log("pwd : " + pwd);
+      //log("iv  : " + cipher.iv);
+      //log("pwd : " + pwd);
       keyparam = "&key=" + strencode("01" + cipher.iv + pwd);
       gpx = cipher.ciphertext;
       ga('send', 'event', 'file', 'encrypt', undefined, Math.round(gpx.length / 1000));
@@ -2401,8 +2401,8 @@ function loadFromUrl(url, options) {
         var v = deckey.substring(0,2); // version, ignored for now
         var iv = deckey.substring(2,26);
         var pwd = deckey.substring(26);
-        log("iv  : " + iv);
-        log("pwd : " + pwd);
+        //log("iv  : " + iv);
+        //log("pwd : " + pwd);
         ga('send', 'event', 'file', 'decrypt', undefined, Math.round(data.length / 1000));
         aesGcmDecrypt(data, iv, pwd)
         .then(function(gpx) {
@@ -2561,7 +2561,6 @@ $("#dropbox-saver").click(function(e) {
   dropboxTempShare.upload(
     name, gpx,
     function (gpxurl, rawgpxurl, passcode) {
-      log("temp share: " + rawgpxurl);
       ga('send', 'event', 'file', 'save-dropbox', undefined, Math.round(gpx.length / 1000));
       dropboxSaveOptions.files[0].filename = name + ".gpx";
       dropboxSaveOptions.files[0].url = rawgpxurl;
