@@ -654,12 +654,6 @@ button:active, #track-upload-label:active {
   .show-medium {
      display: initial;
   }
-  .share-item {
-    margin-left: 40px;
-    display: block;
-    line-height: 24px;
-    vertical-align: middle;
-  }
   .statistics tr {
     line-height: 18px;
   }
@@ -682,6 +676,12 @@ button:active, #track-upload-label:active {
 @media screen and (max-width: 480px) {
   .title {
     max-width: 80%;
+  }
+  .share-item {
+    margin-left: 40px;
+    display: block;
+    line-height: 24px;
+    vertical-align: middle;
   }
   .statistics th {
     display: none;
