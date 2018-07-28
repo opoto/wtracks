@@ -1210,136 +1210,21 @@ $("#share-cancel").keyup(closeShareBoxOnEscape);
 $("#share-val").keyup(closeShareBoxOnEscape);
 $("#share-ok").keyup(closeShareBoxOnEscape);
 
-function dpasteUpload(name, gpx, onDone, onFail) {
-  $.post( "//dpaste.com/api/v2/",
-     { "content": gpx,
-        "title": name,
-        "poster": "WTracks",
-        "syntax": "xml",
-        "expiry_days": 60
-  }).done(function(data) {
-    onDone(data, data + ".txt");
-  }).fail(onFail);
-}
-
-function htputUpload(name, gpx, onDone, onFail) {
-  function getId() {
-    return Math.random().toString(36).substring(2);
-  }
-  var id = getId() + "-" + getId();
-  var sharedurl = "//htput.com/" + id;
-  $.ajax({
-    url: sharedurl,
-    type: 'PUT',
-    dataType: "json",
-    data: gpx,
-  }).done(function(resp) {
-    if (resp.status === "ok") {
-      sharedurl = window.location.protocol + sharedurl;
-      onDone(sharedurl, sharedurl, resp.pass);
-    } else {
-      onFail(resp.error_msg);
-    }
-  }).fail(onFail);
-}
-function htputDelete(url, rawurl, passcode, onDone, onFail) {
-  $.ajax({
-    url: url,
-    type: 'PUT',
-    headers: {
-      "Htput-pass": passcode
-    },
-    dataType: "json",
-    data: "deleted",
-  }).done(function(resp) {
-    if (onDone && resp.status === "ok") {
-      onDone();
-    } else if (onFail) {
-      onFail(resp.error_msg);
-    }
-  }).fail(onFail);
-}
-
-function friendpasteUpload(name, gpx, onDone, onFail) {
-  $.ajax({
-    method: "POST",
-    url: "//www.friendpaste.com/",
-    dataType: "json",
-    contentType:"application/json; charset=utf-8",
-    data: JSON.stringify({
-      "title": name,
-      "snippet": gpx,
-      "password": "moncode",
-      "language": "xml"
-    })
-  }).done(function(resp) {
-    if (resp.ok) {
-      onDone(resp.url + "?rev=" + resp.rev, resp.url + "/raw?rev=" + resp.rev);
-    } else {
-      onFail(resp.reason);
-    }
-  }).fail(onFail);
-}
-
-function fileioUpload(name, gpx, onDone, onFail) {
-  $.post( "//file.io/?expires=1d", { "text": gpx }
-  ).done(function(resp) {
-    if (resp.success) {
-      onDone(resp.link, resp.link);
-    } else {
-      onFail(resp.message);
-    }
-  }).fail(onFail);
-}
-
-// for shares who cannot delete
-function noDelete() {
-    warn("Delete of temp sharing no implemented");
-}
-// silently does nothing
-function nop() {}
-
-var shares = {
-  "friendpaste": {
-    "name": "FriendPaste",
-    "web": "https://friendpaste.com/",
-    "upload": friendpasteUpload,
-    "delete": noDelete
-  },
-  "htput": {
-    "name": "HTPut",
-    "web": "http://htput.com/",
-    "upload": htputUpload,
-    "delete": htputDelete
-  },
-  "dpaste": {
-    "name": "DPaste",
-    "web": "http://dpaste.com/",
-    "upload": dpasteUpload,
-    "delete": noDelete
-  },
-  "fileio": {
-    "name": "file.io",
-    "web": "http://file.io/",
-    "upload": fileioUpload,
-    "delete": nop // no need to delete
-  }
-};
-
 var setshare = getParameterByName("share");
 if (setshare) {
-  if (shares[setshare]) {
+  if (pastesLib[setshare]) {
     storeVal("wt.share", setshare);
   } else {
     storeVal("wt.share", undefined);
   }
 }
 var sharename = getVal("wt.share", undefined);
-var share = sharename ? shares[sharename] : shares[Object.keys(shares)[0]];
+var share = sharename ? pastesLib[sharename] : pastesLib[Object.keys(pastesLib)[0]];
 $("#share-name").text(share.name);
 $("#share-web").attr("href", share.web);
 
-var dropboxTempShare = shares.fileio;
+// fileio automatically deletes paste after download, perfect for dropbox use case
+var dropboxTempShare = pastesLib.fileio;
 
 //---------------------------------------------------
 
