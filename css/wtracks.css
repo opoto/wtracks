@@ -257,6 +257,17 @@ a.button {
   float: right;
   padding: 0;
 }
+#share-ask table td:first-child {
+  text-align: center;
+  padding: 0;
+  vertical-align: middle;
+}
+#share-links input {
+  width: 90%;
+}
+#share-viewqr {
+  float: right;
+}
 .text-bottom {
   vertical-align: bottom;
 }

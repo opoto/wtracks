@@ -1,5 +1,6 @@
 /*
  * Simple lib to encrypt / decrypt a text with a password. Encrypted form is base64 encoded.
+ * Requires WebCrypto API, TextEncoder/TextDecoder and Promise (>= ES6)
  */
 
 

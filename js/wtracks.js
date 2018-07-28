@@ -38,6 +38,8 @@ $(".toggle").click(toggleElement);
 /* help buttons */
 function toggleHelp(e) {
   $("#" + this.id + "-help").toggle();
+  e.stopPropagation();
+  return false;
 }
 $(".help-b").click(toggleHelp);
 
