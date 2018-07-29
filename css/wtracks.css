@@ -266,7 +266,9 @@ a.button {
   margin: 0 auto 10px auto;
   outline: 1px solid #FFF;
   box-shadow: 0px 0px 10px 10px #FFF;
-
+}
+.if-encrypt {
+  margin-bottom: 10px;
 }
 .text-bottom {
   vertical-align: bottom;

@@ -1144,7 +1144,7 @@ function uploadClicked(){
     .then(function(cipher) {
       //log("iv  : " + cipher.iv);
       //log("pwd : " + pwd);
-      keyparam = "&key=" + "01" +strencode(cipher.iv + pwd);
+      keyparam = "&key=" + "01" + strencode(cipher.iv + pwd);
       gpx = cipher.ciphertext;
       ga('send', 'event', 'file', 'encrypt', undefined, Math.round(gpx.length / 1000));
       shareGpx(gpx, keyparam);

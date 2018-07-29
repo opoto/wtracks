@@ -32,7 +32,7 @@ function aesGcmEncrypt(plaintext, password) {
     const alg = { name: 'AES-GCM' };
 
     return crypto.subtle.digest('SHA-256', pwUtf8)                                     // hash the password
-    .then( pwHash => {
+    .then( function(pwHash) {
 
       const iv = crypto.getRandomValues(new Uint8Array(12));                           // get 96-bit random iv
 
@@ -41,13 +41,13 @@ function aesGcmEncrypt(plaintext, password) {
       return crypto.subtle.importKey('raw', pwHash, alg, false, ['encrypt']);          // generate key from pw
 
     })
-    .then( key => {
+    .then( function(key) {
 
       const ptUint8 = new TextEncoder().encode(plaintext);                             // encode plaintext as UTF-8
       return crypto.subtle.encrypt(alg, key, ptUint8);                                 // encrypt plaintext using key
 
     })
-    .then( ctBuffer => {
+    .then( function(ctBuffer) {
 
       const ctArray = Array.from(new Uint8Array(ctBuffer));                            // ciphertext as byte array
       const ctStr = ctArray.map(byte => String.fromCharCode(byte)).join('');           // ciphertext as string
