@@ -17,7 +17,7 @@
 /**
  * @fileoverview Polyfill for TextEncoder and TextDecoder.
  *
- * You probably want `text.min.js`, and not this file directly.
+ * You probably want "text.min.js", and not this file directly.
  */
 
 (function(scope) {
@@ -32,10 +32,10 @@ if (scope['TextEncoder'] && scope['TextDecoder']) {
  * @constructor
  * @param {string=} utfLabel
  */
-function FastTextEncoder(utfLabel='utf-8') {
-  if (utfLabel !== 'utf-8') {
+function FastTextEncoder(utfLabel) {
+  if (utfLabel && utfLabel !== 'utf-8') {
     throw new RangeError(
-      `Failed to construct 'TextEncoder': The encoding label provided ('${utfLabel}') is invalid.`);
+      "Failed to construct 'TextEncoder': The encoding label provided ( " + utfLabel + " ) is invalid.");
   }
 }
 
@@ -46,25 +46,25 @@ Object.defineProperty(FastTextEncoder.prototype, 'encoding', {value: 'utf-8'});
  * @param {{stream: boolean}=} options
  * @return {!Uint8Array}
  */
-FastTextEncoder.prototype.encode = function(string, options={stream: false}) {
-  if (options.stream) {
-    throw new Error(`Failed to encode: the 'stream' option is unsupported.`);
+FastTextEncoder.prototype.encode = function(string, options) {
+  if (options && options.stream) {
+    throw new Error("Failed to encode: the 'stream' option is unsupported.");
   }
 
-  let pos = 0;
-  const len = string.length;
-  const out = [];
+  var pos = 0;
+  var len = string.length;
+  var out = [];
 
-  let at = 0;  // output position
-  let tlen = Math.max(32, len + (len >> 1) + 7);  // 1.5x size
-  let target = new Uint8Array((tlen >> 3) << 3);  // ... but at 8 byte offset
+  var at = 0;  // output position
+  var tlen = Math.max(32, len + (len >> 1) + 7);  // 1.5x size
+  var target = new Uint8Array((tlen >> 3) << 3);  // ... but at 8 byte offset
 
   while (pos < len) {
-    let value = string.charCodeAt(pos++);
+    var value = string.charCodeAt(pos++);
     if (value >= 0xd800 && value <= 0xdbff) {
       // high surrogate
       if (pos < len) {
-        const extra = string.charCodeAt(pos);
+        var extra = string.charCodeAt(pos);
         if ((extra & 0xfc00) === 0xdc00) {
           ++pos;
           value = ((value & 0x3ff) << 10) + (extra & 0x3ff) + 0x10000;
@@ -81,7 +81,7 @@ FastTextEncoder.prototype.encode = function(string, options={stream: false}) {
       tlen *= (1.0 + (pos / string.length) * 2);  // take 2x the remaining
       tlen = (tlen >> 3) << 3;  // 8 byte offset
 
-      const update = new Uint8Array(tlen);
+      var update = new Uint8Array(tlen);
       update.set(target);
       target = update;
     }
@@ -114,13 +114,13 @@ FastTextEncoder.prototype.encode = function(string, options={stream: false}) {
  * @param {string=} utfLabel
  * @param {{fatal: boolean}=} options
  */
-function FastTextDecoder(utfLabel='utf-8', options={fatal: false}) {
-  if (utfLabel !== 'utf-8') {
+function FastTextDecoder(utfLabel, options) {
+  if (utfLabel && utfLabel !== 'utf-8') {
     throw new RangeError(
-      `Failed to construct 'TextDecoder': The encoding label provided ('${utfLabel}') is invalid.`);
+      "Failed to construct 'TextDecoder': The encoding label provided ( " + utfLabel + " ) is invalid.");
   }
-  if (options.fatal) {
-    throw new Error(`Failed to construct 'TextDecoder': the 'fatal' option is unsupported.`);
+  if (options && options.fatal) {
+    throw new Error("Failed to construct 'TextDecoder': the 'fatal' option is unsupported.");
   }
 }
 
@@ -134,38 +134,38 @@ Object.defineProperty(FastTextDecoder.prototype, 'ignoreBOM', {value: false});
  * @param {(!ArrayBuffer|!ArrayBufferView)} buffer
  * @param {{stream: boolean}=} options
  */
-FastTextDecoder.prototype.decode = function(buffer, options={stream: false}) {
-  if (options['stream']) {
-    throw new Error(`Failed to decode: the 'stream' option is unsupported.`);
+FastTextDecoder.prototype.decode = function(buffer, options) {
+  if (options && options['stream']) {
+    throw new Error("Failed to decode: the 'stream' option is unsupported.");
   }
 
-  const bytes = new Uint8Array(buffer);
-  let pos = 0;
-  const len = bytes.length;
-  const out = [];
+  var bytes = new Uint8Array(buffer);
+  var pos = 0;
+  var len = bytes.length;
+  var out = [];
 
   while (pos < len) {
-    const byte1 = bytes[pos++];
+    var byte1 = bytes[pos++];
     if (byte1 === 0) {
       break;  // NULL
     }
-  
+
     if ((byte1 & 0x80) === 0) {  // 1-byte
       out.push(byte1);
     } else if ((byte1 & 0xe0) === 0xc0) {  // 2-byte
-      const byte2 = bytes[pos++] & 0x3f;
+      var byte2 = bytes[pos++] & 0x3f;
       out.push(((byte1 & 0x1f) << 6) | byte2);
     } else if ((byte1 & 0xf0) === 0xe0) {
-      const byte2 = bytes[pos++] & 0x3f;
-      const byte3 = bytes[pos++] & 0x3f;
+      var byte2 = bytes[pos++] & 0x3f;
+      var byte3 = bytes[pos++] & 0x3f;
       out.push(((byte1 & 0x1f) << 12) | (byte2 << 6) | byte3);
     } else if ((byte1 & 0xf8) === 0xf0) {
-      const byte2 = bytes[pos++] & 0x3f;
-      const byte3 = bytes[pos++] & 0x3f;
-      const byte4 = bytes[pos++] & 0x3f;
+      var byte2 = bytes[pos++] & 0x3f;
+      var byte3 = bytes[pos++] & 0x3f;
+      var byte4 = bytes[pos++] & 0x3f;
 
       // this can be > 0xffff, so possibly generate surrogates
-      let codepoint = ((byte1 & 0x07) << 0x12) | (byte2 << 0x0c) | (byte3 << 0x06) | byte4;
+      var codepoint = ((byte1 & 0x07) << 0x12) | (byte2 << 0x0c) | (byte3 << 0x06) | byte4;
       if (codepoint > 0xffff) {
         // codepoint &= ~0x10000;
         codepoint -= 0x10000;
