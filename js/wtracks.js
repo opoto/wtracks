@@ -1144,7 +1144,7 @@ function uploadClicked(){
     .then(function(cipher) {
       //log("iv  : " + cipher.iv);
       //log("pwd : " + pwd);
-      keyparam = "&key=" + strencode("01" + cipher.iv + pwd);
+      keyparam = "&key=" + "01" +strencode(cipher.iv + pwd);
       gpx = cipher.ciphertext;
       ga('send', 'event', 'file', 'encrypt', undefined, Math.round(gpx.length / 1000));
       shareGpx(gpx, keyparam);
@@ -2396,11 +2396,11 @@ function loadFromUrl(url, options) {
           setStatus("Your browser does not support encrypted files", { timeout: 5, class: "status-error" });
           return;
         }
-        var key = encodeURIComponent(options.key);
+        var v = options.key.substring(0,2); // version, ignored for now
+        var key = encodeURIComponent(options.key.substring(2));
         var deckey = strdecode(key, key);
-        var v = deckey.substring(0,2); // version, ignored for now
-        var iv = deckey.substring(2,26);
-        var pwd = deckey.substring(26);
+        var iv = deckey.substring(0,24);
+        var pwd = deckey.substring(24);
         //log("iv  : " + iv);
         //log("pwd : " + pwd);
         ga('send', 'event', 'file', 'decrypt', undefined, Math.round(data.length / 1000));
