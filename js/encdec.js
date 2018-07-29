@@ -3,9 +3,6 @@
  * Requires WebCrypto API, TextEncoder/TextDecoder and Promise (>= ES6)
  */
 
-if (crypto && !crypto.subtle && crypto.webkitSubtle) {
-  crypto.subtle = crypto.webkitSubtle;
-}
 
 /**
  * Check if required dependencies are available
