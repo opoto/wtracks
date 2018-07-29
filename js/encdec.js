@@ -3,6 +3,9 @@
  * Requires WebCrypto API, TextEncoder/TextDecoder and Promise (>= ES6)
  */
 
+if (crypto && !crypto.subtle && crypto.webkitSubtle) {
+  crypto.subtle = crypto.webkitSubtle;
+}
 
 /**
  * Check if required dependencies are available
@@ -50,10 +53,10 @@ function aesGcmEncrypt(plaintext, password) {
     .then( function(ctBuffer) {
 
       var ctArray = Array.from(new Uint8Array(ctBuffer));                            // ciphertext as byte array
-      var ctStr = ctArray.map(function(byte) { String.fromCharCode(byte); } ).join('');           // ciphertext as string
+      var ctStr = ctArray.map(function(byte) { return String.fromCharCode(byte); } ).join('');           // ciphertext as string
       var ctBase64 = btoa(ctStr);                                                    // encode ciphertext as base64
 
-      var ivHex = Array.from(alg.iv).map(function(b) { ('00' + b.toString(16)).slice(-2); } ).join(''); // iv as hex string
+      var ivHex = Array.from(alg.iv).map(function(b) { return ('00' + b.toString(16)).slice(-2); } ).join(''); // iv as hex string
 
       resolve({ iv:ivHex, ciphertext:ctBase64 });                                      // return {iv,ciphertext}
 
@@ -82,7 +85,7 @@ function aesGcmDecrypt(ciphertext, iv, password) {
     return crypto.subtle.digest('SHA-256', pwUtf8)                                     // hash the password
     .then(function(pwHash){
 
-      iv = iv.match(/.{2}/g).map(function(byte) { parseInt(byte, 16); });                          // convert iv to bytes
+      iv = iv.match(/.{2}/g).map(function(byte) { return parseInt(byte, 16); });                          // convert iv to bytes
 
       alg.iv = new Uint8Array(iv);                                                     // specify algorithm to use
 
@@ -91,7 +94,7 @@ function aesGcmDecrypt(ciphertext, iv, password) {
     })
     .then(function(key){
       var ctStr = atob(ciphertext);                                                  // decode base64 ciphertext
-      var ctUint8 = new Uint8Array(ctStr.match(/[\s\S]/g).map(function(ch) { ch.charCodeAt(0); } ));// ciphertext as Uint8Array
+      var ctUint8 = new Uint8Array(ctStr.match(/[\s\S]/g).map(function(ch) { return ch.charCodeAt(0); } ));// ciphertext as Uint8Array
 
       return crypto.subtle.decrypt(alg, key, ctUint8);                                 // decrypt ciphertext using key
     })
