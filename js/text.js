@@ -106,7 +106,9 @@ FastTextEncoder.prototype.encode = function(string, options) {
     target[at++] = (value & 0x3f) | 0x80;
   }
 
-  return target.slice(0, at);
+  // Safari 8 has subarray instead of slice
+  var cut = target.slice ? target.slice : target.subarray;
+  return cut(0, at);
 }
 
 /**
