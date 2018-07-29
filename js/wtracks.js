@@ -2394,6 +2394,7 @@ function loadFromUrl(url, options) {
       if (options.key) {
         if (!isCryptoSupported()) {
           setStatus("Your browser does not support encrypted files", { timeout: 5, class: "status-error" });
+          newTrack();
           return;
         }
         var v = options.key.substring(0,2); // version, ignored for now
