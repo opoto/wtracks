@@ -1150,6 +1150,7 @@ function uploadClicked(){
       shareGpx(gpx, keyparam);
     })
     .catch(function(err) {
+      ga('send', 'event', 'error', 'crypto-encrypt', err);
       setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
       $("#share-box").hide();
     });
@@ -2393,7 +2394,8 @@ function loadFromUrl(url, options) {
       loadCount = 0;
       if (options.key) {
         if (!isCryptoSupported()) {
-          setStatus("Your browser does not support encrypted files", { timeout: 5, class: "status-error" });
+          ga('send', 'event', 'error', 'crypto-not-supported', navigator.userAgent);
+          alert("Sorry, you cannot load this file: it is encrypted, and your browser does not provide the required services to decrypt it.");
           newTrack();
           return;
         }
@@ -2410,6 +2412,7 @@ function loadFromUrl(url, options) {
           fileloader.loadData(gpx, url, options.ext);
         })
         .catch(function(err) {
+          ga('send', 'event', 'error', 'crypto-decrypt', err);
           setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
         });
       } else {
