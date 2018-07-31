@@ -711,7 +711,7 @@ function newWaypoint(latlng, properties, wptLayer) {
 
   if (wptLayer == waypoints) {
     marker.on("click", function() {
-      pop = L.popup()
+      pop = L.popup({ "className" : "overlay" })
         .setLatLng(marker.getLatLng())
         .setContent(getMarkerPopupContent(marker))
         .openOn(map);
@@ -2084,9 +2084,18 @@ $("body").keydown(function(event) {
   nOverlays = openedOverlays();
   // ignore control keys
   if (event.which == 17) return;
-  // close menu on escape
-  if ((event.which == 27) && (nOverlays == 1) && isMenuVisible()) {
-    closeMenu();
+  // on escape
+  if ((event.which == 27) && (nOverlays == 1)) {
+    if (isMenuVisible()) {
+      // close menu
+      closeMenu();
+      return;
+    }
+    if ($(".overlay:visible").hasClass("leaflet-popup")) {
+      // close popup
+      map.closePopup();
+      return;
+    }
   }
   // ignore if an overlay is open
   if ((nOverlays > 0) || isUserInputOngoing()) return;
@@ -2585,7 +2594,7 @@ var MAX_ROUTE_WPTS = 2;
 function newRouteWaypoint(i, waypoint, n) {
 
   function getRouteWaypoinContent(latlng, index) {
-    var div = document.createElement("div overlay");
+    var div = document.createElement("div");
 
     p = L.DomUtil.create("div", "popupdiv ptbtn", div);
     var del = L.DomUtil.create('a', "", p);
@@ -2623,7 +2632,7 @@ function newRouteWaypoint(i, waypoint, n) {
 
   marker.on("click", function(e) {
 
-    var pop = L.popup()
+    var pop = L.popup({ "className" : "overlay" })
       .setLatLng(e.latlng)
       .setContent(getRouteWaypoinContent(e.latlng, i))
       .openOn(map);
@@ -2794,7 +2803,7 @@ function getTrackPointPopupContent(latlng) {
 }
 
 function getLatLngPopupContent(latlng, deletefn, splitfn, toadd) {
-  var div = L.DomUtil.create("div", "overlay");
+  var div = L.DomUtil.create("div");
   var p;
 
   p = L.DomUtil.create("div", "popupdiv", div);
@@ -3103,7 +3112,7 @@ map.on('editable:vertex:click', function(e) {
   if ((i>1) & (i<len-1)) {
     splitfn = splitSegment;
   }
-  var pop = L.popup()
+  var pop = L.popup({ "className" : "overlay" })
     .setLatLng(e.latlng)
     .setContent(getLatLngPopupContent(e.latlng, deleteTrackPoint, splitfn, div))
     .openOn(map);
