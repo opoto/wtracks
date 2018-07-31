@@ -2679,10 +2679,10 @@ function dist2txt(dist, noUnits) {
   var unit = "m";
   var roundFactor = 1;
   if (isImperial()) {
-    dist = dist / 0.9144;
+    dist /= 0.9144;
     unit = "yd";
-    if (dist > 2000) {
-      dist *= 0.000568182;
+    if (dist > 1000) {
+      dist /= 1760;
       unit = "mi";
       roundFactor = 10;
     }
