@@ -1929,8 +1929,8 @@ function callElevationService(callerName, locations, points, inc, cb) {
 var elevate = elevatePoints;
 var elevatePoint = elevatePoints;
 var elevationService =
-      googleElevationService;
-      //openElevationService;
+      //googleElevationService;
+      openElevationService;
 
 // ---------------------------------------------------------------------------
 
