@@ -890,7 +890,7 @@ function updateApiKey(name) {
 
 function checkApikey(name) {
   var useDefault = !isChecked("#" + name + "-chk");
-  $("#" + name + "-value").val(useDefault ? "Using WTracks key": "");
+  $("#" + name + "-value").val(useDefault ? "Using WTracks defaults": "");
   $("#" + name + "-value").attr("disabled", useDefault);
   var key = updateApiKey(name);
   return key;
@@ -1928,8 +1928,8 @@ function callElevationService(callerName, locations, points, inc, cb) {
 // Select elevation service
 var elevate = elevatePoints;
 var elevatePoint = elevatePoints;
-var elevationService =
-      //googleElevationService;
+var elevationService = ggkey ?
+      googleElevationService :
       openElevationService;
 
 // ---------------------------------------------------------------------------
