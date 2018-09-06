@@ -683,6 +683,9 @@ button:active, #track-upload-label:active {
     margin-bottom: 10px;
     display: block;
   }
+  #share-links input {
+    width: 80%;
+  }
   .statistics th {
     display: none;
   }
