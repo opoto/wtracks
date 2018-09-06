@@ -598,7 +598,7 @@
           The decryption key will be included in the shareable link you will be provided.
           The encrypted track cannot be decrypted without this link.
         </p>
-        <button id="share-start" class="ok-btn">Upload</button>
+        <button id="share-start" class="ok-btn">Continue</button>
         <button id="share-cancel" class="cancel-btn">Cancel</button>
       </div>
       <div id="share-processing">
@@ -611,9 +611,10 @@
       </div>
       <div id="share-done">
         <div id="share-links">
-          <p>Copy and share the link below to reopen current track.</p>
+          <p>Here is the link to your track, copy and share it.</p>
           <p>
-            <input id="share-val" type="text" size="50" value="" />
+            <i class="material-icons copyonclick" title="Copy link" id="-share-val">filter_none</i>
+            <input id="share-val" type="text" size="50" value="" disabled readonly/>
             <a href="#" id="share-viewqr" title="View link as QR Code"><img src='img/qrcode.png' alt='QRCode'></a>
           </p>
           <p>
