@@ -100,6 +100,8 @@ var EDIT_MARKER = 3;
 var EDIT_DEFAULT = EDIT_MANUAL_TRACK;
 var editMode = -1;
 
+var ghkey = getVal("wt.ghkey", undefined);
+var ggkey = getVal("wt.ggkey", undefined);
 
 var MARKER_ICON = L.icon({
   iconUrl: 'img/marker-icon.png',
@@ -115,7 +117,8 @@ var MARKER_ICON = L.icon({
 
 // load Google Maps API
 var gk = ggkey ? ggkey : config.google.mapsapikey();
-gk = $.getScript("https://maps.googleapis.com/maps/api/js" + (gk ? "?key=" + gk : ""));
+$.getScript("https://maps.googleapis.com/maps/api/js" + (gk ? "?key=" + gk : ""));
+
 // load Dropbox API
 $("#dropboxjs").attr("data-app-key", config.dropbox.key());
 $("#dropboxjs").attr("src", "https://www.dropbox.com/static/api/2/dropins.js");
@@ -883,9 +886,6 @@ function initTrackDisplaySettings() {
 
 /* --------------------------------------*/
 // API keys
-
-var ghkey = getVal("wt.ghkey", undefined);
-var ggkey = getVal("wt.ggkey", undefined);
 
 function showApiKey(name, value) {
   var useDefault = isUndefined(value);
