@@ -327,6 +327,12 @@ var config = {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> | <a href="http://wiki.openstreetmap.org/wiki/Hiking/mri">MRI</a>'
       }
     },
+    "FI MML": {
+      url: "//avoin-karttakuva.maanmittauslaitos.fi/avoin/wmts/1.0.0/maastokartta/default/WGS84_Pseudo-Mercator/{z}/{y}/{x}.png",
+      options: {
+          attribution: "&copy; Maanmittauslaitos"
+        }
+    },
     "FI MapAnts": {
       url: '//wmts.mapant.fi/wmts_EPSG3857.php?z={z}&x={x}&y={y}',
       options: {
