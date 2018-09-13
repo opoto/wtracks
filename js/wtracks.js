@@ -1429,6 +1429,7 @@ function joinSegments() {
     track = null;
     segmentClickListener({target: seg1}, true);
     saveState();
+    polystats.updateStatsFrom(0);
     setStatus("Joined " + count + " segments", { timeout: 3 });
     ga('send', 'event', 'tool', 'join', undefined, count);
   } else {
