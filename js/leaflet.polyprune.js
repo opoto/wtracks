@@ -82,20 +82,23 @@
                         if (!isNaN(zDelta)) {
                           closestPoint.alt = startLine.alt + zDelta / 2;
                         }
-                    }
-
-                    var u = ((latlng.lng - startLine.lng) * xDelta + (latlng.lat - startLine.lat) * yDelta) / (xDelta * xDelta + yDelta * yDelta);
-
-                    if (u < 0) {
-                        closestPoint = startLine;
-                    } else if (u > 1) {
-                        closestPoint = endLine;
                     } else {
-                        closestPoint = L.latLng(startLine.lat + u * yDelta, startLine.lng + u * xDelta);
-                        if (!isNaN(zDelta)) {
-                          closestPoint.alt = startLine.alt + u * zDelta;
-                        }
+
+                      var u = ((latlng.lng - startLine.lng) * xDelta + (latlng.lat - startLine.lat) * yDelta) / (xDelta * xDelta + yDelta * yDelta);
+
+                      if (u < 0) {
+                          closestPoint = startLine;
+                      } else if (u > 1) {
+                          closestPoint = endLine;
+                      } else {
+                          closestPoint = L.latLng(startLine.lat + u * yDelta, startLine.lng + u * xDelta);
+                          if (!isNaN(zDelta)) {
+                            closestPoint.alt = startLine.alt + u * zDelta;
+                          }
+                      }
+
                     }
+
 
                     var dist2d = latlng.distanceTo(closestPoint);
                     var dist3d;
