@@ -60,7 +60,7 @@ body {
 }
 
 #menu {
-  max-width: 90%;
+  width: 500px;
   background: #eee;
   border: 1px solid black;
   position: fixed;
@@ -678,6 +678,9 @@ button:active, #track-upload-label:active {
 @media screen and (max-width: 480px) {
   .title {
     max-width: 80%;
+  }
+  #menu {
+    width: 380px;
   }
   .share-item {
     margin-bottom: 10px;
