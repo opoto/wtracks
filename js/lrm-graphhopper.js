@@ -283,7 +283,7 @@ if (typeof module !== undefined) module.exports = polyline;
 			    path;
 
 			context = context || callback;
-			if (response.info.errors && response.info.errors.length) {
+			if (response.info && response.info.errors && response.info.errors.length) {
 				callback.call(context, {
 					// TODO: include all errors
 					status: response.info.errors[0].details,
@@ -379,13 +379,16 @@ if (typeof module !== undefined) module.exports = polyline;
 					6: 'Roundabout'
 				},
 				result = [],
-			    i,
-			    instr;
+		    i,
+		    instr,
+        type;
 
 			for (i = 0; instructions && i < instructions.length; i++) {
 				instr = instructions[i];
+        type = signToType[instr.sign];
 				result.push({
-					type: signToType[instr.sign],
+          type: type,
+          modifier: type,
 					text: instr.text,
 					distance: instr.distance,
 					time: instr.time / 1000,
