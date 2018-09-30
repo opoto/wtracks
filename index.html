@@ -80,20 +80,35 @@
       <li><a href="#" class="tablinks" id="tababout">About</a></li>
     </ul>
     <table id="menufile">
-      <tr>
+      <tr class="nobottomborder">
+        <td colspan="2">
+          <div>
+            <span class="fold fold-file-closed material-icons" id="file-newtrk-closed">&#xE5CC;</span>
+            <span class="fold-file newtrk material-icons">&#xE5CF;</span>
+            <span  class="fold" id="file-newtrk">New Track</span>
+          </div>
+        </td>
+      </tr>
+      <tr class="notopborder fold-file newtrk">
         <td>
           <button id="track-new" title="Start a new track from scratch">New Track</button>
         </td>
         <td>
-          <span id="newtracktxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
-          <p id="newtracktxt-help" class="help-p">
-            Discard current editor content and start a new track
-          </p>
+          Discard current editor content and start a new track
         </td>
       </tr>
       <tr class="nobottomborder">
+        <td colspan="2">
+          <div>
+            <span class="fold fold-file-closed material-icons" id="file-load-closed">&#xE5CC;</span>
+            <span class="fold-file load material-icons">&#xE5CF;</span>
+            <span  class="fold" id="file-load">Load</span>
+          </div>
+        </td>
+      </tr>
+      <tr class="notopborder nobottomborder fold-file load">
         <td>
-          <span>Load file:</span>
+          <span>Options</span>
         </td>
         <td>
           <label><input type="checkbox" id="merge"/>Merge</label>
@@ -109,7 +124,7 @@
           </p>
         </td>
       </tr>
-      <tr class="nobottomborder notopborder">
+      <tr class="nobottomborder notopborder fold-file load">
         <td>
         </td>
         <td>
@@ -126,12 +141,12 @@
           </p>
         </td>
       </tr>
-      <tr class="nobottomborder notopborder">
+      <tr class="nobottomborder notopborder fold-file load">
         <td>
           <label id="track-upload-label">
             <input type="file" name="track" id="track-upload" multiple="multiple" accept=".gpx,.kml,.geojson"/>
             <span>
-              Select
+              File
             </span>
           </label>
         </td>
@@ -139,7 +154,7 @@
           Open a file from your device<br/>
         </td>
       </tr>
-      <tr class="nobottomborder notopborder">
+      <tr class="nobottomborder notopborder fold-file load">
         <td>
           <button id="track-get" title="Load a file from the internet">
             Get from:
@@ -154,7 +169,7 @@
           </p>
         </td>
       </tr>
-      <tr class="notopborder">
+      <tr class="notopborder fold-file load">
         <td>
           <button id="dropbox-chooser" title="Load a track from your Dropbox">
             <span id="dropbox-logo"></span>
@@ -166,9 +181,18 @@
         </td>
       </tr>
       <tr class="nobottomborder">
+        <td colspan="2">
+          <div>
+            <span class="fold fold-file-closed material-icons" id="file-save-closed">&#xE5CC;</span>
+            <span class="fold-file save material-icons">&#xE5CF;</span>
+            <span  class="fold" id="file-save">Save</span>
+          </div>
+        </td>
+      </tr>
+      <tr class="notopborder nobottomborder fold-file save">
         <td>
           <button id="track-download" title="Download as a GPX file">
-            Save
+            As File
           </button>
           <br/>
           <button id="dropbox-saver" title="Save track in your Dropbox">
@@ -199,7 +223,16 @@
           </p>
         </td>
       </tr>
-      <tr class="notopborder">
+      <tr class="nobottomborder">
+        <td colspan="2">
+          <div>
+            <span class="fold fold-file-closed material-icons" id="file-share-closed">&#xE5CC;</span>
+            <span class="fold-file share material-icons">&#xE5CF;</span>
+            <span class="fold" id="file-share">Share</span>
+          </div>
+        </td>
+      </tr>
+      <tr class="notopborder fold-file share">
         <td>
           <button id="track-share" title="Share through a link">
             Share
@@ -293,27 +326,36 @@
       </tr>
     </table>
     <table id="menusettings">
-      <tr>
+      <tr class="nobottomborder">
+        <td colspan="2">
+          <div>
+            <span class="fold fold-settings-closed material-icons" id="settings-savstg-closed">&#xE5CC;</span>
+            <span class="fold-settings savstg material-icons">&#xE5CF;</span>
+            <span  class="fold" id="settings-savstg">Remember me</span>
+            <span id="cfgsavetxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+            <p id="cfgsavetxt-help" class="help-p">
+              Your WTracks editor status will be saved continuously in your browser local storage,
+              so that when you close and reopen it later it will restore the same content and settings.
+            </p>
+          </div>
+        </td>
+      </tr>
+      <tr class="notopborder fold-settings savstg">
         <td>
           <input id="cfgsave" class="no-trim" type="checkbox" />
         </td>
         <td>
           <label for="cfgsave">Locally save editor's state between sessions</label>
-          <span id="cfgsavetxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <br/>
           Privacy warning: state is shared with all users of this browser profile
-          <p id="cfgsavetxt-help" class="help-p">
-            Your WTracks editor status will be saved continuously in your browser local storage,
-            so that when you close and reopen it later it will restore the same content and settings.
-          </p>
         </td>
       </tr>
       <tr class="nobottomborder">
         <td colspan="2">
           <div>
-            <span class="mapstg-toggle toggle-hidden toggle material-icons" id="mapstg1">&#xE5CC;</span>
-            <span class="mapstg-toggle toggle material-icons" id="mapstg2">&#xE5CF;</span>
-            <span  class="toggle" id="mapstg3">Personal background maps:</span>
+            <span class="fold fold-settings-closed material-icons" id="settings-mapstg-closed">&#xE5CC;</span>
+            <span class="fold-settings mapstg material-icons">&#xE5CF;</span>
+            <span  class="fold" id="settings-mapstg">Personal background maps</span>
             <span id="mapopts" class="help-b material-icons" title="Help">&#xE8FD;</span>
             <p id="mapopts-help" class="help-p">
               Configure your own map backgrounds.
@@ -321,7 +363,7 @@
           </div>
         </td>
       </tr>
-      <tr class="notopborder mapstg-toggle">
+      <tr class="notopborder fold-settings mapstg">
         <td>
         </td>
         <td>
@@ -342,9 +384,9 @@
       <tr class="nobottomborder">
         <td colspan="2">
           <div>
-            <span class="trkstg-toggle toggle-hidden toggle material-icons" id="trkstg1">&#xE5CC;</span>
-            <span class="trkstg-toggle toggle material-icons" id="trkstg2">&#xE5CF;</span>
-            <span  class="toggle" id="trkstg3">Track display options:</span>
+            <span class="fold fold-settings-closed material-icons" id="settings-trkstg-closed">&#xE5CC;</span>
+            <span class="fold-settings trkstg material-icons">&#xE5CF;</span>
+            <span  class="fold" id="settings-trkstg">Track display options</span>
             <span id="trkopts" class="help-b material-icons" title="Help">&#xE8FD;</span>
             <p id="trkopts-help" class="help-p">
               Configure the color and width of your track on the map.
@@ -352,7 +394,7 @@
           </div>
         </td>
       </tr>
-      <tr class="notopborder trkstg-toggle">
+      <tr class="notopborder fold-settings trkstg">
         <td>
         </td>
         <td>
@@ -381,9 +423,9 @@
       <tr class="nobottomborder">
         <td colspan="2">
           <div>
-            <span class="apistg-toggle toggle-hidden toggle material-icons" id="apistg1">&#xE5CC;</span>
-            <span class="apistg-toggle toggle material-icons" id="apistg2">&#xE5CF;</span>
-            <span  class="toggle" id="apistg3">API keys:</span>
+            <span class="fold fold-settings-closed material-icons" id="settings-apistg-closed">&#xE5CC;</span>
+            <span class="fold-settings apistg material-icons" id="apistg2">&#xE5CF;</span>
+            <span  class="fold" id="settings-apistg">API keys</span>
             <span id="keystxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
             <p id="keystxt-help" class="help-p">
               Set your own API keys to bypass WTracks quota limits.
@@ -393,7 +435,7 @@
           </div>
         </td>
       </tr>
-      <tr class="notopborder apistg-toggle">
+      <tr class="notopborder fold-settings apistg">
         <td>
         </td>
         <td>

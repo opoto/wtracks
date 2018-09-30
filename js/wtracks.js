@@ -35,6 +35,22 @@ function toggleElement(e) {
 }
 $(".toggle").click(toggleElement);
 
+/* folding settings */
+function openFolder(id) {
+  eltInfo = id.split("-");
+  // hide all group
+  $(".fold-" + eltInfo[0]).hide();
+  $(".fold-" + eltInfo[0] + "-closed").show();
+  // show
+  $("." + eltInfo[1]).show();
+  $("#" + eltInfo[0] + "-" + eltInfo[1] + "-closed").hide();
+}
+$(".fold").click(function(e) { openFolder(e.target.id); });
+
+// defaults
+openFolder("file-newtrk");
+openFolder("settings-savstg");
+
 /* help buttons */
 function toggleHelp(e) {
   $("#" + this.id + "-help").toggle();
@@ -1628,6 +1644,7 @@ $("#save-yes").click(function() {
 $("#save-no").click(function() {
   saveInfo(false);
   menu("settings");
+  openFolder(settings-savstg)
   var saveSetting = $("#menusettings tr:first-of-type");
   saveSetting.addClass("highlight");
   setTimeout(function(){
