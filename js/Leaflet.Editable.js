@@ -150,7 +150,7 @@
         },
 
         createVertexIcon: function (options) {
-            return L.Browser.touch ? new L.Editable.TouchVertexIcon(options) : new L.Editable.VertexIcon(options);
+            return L.Browser.mobile && L.Browser.touch ? new L.Editable.TouchVertexIcon(options) : new L.Editable.VertexIcon(options);
         },
 
         createEditLayer: function () {
@@ -223,22 +223,14 @@
             }
         },
 
-        isChromeMobile: function() {
-            return L.Browser.chrome && L.Browser.mobile;
-        },
-
         registerForDrawing: function (editor) {
             if (this._drawingEditor) this.unregisterForDrawing(this._drawingEditor);
             this.blockEvents();
             editor.reset();  // Make sure editor tools still receive events.
             this._drawingEditor = editor;
             this.map.on('mousemove touchmove', editor.onDrawingMouseMove, editor);
-            if (this.isChromeMobile()) {
-              this.map.on('click', this.onClick, this);
-            } else { // touchstart touchend ?
-              this.map.on('mousedown', this.onMousedown, this);
-              this.map.on('mouseup', this.onMouseup, this);
-            }
+            this.map.on('mousedown', this.onMousedown, this);
+            this.map.on('mouseup', this.onMouseup, this);
             L.DomUtil.addClass(this.map._container, this.options.drawingCSSClass);
             this.defaultMapCursor = this.map._container.style.cursor;
             this.map._container.style.cursor = this.options.drawingCursor;
@@ -251,18 +243,15 @@
             editor = editor || this._drawingEditor;
             if (!editor) return;
             this.map.off('mousemove touchmove', editor.onDrawingMouseMove, editor);
-            if (this.isChromeMobile()) {
-              this.map.off('click', this.onClick, this);
-            } else { // touchstart touchend ?
-              this.map.off('mousedown', this.onMousedown, this);
-              this.map.off('mouseup', this.onMouseup, this);
-            }
+            this.map.off('mousedown', this.onMousedown, this);
+            this.map.off('mouseup', this.onMouseup, this);
             if (editor !== this._drawingEditor) return;
             delete this._drawingEditor;
             if (editor._drawing) editor.cancelDrawing();
         },
 
         onMousedown: function (e) {
+            if (e.originalEvent.which != 1) return;
             this._mouseDown = e;
             this._drawingEditor.onDrawingMouseDown(e);
         },
@@ -278,11 +267,6 @@
                 var distance = L.point(e.originalEvent.clientX, e.originalEvent.clientY).distanceTo(origin);
                 if (Math.abs(distance) < 9 * (window.devicePixelRatio || 1)) this._drawingEditor.onDrawingClick(e);
             }
-        },
-
-        onClick: function(e) {
-            this.onMousedown(e);
-            this.onMouseup(e);
         },
 
         // 🍂section Public methods
@@ -437,7 +421,7 @@
         editable: false,
 
         // 🍂option editOptions: hash = {}
-        // Options to pass to L.Editable when instanciating.
+        // Options to pass to L.Editable when instantiating.
         editOptions: {}
 
     });
@@ -504,6 +488,8 @@
             this.on('click', this.onClick);
             this.on('contextmenu', this.onContextMenu);
             this.on('mousedown touchstart', this.onMouseDown);
+            this.on('mouseover', this.onMouseOver);
+            this.on('mouseout', this.onMouseOut);
             this.addMiddleMarkers();
         },
 
@@ -517,6 +503,8 @@
             this.off('click', this.onClick);
             this.off('contextmenu', this.onContextMenu);
             this.off('mousedown touchstart', this.onMouseDown);
+            this.off('mouseover', this.onMouseOver);
+            this.off('mouseout', this.onMouseOut);
             L.Marker.prototype.onRemove.call(this, map);
         },
 
@@ -562,6 +550,16 @@
         onMouseDown: function (e) {
             e.vertex = this;
             this.editor.onVertexMarkerMouseDown(e);
+        },
+
+        onMouseOver: function (e) {
+            e.vertex = this;
+            this.editor.onVertexMarkerMouseOver(e);
+        },
+
+        onMouseOut: function (e) {
+            e.vertex = this;
+            this.editor.onVertexMarkerMouseOut(e);
         },
 
         // 🍂method delete()
@@ -789,7 +787,6 @@
             else this.feature.once('add', this.onFeatureAdd, this);
             this.onEnable();
             this.feature.on(this._getEvents(), this);
-            return;
         },
 
         // 🍂method disable(): this
@@ -801,7 +798,6 @@
             this.tools.editLayer.removeLayer(this.editLayer);
             this.onDisable();
             if (this._drawing) this.cancelDrawing();
-            return;
         },
 
         // 🍂method drawing(): boolean
@@ -940,7 +936,7 @@
             return this.map.hasLayer(this.feature);
         },
 
-        connect: function (e) {
+        connect: function () {
             this.tools.connectCreatedToMap(this.feature);
             this.tools.editLayer.addLayer(this.editLayer);
         },
@@ -1186,6 +1182,22 @@
             this.fireAndForward('editable:vertex:mousedown', e);
         },
 
+        onVertexMarkerMouseOver: function (e) {
+            // 🍂namespace Editable
+            // 🍂section Vertex events
+            // 🍂event editable:vertex:mouseover: VertexEvent
+            // Fired when a user's mouse enters the vertex
+            this.fireAndForward('editable:vertex:mouseover', e);
+        },
+
+        onVertexMarkerMouseOut: function (e) {
+            // 🍂namespace Editable
+            // 🍂section Vertex events
+            // 🍂event editable:vertex:mouseout: VertexEvent
+            // Fired when a user's mouse leaves the vertex
+            this.fireAndForward('editable:vertex:mouseout', e);
+        },
+
         onMiddleMarkerMouseDown: function (e) {
             // 🍂namespace Editable
             // 🍂section MiddleMarker events
@@ -1265,7 +1277,7 @@
         // 🍂method push()
         // Programmatically add a point while drawing.
         push: function (latlng) {
-            if (!latlng) return console.error('L.Editable.PathEditor.push expect a vaild latlng as parameter');
+            if (!latlng) return console.error('L.Editable.PathEditor.push expect a valid latlng as parameter');
             if (this._drawing === L.Editable.FORWARD) this.newPointForward(latlng);
             else this.newPointBackward(latlng);
         },
@@ -1619,7 +1631,7 @@
             e.originalEvent._simulated = false;
             this.map.dragging._draggable._onUp(e.originalEvent);
             // Now transfer ongoing drag action to the bottom right corner.
-            // Should we refine which corne will handle the drag according to
+            // Should we refine which corner will handle the drag according to
             // drag direction?
             latlngs[3].__vertex.dragging._draggable._onDown(e.originalEvent);
         },
@@ -1650,7 +1662,7 @@
             // Keep references.
             for (var i = 0; i < latlngs.length; i++) {
                 latlngs[i].update(newLatlngs[i]);
-            };
+            }
         }
 
     });
@@ -1697,7 +1709,7 @@
         },
 
         resize: function (e) {
-            var radius = this.feature._latlng.distanceTo(e.latlng)
+            var radius = this.feature._latlng.distanceTo(e.latlng);
             this.feature.setRadius(radius);
         },
 
@@ -1733,7 +1745,7 @@
 
     // 🍂namespace Editable; 🍂class EditableMixin
     // `EditableMixin` is included to `L.Polyline`, `L.Polygon`, `L.Rectangle`, `L.Circle`
-    // and `L.Marker`. It adds some methods to them.
+    // and `L.Marker`. It adds some methods to them.
     // *When editing is enabled, the editor is accessible on the instance with the
     // `editor` property.*
     var EditableMixin = {
@@ -1741,7 +1753,7 @@
         createEditor: function (map) {
             map = map || this._map;
             var tools = (this.options.editOptions || {}).editTools || map.editTools;
-            if (!tools) throw Error('Unable to detect Editable instance.')
+            if (!tools) throw Error('Unable to detect Editable instance.');
             var Klass = this.options.editorClass || this.getEditorClass(tools);
             return new Klass(map, this, this.options.editOptions);
         },
