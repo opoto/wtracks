@@ -60,6 +60,7 @@ body {
 }
 
 #menu {
+  max-width: 90%;
   width: 500px;
   background: #eee;
   border: 1px solid black;
