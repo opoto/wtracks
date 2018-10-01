@@ -1644,8 +1644,8 @@ $("#save-yes").click(function() {
 $("#save-no").click(function() {
   saveInfo(false);
   menu("settings");
-  openFolder(settings-savstg)
-  var saveSetting = $("#menusettings tr:first-of-type");
+  openFolder("settings-savstg");
+  var saveSetting = $("#menusettings tr:nth-child(-n+2)");
   saveSetting.addClass("highlight");
   setTimeout(function(){
     saveSetting.removeClass("highlight");
