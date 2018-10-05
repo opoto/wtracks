@@ -39,11 +39,15 @@ $(".toggle").click(toggleElement);
 function openFolder(id) {
   eltInfo = id.split("-");
   // hide all group
-  $(".fold-" + eltInfo[0]).hide();
+  $(".fold-" + eltInfo[0] + ":not(.fold-link)").hide();
   $(".fold-" + eltInfo[0] + "-closed").show();
+  $(".fold-link.fold-" +  eltInfo[0]).removeClass("fold-selected");
+  $(".fold-" + eltInfo[0] + "-closed").parent("div").removeClass("fold-selected-title");
   // show
   $("." + eltInfo[1]).show();
   $("#" + eltInfo[0] + "-" + eltInfo[1] + "-closed").hide();
+  $("#" + eltInfo[0] + "-" + eltInfo[1]).addClass("fold-selected");
+  $("#" + eltInfo[0] + "-" + eltInfo[1]).parent("div").addClass("fold-selected-title");
 }
 $(".fold").click(function(e) { openFolder(e.target.id); });
 

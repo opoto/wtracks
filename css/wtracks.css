@@ -131,6 +131,20 @@ body {
   color: #1992ca;
 }
 
+.fold-link,
+.fold-file-closed,
+.fold-settings-closed {
+  color: #1992ca;
+  cursor: pointer;
+}
+.fold-selected {
+  color: #000;
+  cursor: default;
+}
+.fold-selected-title {
+  background-color: #CCC;
+}
+
 .setting-name {
   width: 110px;
   display: inline-block;
@@ -679,9 +693,6 @@ button:active, #track-upload-label:active {
 @media screen and (max-width: 480px) {
   .title {
     max-width: 80%;
-  }
-  #menu {
-    width: 380px;
   }
   .share-item {
     margin-bottom: 10px;
