@@ -2687,12 +2687,12 @@ function newRouteWaypoint(i, waypoint, n) {
 
 // ------------ Length Unit
 
-var LENGTH_UNIT_METRIC = 0;
-var LENGTH_UNIT_IMPERIAL = 1;
+var LENGTH_UNIT_METRIC = "0";
+var LENGTH_UNIT_IMPERIAL = "1";
 
 var defaultLengthUnit = window.navigator.language === "en-US" ?
   LENGTH_UNIT_IMPERIAL : LENGTH_UNIT_METRIC;
-var lengthUnit = getNumVal("wt.lengthUnit", defaultLengthUnit);
+var lengthUnit = getVal("wt.lengthUnit", defaultLengthUnit);
 
 function isMetric() {
   return lengthUnit === LENGTH_UNIT_METRIC;
@@ -2751,22 +2751,20 @@ function dist2txt(dist, noUnits) {
 // ------------ Scale control and unit toggling
 
 var scaleCtrl;
-var scaleCtrlTimeout;
-var scaleCtrlPopups = getNumVal("wt.scaleCtrlPopups", config.scaleCtrlPopups);
 
 function updateUnitSystem(event) {
-  if (event && (editMode != EDIT_NONE)) {
-    return;
-  }
   if (scaleCtrl) {
     scaleCtrl.remove();
   }
   if (event) {
-    // toggle between 0 and 1
-    lengthUnit = (lengthUnit + 1) % 2;
+    // setting changed
+    lengthUnit = $("input[name=unitopt]:checked").val();
     saveValOpt("wt.lengthUnit", lengthUnit);
-    ga('send', 'event', 'setting', 'lengthUnit', undefined, lengthUnit);
+    ga('send', 'event', 'setting', 'lengthUnit', undefined, parseFloat(lengthUnit));
     showStats();
+  } else {
+    // init
+    $("input:radio[name=unitopt][value=" +  lengthUnit + "]").prop("checked",true);
   }
   $(".distUnit").text(isMetric() ? "meter" : "yard");
   scaleCtrl = L.control.scale({
@@ -2775,28 +2773,9 @@ function updateUnitSystem(event) {
     imperial: isImperial()
   });
   scaleCtrl.addTo(map);
-  $(".leaflet-control-scale").click(updateUnitSystem);
-  $(".leaflet-control-scale").on("mouseenter", function(e) {
-    // cancel after number of displays
-    if (scaleCtrlPopups < 1) {
-      if (scaleCtrlPopups == 0) {
-        scaleCtrlPopups--;
-        // after number of visits the popup will not be displayed anymore
-        saveValOpt("wt.scaleCtrlPopups", Math.max(1, getNumVal("wt.scaleCtrlPopups", config.scaleCtrlPopups) - 2));
-      }
-      return;
-    }
-    // cancel if already being displayed
-    if (scaleCtrlTimeout) return;
-    scaleCtrlTimeout = setTimeout(function(){
-      scaleCtrlTimeout = undefined;
-      $("#scale-ctrl-help").hide(800);
-    }, 3000);
-    scaleCtrlPopups--;
-    $("#scale-ctrl-help").show(200);
-  });
 }
 updateUnitSystem();
+$("input:radio[name=unitopt]").change(updateUnitSystem);
 
 // --------------- Time
 
