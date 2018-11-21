@@ -2119,7 +2119,6 @@ $("body").keydown(function(event) {
     case 70: // 'f' - find address
       $(".glass")[0].click();
       return false;
-      break;
     case 76: // 'l' - my location
       showLocation = LOC_ONCE;
       gotoMyLocation();

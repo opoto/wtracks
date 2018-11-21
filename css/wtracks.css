@@ -1,4 +1,8 @@
-html, body {height:100%; width:100%; margin:0;}
+html, body {
+  height:100%;
+  margin:0;
+  width:100%;
+}
 body {
   margin:0;
   padding:0;
@@ -180,7 +184,7 @@ body {
   padding-right: 0;
   padding-left: 0;
 }
-#dropbox-logo {
+.dropbox-logo {
   display: inline-block;
   width: 15px;
   height: 14px;
