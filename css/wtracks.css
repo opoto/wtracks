@@ -545,6 +545,77 @@ div.trumbowyg-editor {
   font-family: sans-serif;
   font-size: 100%;
 }
+#input-val {
+  width: 90%;
+}
+
+/* ------------ draggable map list ------------ */
+
+.container{
+  margin: 10px;
+}
+
+[draggable] {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  /* Required to make elements draggable in old WebKit */
+  -khtml-user-drag: element;
+  -webkit-user-drag: element;
+}
+
+#mymaps-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+#mymaps-list li {
+  width: 400px;
+  padding: 3px 0;
+  text-align: left;
+  border-top: 2px solid white;
+  user-select: none;
+}
+#mymaps-list li .map-item {
+  padding: 5px;
+  border-bottom: 1px solid #ddd;
+  border-radius: 10px;
+  border: 2px solid #666666;
+  background: #E4E4E4;
+}
+
+.map-drag, .map-name {
+  cursor: move;
+  vertical-align: middle;
+}
+.map-name {
+  width: 200px;
+  overflow: hidden;
+  display: inline-block;
+  padding-bottom: 3px;
+  user-select: text;
+}
+.map-edit, .map-delete, .map-share, .map-visibility {
+  cursor: pointer;
+  margin-left: 10px;
+  padding-bottom: 4px;
+}
+
+#mymaps-list li.dragElem {
+  opacity: 0.4;
+}
+#mymaps-list li.over {
+  /*border: 2px dashed #000;*/
+  border-top: 2px solid blue;
+}
+
+#maps-btns button {
+  width: auto;
+}
+
+/* ---------------------------------- */
+
 
 #mymap-minz, #mymap-maxz, #mymapbox input[name=mymap-type] {
   width: auto;

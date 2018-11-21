@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="shortcut icon" href="img/favicon.ico" />
+  <meta charset='utf-8'>
+  <meta http-equiv="x-ua-compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,height=device-height, user-scalable=no" />
+  <META name="keywords" content="Leaflet, OpenStreetMap, GPX, GPS, speed, regression, GIS, outdoor">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self';
+    style-src 'self' 'unsafe-inline' https://cdn.rawgit.com https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+    script-src 'self' https://cdn.rawgit.com https://cdnjs.cloudflare.com https://extreme-ip-lookup.com https://www.dropbox.com https://www.google-analytics.com https://maps.googleapis.com;
+    font-src https://fonts.gstatic.com https://fonts.googleapis.com;
+    connect-src *;
+    img-src * data:;
+    worker-src 'self';
+    child-src 'none';
+    object-src 'none'">
+  <link rel="manifest" href="./manifest.json">
+  <!-- Google Material design fontss -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+
+  <title>Maps editor</title>
+  <script src="js/jquery.min.js"></script>
+  <script type="text/javascript" src="js/cookieconsent.min.js"></script>
+
+  <link rel="stylesheet" href="css/wtracks.css" />
+</head>
+
+<body>
+
+  <!-- Export/import Mymaps box -->
+  <div id="input-box" class= "modal overlay">
+    <!-- Modal content -->
+    <div class="prompt-content">
+      <div class="box-header"><a id="input-box-close" href="#" class="close-button">×</a></div>
+      <p id="input-text"></p>
+      <i class="material-icons copyonclick" title="Copy link" id="-input-val">filter_none</i>
+      <input id="input-val" type="text" size="50" value="" />
+      <button id="input-ok" class="ok-btn">Ok</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="text">
+      <h1>Maps Editor</h1>
+      <p>
+        Here you can edit the background maps you will be able to use in WTracks.
+      </p>
+    </div>
+
+    <h2>Configured Maps:</h2>
+    <ul id="mymaps-list"></ul>
+
+    <div id="maps-btns">
+      <button id="maps-reset">Reset Defaults</button>
+      <button id="maps-exportall">Export All</button>
+      <button id="maps-import">Import</button>
+      <button id="maps-new">New</button>
+    </div>
+
+    <div id="editordiv">
+      <table>
+        <tr>
+          <th colspan="2">Enter map details</th>
+        </tr>
+        <tr>
+          <td>Name: </td>
+          <td><input id="mymap-name" type="text" required placeholder="Required" pattern="\S.*" value=""/></td>
+        </tr>
+        <tr>
+          <td>Type: </td>
+          <td>
+            <label><input name="mymap-type" type="radio" value="base" checked="checked"/> Base</label>
+            <label><input name="mymap-type" type="radio" value="wms"/> WMS</label>
+            <label><input name="mymap-type" type="radio" value="wmts"/> WMTS</label>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            URL
+            <span id="mapurl" class="help-b material-icons" title="Help">&#xE8FD;</span>
+            :
+          </td>
+          <td>
+            <input id="mymap-url" type="text" value="" required placeholder="Required, https or // URL" pattern="(http(s)?:)?\/\/\S+"/>
+            <p id="mapurl-help" class="help-p">
+              Because this site is hosted using https, http URL will not work.
+              Your URL will not be sent to WTracks server. Only enter URL with credentials on your personal devices,
+              or uncheck the 'save editor state' if you use a shared/public device.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td>Zoom: </td>
+          <td>
+            <input id="mymap-minz" type="text" size="2" value="" pattern="([1-2][0-9]|[1-9])"/> to
+            <input id="mymap-maxz" type="text" size="2" value="" required pattern="([1-2][0-9]|[1-9])"/>
+          </td>
+        </tr>
+        <tr class="map-wms">
+          <td>Layers: </td>
+          <td><input id="mymap-layers" type="text" size="50" placeholder="Required" required pattern="\S.*" value=""/></td>
+        </tr>
+        <tr class="map-wmts">
+          <td>Layer: </td>
+          <td><input id="mymap-layer" type="text" size="50" placeholder="Required" required pattern="" value=""/></td>
+        </tr>
+        <tr class="map-wmts">
+          <td>Tile Matrix Set: </td>
+          <td><input id="mymap-tilematrixSet" type="text" size="50" value="" /></td>
+        </tr>
+        <tr class="map-wms">
+          <td>CRS: </td>
+          <td><select id="mymap-crs"/></td>
+        </tr>
+        <tr class="map-wms">
+          <td>Styles: </td>
+          <td><input id="mymap-styles" type="text" size="50" value="" /></td>
+        </tr>
+        <tr class="map-wmts">
+          <td>Style: </td>
+          <td><input id="mymap-style" type="text" size="50" value="" /></td>
+        </tr>
+        <tr class="map-wms map-wmts">
+          <td>Format: </td>
+          <td><input id="mymap-format" type="text" size="50" value="" /></td>
+        </tr>
+        <tr>
+          <td><i class="material-icons symbol">&#xE90C;</i>: </td>
+          <td><input id="mymap-attr" type="text" placeholder="Map attributions and copyright" size="50" value="" /></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <button id="mymap-ok" class="ok-btn">Ok</button>
+            <button id="mymap-cancel" class="cancel-btn">Cancel</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div id="footer">
+      <a href="." class="btn-link">&lt;&lt; Back to WTracks editor</a>
+    </div>
+
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/wtracks-commons.js"></script>
+  <script src="js/maps.js"></script>
+</body>
+
+</html>

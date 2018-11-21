@@ -584,7 +584,7 @@
         </tr>
         <tr class="map-wms">
           <td>Layers: </td>
-          <td><input id="mymap-layers" type="text" size="50" placeholder="Required" required value="\S.*" /></td>
+          <td><input id="mymap-layers" type="text" size="50" placeholder="Required" required pattern="\S.*" value="" /></td>
         </tr>
         <tr class="map-wmts">
           <td>Layer: </td>
@@ -686,7 +686,7 @@
           <p>Here is the link to your track, copy and share it.</p>
           <p>
             <i class="material-icons copyonclick" title="Copy link" id="-share-val">filter_none</i>
-            <input id="share-val" type="text" size="50" value="" disabled readonly/>
+            <input id="share-val" type="text" size="50" value="" readonly />
             <a href="#" id="share-viewqr" title="View link as QR Code"><img src='img/qrcode.png' alt='QRCode'></a>
           </p>
           <p>
@@ -792,6 +792,7 @@
 
   <script src="js/config.js"></script>
   <script src="js/utils.js"></script>
+  <script src="js/wtracks-commons.js"></script>
   <script src="js/wtracks.js"></script>
 </body>
 
