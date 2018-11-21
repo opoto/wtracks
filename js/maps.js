@@ -46,6 +46,15 @@ function listMymaps() {
   }
 }
 
+function initCrsSelector() {
+  var crsSelect = $("#mymap-crs")[0];
+  for (var i = CrsValues.length - 1; i >=0; i--) {
+    var crs = CrsValues[i];
+    addSelectOption(crsSelect, crs ? crs.code : "");
+  }
+}
+initCrsSelector();
+
 function openMymapBox() {
   $("#mymap-name").val(mymap.name);
   $("#mymap-url").val(mymap.url);
@@ -212,8 +221,6 @@ $("#mymap-add").click(addMymap);
 $("#mymap-reset").click(resetMymap);
 $("input:radio[name=mymap-type]").change(changeMymapType);
 
-listMymaps();
-
 // ---------------- Import / export my maps
 
 function openExportMymaps(mymapname) {
@@ -342,7 +349,7 @@ function handleDrop(e) {
     var dropHTML = e.originalEvent.dataTransfer.getData('text/html');
     dropOn.insertAdjacentHTML('beforebegin',dropHTML);
     dragSrcEl = dropOn.previousSibling;
-    addDnDHandlers($(dragSrcEl));
+    addMapItemHandlers($(dragSrcEl));
 
   }
   dropOn.classList.remove('over');
@@ -354,37 +361,38 @@ function handleDragEnd(e) {
   e.currentTarget.classList.remove('over');
 }
 
-function addDnDHandlers(selector) {
+function addMapItemHandlers(selector) {
   selector.on("dragstart", handleDragStart);
   selector.on("dragenter", handleDragEnter);
   selector.on("dragover", handleDragOver);
   selector.on("dragleave", handleDragLeave);
   selector.on("drop", handleDrop);
   selector.on("dragend", handleDragEnd);
-}
 
-$(document).ready(function() {
-  addDnDHandlers($('#mymaps-list li'));
-
-  $(".map-edit").click(function(e){
+  selector.find(".map-edit").click(function(e){
     var name = getMapName(e.target);
     editMymap(name);
   });
-  $(".map-visibility").click(function(e){
+  selector.find(".map-visibility").click(function(e){
     var name = getMapName(e.target);
     var isVisible = e.target.getAttribute("isVisible") == "true";
     isVisible = !isVisible;
     e.target.setAttribute("isVisible", "" + isVisible);
     e.target.innerText = isVisible ? "visibility" : "visibility_off";
   });
-  $(".map-delete").click(function(e){
+  selector.find(".map-delete").click(function(e){
     var name = getMapName(e.target);
     deleteMymap(name);
   });
-  $(".map-share").click(function(e){
+  selector.find(".map-share").click(function(e){
     var name = getMapName(e.target);
     openExportMymaps(name);
   });
+}
+
+$(document).ready(function() {
+  listMymaps();
+  addMapItemHandlers($('#mymaps-list li'));
 });
 
 $(window).on("unload", function() {

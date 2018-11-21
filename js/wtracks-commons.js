@@ -40,3 +40,32 @@ function copyOnClick(event) {
   }
 }
 $(".copyonclick").click(copyOnClick);
+
+
+
+var CrsValues = [
+  null,
+  L.CRS.EPSG3395,
+  L.CRS.EPSG3857,
+  L.CRS.EPSG4326,
+  L.CRS.EPSG900913
+];
+
+function getCrsFromName(crsname) {
+  for (var i = CrsValues.length - 1; i >=0; i--) {
+    var crs = CrsValues[i];
+    if (crs && crs.code == crsname) {
+      return crs;
+    }
+  }
+  return undefined;
+}
+
+function getCrsName(crs) {
+  for (var i = CrsValues.length - 1; i >=0; i--) {
+    if (CrsValues[i] == crs) {
+      return CrsValues[i] ? CrsValues[i].code : "";
+    }
+  }
+  return undefined;
+}

@@ -23,6 +23,8 @@
   <title>Maps editor</title>
   <script src="js/jquery.min.js"></script>
   <script type="text/javascript" src="js/cookieconsent.min.js"></script>
+  <script src="js/leaflet.js"></script>
+  <script src="js/leaflet.wmts.js"></script>
 
   <link rel="stylesheet" href="css/wtracks.css" />
 </head>
@@ -59,85 +61,89 @@
       <button id="maps-new">New</button>
     </div>
 
-    <div id="editordiv">
-      <table>
-        <tr>
-          <th colspan="2">Enter map details</th>
-        </tr>
-        <tr>
-          <td>Name: </td>
-          <td><input id="mymap-name" type="text" required placeholder="Required" pattern="\S.*" value=""/></td>
-        </tr>
-        <tr>
-          <td>Type: </td>
-          <td>
-            <label><input name="mymap-type" type="radio" value="base" checked="checked"/> Base</label>
-            <label><input name="mymap-type" type="radio" value="wms"/> WMS</label>
-            <label><input name="mymap-type" type="radio" value="wmts"/> WMTS</label>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            URL
-            <span id="mapurl" class="help-b material-icons" title="Help">&#xE8FD;</span>
-            :
-          </td>
-          <td>
-            <input id="mymap-url" type="text" value="" required placeholder="Required, https or // URL" pattern="(http(s)?:)?\/\/\S+"/>
-            <p id="mapurl-help" class="help-p">
-              Because this site is hosted using https, http URL will not work.
-              Your URL will not be sent to WTracks server. Only enter URL with credentials on your personal devices,
-              or uncheck the 'save editor state' if you use a shared/public device.
-            </p>
-          </td>
-        </tr>
-        <tr>
-          <td>Zoom: </td>
-          <td>
-            <input id="mymap-minz" type="text" size="2" value="" pattern="([1-2][0-9]|[1-9])"/> to
-            <input id="mymap-maxz" type="text" size="2" value="" required pattern="([1-2][0-9]|[1-9])"/>
-          </td>
-        </tr>
-        <tr class="map-wms">
-          <td>Layers: </td>
-          <td><input id="mymap-layers" type="text" size="50" placeholder="Required" required pattern="\S.*" value=""/></td>
-        </tr>
-        <tr class="map-wmts">
-          <td>Layer: </td>
-          <td><input id="mymap-layer" type="text" size="50" placeholder="Required" required pattern="" value=""/></td>
-        </tr>
-        <tr class="map-wmts">
-          <td>Tile Matrix Set: </td>
-          <td><input id="mymap-tilematrixSet" type="text" size="50" value="" /></td>
-        </tr>
-        <tr class="map-wms">
-          <td>CRS: </td>
-          <td><select id="mymap-crs"/></td>
-        </tr>
-        <tr class="map-wms">
-          <td>Styles: </td>
-          <td><input id="mymap-styles" type="text" size="50" value="" /></td>
-        </tr>
-        <tr class="map-wmts">
-          <td>Style: </td>
-          <td><input id="mymap-style" type="text" size="50" value="" /></td>
-        </tr>
-        <tr class="map-wms map-wmts">
-          <td>Format: </td>
-          <td><input id="mymap-format" type="text" size="50" value="" /></td>
-        </tr>
-        <tr>
-          <td><i class="material-icons symbol">&#xE90C;</i>: </td>
-          <td><input id="mymap-attr" type="text" placeholder="Map attributions and copyright" size="50" value="" /></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>
-            <button id="mymap-ok" class="ok-btn">Ok</button>
-            <button id="mymap-cancel" class="cancel-btn">Cancel</button>
-          </td>
-        </tr>
-      </table>
+    <!-- Perso Map Box -->
+    <div id="mymap-box" class= "modal overlay">
+      <!-- Modal content -->
+      <div class="prompt-content">
+        <table>
+          <tr>
+            <th colspan="2">Enter map details</th>
+          </tr>
+          <tr>
+            <td>Name: </td>
+            <td><input id="mymap-name" type="text" value="" required placeholder="Required" pattern="\S.*"/></td>
+          </tr>
+          <tr>
+            <td>Type: </td>
+            <td>
+              <label><input name="mymap-type" type="radio" value="base" checked="checked"/> Base</label>
+              <label><input name="mymap-type" type="radio" value="wms"/> WMS</label>
+              <label><input name="mymap-type" type="radio" value="wmts"/> WMTS</label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              URL
+              <span id="mapurl" class="help-b material-icons" title="Help">&#xE8FD;</span>
+              :
+            </td>
+            <td>
+              <input id="mymap-url" type="text" value="" required placeholder="Required, https or // URL" pattern="(http(s)?:)?\/\/\S+"/>
+              <p id="mapurl-help" class="help-p">
+                Because this site is hosted using https, http URL will not work.
+                Your URL will not be sent to WTracks server. Only enter URL with credentials on your personal devices,
+                or uncheck the 'save editor state' if you use a shared/public device.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>Zoom: </td>
+            <td>
+              <input id="mymap-minz" type="text" size="2" value="" pattern="([1-2][0-9]|[1-9])"/> to
+              <input id="mymap-maxz" type="text" size="2" value="" required pattern="([1-2][0-9]|[1-9])"/>
+            </td>
+          </tr>
+          <tr class="map-wms">
+            <td>Layers: </td>
+            <td><input id="mymap-layers" type="text" size="50" placeholder="Required" required pattern="\S.*" value="" /></td>
+          </tr>
+          <tr class="map-wmts">
+            <td>Layer: </td>
+            <td><input id="mymap-layer" type="text" size="50" placeholder="Required" required value="" /></td>
+          </tr>
+          <tr class="map-wmts">
+            <td>Tile Matrix Set: </td>
+            <td><input id="mymap-tilematrixSet" type="text" size="50" value="" /></td>
+          </tr>
+          <tr class="map-wms">
+            <td>CRS: </td>
+            <td><select id="mymap-crs"/></td>
+          </tr>
+          <tr class="map-wms">
+            <td>Styles: </td>
+            <td><input id="mymap-styles" type="text" size="50" value="" /></td>
+          </tr>
+          <tr class="map-wmts">
+            <td>Style: </td>
+            <td><input id="mymap-style" type="text" size="50" value="" /></td>
+          </tr>
+          <tr class="map-wms map-wmts">
+            <td>Format: </td>
+            <td><input id="mymap-format" type="text" size="50" value="" /></td>
+          </tr>
+          <tr>
+            <td><i class="material-icons symbol">&#xE90C;</i>: </td>
+            <td><input id="mymap-attr" type="text" placeholder="Map attributions and copyright" size="50" value="" /></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>
+              <button id="mymap-ok" class="ok-btn">Ok</button>
+              <button id="mymap-cancel" class="cancel-btn">Cancel</button>
+            </td>
+          </tr>
+        </table>
+      </div>
     </div>
 
     <div id="footer">
