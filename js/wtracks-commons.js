@@ -14,6 +14,14 @@ function saveJsonValOpt(name, val) {
   }
 }
 
+function getStateSaved() {
+  return getVal("wt.saveState", null);
+}
+function isStateSaved() {
+  return getStateSaved() === "true";
+}
+
+
 /* help buttons */
 function toggleHelp(e) {
   $("#" + this.id + "-help").toggle();
@@ -68,4 +76,79 @@ function getCrsName(crs) {
     }
   }
   return undefined;
+}
+
+// ------------------------ Maps Configuration
+var mymaps = getJsonVal("wt.mymaps", {});
+var mapsList = getJsonVal("wt.mapslist", [[], []]);
+var mapsListNames = mapsList[0];
+var mapsListProps = mapsList[1];
+
+var MAP_DEF = '0';
+var MAP_MY = '1';
+
+function addMapListEntry(name, _in, _on) {
+  mapsListNames.push(name);
+  mapsListProps.push({
+    'in': _in,
+    'on': _on
+  });
+}
+
+function delMapListEntry(idx) {
+  mapsListNames.splice(idx, 1);
+  mapsListProps.splice(idx, 1);
+}
+
+function MoveMapListEntry(from, to) {
+  arrayMove(mapsListNames, from, to);
+  arrayMove(mapsListProps, from, to);
+}
+
+function getMapList() {
+  if (mapsListNames.length) {
+    // check my maps
+    objectForEach(mymaps, function(name, value) {
+      if (!mapsListNames.indexOf(name)<0) {
+        addMapListEntry(name, MAP_MY, true);
+      }
+    });
+    // check default maps
+    objectForEach(config.maps, function(name, value) {
+      if (!mapsListNames.indexOf(name)<0) {
+        addMapListEntry(name, MAP_DEF, true);
+      }
+    });
+    // deprecated maps
+    arrayForEach(mapsListNames, function(idx, value) {
+      var inList = mapsListProps[idx]['in'] == MAP_MY ? mymaps : config.maps;
+      var name = mapsListNames[idx];
+      if (!inList[name]) {
+        // remove deprecated map
+        delMapListEntry(idx);
+      }
+    });
+  } else {
+    // add default maps
+    objectForEach(config.maps, function(name, value) {
+      addMapListEntry(name, MAP_DEF, true);
+    });
+    // add my maps
+    objectForEach(mymaps, function(name, value) {
+      addMapListEntry(name, MAP_MY, true);
+    });
+  }
+  saveMapList();
+}
+function saveMapList() {
+  saveJsonValOpt("wt.mapslist", mapsList);
+}
+getMapList();
+
+function mapsForEach(func) {
+  arrayForEach(mapsListNames, function(idx, value) {
+    var name = mapsListNames[idx];
+    var value = mapsListProps[idx];
+    func(name, value);
+  });
 }

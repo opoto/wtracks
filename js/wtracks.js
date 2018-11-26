@@ -154,7 +154,6 @@ $("#track-name-edit").click(promptTrackName);
 
 /* ----------------- My maps edition ------------------- */
 
-var mymaps = getJsonVal("wt.mymaps", {});
 var selectMymaps = $("#mymaps-list")[0];
 var mymap;
 
@@ -1562,6 +1561,7 @@ function saveSettings() {
   saveValOpt("wt.lengthUnit", lengthUnit);
   saveValOpt("wt.trackColor", trackColor);
   saveValOpt("wt.trackWeight", trackWeight);
+  saveValOpt("wt.mapslist", mapsList);
 }
 
 function saveState() {
@@ -1643,6 +1643,7 @@ function clearSavedState() {
   storeVal("wt.trackColor", undefined);
   storeVal("wt.trackWeight", undefined);
   storeVal("wt.share", undefined);
+  saveValOpt("wt.mapslist", undefined);
 }
 
 function getProvider(mapobj) {
@@ -3135,9 +3136,6 @@ $("#donate").click(function(event) {
 });
 
 
-function isStateSaved() {
-  return isChecked("#cfgsave");
-}
 $("#cfgsave").change(function(e) {
   var saveCfg = isStateSaved();
   ga('send', 'event', 'setting', saveCfg ? 'save-on' : 'save-off');
@@ -3157,8 +3155,7 @@ $(document).ready(function() {
   // get visit info
   var about = getVal("wt.about", undefined);
   // get saving status
-  var isSaving = getVal("wt.saveState", null);
-  setChecked("#cfgsave", isSaving === "true");
+  setChecked("#cfgsave", isStateSaved());
 
   var url = getParameterByName("url");
   if (url) {
@@ -3208,6 +3205,8 @@ $(document).ready(function() {
   }
 
   initTrackDisplaySettings();
+
+  $(".leaflet-control-layers-base").append("<label><div>&nbsp;<i class='material-icons'>settings&nbsp;</i><a href='./maps.html'>More...</a></div></label>");
 
   // Persist joinOnLoad option
   joinOnLoad = getBoolVal("wt.joinOnLoad", true);

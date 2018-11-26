@@ -1,49 +1,71 @@
 /* ----------------- My maps edition ------------------- */
 
-var mymaps = getJsonVal("wt.mymaps", {});
 var mymap;
 
 
-function addMymapsItem(name) {
+function setMapItemVisibility(elt, props) {
+  //var isVisible = e.target.getAttribute("isVisible") == "true";
+  var isVisible = props.on;
+  elt.attr("isVisible", "" + isVisible);
+  elt.text(isVisible ? "visibility" : "visibility_off");
+}
+
+function addMymapsItem(name, props) {
   var mapitem = "<li draggable='true'><span class='map-item'>";
   mapitem += "<i class='material-icons map-drag'>drag_indicator</i> ";
   mapitem += "<span class='map-name'>" + name + "</span> ";
-  mapitem += "<i class='material-icons map-edit'>create</i> ";
-  mapitem += "<i class='material-icons map-visibility' isVisible='true'>visibility</i> ";
-  mapitem += "<i class='material-icons map-share'>share</i> ";
-  mapitem += "<i class='material-icons map-delete'>delete</i> ";
+  mapitem += "<i class='material-icons map-visibility' isVisible='??'>??</i> ";
+  if (props.in == MAP_MY) {
+    mapitem += "<i class='material-icons map-edit'>create</i> ";
+    mapitem += "<i class='material-icons map-share'>share</i> ";
+    mapitem += "<i class='material-icons map-delete'>delete</i> ";
+  } else {
+    mapitem += "<i class='material-icons'></i> ";
+    mapitem += "<i class='material-icons'></i> ";
+    mapitem += "<i class='material-icons'></i> ";
+
+  }
   mapitem += "</span></li>";
-  $("#mymaps-list").append(mapitem);
+  var ml = $("#mymaps-list").append(mapitem);
+  setMapItemVisibility(ml.children().last().find(".map-visibility"), props);
 }
 
 function getMapName(elt) {
   return elt.parentNode.querySelector(".map-name").innerText;
 }
 
-function changeMymapsItem(oldname, newname) {
-  $("#mymaps-list option").each(function(i, v) {
-    if (oldname == v.innerHTML) {
-      if (newname) {
-        var elt = $(v);
-        elt.val(newname);
-        elt.attr("name", newname);
-        elt.text(newname);
-      } else {
-        v.remove();
-      }
-      return false;
+function getMapProps(elt) {
+  var name = getMapName(elt);
+  var idx = mapsListNames.indexOf(name);
+  return mapsListProps[idx];
+}
+
+function getMapItem(name) {
+  var res = undefined;
+  $("#mymaps-list > .map-name").each(function(i, v) {
+    if (name == v.text()) {
+      res = v;
+      return true;
     }
   });
+  return res;
+}
+
+function changeMymapsItem(oldname, newname) {
+  var mapItem = getMapItem(oldname);
+  if (mapItem) {
+    if (newname) {
+      v.text(newname);
+    } else {
+      v.parentNode.remove();
+    }
+  }
 }
 
 function listMymaps() {
-  if (mymaps) {
-    for (var m in mymaps) {
-      if (hasOwnProperty.call(mymaps, m)) {
-        addMymapsItem(m);
-      }
-    }
-  }
+  mapsForEach(function(name, value) {
+    addMymapsItem(name, value);
+  });
 }
 
 function initCrsSelector() {
@@ -300,12 +322,12 @@ $("#input-val").keyup(function(event) {
 
 $("#input-ok").click(importMymaps);
 
-$("#mymap-import").click(openImportMymaps);
-$("#mymap-export").click(openExportMymaps);
+$("#mymaps-import").click(openImportMymaps);
+$("#mymaps-export").click(openExportMymaps);
 
 if (!supportsBase64() || !JSON || !JSON.parse || !JSON.stringify) {
-  $("#mymap-import").attr("disabled", "disabled");
-  $("#mymap-export").attr("disabled", "disabled");
+  $("#mymaps-import").attr("disabled", "disabled");
+  $("#mymaps-export").attr("disabled", "disabled");
 }
 
 // ----------------- draggable list ----------------
@@ -345,12 +367,17 @@ function handleDrop(e) {
 
   // Don't do anything if dropping the same map item we're dragging.
   if (dragSrcEl != dropOn) {
+    // move map item
+    var fromIdx = $(dragSrcEl).index();
+    var toIdx = $(dropOn).index();
+    MoveMapListEntry(fromIdx, toIdx);
+    saveMapList();
+    // update display
     dropOn.parentNode.removeChild(dragSrcEl);
     var dropHTML = e.originalEvent.dataTransfer.getData('text/html');
     dropOn.insertAdjacentHTML('beforebegin',dropHTML);
     dragSrcEl = dropOn.previousSibling;
     addMapItemHandlers($(dragSrcEl));
-
   }
   dropOn.classList.remove('over');
   dragSrcEl.classList.remove('dragElem');
@@ -360,6 +387,14 @@ function handleDrop(e) {
 function handleDragEnd(e) {
   e.currentTarget.classList.remove('over');
 }
+
+function toggleMapVisibility(e) {
+  var mprops = getMapProps(e.target);
+  mprops.on = !mprops.on;
+  saveMapList();
+  setMapItemVisibility($(e.target), mprops)
+}
+
 
 function addMapItemHandlers(selector) {
   selector.on("dragstart", handleDragStart);
@@ -373,13 +408,7 @@ function addMapItemHandlers(selector) {
     var name = getMapName(e.target);
     editMymap(name);
   });
-  selector.find(".map-visibility").click(function(e){
-    var name = getMapName(e.target);
-    var isVisible = e.target.getAttribute("isVisible") == "true";
-    isVisible = !isVisible;
-    e.target.setAttribute("isVisible", "" + isVisible);
-    e.target.innerText = isVisible ? "visibility" : "visibility_off";
-  });
+  selector.find(".map-visibility").click(toggleMapVisibility);
   selector.find(".map-delete").click(function(e){
     var name = getMapName(e.target);
     deleteMymap(name);

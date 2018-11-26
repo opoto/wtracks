@@ -380,6 +380,11 @@ a.button {
   font-size: 20px;
 }
 
+.leaflet-control-layers-base .material-icons {
+  font-size: 18px;
+  color: #777;
+}
+
 .popupdiv {
   margin: 5px 0;
 }
