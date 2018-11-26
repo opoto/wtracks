@@ -175,7 +175,14 @@ function initGoogleAnalytics(trackingid) {
       m = s.getElementsByTagName(o)[0];
     a.async = 1;
     a.src = g;
-    m.parentNode.insertBefore(a, m);
+    a.onerror = function(err) {
+      error("Google Analytics blocked. Ad blocker?");
+    }
+    try {
+      m.parentNode.insertBefore(a, m);
+    } catch (err) {
+      error("Google Analytics blocked. Ad blocker?");
+    }
   })(window, document, 'script', gaScriptUrl, 'ga');
   if (gadbg === "2") {
     window.ga_debug = {trace: true};
