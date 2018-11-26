@@ -1614,13 +1614,12 @@ $("#save-no").click(function() {
   }, 10000);
 });
 
-function restoreState(showInfo) {
-  if (!isStateSaved() && showInfo) {
+function restoreState(showSaveInfo) {
+  if (showSaveInfo) {
     $("#save-info").show();
   }
-  if (!restoreTrack()) {
-    restorePosition();
-  }
+  restorePosition();
+  restoreTrack();
   restoreEditMode();
 }
 
@@ -3137,7 +3136,7 @@ $("#donate").click(function(event) {
 
 
 $("#cfgsave").change(function(e) {
-  var saveCfg = isStateSaved();
+  var saveCfg = isChecked("#cfgsave");
   ga('send', 'event', 'setting', saveCfg ? 'save-on' : 'save-off');
   storeVal("wt.saveState", saveCfg ? "true" : "false");
   if (saveCfg) {
@@ -3154,7 +3153,7 @@ $(document).ready(function() {
 
   // get visit info
   var about = getVal("wt.about", undefined);
-  // get saving status
+  // set saving status
   setChecked("#cfgsave", isStateSaved());
 
   var url = getParameterByName("url");
@@ -3173,7 +3172,7 @@ $(document).ready(function() {
     });
     setEditMode(EDIT_NONE);
   } else {
-    restoreState(about);
+    restoreState(about && !getStateSaved());
   }
 
   /* Show About dialog if not shown since a while */
@@ -3219,5 +3218,5 @@ $(document).ready(function() {
 });
 
 $(window).on("unload", function() {
-  saveState();
+  //saveState();
 });
