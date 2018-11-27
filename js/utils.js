@@ -327,8 +327,15 @@ function objectForEach(object, func) {
 }
 function arrayForEach(array, func) {
   if (array) {
-    for (var i=0; i < array.length; i++) {
+    var i = 0;
+    var len = array.length;
+    while (i < len) {
       if (func(i, array[i])) break;
+      if (len > array.length) {
+        len = array.length;
+      } else {
+        i++;
+      }
     }
   }
 }

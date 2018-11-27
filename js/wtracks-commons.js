@@ -89,33 +89,54 @@ var MAP_MY = '1';
 
 function addMapListEntry(name, _in, _on) {
   mapsListNames.push(name);
-  mapsListProps.push({
+  var props = {
     'in': _in,
     'on': _on
-  });
+  };
+  mapsListProps.push(props);
+  return props;
 }
 
 function delMapListEntry(idx) {
-  mapsListNames.splice(idx, 1);
-  mapsListProps.splice(idx, 1);
+  if (idx >=0) {
+    mapsListNames.splice(idx, 1);
+    mapsListProps.splice(idx, 1);
+  }
 }
 
-function MoveMapListEntry(from, to) {
+function moveMapListEntry(from, to) {
   arrayMove(mapsListNames, from, to);
   arrayMove(mapsListProps, from, to);
+}
+
+function getMapListEntryIndex(name) {
+  return mapsListNames.indexOf(name);
+}
+
+function renameMapListEntry(oldname, newname) {
+  var idx = getMapListEntryIndex(oldname);
+  if (idx >=0) {
+    mapsListNames[idx] = newname;
+  }
+}
+
+function resetMapList() {
+  mapsList = [[], []];
+  mapsListNames = mapsList[0];
+  mapsListProps = mapsList[1];
 }
 
 function getMapList() {
   if (mapsListNames.length) {
     // check my maps
     objectForEach(mymaps, function(name, value) {
-      if (!mapsListNames.indexOf(name)<0) {
+      if (getMapListEntryIndex(name) < 0) {
         addMapListEntry(name, MAP_MY, true);
       }
     });
     // check default maps
     objectForEach(config.maps, function(name, value) {
-      if (!mapsListNames.indexOf(name)<0) {
+      if (getMapListEntryIndex(name) < 0) {
         addMapListEntry(name, MAP_DEF, true);
       }
     });
@@ -131,7 +152,7 @@ function getMapList() {
   } else {
     // add default maps
     objectForEach(config.maps, function(name, value) {
-      addMapListEntry(name, MAP_DEF, true);
+      addMapListEntry(name, MAP_DEF, value.visible);
     });
     // add my maps
     objectForEach(mymaps, function(name, value) {

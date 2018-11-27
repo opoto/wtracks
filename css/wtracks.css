@@ -130,7 +130,8 @@ body {
 }
 #menuabout a:link, #menuabout a:visited,
 #share-ask a:link, #share-ask a:visited,
-#share-done a:link, #share-done a:visited {
+#share-done a:link, #share-done a:visited,
+.text a:link, .text a:visited {
   text-decoration: none;
   color: #1992ca;
 }
@@ -591,9 +592,11 @@ div.trumbowyg-editor {
   border-bottom: 1px solid #ddd;
   border-radius: 10px;
   border: 2px solid #666666;
-  background: #E4E4E4;
+  background: #c8ffc1;
 }
-
+.map-invisible {
+  background: #D4D4D4 !important;
+}
 .map-drag, .map-name {
   cursor: move;
   vertical-align: middle;
@@ -619,8 +622,29 @@ div.trumbowyg-editor {
   border-top: 2px solid blue;
 }
 
-#maps-btns button {
+.maps-btns button {
   width: auto;
+}
+
+#footer {
+  margin-top: 2em;
+}
+
+
+.btn-link {
+  padding: 4px 7px 0 0;
+  border: none;
+  width: 18px;
+  height: 14px;
+  font: 16px/14px Tahoma, Verdana, sans-serif;
+  color: #c3c3c3;
+  text-decoration: none;
+  font-weight: bold;
+  background: transparent;
+  text-align: left;
+}
+.btn-link:hover {
+  color: #999;
 }
 
 /* ---------------------------------- */

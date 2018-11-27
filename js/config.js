@@ -152,21 +152,24 @@ var config = {
       options : {
         maxZoom: 17,
         attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
-      }
+      },
+      visible: true
     },
     "OpenStreetMap": {
       url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       options : {
         maxZoom: 19,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      }
+      },
+      visible: true
     },
     "OSM Hot": {
       url: '//{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
       options: {
         maxZoom: 19,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      }
+      },
+      visible: true
     },
     "OpenCycleMap": {
       url: function() {
@@ -175,14 +178,16 @@ var config = {
       options: {
         maxZoom: 18,
         attribution: '&copy; <a href="https://www.thunderforest.com/">Thunderforest</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      }
+      },
+      visible: true
     },
     "Sigma Cycle": {
       url: '//tiles1.sigma-dc-control.com/layer5/{z}/{x}/{y}.png',
       options: {
         maxZoom: 18,
         attribution: '&copy; <a href="http://www.sigmasport.com/" target="_blank">SIGMA Sport &reg;</a> Map data <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>'
-      }
+      },
+      visible: true
     },
     "Outdoors": {
       url: function() {
@@ -191,7 +196,8 @@ var config = {
       options: {
         maxZoom: 18,
         attribution: '&copy; <a href="https://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      }
+      },
+      visible: false
     },
     "OSM HikeBike": {
       //'http://{s}.tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png'
@@ -199,40 +205,48 @@ var config = {
       options: {
         maxZoom: 17,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      }
+      },
+      visible: true
     },
     "ESRI Topo": {
       url: '//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
       options: {
         attribution: 'Tiles &copy; Esri &mdash; Esri and GIS Community'
-      }
+      },
+      visible: false
     },
     "ESRI Street": {
       url: '//server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
       options: {
         attribution: 'Tiles &copy; Esri &mdash; Esri &amp; al.'
-      }
+      },
+      visible: false
     },
+    /*
     "MTB": {
       url: 'http://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png',
       options: {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &amp; USGS'
-      }
+      },
+      visible: false
     },
     "Map1.eu": {
       url: 'http://beta.map1.eu/tiles/{z}/{x}/{y}.jpg',
       options: {
         maxZoom: 17,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &amp; <a href="http://map1.eu">map1.eu</a>'
-      }
+      },
+      visible: false
     },
+    */
     "Google Roads": {
       url: '//{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
       options: {
         maxZoom: 20,
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
         attribution: '&copy; Google'
-      }
+      },
+      visible: true
     },
     "Google Terrain": {
       url: '//{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
@@ -240,7 +254,8 @@ var config = {
         maxZoom: 20,
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
         attribution: '&copy; Google'
-      }
+      },
+      visible: true
     },
     "Google Satellite": {
       url: '//{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
@@ -248,7 +263,8 @@ var config = {
         maxZoom: 20,
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
         attribution: '&copy; Google'
-      }
+      },
+      visible: true
     },
     "Google Hybrid": {
       url: '//{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',
@@ -256,7 +272,8 @@ var config = {
         maxZoom: 20,
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
         attribution: '&copy; Google'
-      }
+      },
+      visible: true
     },
     "FR IGN Classic": {
       type: "wmts",
@@ -269,7 +286,8 @@ var config = {
         tilematrixSet: "PM",
         format: 'image/jpeg',
         attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
-      }
+      },
+      visible: true
     },
     "FR IGN Express": {
       type: "wmts",
@@ -282,7 +300,8 @@ var config = {
         tilematrixSet: "PM",
         format: 'image/jpeg',
         attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
-      }
+      },
+      visible: false
     },
     /*
     "FR IGN Satellite": {
@@ -307,7 +326,8 @@ var config = {
         transparent: false,
         continuousWorld: true,
         attribution: '© <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
-      }
+      },
+      visible: false
     },
     "SP ICGC": {
       type: "wmts",
@@ -318,14 +338,23 @@ var config = {
           tilematrixSet: "GRID3857",
           format: 'image/jpeg',
           attribution: "&copy; Institut Cartogràfic i Geològic de Catalunya - ICGC"
-        }
+        },
+        visible: true
     },
     "EU Huts": {
       url:'//maps.refuges.info/hiking/{z}/{x}/{y}.png',
       options: {
         maxZoom: 18,
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> | <a href="http://wiki.openstreetmap.org/wiki/Hiking/mri">MRI</a>'
-      }
+      },
+      visible: true
+    },
+    "FI MML": {
+      url: "//avoin-karttakuva.maanmittauslaitos.fi/avoin/wmts/1.0.0/maastokartta/default/WGS84_Pseudo-Mercator/{z}/{y}/{x}.png",
+      options: {
+        attribution: "&copy; Maanmittauslaitos"
+      },
+      visible: true
     },
     "FI MapAnts": {
       url: '//wmts.mapant.fi/wmts_EPSG3857.php?z={z}&x={x}&y={y}',
@@ -333,7 +362,8 @@ var config = {
         maxZoom: 19,
         minZoom: 7,
         attribution: '<a href="http://www.maanmittauslaitos.fi/en/digituotteet/laser-scanning-data" target="_blank">Laser scanning</a> and <a href="http://www.maanmittauslaitos.fi/en/digituotteet/topographic-database" target="_blank">topographic</a> data provided by the <a href="http://www.maanmittauslaitos.fi/en" target="_blank">National Land Survey of Finland</a> under the <a href="https://creativecommons.org/licenses/by/4.0/legalcode">Creative Commons license</a>.'
-      }
+      },
+      visible: false
     }
   },
   overlays: {

@@ -45,20 +45,32 @@
 
   <div class="container">
     <div class="text">
-      <h1>Maps Editor</h1>
+      <h1>WTracks Maps Configuration</h1>
       <p>
         Here you can edit the background maps you will be able to use in WTracks.
       </p>
+      <p>
+        You can hide or show map names in WTracks background map selector by clicking
+        on the <i class='material-icons'>visibility</i> icon. You may also
+        <a href="#persomaps">define and configure your own personal maps</a>.
+      </p>
+      <p>
+        Drag and drop list elements to define your preferred order.
+      </p>
     </div>
 
-    <h2>Configured Maps:</h2>
+    <div class="maps-btns">
+      <button id="maps-reorder">Reset Default Order</button>
+    </div>
+
     <ul id="mymaps-list"></ul>
 
-    <div id="maps-btns">
-      <button id="maps-reset">Reset Defaults</button>
-      <button id="mymaps-export">Export All</button>
-      <button id="mymaps-import">Import</button>
-      <button id="mymaps-new">New</button>
+    <h2><a name="persomaps">Configure personal maps:</a></h2>
+    <div class="maps-btns">
+      <button id="mymaps-deleteall" title="Deletes all personal maps">Delete All</button>
+      <button id="mymaps-export" title="Export all personal maps">Export All</button>
+      <button id="mymaps-import" title="Import personal maps">Import</button>
+      <button id="mymaps-new" title="Create a new personal map">New</button>
     </div>
 
     <!-- Perso Map Box -->

@@ -8,9 +8,15 @@ function setMapItemVisibility(elt, props) {
   var isVisible = props.on;
   elt.attr("isVisible", "" + isVisible);
   elt.text(isVisible ? "visibility" : "visibility_off");
+  var parent = elt.parent(".map-item");
+  if (isVisible && parent.length) {
+    parent.removeClass("map-invisible");
+  } else {
+    parent.addClass("map-invisible");
+  }
 }
 
-function addMymapsItem(name, props) {
+function addMymapsItem(name, props, addHandlers) {
   var mapitem = "<li draggable='true'><span class='map-item'>";
   mapitem += "<i class='material-icons map-drag'>drag_indicator</i> ";
   mapitem += "<span class='map-name'>" + name + "</span> ";
@@ -19,15 +25,14 @@ function addMymapsItem(name, props) {
     mapitem += "<i class='material-icons map-edit'>create</i> ";
     mapitem += "<i class='material-icons map-share'>share</i> ";
     mapitem += "<i class='material-icons map-delete'>delete</i> ";
-  } else {
-    mapitem += "<i class='material-icons'></i> ";
-    mapitem += "<i class='material-icons'></i> ";
-    mapitem += "<i class='material-icons'></i> ";
-
   }
   mapitem += "</span></li>";
-  var ml = $("#mymaps-list").append(mapitem);
-  setMapItemVisibility(ml.children().last().find(".map-visibility"), props);
+  $("#mymaps-list").append(mapitem);
+  var newitem = $("#mymaps-list").children().last();
+  setMapItemVisibility(newitem.find(".map-visibility"), props);
+  if (addHandlers) {
+    addMapItemHandlers(newitem);
+  }
 }
 
 function getMapName(elt) {
@@ -42,9 +47,9 @@ function getMapProps(elt) {
 
 function getMapItem(name) {
   var res = undefined;
-  $("#mymaps-list > .map-name").each(function(i, v) {
-    if (name == v.text()) {
-      res = v;
+  $("#mymaps-list .map-name").each(function(i, v) {
+    if (name == v.innerText) {
+      res = $(v);
       return true;
     }
   });
@@ -55,17 +60,21 @@ function changeMymapsItem(oldname, newname) {
   var mapItem = getMapItem(oldname);
   if (mapItem) {
     if (newname) {
-      v.text(newname);
+      // name changed
+      mapItem.text(newname);
     } else {
-      v.parentNode.remove();
+      // item deleted
+      mapItem.parent(".map-item").remove();
     }
   }
 }
 
-function listMymaps() {
+function showMapsList() {
+  $("#mymaps-list").empty();
   mapsForEach(function(name, value) {
     addMymapsItem(name, value);
   });
+  addMapItemHandlers($('#mymaps-list li'));
 }
 
 function initCrsSelector() {
@@ -96,7 +105,7 @@ function openMymapBox() {
   changeMymapType();
 }
 
-function addMymap(evt) {
+function newMymap(evt) {
   mymap = { options: {} };
   openMymapBox();
 }
@@ -168,26 +177,25 @@ function validateMymapBox(evt) {
       if (oldname != newname) {
         // rebuild object to preserve order
         var tmp = {};
-        for (var m in mymaps) {
-          if (hasOwnProperty.call(mymaps, m)) {
-            if (m == oldname) {
-              tmp[newname] = mymap;
-            } else {
-              tmp[m] = mymaps[m];
-            }
+        objectForEach(mymaps, function(name, value) {
+          if (name == oldname) {
+            tmp[newname] = mymap;
+          } else {
+            tmp[name] = value;
           }
-        }
+        });
         mymaps = tmp;
+        renameMapListEntry(oldname, newname);
         changeMymapsItem(oldname, newname);
+        saveMapList();
       } else {
         mymaps[newname] = mymap;
       }
-      changeBaseLayer(oldname, newname, mymap);
       ga('send', 'event', 'map', 'edit');
     } else {
-      addMymapsItem(newname);
-      addBaseLayer(newname, mymap);
       mymaps[newname] = mymap;
+      addMymapsItem(newname, addMapListEntry(newname, MAP_MY, true), true);
+      saveMapList();
       ga('send', 'event', 'map', 'add');
     }
     saveJsonValOpt("wt.mymaps", mymaps);
@@ -207,8 +215,9 @@ function deleteMymap(mymapname) {
       mymaps[mymapname] = undefined;
       saveJsonValOpt("wt.mymaps", mymaps);
       // delete map in lists
+      delMapListEntry(getMapListEntryIndex(mymapname));
       changeMymapsItem(mymapname);
-      changeBaseLayer(mymapname);
+      saveMapList();
       ga('send', 'event', 'map', 'delete');
     }
   }
@@ -223,29 +232,38 @@ function changeMymapType(evt) {
   }
 }
 
-function resetMymap(evt) {
+function deleteAllMymaps(evt) {
   if (!$.isEmptyObject(mymaps) &&
       confirm("Delete all your personal maps?")) {
-    $("#mymaps-list option").each(function(i, v) {
-      changeBaseLayer($(v).text());
-      v.remove();
-    });
     mymaps = {};
-    ga('send', 'event', 'map', 'reset');
     saveJsonValOpt("wt.mymaps", undefined);
+    ga('send', 'event', 'map', 'deleteall');
+    getMapList();
+    showMapsList()
   }
 }
+function reorderMapList(evt) {
+  if (confirm("Re-order map list according to defaults, with personal maps at the end?")) {
+    ga('send', 'event', 'map', 'reorder');
+    resetMapList();
+    getMapList();
+    showMapsList();
+  }
+}
+
 
 $("#mymap-ok").click(validateMymapBox);
 $("#mymap-cancel").click(cancelMymapBox);
 
-$("#mymap-add").click(addMymap);
-$("#mymap-reset").click(resetMymap);
+$("#mymaps-new").click(newMymap);
+$("#mymaps-deleteall").click(deleteAllMymaps);
+
+$("#maps-reorder").click(reorderMapList);
 $("input:radio[name=mymap-type]").change(changeMymapType);
 
 // ---------------- Import / export my maps
 
-function openExportMymaps(mymapname) {
+function openExportMymaps(evt, mymapname) {
   var toexport = mymapname ? { mymapname : mymaps[mymapname] } : mymaps;
   if (!$.isEmptyObject(toexport)) {
     var json = JSON.stringify(toexport);
@@ -276,29 +294,26 @@ function importMymaps() {
   try {
     var data = $("#input-val").val().trim();
     var importedMymaps = data ? JSON.parse(b64DecodeUnicode(data)) : {};
-    for (var name in importedMymaps) {
-      if (hasOwnProperty.call(importedMymaps, name)) {
-        var overwrite = mymaps[name];
-        var msg = overwrite ? "Overwrite " : "Import ";
-        if (confirm(msg + name + "?")) {
-          if (overwrite) {
-            changeMymapsItem(name, name);
-            changeBaseLayer(name, name, importedMymaps[name]);
-          } else {
-            addMymapsItem(name);
-            addBaseLayer(name, importedMymaps[name]);
-          }
-          mymaps[name] = importedMymaps[name];
-          imported++;
+    objectForEach(importedMymaps, function(name, value) {
+      var overwrite = mymaps[name];
+      var msg = overwrite ? "Overwrite " : "Import ";
+      if (confirm(msg + name + "?")) {
+        if (overwrite) {
+          changeMymapsItem(name, name);
+        } else {
+          addMymapsItem(name, addMapListEntry(name, MAP_MY, true), true);
         }
+        mymaps[name] = value;
+        imported++;
       }
-    }
+    });
   } catch (ex) {
     error("Invalid import data");
   }
   if (imported > 0) {
     saveJsonValOpt("wt.mymaps", mymaps);
     ga('send', 'event', 'map', 'import', undefined, imported);
+    saveMapList();
   }
   $("#input-box").hide();
 }
@@ -370,7 +385,7 @@ function handleDrop(e) {
     // move map item
     var fromIdx = $(dragSrcEl).index();
     var toIdx = $(dropOn).index();
-    MoveMapListEntry(fromIdx, toIdx);
+    moveMapListEntry(fromIdx, toIdx);
     saveMapList();
     // update display
     dropOn.parentNode.removeChild(dragSrcEl);
@@ -395,6 +410,18 @@ function toggleMapVisibility(e) {
   setMapItemVisibility($(e.target), mprops)
 }
 
+function editMapItem(e) {
+  var name = getMapName(e.target);
+  editMymap(name);
+}
+function deleteMapItem(e) {
+  var name = getMapName(e.target);
+  deleteMymap(name);
+}
+function shareMapItem(e) {
+  var name = getMapName(e.target);
+  openExportMymaps(null, name);
+}
 
 function addMapItemHandlers(selector) {
   selector.on("dragstart", handleDragStart);
@@ -404,24 +431,14 @@ function addMapItemHandlers(selector) {
   selector.on("drop", handleDrop);
   selector.on("dragend", handleDragEnd);
 
-  selector.find(".map-edit").click(function(e){
-    var name = getMapName(e.target);
-    editMymap(name);
-  });
+  selector.find(".map-edit").click(editMapItem);
   selector.find(".map-visibility").click(toggleMapVisibility);
-  selector.find(".map-delete").click(function(e){
-    var name = getMapName(e.target);
-    deleteMymap(name);
-  });
-  selector.find(".map-share").click(function(e){
-    var name = getMapName(e.target);
-    openExportMymaps(name);
-  });
+  selector.find(".map-delete").click(deleteMapItem);
+  selector.find(".map-share").click(shareMapItem);
 }
 
 $(document).ready(function() {
-  listMymaps();
-  addMapItemHandlers($('#mymaps-list li'));
+  showMapsList();
 });
 
 $(window).on("unload", function() {
