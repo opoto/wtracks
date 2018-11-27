@@ -1,6 +1,7 @@
 var filesToCache = [
   './css/activities.css',
   './css/dark-bottom.css',
+  './css/draganddrop.css',
   './css/images/layers-2x.png',
   './css/images/layers.png',
   './css/leaflet.css',
@@ -25,6 +26,7 @@ var filesToCache = [
   './js/cookieconsent.min.js',
   './js/d3.v3.min.js',
   './js/dataset.js',
+  './js/draganddrop.js',
   './js/FileSaver.js',
   './js/jquery.flot.min.js',
   './js/jquery.min.js',
@@ -41,6 +43,7 @@ var filesToCache = [
   './js/leaflet.wmts.js',
   './js/l.geosearch.provider.openstreetmap.js',
   './js/lrm-graphhopper.js',
+  './js/maps.js',
   './js/regression.js',
   './js/sw-toolbox.js',
   './js/togeojson.js',
@@ -48,6 +51,7 @@ var filesToCache = [
   './js/wtracks.js',
   './activities.html',
   './index.html',
+  './maps.html'
 ];
 
 importScripts('js/sw-toolbox.js');
