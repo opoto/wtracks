@@ -275,6 +275,7 @@ function openExportMymaps(evt, mymapname) {
     $("#input-val").focus();
     $("#input-val").select();
     $("#input-val").attr("readonly", "readonly");
+    $(".prompt-content .copyonclick").show();
     ga('send', 'event', 'map', 'export', undefined, mymaps.length);
   }
 }
@@ -285,6 +286,7 @@ function openImportMymaps() {
   $("#input-ok").show();
   $("#input-box").show();
   $("#input-val").focus();
+  $(".prompt-content .copyonclick").hide();
   $("#input-val").attr("readonly", undefined);
 }
 

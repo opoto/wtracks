@@ -318,6 +318,9 @@ a.button {
 .leaflet-bar {
   font-size: 16pt;
 }
+.leaflet-container a {
+  text-decoration: none;
+}
 #edit-tools {
   background-color: #FFF;
   z-index: 10000;
