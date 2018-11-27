@@ -1,8 +1,5 @@
 /* ----------------- My maps edition ------------------- */
 
-var mymap;
-
-
 function setMapItemVisibility(elt, props) {
   //var isVisible = e.target.getAttribute("isVisible") == "true";
   var isVisible = props.on;
@@ -17,7 +14,7 @@ function setMapItemVisibility(elt, props) {
 }
 
 function addMymapsItem(name, props, addHandlers) {
-  var mapitem = "<li draggable='true'><span class='map-item'>";
+  var mapitem = "<li><span class='map-item'>";
   mapitem += "<i class='material-icons map-drag'>drag_indicator</i> ";
   mapitem += "<span class='map-name'>" + name + "</span> ";
   mapitem += "<i class='material-icons map-visibility' isVisible='??'>??</i> ";
@@ -49,7 +46,7 @@ function getMapItem(name) {
   var res = undefined;
   $("#mymaps-list .map-name").each(function(i, v) {
     if (name == v.innerText) {
-      res = $(v);
+      res = $(v).parents("li");
       return true;
     }
   });
@@ -61,10 +58,10 @@ function changeMymapsItem(oldname, newname) {
   if (mapItem) {
     if (newname) {
       // name changed
-      mapItem.text(newname);
+      mapItem.find(".map-name").text(newname);
     } else {
       // item deleted
-      mapItem.parent(".map-item").remove();
+      mapItem.remove();
     }
   }
 }
@@ -76,6 +73,37 @@ function showMapsList() {
   });
   addMapItemHandlers($('#mymaps-list li'));
 }
+
+function toggleMapVisibility(e) {
+  var mprops = getMapProps(e.target);
+  mprops.on = !mprops.on;
+  saveMapList();
+  setMapItemVisibility($(e.target), mprops)
+}
+
+function editMapItem(e) {
+  var name = getMapName(e.target);
+  editMymap(name);
+}
+function deleteMapItem(e) {
+  var name = getMapName(e.target);
+  deleteMymap(name);
+}
+function shareMapItem(e) {
+  var name = getMapName(e.target);
+  openExportMymaps(null, name);
+}
+
+function addMapItemHandlers(selector) {
+  selector.find(".map-edit").click(editMapItem);
+  selector.find(".map-visibility").click(toggleMapVisibility);
+  selector.find(".map-delete").click(deleteMapItem);
+  selector.find(".map-share").click(shareMapItem);
+}
+
+// ----------------------- Personal map edition ----------------------
+
+var mymap;
 
 function initCrsSelector() {
   var crsSelect = $("#mymap-crs")[0];
@@ -347,101 +375,33 @@ if (!supportsBase64() || !JSON || !JSON.parse || !JSON.stringify) {
   $("#mymaps-export").attr("disabled", "disabled");
 }
 
-// ----------------- draggable list ----------------
-
-var dragSrcEl = null;
-
-function handleDragStart(e) {
-  dragSrcEl = e.currentTarget;
-  dragSrcEl.classList.add('dragElem');
-
-  e.originalEvent.dataTransfer.effectAllowed = 'move';
-  e.originalEvent.dataTransfer.setData('text/html', this.outerHTML);
-}
-
-function handleDragOver(e) {
-  if (e.preventDefault) {
-    e.preventDefault(); // Necessary. Allows us to drop.
-  }
-  e.currentTarget.classList.add('over');
-
-  e.originalEvent.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
-  return false;
-}
-
-function handleDragEnter(e) {
-}
-
-function handleDragLeave(e) {
-  e.currentTarget.classList.remove('over');
-}
-
-function handleDrop(e) {
-  if (e.stopPropagation) {
-    e.stopPropagation(); // Stops some browsers from redirecting.
-  }
-  var dropOn = e.currentTarget;
-
-  // Don't do anything if dropping the same map item we're dragging.
-  if (dragSrcEl != dropOn) {
-    // move map item
-    var fromIdx = $(dragSrcEl).index();
-    var toIdx = $(dropOn).index();
-    moveMapListEntry(fromIdx, toIdx);
-    saveMapList();
-    // update display
-    dropOn.parentNode.removeChild(dragSrcEl);
-    var dropHTML = e.originalEvent.dataTransfer.getData('text/html');
-    dropOn.insertAdjacentHTML('beforebegin',dropHTML);
-    dragSrcEl = dropOn.previousSibling;
-    addMapItemHandlers($(dragSrcEl));
-  }
-  dropOn.classList.remove('over');
-  dragSrcEl.classList.remove('dragElem');
-  return false;
-}
-
-function handleDragEnd(e) {
-  e.currentTarget.classList.remove('over');
-}
-
-function toggleMapVisibility(e) {
-  var mprops = getMapProps(e.target);
-  mprops.on = !mprops.on;
-  saveMapList();
-  setMapItemVisibility($(e.target), mprops)
-}
-
-function editMapItem(e) {
-  var name = getMapName(e.target);
-  editMymap(name);
-}
-function deleteMapItem(e) {
-  var name = getMapName(e.target);
-  deleteMymap(name);
-}
-function shareMapItem(e) {
-  var name = getMapName(e.target);
-  openExportMymaps(null, name);
-}
-
-function addMapItemHandlers(selector) {
-  selector.on("dragstart", handleDragStart);
-  selector.on("dragenter", handleDragEnter);
-  selector.on("dragover", handleDragOver);
-  selector.on("dragleave", handleDragLeave);
-  selector.on("drop", handleDrop);
-  selector.on("dragend", handleDragEnd);
-
-  selector.find(".map-edit").click(editMapItem);
-  selector.find(".map-visibility").click(toggleMapVisibility);
-  selector.find(".map-delete").click(deleteMapItem);
-  selector.find(".map-share").click(shareMapItem);
-}
+// ------------------- ready?
 
 $(document).ready(function() {
   showMapsList();
+  // ----- drag & drop list -----
+  $("#mymaps-list").sortable({
+    //scroll: true,
+    handle: ".map-drag, .map-name",
+    update: function(evt) {
+      // get map-item
+      var item = $(evt.target).parents(".map-item");
+      // NOTE: item may be detached from the list at this step
+      // moved item name
+      var name = item.find(".map-name").text();
+      // get new index
+      var toIdx = getMapItem(name).index();
+      // get old index
+      var fromIdx = getMapListEntryIndex(name);
+      if (fromIdx != toIdx) {
+        // update list data
+        moveMapListEntry(fromIdx, toIdx);
+        saveMapList();
+      }
+    }
+  });
 });
 
 $(window).on("unload", function() {
+  $("#mymaps-list").sortable('destroy');
 });

@@ -584,7 +584,7 @@ div.trumbowyg-editor {
 }
 
 #mymaps-list li {
-  width: 400px;
+  width: fit-content;
   padding: 3px 0;
   text-align: left;
   border-top: 2px solid white;
@@ -607,6 +607,8 @@ div.trumbowyg-editor {
 .map-name {
   width: 200px;
   overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   display: inline-block;
   padding-bottom: 3px;
   user-select: text;
@@ -615,14 +617,6 @@ div.trumbowyg-editor {
   cursor: pointer;
   margin-left: 10px;
   padding-bottom: 4px;
-}
-
-#mymaps-list li.dragElem {
-  opacity: 0.4;
-}
-#mymaps-list li.over {
-  /*border: 2px dashed #000;*/
-  border-top: 2px solid blue;
 }
 
 .maps-btns button {
@@ -829,6 +823,9 @@ button:active, #track-upload-label:active {
   }
   #join, #segment-new {
     font-size: 60%;
+  }
+  .map-name {
+    width: 150px;
   }
 }
 
