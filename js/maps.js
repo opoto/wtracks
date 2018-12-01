@@ -179,11 +179,16 @@ function validateMymapBox(evt) {
       return false;
     }
   });
+  var oldname = mymap.name;
+  var newname = $("#mymap-name").val().trim();
+  if ((oldname != newname) && (getMapListEntryIndex(newname) >= 0)) {
+    $("#mymap-name").trigger("invalid");
+    warn("Map name already used: " + newname);
+    valid = false;
+  }
   if (valid) {
     //mymapsInputs.removeClass("invalid");
     $("#mymap-box").hide();
-    var oldname = mymap.name;
-    var newname = $("#mymap-name").val().trim();
     mymap[name] = undefined;
     mymap.url = $("#mymap-url").val().trim();
     mymap.type = $('input:radio[name=mymap-type]:checked').val();
