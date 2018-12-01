@@ -49,7 +49,14 @@ function copyOnClick(event) {
 }
 $(".copyonclick").click(copyOnClick);
 
-
+$("#link-home").click(function() {
+  if ((history.length > 0) && (document.referrer.indexOf(location.origin) == 0)) {
+    history.back();
+  } else {
+    window.location = ".";
+  }
+  return false;
+});
 
 var CrsValues = [
   null,

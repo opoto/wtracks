@@ -1,7 +1,3 @@
-if (config.google && config.google.analyticsid) {
-  initGoogleAnalytics(config.google.analyticsid());
-}
-
 // -------- ACTIVITIES
 var activities = getJsonVal("wt.activities");
 // initialize activities on first use
