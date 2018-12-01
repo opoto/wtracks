@@ -77,6 +77,7 @@ function showMapsList() {
 function toggleMapVisibility(e) {
   var mprops = getMapProps(e.target);
   mprops.on = !mprops.on;
+  ga('send', 'event', 'map', 'visibility');
   saveMapList();
   setMapItemVisibility($(e.target), mprops)
 }
@@ -309,7 +310,7 @@ function openExportMymaps(evt, mymapname) {
     $("#input-val").select();
     $("#input-val").attr("readonly", "readonly");
     $(".prompt-content .copyonclick").show();
-    ga('send', 'event', 'map', 'export', undefined, mymaps.length);
+    ga('send', 'event', 'map', 'export', undefined, mymapname ? 1 : mymaps.length);
   }
 }
 
@@ -334,7 +335,8 @@ function importMymaps() {
       var msg = overwrite ? "Overwrite " : "Import ";
       if (confirm(msg + name + "?")) {
         if (overwrite) {
-          changeMymapsItem(name, name);
+          // useless
+          //changeMymapsItem(name, name);
         } else {
           addMymapsItem(name, addMapListEntry(name, MAP_MY, true), true);
         }
@@ -402,6 +404,7 @@ $(document).ready(function() {
         // update list data
         moveMapListEntry(fromIdx, toIdx);
         saveMapList();
+        ga('send', 'event', 'map', 'move');
       }
     }
   });
