@@ -319,9 +319,9 @@ function openImportMymaps() {
   $("#input-val").val("");
   $("#input-ok").show();
   $("#input-box").show();
-  $("#input-val").focus();
+  $("#input-val").removeAttr("readonly");
   $(".prompt-content .copyonclick").hide();
-  $("#input-val").attr("readonly", undefined);
+  $("#input-val").focus();
 }
 
 

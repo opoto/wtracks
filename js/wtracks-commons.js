@@ -33,17 +33,13 @@ $(".help-b").click(toggleHelp);
 function copyOnClick(event) {
   if (event.target && document.execCommand) {
     var elt = $("#" + event.target.id.substring(1));
-    elt.removeAttr("disabled");
     elt.select();
     document.execCommand("copy");
     var tmp = elt.val();
     elt.val("Text copied to clipboard");
-    elt.attr("disabled", "disabled");
     setTimeout(function(){
-      elt.removeAttr("disabled");
       elt.val(tmp);
       elt.select();
-      elt.attr("disabled", "disabled");
      }, 2000);
   }
 }
