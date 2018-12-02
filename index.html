@@ -511,18 +511,18 @@
   </div>
 
   <!-- Share track box box -->
-  <div id="share-box" class= "modal overlay">
+  <div id="wtshare-box" class= "modal overlay">
     <!-- Modal content -->
     <div class="prompt-content">
-      <div class="box-header"><a id="share-box-close" href="#" class="close-button">×</a></div>
-      <div id="share-ask">
+      <div class="box-header"><a id="wtshare-box-close" href="#" class="close-button">×</a></div>
+      <div id="wtshare-ask">
         <p>
           Click button below to anonymously upload your track to the cloud and get a shareable link to reopen it.
           <span id="sharetxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
         </p>
         <p id="sharetxt-help" class="help-p">
           Your track will be stored on a third-party server
-          (<a id="share-web" href="#" target="_blank"><span id="share-name"></span></a>)
+          (<a id="wtshare-web" href="#" target="_blank"><span id="wtshare-name"></span></a>)
           without any guarantee of availability.
           Make sure to keep a copy of the file on your own.
         </p>
@@ -531,9 +531,9 @@
             <tr>
               <td class="tdfit">
                 <i class="material-icons">security</i>
-                <input id="share-enc" type="checkbox"/>
+                <input id="wtshare-enc" type="checkbox"/>
               </td><td>
-                <label for="share-enc">Check to encrypt your track on the cloud for enhanced privacy</label>
+                <label for="wtshare-enc">Check to encrypt your track on the cloud for enhanced privacy</label>
                 <span id="shareenctxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
               </td>
             </tr>
@@ -544,41 +544,41 @@
           The decryption key will be included in the shareable link you will be provided.
           The encrypted track cannot be decrypted without this link.
         </p>
-        <button id="share-start" class="ok-btn">Continue</button>
-        <button id="share-cancel" class="cancel-btn">Cancel</button>
+        <button id="wtshare-start" class="ok-btn">Continue</button>
+        <button id="wtshare-cancel" class="cancel-btn">Cancel</button>
       </div>
-      <div id="share-processing">
+      <div id="wtshare-processing">
         <p>Uploading, please wait...</p>
-        <div id="share-spinner" class="spinner">
+        <div id="wtshare-spinner" class="spinner">
           <div class="bounce1"></div>
           <div class="bounce2"></div>
           <div class="bounce3"></div>
         </div>
       </div>
-      <div id="share-done">
-        <div id="share-links">
+      <div id="wtshare-done">
+        <div id="wtshare-links">
           <p>Here is the link to your track, copy and share it.</p>
           <p>
-            <i class="material-icons copyonclick" title="Copy link" id="-share-val">filter_none</i>
-            <input id="share-val" type="text" size="50" value="" readonly="readonly" />
-            <a href="#" id="share-viewqr" title="View link as QR Code"><img src='img/qrcode.png' alt='QRCode'></a>
+            <i class="material-icons copyonclick" title="Copy link" id="-wtshare-val">filter_none</i>
+            <input id="wtshare-val" type="text" size="50" value="" readonly="readonly" />
+            <a href="#" id="wtshare-viewqr" title="View link as QR Code"><img src='img/qrcode.png' alt='QRCode'></a>
           </p>
           <p>
-            <span class="share-item"><a href="#" id="share-open">
+            <span class="wtshare-item"><a href="#" id="wtshare-open">
               <i class="material-icons">open_in_new</i> Open that link</a>
             </span>
             <span class="hide-on-small-screen">&nbsp;|&nbsp;</span>
-            <span class="share-item">
-              <a href="#" id="share-view" target="_blank"><i class="material-icons">cloud</i> View cloud storage</a>
+            <span class="wtshare-item">
+              <a href="#" id="wtshare-view" target="_blank"><i class="material-icons">cloud</i> View cloud storage</a>
             </span>
           </p>
         </div>
-        <div id="share-qrcode">
-          <a id="share-back" href="#"><i class="material-icons">arrow_back</i></a>
+        <div id="wtshare-qrcode">
+          <a id="wtshare-back" href="#"><i class="material-icons">arrow_back</i></a>
           <p>Scan the QR Code below with your mobile to open the track:</p>
-          <img id="share-qrimg" src="#" alt="QR Code to be scanned"/>
+          <img id="wtshare-qrimg" src="#" alt="QR Code to be scanned"/>
         </div>
-        <button id="share-ok" class="ok-btn">Close</button>
+        <button id="wtshare-ok" class="ok-btn">Close</button>
       </div>
     </div>
   </div>

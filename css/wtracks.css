@@ -129,8 +129,8 @@ body {
   margin: 15px 5px;
 }
 #menuabout a:link, #menuabout a:visited,
-#share-ask a:link, #share-ask a:visited,
-#share-done a:link, #share-done a:visited,
+#wtshare-ask a:link, #wtshare-ask a:visited,
+#wtshare-done a:link, #wtshare-done a:visited,
 .text a:link, .text a:visited {
   text-decoration: none;
   color: #1992ca;
@@ -261,27 +261,27 @@ a.button {
   padding: 0;
 }
 
-#share-box .close-button {
+#wtshare-box .close-button {
   position: inherit;
   float: right;
   padding: 0;
 }
-#share-ask table td:first-child {
+#wtshare-ask table td:first-child {
   text-align: center;
   padding: 0;
   vertical-align: middle;
 }
-#share-links input {
+#wtshare-links input {
   width: 85%;
 }
-.share-item .material-icons  {
+.wtshare-item .material-icons  {
   color: black;
 }
-#share-viewqr {
+#wtshare-viewqr {
   float: right;
   padding-top: 3px;
 }
-#share-qrimg {
+#wtshare-qrimg {
   display: block;
   margin: 0 auto 10px auto;
   outline: 1px solid #FFF;
@@ -795,11 +795,11 @@ button:active, #track-upload-label:active {
   .title {
     max-width: 80%;
   }
-  .share-item {
+  .wtshare-item {
     margin-bottom: 10px;
     display: block;
   }
-  #share-links input {
+  #wtshare-links input {
     width: 80%;
   }
   .statistics th {

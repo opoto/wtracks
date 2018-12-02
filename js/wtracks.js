@@ -799,29 +799,29 @@ $("#track-download").click(function() {
 
 $("#track-share").click(function() {
   closeMenu();
-  $("#share-ask").show();
-  $("#share-processing").hide();
-  $("#share-done").hide();
-  $("#share-val").val("");
-  $("#share-box").show();
-  $("#share-start").focus();
+  $("#wtshare-ask").show();
+  $("#wtshare-processing").hide();
+  $("#wtshare-done").hide();
+  $("#wtshare-val").val("");
+  $("#wtshare-box").show();
+  $("#wtshare-start").focus();
   if (isCryptoSupported()) {
     $(".if-encrypt").show();
   }
 });
 function closeShareBox(){
-  $("#share-box").hide();
+  $("#wtshare-box").hide();
 }
-$("#share-box-close").click(closeShareBox);
-$("#share-cancel").click(closeShareBox);
-$("#share-ok").click(closeShareBox);
+$("#wtshare-box-close").click(closeShareBox);
+$("#wtshare-cancel").click(closeShareBox);
+$("#wtshare-ok").click(closeShareBox);
 
 function uploadClicked(){
-  $("#share-ask").hide();
-  $("#share-processing").show();
+  $("#wtshare-ask").hide();
+  $("#wtshare-processing").show();
   var gpx = getTrackGPX(true);
   var keyparam = "";
-  if (isChecked("#share-enc")) {
+  if (isChecked("#wtshare-enc")) {
     var pwd = Math.random().toString(36).substring(2);
     aesGcmEncrypt(gpx, pwd)
     .then(function(cipher) {
@@ -835,7 +835,7 @@ function uploadClicked(){
     .catch(function(err) {
       ga('send', 'event', 'error', 'crypto-encrypt', err);
       setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
-      $("#share-box").hide();
+      $("#wtshare-box").hide();
     });
   } else {
     shareGpx(gpx, keyparam);
@@ -853,37 +853,37 @@ function shareGpx(gpx, keyparam) {
       url = url.replace(/index\.html$/,""); // remove index.html
       url = url.replace(/\/*$/,"/"); // keep 1 and only 1 trailing /
       url = url + "?ext=gpx&noproxy=true&url=" + encodeURIComponent(rawgpxurl) + keyparam;
-      $("#share-val").val(url);
-      $("#share-open").attr("href", url);
-      $("#share-view").attr("href", gpxurl);
-      $("#share-processing").hide();
-      $("#share-links").show();
-      $("#share-qrcode").hide();
-      $("#share-qrimg").attr("src", config.qrCodeService + encodeURIComponent(url + "&qr=1"));
-      $("#share-done").show();
-      $("#share-val").focus();
-      $("#share-val").select();
+      $("#wtshare-val").val(url);
+      $("#wtshare-open").attr("href", url);
+      $("#wtshare-view").attr("href", gpxurl);
+      $("#wtshare-processing").hide();
+      $("#wtshare-links").show();
+      $("#wtshare-qrcode").hide();
+      $("#wtshare-qrimg").attr("src", config.qrCodeService + encodeURIComponent(url + "&qr=1"));
+      $("#wtshare-done").show();
+      $("#wtshare-val").focus();
+      $("#wtshare-val").select();
     }, function(error) {
       var errmsg = error.statusText ? error.statusText : error;
       setStatus("Failed: " + errmsg, { timeout: 5, class: "status-error" });
-      $("#share-box").hide();
+      $("#wtshare-box").hide();
     });
 }
 
 function showQRCode(e){
-  $("#share-links").hide();
-  $("#share-qrcode").show();
+  $("#wtshare-links").hide();
+  $("#wtshare-qrcode").show();
   return false;
 }
 function hideQRCode(e){
-  $("#share-links").show();
-  $("#share-qrcode").hide();
+  $("#wtshare-links").show();
+  $("#wtshare-qrcode").hide();
   return false;
 }
 
-$("#share-start").click(uploadClicked);
-$("#share-viewqr").click(showQRCode);
-$("#share-back").click(hideQRCode);
+$("#wtshare-start").click(uploadClicked);
+$("#wtshare-viewqr").click(showQRCode);
+$("#wtshare-back").click(hideQRCode);
 
 function closeShareBoxOnEscape(event) {
   if (event.which == 27) {
@@ -891,10 +891,10 @@ function closeShareBoxOnEscape(event) {
     event.stopPropagation();
   }
 }
-$("#share-start").keyup(closeShareBoxOnEscape);
-$("#share-cancel").keyup(closeShareBoxOnEscape);
-$("#share-val").keyup(closeShareBoxOnEscape);
-$("#share-ok").keyup(closeShareBoxOnEscape);
+$("#wtshare-start").keyup(closeShareBoxOnEscape);
+$("#wtshare-cancel").keyup(closeShareBoxOnEscape);
+$("#wtshare-val").keyup(closeShareBoxOnEscape);
+$("#wtshare-ok").keyup(closeShareBoxOnEscape);
 
 var setshare = getParameterByName("share");
 if (setshare) {
@@ -906,8 +906,8 @@ if (setshare) {
 }
 var sharename = getVal("wt.share", undefined);
 var share = sharename ? pastesLib[sharename] : pastesLib[Object.keys(pastesLib)[0]];
-$("#share-name").text(share.name);
-$("#share-web").attr("href", share.web);
+$("#wtshare-name").text(share.name);
+$("#wtshare-web").attr("href", share.web);
 
 // fileio automatically deletes paste after download, perfect for dropbox use case
 var dropboxTempShare = sharename ? pastesLib[sharename] : pastesLib.fileio;
