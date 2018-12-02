@@ -1,3 +1,6 @@
+// From: https://github.com/gardiner/draganddrop
+// License: MIT https://github.com/gardiner/draganddrop/blob/master/LICENSE.txt
+
 (function($) {
 "use strict";
 
