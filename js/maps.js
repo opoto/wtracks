@@ -245,7 +245,7 @@ function cancelMymapBox(evt) {
 function deleteMymap(mymapname) {
   if (mymapname) {
     mymap = mymaps[mymapname];
-    if (mymap && confirm("Delete " + mymapname + "?")) {
+    if (mymap && confirm("Delete \"" + mymapname + "\"?")) {
       mymaps[mymapname] = undefined;
       saveJsonValOpt("wt.mymaps", mymaps);
       // delete map in lists
@@ -298,7 +298,12 @@ $("input:radio[name=mymap-type]").change(changeMymapType);
 // ---------------- Import / export my maps
 
 function openExportMymaps(evt, mymapname) {
-  var toexport = mymapname ? { mymapname : mymaps[mymapname] } : mymaps;
+  var toexport = {};
+  if (mymapname) {
+    toexport[mymapname] = mymaps[mymapname];
+  } else {
+    toexport = mymaps;
+  }
   if (!$.isEmptyObject(toexport)) {
     var json = JSON.stringify(toexport);
     var data = b64EncodeUnicode(json);
@@ -332,8 +337,8 @@ function importMymaps() {
     var importedMymaps = data ? JSON.parse(b64DecodeUnicode(data)) : {};
     objectForEach(importedMymaps, function(name, value) {
       var overwrite = mymaps[name];
-      var msg = overwrite ? "Overwrite " : "Import ";
-      if (confirm(msg + name + "?")) {
+      var msg = overwrite ? "Overwrite \"" : "Import \"";
+      if (confirm(msg + name + "\"?")) {
         if (overwrite) {
           // useless
           //changeMymapsItem(name, name);
