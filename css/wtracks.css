@@ -135,6 +135,9 @@ body {
   text-decoration: none;
   color: #1992ca;
 }
+#wtshare-map-name {
+  font-style: italic;
+}
 
 .fold-link,
 .fold-file-closed,

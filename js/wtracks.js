@@ -799,6 +799,7 @@ $("#track-download").click(function() {
 
 $("#track-share").click(function() {
   closeMenu();
+  $("#wtshare-map-name").text(baseLayer);
   $("#wtshare-ask").show();
   $("#wtshare-processing").hide();
   $("#wtshare-done").hide();
@@ -820,14 +821,17 @@ function uploadClicked(){
   $("#wtshare-ask").hide();
   $("#wtshare-processing").show();
   var gpx = getTrackGPX(true);
-  var keyparam = "";
+  var params = "";
+  if (isChecked("#wtshare-map")) {
+    params += "&map=" + encodeURIComponent(baseLayer);
+  }
   if (isChecked("#wtshare-enc")) {
     var pwd = Math.random().toString(36).substring(2);
     aesGcmEncrypt(gpx, pwd)
     .then(function(cipher) {
       //log("iv  : " + cipher.iv);
       //log("pwd : " + pwd);
-      keyparam = "&key=" + "01" + strencode(cipher.iv + pwd);
+      params += "&key=" + "01" + strencode(cipher.iv + pwd);
       gpx = cipher.ciphertext;
       ga('send', 'event', 'file', 'encrypt', undefined, Math.round(gpx.length / 1000));
       shareGpx(gpx, keyparam);
@@ -838,11 +842,11 @@ function uploadClicked(){
       $("#wtshare-box").hide();
     });
   } else {
-    shareGpx(gpx, keyparam);
+    shareGpx(gpx, params);
   }
 }
 
-function shareGpx(gpx, keyparam) {
+function shareGpx(gpx, params) {
   ga('send', 'event', 'file', 'share', undefined, Math.round(gpx.length / 1000));
   share.upload(
     getTrackName(), gpx,
@@ -852,7 +856,7 @@ function shareGpx(gpx, keyparam) {
       url = url.replace(/\?.*$/,""); // remove parameters
       url = url.replace(/index\.html$/,""); // remove index.html
       url = url.replace(/\/*$/,"/"); // keep 1 and only 1 trailing /
-      url = url + "?ext=gpx&noproxy=true&url=" + encodeURIComponent(rawgpxurl) + keyparam;
+      url = url + "?ext=gpx&noproxy=true&url=" + encodeURIComponent(rawgpxurl) + params;
       $("#wtshare-val").val(url);
       $("#wtshare-open").attr("href", url);
       $("#wtshare-view").attr("href", gpxurl);
@@ -1399,6 +1403,22 @@ map.on("baselayerchange", function(e) {
   saveValOpt("wt.baseLayer", baseLayer);
   $(".leaflet-control-layers").removeClass("leaflet-control-layers-expanded");
 });
+
+function changeBaseLayer(mapname) {
+  var found = false;
+  $(".leaflet-control-layers-base .leaflet-control-layers-selector").each(function(idx,elt) {
+    if (mapname === elt.nextSibling.innerText.substring(1)) {
+      $(elt).click();
+      return found = true;
+    }
+  });
+  if (!found) {
+    // map is missing, inform user
+    setTimeout(function(){
+      setStatus("Requested map not visible/configured: " + mapname, { timeout: 5, class: "status-error" });
+    }, 4000);
+  }
+}
 
 var overlaysOn = getJsonVal("wt.overlaysOn", {});
 
@@ -2838,6 +2858,13 @@ $(document).ready(function() {
   var about = getVal("wt.about", undefined);
   // set saving status
   setChecked("#cfgsave", isStateSaved());
+
+  // map parameter
+  var mapname = getParameterByName("map");
+  if (mapname) {
+    ga('send', 'event', 'file', 'load-mapparam');
+    changeBaseLayer(mapname);
+  }
 
   var url = getParameterByName("url");
   if (url) {
