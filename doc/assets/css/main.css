@@ -2587,3 +2587,9 @@
 		float: right;
 		width: 150px;
 	}
+
+
+	.code {
+	  font-family: monospace;
+	  background-color: #eee;
+	}

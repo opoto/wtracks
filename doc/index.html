@@ -102,11 +102,61 @@
 							<p>Real-time statistic data about your track</p>
 							<ul class="default">
 								<li>Distance: One way (<span class="material-icons symbol">&#xE31C;</span>) and round-trip (<span class="material-icons symbol">&#xE041;</span>) lenght of the track</li>
-								<li>Duration: Estimated duration (one way and round-trip) of the track itinary based on the activity type. This computation is based on elevation profile and my personal experience ;) [hopefully in the future it will be configurable]</li>
+								<li>Duration: Estimated duration (one way and round-trip) of the track itinary based on the activity type. Default activities and timings, but you can configure your own, see below</li>
 								<li>Maximum and minimum altitudes of the track</li>
 								<li>Cumulated climbing and descent heights</li>
 							</ul>
 							<p><img src="images/statistics.png" alt="statistics"/></p>
+
+							<h3>Activity editor</h3>
+							<p>Define your own type of activity, which will be used to computes track duration.</p>
+							<ul class="default">
+								<li>Several timing models: reference points, linear polynomial...</li>
+								<li>Automatic computation from a reference recorded track</li>
+								<li>Share and import personal activities</li>
+							</ul>
+							<p><img src="images/activities.png" alt="activities"/></p>
+
+							<h3>Personal map configuration</h3>
+							<p>Configure the list of background maps in the top right selector</p>
+							<ul class="default">
+								<li>Define your preferred map order</li>
+								<li>Hide/Show maps of your choice</li>
+								<li>Configure your own personal map (standard tile layers or WMS/WMTS)</li>
+							</ul>
+							<p><img src="images/maps.png" alt="maps" /></p>
+
+							<h3>Sharing</h3>
+							<ul class="default">
+								<li>Provides a shareable link to reopen current edited track anytime and anywhere</li>
+								<li>Anonymous storage in the cloud</li>
+								<li>Optional sharing of the background map</li>
+								<li>Optional encryption in the cloud</li>
+								<li>Link available as a QRCode for easy mobile capture</li>
+							</ul>
+							<p>Simplest way to share a track to go use the "Share" button from the File tab.</p>
+							<p><img src="images/sharing.png" alt="sharing" /></p>
+							<p>Altenatively, you can manually build a shareable URL using the following syntax:</p>
+							<span class="code">https://opoto.github.io/wtracks/?url=&lt;link to online track file&gt;[&&lt;option&gt;=&lt;value&gt;]</span>
+							<p>where parameters are:</p>
+							<ul class="default">
+								<li><span class="code">url</span> is a HTTPS URL to a GPX/KML/GEOJSON track file</li>
+								<li><span class="code">map</span> is the name of the map as is appears in the top-right map selecetor.
+									Map name with special characters need to be URL encoded. In particular, spaces must be replaced by + sign.
+								</li>
+								<li><span class="code">ext</span> is the extension/type of the track to use for parsing it.
+									By default the end of the URL will be considered as the extension of the file.
+									If it is not one of '.gpx', '.geojson', or '.kml', define it using the 'ext' parameter.
+								</li>
+								<li><span class="code">noproxy=true</span> when access to the track URL requires credentials
+									 provided by your browser (e.g., being logged in to a remote server).
+									 This requires the server hosting the track to support cross-origin requests.
+									 If not set, the file will be loaded by a intermediate proxy,
+									 removing the cross-origin constraint, but without your credentials.
+								 </li>
+							</ul>
+							<p>For example:</p>
+							<span class="code">https://opoto.github.io/wtracks/?url=https://my.domain.com/track12&ext=gpx&map=Sigma+Cycle</span>
 
 							<h3>Compress</h3>
 							<ul class="default">
@@ -114,7 +164,7 @@
 								<li>Consumes less browser memory and processing, leading to faster editor execution</li>
 								<li>Simplifies step-by-step track edition, by only keeping most relevant points</li>
 							</ul>
-							<p>This tools looks at each point in a track, and measures its distance from the line between the previous and next points. If this distance is smaller than the configurable value (eg 5 meters) then the point is deleted.</p>
+							<p>This tools looks at each point in a track, and measures its distance from the line between the previous and next points. If this distance is smaller than the configurable value (e.g., 5 meters) then the point is deleted.</p>
 							<p><img src="images/compress.png" alt="compress" /></p>
 
 							<h3>Elevate / Cleanup</h3>
