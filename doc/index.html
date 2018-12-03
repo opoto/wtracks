@@ -115,7 +115,7 @@
 								<li>Automatic computation from a reference recorded track</li>
 								<li>Share and import personal activities</li>
 							</ul>
-							<p><img src="images/activities.png" alt="activities"/></p>
+							<p><img src="images/activities.png" alt="activities" width="600"/></p>
 
 							<h3>Personal map configuration</h3>
 							<p>Configure the list of background maps in the top right selector</p>
@@ -124,7 +124,10 @@
 								<li>Hide/Show maps of your choice</li>
 								<li>Configure your own personal map (standard tile layers or WMS/WMTS)</li>
 							</ul>
-							<p><img src="images/maps.png" alt="maps" /></p>
+							<p>
+								<img src="images/maps.png" alt="maps"/>
+								<img src="images/config-maps.png" alt="maps configuration" width="500"/>
+							</p>
 
 							<h3>Sharing</h3>
 							<ul class="default">
@@ -134,15 +137,18 @@
 								<li>Optional encryption in the cloud</li>
 								<li>Link available as a QRCode for easy mobile capture</li>
 							</ul>
-							<p>Simplest way to share a track to go use the "Share" button from the File tab.</p>
+							<p>The simplest way to share a track is using the "Share" button from the File menu tab.</p>
 							<p><img src="images/sharing.png" alt="sharing" /></p>
 							<p>Altenatively, you can manually build a shareable URL using the following syntax:</p>
 							<p class="code">https://opoto.github.io/wtracks/?url=&lt;link to online track file&gt;[&&lt;option&gt;=&lt;value&gt;]</p>
 							<p>where parameters are:</p>
 							<ul class="default">
-								<li><span class="code">url</span> is a HTTPS URL to a GPX/KML/GEOJSON track file</li>
+								<li><span class="code">url</span> is a HTTPS URL to a GPX/KML/GEOJSON track file.
+									<a href="https://meyerweb.com/eric/tools/dencoder/">Encode</a> the URL if it contains ? or &amp; or other special characters.
+								</li>
 								<li><span class="code">map</span> is the name of the map as is appears in the top-right map selecetor.
-									Map name with special characters need to be URL encoded. In particular, spaces must be replaced by + sign.
+									Map name with special characters need to be <a href="https://meyerweb.com/eric/tools/dencoder/">encoded</a>.
+									In particular, space must be replaced by + sign.
 								</li>
 								<li><span class="code">ext</span> is the extension/type of the track to use for parsing it.
 									By default the end of the URL will be considered as the extension of the file.
@@ -155,8 +161,8 @@
 									 removing the cross-origin constraint, but without your credentials.
 								 </li>
 							</ul>
-							<p>For example:</p>
-							<p class="code">https://opoto.github.io/wtracks/?url=https://my.domain.com/track12&ext=gpx&map=Sigma+Cycle</p>
+							<p>Example of shareable URL:</p>
+							<p class="code">https://opoto.github.io/wtracks/?url=https://www.visugpx.com/download.php?id=1320934523&ext=gpx&map=Sigma+Cycle</p>
 
 							<h3>Compress</h3>
 							<ul class="default">
@@ -191,16 +197,17 @@
 							<div class="container">
 
 								<header>
-									<h2><span class="fa fa-sliders">&nbsp;</span>Settings</h2>
+									<h2><span class="fa fa-sliders">&nbsp;</span>Configurable</h2>
 								</header>
 
 								<h3>Rich configuration settings</h3>
 								<ul class="default">
 									<li>Persistent settings: Activate persistence of your settings so that your browser stores your WTracks preferences, and restores them on each of your visits. See <a href="#privacy">privacy section</a> for more details.</li>
-									<li>Personal background map: Define your own map backgrounds in WMS or WMTS format.</li>
+									<li>Personal background map: Define your own map backgrounds in WMS or WMTS format (see above).</li>
+									<li>Personal activities: Define your own activities based on your individual performances (see above).</li>
 									<li>Track display: Define the color and width of the track on the map.</li>
 									<li>API keys: Set and use your own Google and GraphHopper API keys in order to overcome the WTracks quota limit.</li>
-									<li>Distance Unit: click on the scale icon on the bottom left of the map to switch between metric and imperial units.</li>
+									<li>Distance Unit: Choose between metric and imperial units.</li>
 								</ul>
 
 							</div>
@@ -254,7 +261,9 @@
 
 							<p>WTrack is a client-side application! The server only provides the files (web pages, images, scripts, stylesheets) that will be processed by your browser. Once these files are loaded, your browser doesn't use the server anymore, all the application runs in your browser, there is no more communication with our server during execution. Our server is hence not even aware of your activity. However the application uses some <a href="#3rdparties">third-party services</a> that interact with backend servers, such as the one providing the map images, the elevation data, or geolocation.</p>
 
-							<p>In order to enhance your exeprience, the application stores some data in your browser, to restore your preferred settings accross different visits. This data includes your selected map style, activity type, or your last position. This information is stored in your browser local storage, which protects its disclosure. Again, this data is not known, processed nor stored by our server.</p>
+							<p>In order to enhance your experience, the application stores some data in your browser, to restore your preferred settings accross different visits. This data includes your selected map style, activity type, or your last position. This information is stored in your browser local storage, which protects its disclosure. Again, this data is not known, processed nor stored by our server.</p>
+
+							<p>WTrack uses Google Analytics to monitor activity and help identify which features need to be enhanced.</p>
 						</div>
 					</section>
 
