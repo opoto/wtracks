@@ -284,7 +284,7 @@ function newWaypoint(latlng, properties, wptLayer) {
 
   function getMarkerPopupContent(marker) {
     var div = L.DomUtil.create('div', "popupdiv"),
-      label, input;
+      label;
 
     if (editMode === EDIT_MARKER) {
 
@@ -2298,7 +2298,7 @@ function newRouteWaypoint(i, waypoint, n) {
 
   marker.on("click", function(e) {
 
-    var pop = L.popup({ "className" : "overlay" })
+    L.popup({ "className" : "overlay" })
       .setLatLng(e.latlng)
       .setContent(getRouteWaypoinContent(e.latlng, i))
       .openOn(map);
@@ -2433,8 +2433,6 @@ function getTrackPointPopupContent(latlng) {
 
   var pts = track.getLatLngs();
   var last = pts[pts.length - 1];
-  var first = pts[0];
-  var stats = track.stats;
 
   data = L.DomUtil.create('div', "popupdiv", div);
   data.innerHTML = "<span class='popupfield'>Distance:</span> " +

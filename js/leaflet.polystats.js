@@ -321,7 +321,7 @@
             };
 
             var stats = this._polyline.stats,
-                j, pt, slope, relchrono, chrono, reldist, altdiff;
+                j, pt, slope, relchrono, reldist, altdiff;
             for (j = 0; j < pts.length; j++) {
                 pt = pts[j];
                 pt.i = j;

@@ -292,8 +292,8 @@ function addRefSpeed() {
   displaySpeedProfile(activity.speedprofile);
 }
 
-function genericSpFormula(method, defparams) {
-  function updParam(method, idx) {
+function genericSpFormula() {
+  function updParam(idx) {
     return function() {
       activity.speedprofile.parameters[idx] = parseFloat($("#spformula #p" + idx).val());
       displaySpeedProfile(activity.speedprofile);
@@ -302,7 +302,7 @@ function genericSpFormula(method, defparams) {
   $("#spformula input").off("keyup");
   for (var i = activity.speedprofile.parameters.length - 1; i >= 0; i--) {
     $("#spformula #p" + i).val(activity.speedprofile.parameters[i]);
-    $("#spformula #p" + i).on("keyup", updParam(method, i));
+    $("#spformula #p" + i).on("keyup", updParam(i));
   }
 }
 

@@ -248,9 +248,8 @@ function getLocalCode() {
 
 function strxor(s, k) {
   var enc = "";
-  var str = "";
   // make sure that input is string
-  str = s.toString();
+  s = s.toString();
   for (var i = 0; i < s.length; i++) {
     // create block
     var a = s.charCodeAt(i);
