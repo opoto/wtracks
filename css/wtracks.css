@@ -128,6 +128,10 @@ body {
 #about-logo {
   margin: 15px 5px;
 }
+#github-logo {
+  float: left;
+  margin: 4px 10px 0 0;
+}
 #menuabout a:link, #menuabout a:visited,
 #wtshare-ask a:link, #wtshare-ask a:visited,
 #wtshare-done a:link, #wtshare-done a:visited,
