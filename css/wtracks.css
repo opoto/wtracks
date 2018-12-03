@@ -130,7 +130,7 @@ body {
 }
 #github-logo {
   float: left;
-  margin: 4px 10px 0 0;
+  margin: -3px 10px 0 0;
 }
 #menuabout a:link, #menuabout a:visited,
 #wtshare-ask a:link, #wtshare-ask a:visited,
@@ -185,6 +185,9 @@ body {
 }
 #mymap-box .help-b {
   margin-left: 0;
+}
+.mymap-name {
+  font-style: italic;
 }
 
 #dropbox-chooser, #dropbox-saver {

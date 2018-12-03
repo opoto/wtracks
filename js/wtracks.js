@@ -2913,6 +2913,13 @@ $(document).ready(function() {
 
   initTrackDisplaySettings();
 
+  $(".leaflet-control-layers-base .leaflet-control-layers-selector").each(function(idx, elt) {
+    var name = elt.nextSibling.innerText.substring(1);
+    var props = getMapListEntryProps(name);
+    if (props && (props.in == MAP_MY)) {
+      $(elt.nextSibling).addClass("mymap-name");
+    }
+  });
   $(".leaflet-control-layers-base").append("<label><div>&nbsp;<i class='material-icons'>settings&nbsp;</i><a href='./maps.html'>More...</a></div></label>");
 
   // Persist joinOnLoad option

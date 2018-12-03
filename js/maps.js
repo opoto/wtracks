@@ -14,15 +14,19 @@ function setMapItemVisibility(elt, props) {
 }
 
 function addMymapsItem(name, props, addHandlers) {
+  var mymapbtns = "",
+    mymapclass = "";
+  if (props.in == MAP_MY) {
+    mymapbtns += "<i class='material-icons map-edit'>create</i> ";
+    mymapbtns += "<i class='material-icons map-share'>share</i> ";
+    mymapbtns += "<i class='material-icons map-delete'>delete</i> ";
+    mymapclass = " mymap-name";
+  }
   var mapitem = "<li><span class='map-item'>";
   mapitem += "<i class='material-icons map-drag'>drag_indicator</i> ";
-  mapitem += "<span class='map-name'>" + name + "</span> ";
+  mapitem += "<span class='map-name" + mymapclass + "'>" + name + "</span> ";
   mapitem += "<i class='material-icons map-visibility' isVisible='??'>??</i> ";
-  if (props.in == MAP_MY) {
-    mapitem += "<i class='material-icons map-edit'>create</i> ";
-    mapitem += "<i class='material-icons map-share'>share</i> ";
-    mapitem += "<i class='material-icons map-delete'>delete</i> ";
-  }
+  mapitem += mymapbtns;
   mapitem += "</span></li>";
   $("#mymaps-list").append(mapitem);
   var newitem = $("#mymaps-list").children().last();

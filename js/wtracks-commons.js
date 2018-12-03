@@ -116,6 +116,13 @@ function getMapListEntryIndex(name) {
   return mapsListNames.indexOf(name);
 }
 
+function getMapListEntryProps(name) {
+  var idx = mapsListNames.indexOf(name);
+  return idx >= 0 ?
+    mapsListProps[idx] :
+    undefined;
+}
+
 function renameMapListEntry(oldname, newname) {
   var idx = getMapListEntryIndex(oldname);
   if (idx >=0) {
