@@ -265,13 +265,7 @@ a.button {
   color: #999;
   cursor: pointer;
 }
-#input-box .close-button {
-  position: inherit;
-  float: right;
-  padding: 0;
-}
-
-#wtshare-box .close-button {
+.prompt-content .close-button {
   position: inherit;
   float: right;
   padding: 0;
@@ -568,7 +562,7 @@ div.trumbowyg-editor {
   font-family: sans-serif;
   font-size: 100%;
 }
-#input-val {
+#export-val {
   width: 90%;
 }
 
@@ -620,7 +614,6 @@ div.trumbowyg-editor {
   white-space: nowrap;
   text-overflow: ellipsis;
   display: inline-block;
-  padding-bottom: 3px;
   user-select: text;
 }
 .map-edit, .map-delete, .map-share, .map-visibility {

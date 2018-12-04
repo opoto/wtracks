@@ -20,7 +20,12 @@ function getStateSaved() {
 function isStateSaved() {
   return getStateSaved() === "true";
 }
-
+function setSaveState(saveCfg) {
+  if (isStateSaved() != saveCfg) {
+    ga('send', 'event', 'setting', saveCfg ? 'save-on' : 'save-off');
+    storeVal("wt.saveState", saveCfg ? "true" : "false");
+  }
+}
 
 /* help buttons */
 function toggleHelp(e) {
@@ -45,7 +50,7 @@ function copyOnClick(event) {
 }
 $(".copyonclick").click(copyOnClick);
 
-$("#link-home").click(function() {
+$(".link-home").click(function() {
   if ((history.length > 0) && (document.referrer.indexOf(location.origin) == 0)) {
     history.back();
   } else {

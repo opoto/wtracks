@@ -33,15 +33,45 @@
 
 <body>
 
-  <!-- Export/import Mymaps box -->
-  <div id="input-box" class= "modal overlay">
+  <!-- Export Mymaps box -->
+
+  <div id="export-box" class= "modal overlay">
     <!-- Modal content -->
     <div class="prompt-content">
-      <div class="box-header"><a id="input-box-close" href="#" class="close-button">×</a></div>
-      <p id="input-text"></p>
-      <i class="material-icons copyonclick" title="Copy link" id="-input-val">filter_none</i>
-      <input id="input-val" type="text" size="50" value="" />
-      <button id="input-ok" class="ok-btn">Ok</button>
+      <div class="box-header"><a id="export-box-close" href="#" class="close-button">×</a></div>
+      <p>
+        Copy and share the link below (Ctrl+C & Enter):
+        <span id="exportv" class="help-b material-icons" title="Help">&#xE8FD;</span>
+      </p>
+      <i class="material-icons copyonclick" title="Copy link" id="-export-val">filter_none</i>
+      <input id="export-val" type="text" size="50" value="" readonly="readonly"/>
+      <p id="exportv-help" class="help-p">
+        To use this link, simply paste it in the address bar of a web browser.
+        WTracks will ask for confirmation before importing each map in local browser storage.
+      </p>
+    </div>
+  </div>
+
+  <div id="import-box" class= "modal overlay">
+    <!-- Modal content -->
+    <div class="prompt-content">
+      <div class="box-header"><a id="import-box-close" href="#" class="close-button">×</a></div>
+      <h3>Import WTracks maps</h3>
+      <p>
+        Select the maps you want to import:
+        <span id="importv" class="help-b material-icons" title="Help">&#xE8FD;</span>
+      </p>
+      <p id="import-list"></p>
+      <p id="importv-help" class="help-p">
+        Selected map will be added to you background map in the main <a href="#" class="link-home">WTracks</a> page.
+      </p>
+      <p id="importv-savecfg">
+        Note: Importing maps will automatically activate persistent storage of WTracks settings in your browser.
+        You can change this setting at any moment in "Settings" menu tab, "Remember me" option.
+      </p>
+      <button id="import-ok" class="ok-btn">Ok</button>
+      <button id="import-cancel" class="cancel-btn">Cancel</button>
+
     </div>
   </div>
 
@@ -71,7 +101,6 @@
     <div class="maps-btns">
       <button id="mymaps-deleteall" title="Deletes all personal maps">Delete All</button>
       <button id="mymaps-export" title="Export all personal maps">Export All</button>
-      <button id="mymaps-import" title="Import personal maps">Import</button>
       <button id="mymaps-new" title="Create a new personal map">New</button>
     </div>
 
@@ -161,7 +190,7 @@
     </div>
 
     <div id="footer">
-      <a href="#" class="btn-link" id="link-home">&lt;&lt; Back to WTracks editor</a>
+      <a href="#" class="btn-link link-home">&lt;&lt; Back to WTracks editor</a>
     </div>
 
   </div>

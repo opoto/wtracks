@@ -81,9 +81,9 @@ function showMapsList() {
 function toggleMapVisibility(e) {
   var mprops = getMapProps(e.target);
   mprops.on = !mprops.on;
-  ga('send', 'event', 'map', 'visibility');
   saveMapList();
   setMapItemVisibility($(e.target), mprops)
+  ga('send', 'event', 'map', 'visibility');
 }
 
 function editMapItem(e) {
@@ -275,17 +275,17 @@ function deleteAllMymaps(evt) {
       confirm("Delete all your personal maps?")) {
     mymaps = {};
     saveJsonValOpt("wt.mymaps", undefined);
-    ga('send', 'event', 'map', 'deleteall');
     getMapList();
     showMapsList()
+    ga('send', 'event', 'map', 'deleteall');
   }
 }
 function reorderMapList(evt) {
   if (confirm("Re-order map list according to defaults, with personal maps at the end?")) {
-    ga('send', 'event', 'map', 'reorder');
     resetMapList();
     getMapList();
     showMapsList();
+    ga('send', 'event', 'map', 'reorder');
   }
 }
 
@@ -299,7 +299,7 @@ $("#mymaps-deleteall").click(deleteAllMymaps);
 $("#maps-reorder").click(reorderMapList);
 $("input:radio[name=mymap-type]").change(changeMymapType);
 
-// ---------------- Import / export my maps
+// ---------------- Export my maps
 
 function openExportMymaps(evt, mymapname) {
   var toexport = {};
@@ -311,85 +311,90 @@ function openExportMymaps(evt, mymapname) {
   if (!$.isEmptyObject(toexport)) {
     var json = JSON.stringify(toexport);
     var data = b64EncodeUnicode(json);
-    $("#input-text").text("Copy and share map data below (Ctrl+C & Enter):");
-    $("#input-ok").hide();
-    $("#input-val").val(data);
-    $("#input-box").show();
-    $("#input-val").focus();
-    $("#input-val").select();
-    $("#input-val").attr("readonly", "readonly");
-    $(".prompt-content .copyonclick").show();
+    $("#export-val").val(window.location.toString() + "?import=" + data);
+    $("#export-box").show();
+    $("#export-val").focus();
+    $("#export-val").select();
     ga('send', 'event', 'map', 'export', undefined, mymapname ? 1 : mymaps.length);
   }
 }
 
-function openImportMymaps() {
-  $("#input-text").text("Paste exported map data (Ctrl+V & Enter):");
-  $("#input-val").val("");
-  $("#input-ok").show();
-  $("#input-box").show();
-  $("#input-val").removeAttr("readonly");
-  $(".prompt-content .copyonclick").hide();
-  $("#input-val").focus();
-}
-
-
-function importMymaps() {
-  var imported = 0;
-  try {
-    var data = $("#input-val").val().trim();
-    var importedMymaps = data ? JSON.parse(b64DecodeUnicode(data)) : {};
-    objectForEach(importedMymaps, function(name, value) {
-      var overwrite = mymaps[name];
-      var msg = overwrite ? "Overwrite \"" : "Import \"";
-      if (confirm(msg + name + "\"?")) {
-        if (overwrite) {
-          // useless
-          //changeMymapsItem(name, name);
-        } else {
-          addMymapsItem(name, addMapListEntry(name, MAP_MY, true), true);
-        }
-        mymaps[name] = value;
-        imported++;
-      }
-    });
-  } catch (ex) {
-    error("Invalid import data");
-  }
-  if (imported > 0) {
-    saveJsonValOpt("wt.mymaps", mymaps);
-    ga('send', 'event', 'map', 'import', undefined, imported);
-    saveMapList();
-  }
-  $("#input-box").hide();
-}
-
-$("#input-box-close").click(function() {
-  $("#input-box").hide();
+$("#export-box-close").click(function() {
+  $("#export-box").hide();
   return false;
 });
 
-$("#input-val").keyup(function(event) {
-  if (event.which == 27) {
-    $("#input-box").hide();
-  } else if (event.keyCode == 13) {
-    var isImport = $("#input-ok").is(":visible");
-    $("#input-box").hide();
-    if (isImport) {
-      importMymaps();
-    }
+$("#export-val").keyup(function(event) {
+  if ((event.which == 27) || (event.keyCode == 13)) {
+    $("#export-box").hide();
   }
 });
 
-$("#input-ok").click(importMymaps);
-
-$("#mymaps-import").click(openImportMymaps);
 $("#mymaps-export").click(openExportMymaps);
 
 if (!supportsBase64() || !JSON || !JSON.parse || !JSON.stringify) {
-  $("#mymaps-import").attr("disabled", "disabled");
   $("#mymaps-export").attr("disabled", "disabled");
 }
+
+// ------------------- Import maps
+
+var importedMymaps;
+function openImportBox(data) {
+  try {
+    importedMymaps = data ? JSON.parse(b64DecodeUnicode(data)) : {};
+    $("#import-list").empty();
+    objectForEach(importedMymaps, function(name, value) {
+      var limap = "<div><label><input type='checkbox'/> <span>" + name;
+      var overwrite = mymaps[name];
+      if (overwrite) {
+        limap += "</span> (Overwrite yours)"
+      }
+      limap += "</span></div>"
+      $("#import-list").append(limap);
+    });
+    // show info about persistence activation if needed
+    if (isStateSaved()) {
+      $("#importv-savecfg").hide();
+    } else {
+      $("#importv-savecfg").show();
+    }
+    $("#import-box").show();
+  } catch (ex) {
+    error("Invalid import data");
+  }
+}
+
+function closeImportBox() {
+  $("#import-box").hide();
+  window.history.pushState({}, document.title, window.location.pathname);
+  importedMymaps = undefined;
+  return false;
+}
+
+function importMymaps() {
+  var imported = 0;
+  $("#import-list input:checked").each(function(i,elt) {
+    var name = elt.nextElementSibling.innerText;
+    var isnew = !mymaps[name];
+    if (isnew) {
+      addMymapsItem(name, addMapListEntry(name, MAP_MY, true), true);
+    }
+    mymaps[name] = importedMymaps[name];
+    imported++;
+  });
+  if (imported > 0) {
+    // requires saved state
+    setSaveState(true);
+    saveJsonValOpt("wt.mymaps", mymaps);
+    saveMapList();
+    ga('send', 'event', 'map', 'import', undefined, imported);
+  }
+  closeImportBox();
+}
+
+$("#import-box-close").click(closeImportBox);
+$("#import-cancel").click(closeImportBox);
+$("#import-ok").click(importMymaps);
 
 // ------------------- ready?
 
@@ -417,6 +422,12 @@ $(document).ready(function() {
       }
     }
   });
+
+  // import maps?
+  var toimport = getParameterByName("import");
+  if (toimport) {
+    openImportBox(toimport);
+  }
 });
 
 $(window).on("unload", function() {

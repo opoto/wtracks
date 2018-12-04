@@ -2838,8 +2838,7 @@ $("#donate").click(function(event) {
 
 $("#cfgsave").change(function(e) {
   var saveCfg = isChecked("#cfgsave");
-  ga('send', 'event', 'setting', saveCfg ? 'save-on' : 'save-off');
-  storeVal("wt.saveState", saveCfg ? "true" : "false");
+  setSaveState(saveCfg);
   if (saveCfg) {
     saveState();
     saveSettings();
@@ -2913,6 +2912,7 @@ $(document).ready(function() {
 
   initTrackDisplaySettings();
 
+  // specific style for personal maps
   $(".leaflet-control-layers-base .leaflet-control-layers-selector").each(function(idx, elt) {
     var name = elt.nextSibling.innerText.substring(1);
     var props = getMapListEntryProps(name);
@@ -2920,6 +2920,7 @@ $(document).ready(function() {
       $(elt.nextSibling).addClass("mymap-name");
     }
   });
+  // add "settings" link in map selector
   $(".leaflet-control-layers-base").append("<label><div>&nbsp;<i class='material-icons'>settings&nbsp;</i><a href='./maps.html'>More...</a></div></label>");
 
   // Persist joinOnLoad option
@@ -2933,5 +2934,5 @@ $(document).ready(function() {
 });
 
 $(window).on("unload", function() {
-  //saveState();
+  saveState();
 });
