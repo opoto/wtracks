@@ -343,13 +343,16 @@ function openImportBox(data) {
   try {
     importedMymaps = data ? JSON.parse(b64DecodeUnicode(data)) : {};
     $("#import-list").empty();
+    var i = 0;
     objectForEach(importedMymaps, function(name, value) {
-      var limap = "<div><label><input type='checkbox'/> <span>" + name;
+      var id = "import-i" + i++;
+      var limap = "<tr><td><input id='" + id  + "' type='checkbox'/></td>"
+      limap += "<td><label for='" + id + "'><span>" + name;
       var overwrite = mymaps[name];
       if (overwrite) {
-        limap += "</span> (Overwrite yours)"
+        limap += "</span> (Overwrite yours)</label>"
       }
-      limap += "</span></div>"
+      limap += "</span></td></tr>"
       $("#import-list").append(limap);
     });
     // show info about persistence activation if needed
@@ -374,7 +377,7 @@ function closeImportBox() {
 function importMymaps() {
   var imported = 0;
   $("#import-list input:checked").each(function(i,elt) {
-    var name = elt.nextElementSibling.innerText;
+    var name = elt.parentElement.nextSibling.firstElementChild.firstElementChild.innerText;
     var isnew = !mymaps[name];
     if (isnew) {
       addMymapsItem(name, addMapListEntry(name, MAP_MY, true), true);

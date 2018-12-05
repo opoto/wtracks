@@ -135,7 +135,8 @@ body {
 #menuabout a:link, #menuabout a:visited,
 #wtshare-ask a:link, #wtshare-ask a:visited,
 #wtshare-done a:link, #wtshare-done a:visited,
-.text a:link, .text a:visited {
+.text a:link, .text a:visited,
+.help-p a:link, .help-p a:visited {
   text-decoration: none;
   color: #1992ca;
 }
@@ -626,10 +627,17 @@ div.trumbowyg-editor {
   width: auto;
 }
 
+#import-list td {
+  padding: 0 2px;
+  min-width: 0;
+}
+#import-list {
+  margin-bottom: 1em;
+}
+
 #footer {
   margin-top: 2em;
 }
-
 
 .btn-link {
   padding: 4px 7px 0 0;
