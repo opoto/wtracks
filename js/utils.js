@@ -177,7 +177,7 @@ function initGoogleAnalytics(trackingid) {
     a.src = g;
     a.onerror = function(err) {
       error("Google Analytics blocked. Ad blocker?");
-    }
+    };
     try {
       m.parentNode.insertBefore(a, m);
     } catch (err) {
@@ -265,7 +265,7 @@ function getEncodeParams(s1, s2) {
     (window.location.toString().indexOf(".dev.local:") > 0);
   var res = {
     k: islocal ? getLocalCode() : n10dLocation()
-  }
+  };
   if (s1 || s2) {
     res.s = islocal ? s2 : s1;
   }
@@ -313,7 +313,7 @@ function arrayMove(arr, old_index, new_index) {
     }
     arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
     return arr;
-};
+}
 
 function objectForEach(object, func) {
   if (object) {

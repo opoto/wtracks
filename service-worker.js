@@ -25,5 +25,5 @@ if (workbox) {
 
 
 } else {
-  console.log(`Workbox didn't load 😬`);
+  console.log("Workbox didn't load 😬");
 }

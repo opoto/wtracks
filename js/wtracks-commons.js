@@ -184,7 +184,7 @@ getMapList();
 function mapsForEach(func) {
   arrayForEach(mapsListNames, function(idx, value) {
     var name = mapsListNames[idx];
-    var value = mapsListProps[idx];
-    func(name, value);
+    var prop = mapsListProps[idx];
+    func(name, prop);
   });
 }

@@ -47,7 +47,7 @@ function getMapProps(elt) {
 }
 
 function getMapItem(name) {
-  var res = undefined;
+  var res;
   $("#mymaps-list .map-name").each(function(i, v) {
     if (name == v.innerText) {
       res = $(v).parents("li");
@@ -82,7 +82,7 @@ function toggleMapVisibility(e) {
   var mprops = getMapProps(e.target);
   mprops.on = !mprops.on;
   saveMapList();
-  setMapItemVisibility($(e.target), mprops)
+  setMapItemVisibility($(e.target), mprops);
   ga('send', 'event', 'map', 'visibility');
 }
 
@@ -276,7 +276,7 @@ function deleteAllMymaps(evt) {
     mymaps = {};
     saveJsonValOpt("wt.mymaps", undefined);
     getMapList();
-    showMapsList()
+    showMapsList();
     ga('send', 'event', 'map', 'deleteall');
   }
 }
@@ -346,13 +346,13 @@ function openImportBox(data) {
     var i = 0;
     objectForEach(importedMymaps, function(name, value) {
       var id = "import-i" + i++;
-      var limap = "<tr><td><input id='" + id  + "' type='checkbox'/></td>"
+      var limap = "<tr><td><input id='" + id  + "' type='checkbox'/></td>";
       limap += "<td><label for='" + id + "'><span>" + name;
       var overwrite = mymaps[name];
       if (overwrite) {
-        limap += "</span> (Overwrite yours)</label>"
+        limap += "</span> (Overwrite yours)</label>";
       }
-      limap += "</span></td></tr>"
+      limap += "</span></td></tr>";
       $("#import-list").append(limap);
     });
     // show info about persistence activation if needed

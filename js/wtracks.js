@@ -1409,7 +1409,8 @@ function changeBaseLayer(mapname) {
   $(".leaflet-control-layers-base .leaflet-control-layers-selector").each(function(idx,elt) {
     if (mapname === elt.nextSibling.innerText.substring(1)) {
       $(elt).click();
-      return found = true;
+      found = true;
+      return false; // stop each loop
     }
   });
   if (!found) {
