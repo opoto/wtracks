@@ -24,15 +24,6 @@ var config = {
   compressdefault: 5,
   qrCodeService: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&bgcolor=fff&data=",
   //qrCodeService: "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chld=M&chl=",
-  thunderforest: {
-    key: function() {
-      // Create aThunderForest account, generate a key, and return it here
-      // Simple obfscuation below to avoid reuse by ommision
-      return strdecode(
-        "%1FL%0E%13%0D%11W%18VPBQAT%1D%5BW%18%40%10%16R%00%0FA%1A%18%1C%0CCW%15",
-        "%05.%0B%0E%24KFhZHA%5Dz%12%10vR%10u3_y%5B5E%1F%1D%0E%11gKM");
-    }
-  },
   graphhopper: {
     key: function() {
       // Create a GraphHopper account, generate a key, and return it here
@@ -171,16 +162,6 @@ var config = {
       },
       visible: true
     },
-    "OpenCycleMap": {
-      url: function() {
-        return '//{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=' + config.thunderforest.key();
-      },
-      options: {
-        maxZoom: 18,
-        attribution: '&copy; <a href="https://www.thunderforest.com/">Thunderforest</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      },
-      visible: true
-    },
     "Sigma Cycle": {
       url: '//tiles1.sigma-dc-control.com/layer5/{z}/{x}/{y}.png',
       options: {
@@ -188,16 +169,6 @@ var config = {
         attribution: '&copy; <a href="http://www.sigmasport.com/" target="_blank">SIGMA Sport &reg;</a> Map data <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>'
       },
       visible: true
-    },
-    "Outdoors": {
-      url: function() {
-        return '//{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=' + config.thunderforest.key();
-      },
-      options: {
-        maxZoom: 18,
-        attribution: '&copy; <a href="https://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      },
-      visible: false
     },
     "OSM HikeBike": {
       //'http://{s}.tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png'
