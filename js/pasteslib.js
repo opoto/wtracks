@@ -129,19 +129,19 @@
    },
    "htput": {
      "name": "HTPut",
-     "web": "http://htput.com/",
+     "web": "https://htput.com/",
      "upload": htputUpload,
      "delete": htputDelete
    },
    "dpaste": {
      "name": "DPaste",
-     "web": "http://dpaste.com/",
+     "web": "https://dpaste.com/",
      "upload": dpasteUpload,
      "delete": noDelete
    },
    "fileio": {
      "name": "file.io",
-     "web": "http://file.io/",
+     "web": "https://file.io/",
      "upload": fileioUpload,
      "delete": nop // no need to delete
    }
