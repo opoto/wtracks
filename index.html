@@ -145,9 +145,7 @@
         <td>
           <label id="track-upload-label">
             <input type="file" name="track" id="track-upload" multiple="multiple" accept=".gpx,.kml,.geojson"/>
-            <span>
-              File
-            </span>
+            <span>File</span>
           </label>
         </td>
         <td>
@@ -348,6 +346,12 @@
           <label for="cfgsave">Locally save editor's state between sessions</label>
           <br/>
           Privacy warning: state is shared with all users of this browser profile
+          <br />
+          <button id="save-state-file" class="state-file">Export</button>
+          <label id="state-load-label" class="state-file">
+            <input type="file" name="track" id="load-state-file" class="state-file">
+            <span>Import</span>
+          </label>
         </td>
       </tr>
       <tr class="nobottomborder">

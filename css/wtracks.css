@@ -705,7 +705,9 @@ input.invalid:focus {
 button:active, button:focus,
 input:active, input:focus,
 select:active, select:focus,
-textarea:focus {
+textarea:focus,
+#track-upload-label:active,
+#state-load-label:active {
   outline: 1px solid #B0CBDE;
   box-shadow: 0 0 2px 2px #B0CBDE;
 }
@@ -719,7 +721,9 @@ textarea:focus {
   font-size: 80%;
 }
 
-button, #track-upload-label {
+button,
+#track-upload-label,
+#state-load-label {
   border: 1px solid #777;
   border-radius: 3px;
   padding: 3px 8px;
@@ -730,16 +734,33 @@ button, #track-upload-label {
   width: 82%;
   text-align: center;
 }
-button:hover, #track-upload-label:hover {
+button:hover,
+#track-upload-label:hover,
+#state-load-label:hover {
   background: #C7E0F1;
 }
-button:active, #track-upload-label:active {
+button:active,
+#track-upload-label:active,
+#state-load-label:active {
   background: #B0CBDE;
 }
-#track-upload {
+#track-upload,
+#load-state-file {
    opacity: 0;
    position: absolute;
    z-index: -1;
+}
+.state-file {
+  width: 100px !important;
+}
+.state-file.disabled-button,
+.state-file.disabled-button:hover,
+.state-file.disabled-button:active
+{
+  color: graytext !important;
+  background: #E4E4E4 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
 }
 .toggle-hidden {
     display: none;

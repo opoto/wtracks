@@ -1255,6 +1255,58 @@ function saveSettings() {
   saveValOpt("wt.mapslist", mapsList);
 }
 
+function saveStateFile() {
+  var fullState = {};
+  var n = localStorage.length;
+  for (i = 0; i < n; i++) {
+    var key = localStorage.key(i);
+    // include all "wt." storage items
+    // but exclude current edited track
+    if (key.startsWith("wt.") && (key != "wt.gpx")) {
+      var val = localStorage.getItem(key);
+      fullState[key] = val;
+    }
+  }
+  var blob = new Blob([JSON.stringify(fullState)],
+    isSafari() ? {
+      type: "text/plain;charset=utf-8"
+    } : {
+      type: "application/json;charset=utf-8"
+    }
+  );
+  saveAs(blob, "wtracks.cfg");
+}
+
+function loadStateFile(filedata) {
+  var state = JSON.parse(filedata);
+  objectForEach(state, function (name, value) {
+    saveValOpt(name, value);
+  });
+  $(window).off("unload");
+  location.reload();
+}
+
+function onStateFileSelect(evt) {
+  var f = evt.currentTarget.files ? evt.currentTarget.files[0] : undefined;
+  if (f) {
+    var reader = new FileReader();
+    reader.onload = function(le) {
+      loadStateFile(le.target.result);
+    };
+    reader.readAsText(f);
+  }
+  evt.preventDefault();
+}
+$('#save-state-file').on('click', saveStateFile);
+$('#load-state-file').on('change', onStateFileSelect);
+$('#load-state-file').on('click', function (e) {
+  if (!confirm(
+      "This will override all your settings (maps, activities, etc.)\nContinue?"
+  )) {
+    e.preventDefault();
+  }
+});
+
 function saveState() {
   if (isStateSaved()) {
     saveTrack();
@@ -1333,7 +1385,7 @@ function clearSavedState() {
   storeVal("wt.trackColor", undefined);
   storeVal("wt.trackWeight", undefined);
   storeVal("wt.share", undefined);
-  saveValOpt("wt.mapslist", undefined);
+  storeVal("wt.mapslist", undefined);
 }
 
 function getProvider(mapobj) {
@@ -2847,6 +2899,18 @@ $("#cfgsave").change(function(e) {
     clearSavedState();
   }
 });
+function setStateSaved(save) {
+  if (save != isChecked()) {
+    setChecked("#cfgsave", save);
+  }
+  if (save) {
+    $(".state-file").removeAttr("disabled");
+    $(".state-file").removeClass("disabled-button");
+  } else {
+    $(".state-file").attr("disabled", true);
+    $(".state-file").addClass("disabled-button");
+  }
+}
 
 setChecked("#merge", false);
 
@@ -2855,7 +2919,7 @@ $(document).ready(function() {
   // get visit info
   var about = getVal("wt.about", undefined);
   // set saving status
-  setChecked("#cfgsave", isStateSaved());
+  setStateSaved(isStateSaved());
 
   // map parameter
   var mapname = getParameterByName("map");
