@@ -2892,6 +2892,7 @@ $("#donate").click(function(event) {
 $("#cfgsave").change(function(e) {
   var saveCfg = isChecked("#cfgsave");
   setSaveState(saveCfg);
+  setStateSaved(saveCfg);
   if (saveCfg) {
     saveState();
     saveSettings();
