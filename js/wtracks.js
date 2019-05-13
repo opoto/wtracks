@@ -1275,6 +1275,7 @@ function saveStateFile() {
     }
   );
   saveAs(blob, "wtracks.cfg");
+  ga('send', 'event', 'setting', 'export');
 }
 
 function loadStateFile(filedata) {
@@ -1283,6 +1284,7 @@ function loadStateFile(filedata) {
     saveValOpt(name, value);
   });
   $(window).off("unload");
+  ga('send', 'event', 'setting', 'import');
   location.reload();
 }
 
