@@ -24,6 +24,7 @@ var config = {
   compressdefault: 5,
   qrCodeService: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&bgcolor=fff&data=",
   //qrCodeService: "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chld=M&chl=",
+  mapsCloseOnClick: true,
   graphhopper: {
     key: function() {
       // Create a GraphHopper account, generate a key, and return it here
@@ -53,7 +54,7 @@ var config = {
       // Simple obfscuation below to avoid reuse by ommision
       return strdecode(
         "UM%06E%5C%1E%03%1A%0EP%06P%1B%07A%06%1CM%06%0E%1C%0EU%5D",
-        "G*%0BT%2FCN'%1A%1FOP%2FEU%25%0FD%3B%60W9Nd");
+        "O%2F%03XuD%12j%02H%05%5C%20AL%2B%19E3-U%25%0Eg");
     }
   },
   corsproxy: {

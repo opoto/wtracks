@@ -78,6 +78,7 @@ var EDIT_MARKER = 3;
 var EDIT_DEFAULT = EDIT_MANUAL_TRACK;
 var editMode = -1;
 
+var mapsCloseOnClick = getBoolVal("wt.mapsCloseOnClick", config.mapsCloseOnClick.toString());
 var ghkey = getVal("wt.ghkey", undefined);
 var ggkey = getVal("wt.ggkey", undefined);
 
@@ -1253,6 +1254,7 @@ function saveSettings() {
   saveValOpt("wt.trackColor", trackColor);
   saveValOpt("wt.trackWeight", trackWeight);
   saveValOpt("wt.mapslist", mapsList);
+  saveValOpt("wt.mapsCloseOnClick", mapsCloseOnClick);
 }
 
 function saveStateFile() {
@@ -1388,6 +1390,7 @@ function clearSavedState() {
   storeVal("wt.trackWeight", undefined);
   storeVal("wt.share", undefined);
   storeVal("wt.mapslist", undefined);
+  storeVal("wt.mapsCloseOnClick", undefined);
 }
 
 function getProvider(mapobj) {
@@ -1455,7 +1458,9 @@ map.on("baselayerchange", function(e) {
     ga('send', 'event', 'map', 'change', baseLayer);
   }
   saveValOpt("wt.baseLayer", baseLayer);
+  if (mapsCloseOnClick) {
   $(".leaflet-control-layers").removeClass("leaflet-control-layers-expanded");
+  }
 });
 
 function changeBaseLayer(mapname) {
@@ -2989,7 +2994,18 @@ $(document).ready(function() {
     }
   });
   // add "settings" link in map selector
-  $(".leaflet-control-layers-base").append("<label><div>&nbsp;<i class='material-icons'>settings&nbsp;</i><a href='./maps.html'>More...</a></div></label>");
+  $(".leaflet-control-layers-base").append(
+    "<label><div>&nbsp;<i class='material-icons'>settings&nbsp;</i><a href='./maps.html'>More...</a></div></label>"
+  );
+  // add option to automatically close map selector when a listed entry is clicked
+  $(".leaflet-control-layers-base").append(
+    "<label for='close-on-click'><div><input type='checkbox' id='close-on-click'> Auto close</div></label>"
+  );
+  setChecked("#close-on-click", mapsCloseOnClick);
+  $("#close-on-click").change(function (event) {
+    mapsCloseOnClick = isChecked("#close-on-click");
+    saveValOpt("wt.mapsCloseOnClick", mapsCloseOnClick);
+  });
 
   // Persist joinOnLoad option
   joinOnLoad = getBoolVal("wt.joinOnLoad", true);
