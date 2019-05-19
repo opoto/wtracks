@@ -1745,7 +1745,7 @@
 
     // 🍂namespace Editable; 🍂class EditableMixin
     // `EditableMixin` is included to `L.Polyline`, `L.Polygon`, `L.Rectangle`, `L.Circle`
-    // and `L.Marker`. It adds some methods to them.
+    // and `L.Marker`. It adds some methods to them.
     // *When editing is enabled, the editor is accessible on the instance with the
     // `editor` property.*
     var EditableMixin = {

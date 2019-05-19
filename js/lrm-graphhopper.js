@@ -9,7 +9,7 @@ function corslite(url, callback, cors) {
     if (typeof cors === 'undefined') {
         var m = url.match(/^\s*https?:\/\/[^\/]*/);
         cors = m && (m[0] !== location.protocol + '//' + location.domain +
-					      (location.port ? ':' + location.port : ''));
+                (location.port ? ':' + location.port : ''));
     }
 
     var x = new window.XMLHttpRequest();
@@ -27,23 +27,23 @@ function corslite(url, callback, cors) {
         // See https://github.com/mapbox/mapbox.js/issues/472
         var original = callback;
         callback = function() {
-					  if (sent) {
-					      original.apply(this, arguments);
-					  } else {
-					      var that = this, args = arguments;
-					      setTimeout(function() {
-										original.apply(that, args);
-					      }, 0);
-					  }
+            if (sent) {
+                original.apply(this, arguments);
+            } else {
+                var that = this, args = arguments;
+                setTimeout(function() {
+                    original.apply(that, args);
+                }, 0);
+            }
         }
     }
 
     function loaded() {
         if (
-					  // XDomainRequest
-					  x.status === undefined ||
-					  // modern browsers
-					  isSuccessful(x.status)) callback.call(x, null, x);
+            // XDomainRequest
+            x.status === undefined ||
+            // modern browsers
+            isSuccessful(x.status)) callback.call(x, null, x);
         else callback.call(x, x, null);
     }
 
@@ -53,9 +53,9 @@ function corslite(url, callback, cors) {
         x.onload = loaded;
     } else {
         x.onreadystatechange = function readystate() {
-					  if (x.readyState === 4) {
-					      loaded();
-					  }
+            if (x.readyState === 4) {
+                loaded();
+            }
         };
     }
 
@@ -141,9 +141,9 @@ polyline.decode = function(str, precision) {
         result = 0;
 
         do {
-					  byte = str.charCodeAt(index++) - 63;
-					  result |= (byte & 0x1f) << shift;
-					  shift += 5;
+            byte = str.charCodeAt(index++) - 63;
+            result |= (byte & 0x1f) << shift;
+            shift += 5;
         } while (byte >= 0x20);
 
         latitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
@@ -151,9 +151,9 @@ polyline.decode = function(str, precision) {
         shift = result = 0;
 
         do {
-					  byte = str.charCodeAt(index++) - 63;
-					  result |= (byte & 0x1f) << shift;
-					  shift += 5;
+            byte = str.charCodeAt(index++) - 63;
+            result |= (byte & 0x1f) << shift;
+            shift += 5;
         } while (byte >= 0x20);
 
         longitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
@@ -295,6 +295,13 @@ if (typeof module !== undefined) module.exports = polyline;
 			for (i = 0; i < response.paths.length; i++) {
 				path = response.paths[i];
 				coordinates = this._decodePolyline(path.points);
+				if (path.points_order) {
+					var tempWaypoints = [];
+					for (i = 0; i < path.points_order.length; i++) {
+						tempWaypoints.push(inputWaypoints[path.points_order[i]]);
+					}
+					inputWaypoints = tempWaypoints;
+				}
 				mappedWaypoints =
 					this._mapWaypointIndices(inputWaypoints, path.instructions, coordinates);
 
@@ -367,6 +374,7 @@ if (typeof module !== undefined) module.exports = polyline;
 
 		_convertInstructions: function(instructions) {
 			var signToType = {
+					'-7': 'SlightLeft',
 					'-3': 'SharpLeft',
 					'-2': 'Left',
 					'-1': 'SlightLeft',
@@ -376,19 +384,24 @@ if (typeof module !== undefined) module.exports = polyline;
 					3: 'SharpRight',
 					4: 'DestinationReached',
 					5: 'WaypointReached',
-					6: 'Roundabout'
+					6: 'Roundabout',
+					7: 'SlightRight'
 				},
 				result = [],
-		    i,
-		    instr,
-        type;
+				type,
+				i,
+				instr;
 
 			for (i = 0; instructions && i < instructions.length; i++) {
 				instr = instructions[i];
-        type = signToType[instr.sign];
+				if (i === 0) {
+					type = 'Head';
+				} else {
+					type = signToType[instr.sign];
+				}
 				result.push({
-          type: type,
-          modifier: type,
+					type: type,
+					modifier: type,
 					text: instr.text,
 					distance: instr.distance,
 					time: instr.time / 1000,
