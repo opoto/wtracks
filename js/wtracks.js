@@ -672,6 +672,11 @@ function LatLngToGPX(latlng, gpxelt, properties) {
   if (properties.time) {
     gpx += "<time>" + (properties.time.toISOString ? properties.time.toISOString() : properties.time) + "</time>";
   }
+  if (properties.hr) {
+    gpx += "<extensions><gpxtpx:TrackPointExtension><gpxtpx:hr>";
+    gpx += properties.hr;
+    gpx += "</gpxtpx:hr></gpxtpx:TrackPointExtension></extensions>";
+  }
   gpx += "</" + gpxelt + ">\n";
   return gpx;
 }
@@ -691,7 +696,7 @@ function getSegmentGPX(segment, ptindent, pttag, savetime) {
       } else {
         time = pt.time;
       }
-      gpx += ptindent + LatLngToGPX(pt, pttag, { 'time': time });
+      gpx += ptindent + LatLngToGPX(pt, pttag, { 'time': time, 'hr' : pt.hr });
       j++;
     }
   }
@@ -703,7 +708,8 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
   var now = new Date();
   var xmlname = "<name>" + htmlEncode(trackname) + "</name>";
   var gpx = '<\?xml version="1.0" encoding="UTF-8" standalone="no" \?>\n';
-  gpx += '<gpx creator="' + config.appname + '" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" version="1.1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">\n';
+  gpx += '<gpx creator="' + config.appname +
+    '" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" version="1.1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">\n';
   if (!nometadata) {
     gpx += "<metadata>\n";
     gpx += "  " + xmlname + "\n";
@@ -2007,7 +2013,7 @@ function importGeoJson(geojson) {
   var initLayers = editLayer.getLayers().length;
   var activeTrack = track;
 
-  function newPoint(coord, time, i) {
+  function newPoint(coord, time, hr, i) {
     var point = L.latLng(coord[1], coord[0]);
     if (coord.length > 2) {
       // alt
@@ -2016,13 +2022,16 @@ function importGeoJson(geojson) {
     if (!isUndefined(time)) {
       point.time = time;
     }
+    if (!isUndefined(hr)) {
+      point.hr = hr;
+    }
     if (!isUndefined(i)) {
       point.i = i;
     }
     return point;
   }
 
-  function importSegment(name, coords, times) {
+  function importSegment(name, coords, times, heartRates) {
     var v;
 
     if (joinOnLoad || track.getLatLngs().length == 0) {
@@ -2037,7 +2046,10 @@ function importGeoJson(geojson) {
 
     // import polyline vertexes
     for (var i = 0; i < coords.length; i++) {
-      v.push(newPoint(coords[i], times ? times[i] : undefined, i));
+      v.push(newPoint(coords[i],
+        times ? times[i] : undefined,
+        heartRates ? heartRates[i] : undefined,
+        i));
     }
 
     track.setLatLngs(v);
@@ -2051,19 +2063,27 @@ function importGeoJson(geojson) {
 
   L.geoJson(geojson, {
     onEachFeature: function(f) {
-      var name, coords, times;
+      var name, coords, times, heartRates;
       if (f.geometry.type === "LineString") {
         name = f.properties.name ? f.properties.name : NEW_TRACK_NAME;
         coords = f.geometry.coordinates;
-        times = f.properties.coordTimes && (f.properties.coordTimes.length == coords.length) ? f.properties.coordTimes : undefined;
-        importSegment(name, coords, times);
+        times = f.properties.coordTimes && (f.properties.coordTimes.length == coords.length) ?
+          f.properties.coordTimes : undefined;
+        heartRates = f.properties.heartRates && (f.properties.heartRates.length == coords.length) ?
+          f.properties.heartRates: undefined;
+        importSegment(name, coords, times, heartRates);
       }
       if (f.geometry.type === "MultiLineString") {
         name = f.properties.name ? f.properties.name : NEW_TRACK_NAME;
         for (var i = 0; i < f.geometry.coordinates.length; i++) {
           coords = f.geometry.coordinates[i];
-          times = f.properties.coordTimes && f.properties.coordTimes[i] && (f.properties.coordTimes[i].length == coords.length) ? f.properties.coordTimes[i] : undefined;
-          importSegment(name, coords, times);
+          times = f.properties.coordTimes && f.properties.coordTimes[i] &&
+            (f.properties.coordTimes[i].length == coords.length) ?
+            f.properties.coordTimes[i] : undefined;
+          heartRates = f.properties.heartRates && f.properties.heartRates[i] &&
+            (f.properties.heartRates[i].length == coords.length) ?
+            f.properties.heartRates[i]: undefined;
+          importSegment(name, coords, times, heartRates);
         }
       } else if (f.geometry.type === "Point") {
         // import marker
