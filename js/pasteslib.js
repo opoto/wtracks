@@ -120,13 +120,15 @@
  // ------------------------------------------------------------------
 
 
- var pastesLib = {
+var pastesLib = {
+   /* not valid https certificate
    "friendpaste": {
      "name": "FriendPaste",
      "web": "https://friendpaste.com/",
      "upload": friendpasteUpload,
      "delete": noDelete
    },
+   */
    "htput": {
      "name": "HTPut",
      "web": "https://htput.com/",
