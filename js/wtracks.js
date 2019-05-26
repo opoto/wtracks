@@ -1915,6 +1915,7 @@ function deleteSegment(segment) {
   setEditMode(EDIT_NONE);
   if (editLayer.getLayers().length > 2) {
     editLayer.removeLayer(segment);
+    track = null;
     segmentClickListener({ target: editLayer.getLayers()[1] }, true);
   } else {
     segment.setLatLngs([]);
