@@ -339,33 +339,68 @@ if (!supportsBase64() || !JSON || !JSON.parse || !JSON.stringify) {
 // ------------------- Import maps
 
 var importedMymaps;
-function openImportBox(data) {
-  try {
-    importedMymaps = data ? JSON.parse(b64DecodeUnicode(data)) : {};
-    $("#import-list").empty();
-    var i = 0;
-    objectForEach(importedMymaps, function(name, value) {
-      var id = "import-i" + i++;
-      var limap = "<tr><td><input id='" + id  + "' type='checkbox'/></td>";
-      limap += "<td><label for='" + id + "'><span>" + name;
-      var overwrite = mymaps[name];
-      if (overwrite) {
-        limap += "</span> (Overwrite yours)</label>";
-      }
-      limap += "</span></td></tr>";
-      $("#import-list").append(limap);
-    });
-    // show info about persistence activation if needed
-    if (isStateSaved()) {
-      $("#importv-savecfg").hide();
-    } else {
-      $("#importv-savecfg").show();
-    }
-    $("#import-box").show();
-  } catch (ex) {
-    error("Invalid import data");
+function openImportBox(event, data) {
+  $("#input-val").val(data ? data : "");
+  $("#import-input").show();
+  $("#input-error").hide();
+  $("#import-select").hide();
+  $("#import-box").show();
+  if (data) {
+    readImportMymaps();
+  } else {
+    $("#import-ok").click(readImportMymaps);
+    $("#input-val").focus();
   }
 }
+
+function readImportMymaps() {
+  var data = $("#input-val").val();
+  if (data.match(/^https?\:\/\//)) {
+    var pos = data.indexOf("?import=");
+    if (pos >= 0) {
+      data = data.substring(pos + 8);
+    }
+  }
+  if (data) {
+    try {
+      importedMymaps = data ? JSON.parse(b64DecodeUnicode(data)) : {};
+      $("#import-list").empty();
+      var i = 0;
+      objectForEach(importedMymaps, function(name, value) {
+        var id = "import-i" + i++;
+        var limap = "<tr><td><input id='" + id  + "' type='checkbox'/></td>";
+        limap += "<td><label for='" + id + "'><span>" + name;
+        var overwrite = mymaps[name];
+        if (overwrite) {
+          limap += "</span> (Overwrite yours)</label>";
+        }
+        limap += "</span></td></tr>";
+        $("#import-list").append(limap);
+      });
+      // show info about persistence activation if needed
+      if (isStateSaved()) {
+        $("#importv-savecfg").hide();
+      } else {
+        $("#importv-savecfg").show();
+      }
+      $("#import-input").hide();
+      $("#import-select").show();
+      $("#import-ok").click(importMymaps);
+      $("#import-ok").focus();
+    } catch (ex) {
+      $("#input-error").show();
+      $("#input-val").focus();
+    }
+  }
+}
+
+$("#import-box").keyup(function(event) {
+  if (event.which == 27) {
+    $("#import-box").hide();
+  } else if (event.keyCode == 13) {
+    readImportMymaps();
+  }
+});
 
 function closeImportBox() {
   $("#import-box").hide();
@@ -395,9 +430,8 @@ function importMymaps() {
   closeImportBox();
 }
 
+$("#mymaps-import").click(openImportBox);
 $("#import-box-close").click(closeImportBox);
-$("#import-cancel").click(closeImportBox);
-$("#import-ok").click(importMymaps);
 
 // ------------------- ready?
 
@@ -429,7 +463,7 @@ $(document).ready(function() {
   // import maps?
   var toimport = getParameterByName("import");
   if (toimport) {
-    openImportBox(toimport);
+    openImportBox(null, toimport);
   }
 });
 

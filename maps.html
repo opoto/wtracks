@@ -57,21 +57,30 @@
     <div class="prompt-content">
       <div class="box-header"><a id="import-box-close" href="#" class="close-button">×</a></div>
       <h3>Import WTracks maps</h3>
-      <p>
-        Select the maps you want to import:
-        <span id="importv" class="help-b material-icons" title="Help">&#xE8FD;</span>
-      </p>
-      <table id="import-list"></table>
-      <p id="importv-help" class="help-p">
-        Selected maps will be added to your list of available background maps
-        in the top right map selector of <a href="#" class="link-home">WTracks</a> editor page.
-      </p>
-      <p id="importv-savecfg">
-        Note: Importing maps will automatically activate persistent storage of WTracks settings in your browser.
-        You can change this setting at any moment in "Settings" menu tab, "Remember me" option.
-      </p>
+      
+      <div id="import-input">
+        <p id="input-text">Paste exported map data:</p>
+        <input id="input-val" type="text" size="50" value="" />
+        <p id="input-error" class="status-error">Invalid input! Value must be a previously exported map value.</p>
+      </div>
+      
+      <div id="import-select">
+        <p>
+          Select the maps you want to import:
+          <span id="importv" class="help-b material-icons" title="Help">&#xE8FD;</span>
+        </p>
+        <table id="import-list"></table>
+        <p id="importv-help" class="help-p">
+          Selected maps will be added to your list of available background maps
+          in the top right map selector of <a href="#" class="link-home">WTracks</a> editor page.
+        </p>
+        <p id="importv-savecfg">
+          Note: Importing maps will automatically activate persistent storage of WTracks settings in your browser.
+          You can change this setting at any moment in "Settings" menu tab, "Remember me" option.
+        </p>
+      </div>
+
       <button id="import-ok" class="ok-btn">Ok</button>
-      <button id="import-cancel" class="cancel-btn">Cancel</button>
 
     </div>
   </div>
@@ -102,6 +111,7 @@
     <div class="maps-btns">
       <button id="mymaps-deleteall" title="Deletes all personal maps">Delete All</button>
       <button id="mymaps-export" title="Export all personal maps">Export All</button>
+      <button id="mymaps-import" title="Import personal maps">Import</button>
       <button id="mymaps-new" title="Create a new personal map">New</button>
     </div>
 
