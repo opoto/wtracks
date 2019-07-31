@@ -17,15 +17,15 @@ function addMymapsItem(name, props, addHandlers) {
   var mymapbtns = "",
     mymapclass = "";
   if (props.in == MAP_MY) {
-    mymapbtns += "<i class='material-icons map-edit'>create</i> ";
-    mymapbtns += "<i class='material-icons map-share'>share</i> ";
-    mymapbtns += "<i class='material-icons map-delete'>delete</i> ";
+    mymapbtns += "<i class='material-icons map-edit' title='Edit'>create</i> ";
+    mymapbtns += "<i class='material-icons map-share' title='Share'>share</i> ";
+    mymapbtns += "<i class='material-icons map-delete' title='Delete'>delete</i> ";
     mymapclass = " mymap-name";
   }
   var mapitem = "<li><span class='map-item'>";
-  mapitem += "<i class='material-icons map-drag'>drag_indicator</i> ";
+  mapitem += "<i class='material-icons map-drag' title='Drag to reorder'>drag_indicator</i> ";
   mapitem += "<span class='map-name" + mymapclass + "'>" + name + "</span> ";
-  mapitem += "<i class='material-icons map-visibility' isVisible='??'>??</i> ";
+  mapitem += "<i class='material-icons map-visibility' title='Show/Hide' isVisible='??'>??</i> ";
   mapitem += mymapbtns;
   mapitem += "</span></li>";
   $("#mymaps-list").append(mapitem);
@@ -289,6 +289,40 @@ function reorderMapList(evt) {
   }
 }
 
+function getLayersList(evt) {
+  $("#wms-getlayerslist").hide();
+  $("#wms-layerslist").hide();
+  $("#wms-layerslist-error").hide();
+  $("#wms-getlayerslist-processing").show();
+  $.ajax({
+    url: $("#mymap-url").val().trim() + "?SERVICE=WMS&REQUEST=GetCapabilities",
+    dataType: "xml"
+  })
+  .done(function (resp) {
+    $("#wms-layerslist").empty();
+    var names = resp.querySelectorAll("Layer>Name");
+    arrayForEach(names, function (idx, val) {
+      var txt = val.textContent;
+      $("#wms-layerslist").append("<option value='" + txt + "' name='" + txt + "'>" + txt +
+        "</option>");
+    });
+    $("#wms-layerslist").show();
+  })
+  .fail(function(err) {
+   $("#wms-layerslist-error").show();
+  })
+  .always(function() {
+    $("#wms-getlayerslist").show();
+    $("#wms-getlayerslist-processing").hide();
+  });
+}
+
+function setLayerFromList(evt) {
+  $("#mymap-layers").val(getSelectedOption("#wms-layerslist"));
+}
+
+$("#wms-getlayerslist").click(getLayersList);
+$("#wms-layerslist").change(setLayerFromList);
 
 $("#mymap-ok").click(validateMymapBox);
 $("#mymap-cancel").click(cancelMymapBox);

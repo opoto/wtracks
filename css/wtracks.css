@@ -664,6 +664,14 @@ div.trumbowyg-editor {
 #mymap-padding {
   margin: 0 4px;
 }
+
+#wms-layerslist {
+  width: 90%;
+  text-overflow: ellipsis;
+}
+#wms-getlayerslist-processing {
+  height: 24px;
+}
 input.invalid {
   border: 2px solid #FF0000 !important;
   background-color: #FFCEC1 !important;
@@ -862,6 +870,9 @@ button:active,
   }
   .map-name {
     width: 135px;
+  }
+  #wms-layerslist {
+    width: 80%;
   }
 }
 
