@@ -665,11 +665,11 @@ div.trumbowyg-editor {
   margin: 0 4px;
 }
 
-#wms-layerslist {
+#mymap-layerslist {
   width: 90%;
   text-overflow: ellipsis;
 }
-#wms-getlayerslist-processing {
+#mymap-getlayerslist-processing {
   height: 24px;
 }
 input.invalid {
@@ -871,7 +871,7 @@ button:active,
   .map-name {
     width: 135px;
   }
-  #wms-layerslist {
+  #mymap-layerslist {
     width: 80%;
   }
 }

@@ -161,22 +161,29 @@
             <td>Layers: </td>
             <td>
               <input id="mymap-layers" type="text" size="50" placeholder="Required" required pattern="\S.*" value="" />
-              <i id="wms-getlayerslist" class='material-icons' title='Get layers list'>find_replace</i>
-              <div id="wms-getlayerslist-processing" class="hidden">
-                <div id="wms-getlayerslist-spinner" class="spinner">
+            </td>
+          </tr>
+          <tr class="map-wmts">
+            <td>Layer: </td>
+            <td><input id="mymap-layer" type="text" size="50" placeholder="Required" required
+                value="" /></td>
+          </tr>
+          <tr class="map-wmts map-wms">
+            <td></td>
+            <td>
+              <i id="mymap-getlayerslist" class='material-icons'
+                title='Get layers list'>find_replace</i>
+              <div id="mymap-getlayerslist-processing" class="hidden">
+                <div id="mymap-getlayerslist-spinner" class="spinner">
                   <div class="bounce1"></div>
                   <div class="bounce2"></div>
                   <div class="bounce3"></div>
                 </div>
               </div>
-
-              <select id="wms-layerslist" class="hidden"></select>
-              <div id="wms-layerslist-error" class="status-error hidden">Error reading list of layers</div>
+              <select id="mymap-layerslist" class="hidden"></select>
+              <div id="mymap-layerslist-error" class="status-error hidden">Error reading list of
+                layers</div>
             </td>
-          </tr>
-          <tr class="map-wmts">
-            <td>Layer: </td>
-            <td><input id="mymap-layer" type="text" size="50" placeholder="Required" required value="" /></td>
           </tr>
           <tr class="map-wmts">
             <td>Tile Matrix Set: </td>
