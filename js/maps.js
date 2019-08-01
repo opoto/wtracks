@@ -133,6 +133,10 @@ function openMymapBox() {
   $("#mymap-format").val(mymap.options.format);
   $("#mymap-attr").val(mymap.options.attribution);
   $("#mymap-box input:radio[name=mymap-type][value=" + mymap.type + "]").prop('checked', true);
+  $("#wms-layerslist").hide();
+  $("#wms-layerslist-error").hide();
+  $("#wms-getlayerslist-processing").hide();
+  $("#wms-getlayerslist").show();
   $("#mymap-box").show();
   $("#mymap-name").focus();
   changeMymapType();
@@ -306,6 +310,8 @@ function getLayersList(evt) {
       $("#wms-layerslist").append("<option value='" + txt + "' name='" + txt + "'>" + txt +
         "</option>");
     });
+    var curval = $("#mymap-layers").val().trim();
+    selectOption("#wms-layerslist", curval);
     $("#wms-layerslist").show();
   })
   .fail(function(err) {
