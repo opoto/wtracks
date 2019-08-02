@@ -133,10 +133,6 @@ function openMymapBox() {
   $("#mymap-format").val(mymap.options.format);
   $("#mymap-attr").val(mymap.options.attribution);
   $("#mymap-box input:radio[name=mymap-type][value=" + mymap.type + "]").prop('checked', true);
-  $("#mymap-layerslist").hide();
-  $("#mymap-layerslist-error").hide();
-  $("#mymap-getlayerslist-processing").hide();
-  $("#mymap-getlayerslist").show();
   $("#mymap-box").show();
   $("#mymap-name").focus();
   changeMymapType();
@@ -266,6 +262,14 @@ function deleteMymap(mymapname) {
   }
 }
 
+function clearLayerList() {
+  $("#mymap-layerslist").hide();
+  $("#mymap-layerslist-error").hide();
+  $("#mymap-getlayerslist-processing").hide();
+  $("#mymap-getlayerslist").show();
+  $("#mymap-layerslist").empty();
+}
+
 function getMapType() {
   return $('input:radio[name=mymap-type]:checked').val();
 }
@@ -277,6 +281,7 @@ function changeMymapType(evt) {
   if (type != "base") {
     $(".map-" + type).show();
   }
+  clearLayerList();
 }
 
 function deleteAllMymaps(evt) {
@@ -308,12 +313,24 @@ function getLayersList(evt) {
     valfield;
   if (mapType == "WMS") {
     layerSelector = "Layer>Name";
+    $("#mymap-layerslist").off("change").change(onWmsLayerChanged);
     valfield = "mymap-layers";
   } else {
-    layerSelector = "Layer>Identifier";
+    layerSelector = "Capabilities>Contents>Layer>Identifier";
+    $("#mymap-layerslist").off("change").change(onWmtsLayerChanged);
     valfield = "mymap-layer";
   }
-  $("#mymap-getlayerslist").attr("valfield", valfield);
+
+  function setLayerAttr(option, attrName, node, selector) {
+    try {
+      var value;
+      arrayForEach(node.querySelectorAll(selector), function(idx,item) {
+        value = value ? value + "|" + item.textContent : item.textContent;
+      });
+      option.attr(attrName, value);
+    } catch(e) {}
+  }
+
   $.ajax({
     url: $("#mymap-url").val().trim() + "?SERVICE=" + mapType + "&REQUEST=GetCapabilities",
     dataType: "xml"
@@ -325,6 +342,13 @@ function getLayersList(evt) {
       var id = val.textContent;
       $("#mymap-layerslist").append("<option value='" + id + "' name='" + id + "'>" + id +
         "</option>");
+      var opt = $($("#mymap-layerslist>option[value='"+id+"']")[0]);
+      var layerElt = val.parentElement;
+      if (mapType == "WMTS") {
+        setLayerAttr(opt, "style", layerElt, "Style>Identifier");
+        setLayerAttr(opt, "tilematrixSet", layerElt, "TileMatrixSet");
+        setLayerAttr(opt, "format", layerElt, "Layer>Format");
+      }
     });
     var curval = $("#"+valfield).val().trim();
     selectOption("#mymap-layerslist", curval);
@@ -339,14 +363,18 @@ function getLayersList(evt) {
   });
 }
 
-function setLayerFromList(evt) {
-  var val = getSelectedOption("#mymap-layerslist"),
-    valfield = $("#mymap-getlayerslist").attr("valfield");
-  $("#" + valfield).val(val)
+function onWmtsLayerChanged(evt) {
+  var opt = $($("#mymap-layerslist>option:selected")[0]);
+  $("#mymap-layer").val(opt.val());
+  $("#mymap-style").val(opt.attr("style"));
+  $("#mymap-format").val(opt.attr("format"));
+  $("#mymap-tilematrixSet").val(opt.attr("tilematrixSet"));
+}
+function onWmsLayerChanged(evt) {
+  $("#mymap-layers").val(getSelectedOption("#mymap-layerslist"));
 }
 
 $("#mymap-getlayerslist").click(getLayersList);
-$("#mymap-layerslist").change(setLayerFromList);
 
 $("#mymap-ok").click(validateMymapBox);
 $("#mymap-cancel").click(cancelMymapBox);
