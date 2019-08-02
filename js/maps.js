@@ -201,6 +201,7 @@ function validateMymapBox(evt) {
     mymap[name] = undefined;
     mymap.url = $("#mymap-url").val().trim();
     mymap.type = $('input:radio[name=mymap-type]:checked').val();
+    mymap.options = {};
     mymap.options.minZoom= $("#mymap-minz").val().trim();
     mymap.options.maxZoom = $("#mymap-maxz").val().trim();
     if (mymap.type === "wms") {
