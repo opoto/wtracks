@@ -309,7 +309,7 @@ function getLayersList(evt) {
     layerSelector = "Layer>Name";
     valfield = "mymap-layers";
   } else {
-    layerSelector = "Layer>Title";
+    layerSelector = "Layer>Identifier";
     valfield = "mymap-layer";
   }
   $("#mymap-getlayerslist").attr("valfield", valfield);
@@ -319,10 +319,10 @@ function getLayersList(evt) {
   })
   .done(function (resp) {
     $("#mymap-layerslist").empty();
-    var names = resp.querySelectorAll(layerSelector);
-    arrayForEach(names, function (idx, val) {
-      var txt = val.textContent;
-      $("#mymap-layerslist").append("<option value='" + txt + "' name='" + txt + "'>" + txt +
+    var ids = resp.querySelectorAll(layerSelector);
+    arrayForEach(ids, function (idx, val) {
+      var id = val.textContent;
+      $("#mymap-layerslist").append("<option value='" + id + "' name='" + id + "'>" + id +
         "</option>");
     });
     var curval = $("#"+valfield).val().trim();
