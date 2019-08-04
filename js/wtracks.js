@@ -1624,13 +1624,13 @@ function orsElevationService(locations, points, inc, done, fail) {
     .done(function (json) {
       if (json.geometry && json.geometry.coordinates && json.geometry.coordinates[0]) {
         points.alt = json.geometry.coordinates[2];
-        done('ors.elevate');
+        done('ors.elevate1');
       } else {
-        fail('ors.elevate.ko');
+        fail('ors.elevate1.ko');
       }
     })
     .fail(function(err) {
-      fail('ors.elevate.ko');
+      fail('ors.elevate1.ko');
     });
     return;
   }
