@@ -76,6 +76,13 @@ var config = {
       return strdecode("X%5B%05O%07%0E%05", "B9%18%0C%25E%0D");
     }
   },
+  openrouteservice: {
+    key: function() {
+      return strdecode(
+        "%1AM%5C%13%0AGZ%17PQAYDS%1EY_%1E%14%12DSWS%12%1DJ%16%0CI%5EMZ%1A%03Z%40%5CE%03%16QW%1FAC%10RP%5DB%1CN%1EX%13",
+        "%00%2FY%0E%23%1DKg%5CIBU%7F%15%13tZ%16!1%0Dx%0Ci%16%18O%04%11mB%15%00y%0E%5Er%1AN%3FSIOTx%13AwY%11sdZ%7B%0F2");
+    }
+  },
   /*------------ activities  -----------*/
   // GraphHopper vehicles
   activities: {

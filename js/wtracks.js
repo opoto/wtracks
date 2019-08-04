@@ -1465,7 +1465,7 @@ map.on("baselayerchange", function(e) {
   }
   saveValOpt("wt.baseLayer", baseLayer);
   if (mapsCloseOnClick) {
-  $(".leaflet-control-layers").removeClass("leaflet-control-layers-expanded");
+    $(".leaflet-control-layers").removeClass("leaflet-control-layers-expanded");
   }
 });
 
@@ -1607,6 +1607,72 @@ function openElevationService(locations, points, inc, done, fail) {
   });
 }
 
+
+// https://openrouteservice.org/dev/#/api-docs/elevation/line/post
+function orsElevationService(locations, points, inc, done, fail) {
+  var i, len,
+    polyline = [];
+
+  if (locations.length == 1) {
+    // single point
+    $.get({
+      url: "https://api.openrouteservice.org/elevation/point?" +
+        "api_key=" + config.openrouteservice.key() +
+        "&geometry=" + locations[0].lng + "," + locations[0].lat,
+      dataType: "json"
+    })
+    .done(function (json) {
+      if (json.geometry && json.geometry.coordinates && json.geometry.coordinates[0]) {
+        points.alt = json.geometry.coordinates[2];
+        done('ors.elevate');
+      } else {
+        fail('ors.elevate.ko');
+      }
+    })
+    .fail(function(err) {
+      fail('ors.elevate.ko');
+    });
+    return;
+  }
+  // multi-points
+  for (i = 0, len=locations.length; i < len; i++) {
+    polyline.push([locations[i].lng, locations[i].lat]);
+  }
+  $.ajax({
+    url: "https://api.openrouteservice.org/elevation/line",
+    headers: {
+      "Authorization": config.openrouteservice.key()
+    },
+    method: "POST",
+    contentType: "application/json",
+    data: JSON.stringify({
+      "format_in": "polyline",
+      "format_out": "polyline",
+      "geometry": polyline
+    }),
+    dataType: "json"
+  })
+  .done(function(json) {
+    if (json.geometry && json.geometry[0]) {
+      var results = json.geometry;
+      for (var i = 0; i < results.length; i++) {
+        var pos = i * inc;
+        if (pos >= points.length) {
+          // we reached last point from track
+          pos = points.length - 1;
+        }
+        points[pos].alt = results[i][2];
+      }
+      done("ors.elevate");
+    } else {
+      fail('ors.elevate.ko');
+    }
+  })
+  .fail(function(err) {
+    fail('ors.elevate.ko');
+  });
+}
+
 // multi-point elevation API
 function elevatePoints(points, cb) {
   if (!points || (points.length === 0)) {
@@ -1648,7 +1714,7 @@ function callElevationService(callerName, locations, points, inc, cb) {
       ga('send', 'event', 'api', eventName, callerName, locations.length);
       if (eventName === "g.elevate.ko") {
         // fallback: next time use open-elevation service
-        elevationService = openElevationService;
+        elevationService = defaultElevatonService;
         // and redo current elevation request immediality
         callElevationService(callerName, locations, points, inc, cb);
       } else {
@@ -1661,9 +1727,11 @@ function callElevationService(callerName, locations, points, inc, cb) {
 // Select elevation service
 var elevate = elevatePoints;
 var elevatePoint = elevatePoints;
+var defaultElevatonService = orsElevationService; //openElevationService
 var elevationService = ggkey ?
-      googleElevationService :
-      openElevationService;
+  googleElevationService :
+  defaultElevatonService;
+
 
 // ---------------------------------------------------------------------------
 
@@ -1973,28 +2041,28 @@ $(".statistics").click(function(e) {
 
 function segmentClickListener(event, noGaEvent) {
   if ((event.target != track) && (editMode == EDIT_NONE)) {
-      if (!noGaEvent) {
-        ga('send', 'event', 'edit', 'switch-segment');
-      }
-      if (track) {
-        updateOverlayTrackStyle(track);
-      }
-      track = event.target;
-      track.bringToFront();
-      updateTrackStyle();
-      polystats = L.polyStats(track, {
-        chrono: true,
-        speedProfile: getCurrentActivity().speedprofile,
-        onUpdate: showStats,
-      });
-      if (!track.stats) {
-        polystats.updateStatsFrom(0);
-      }
-      showStats();
-      return true;
-    } else {
-      return false;
+    if (!noGaEvent) {
+      ga('send', 'event', 'edit', 'switch-segment');
     }
+    if (track) {
+      updateOverlayTrackStyle(track);
+    }
+    track = event.target;
+    track.bringToFront();
+    updateTrackStyle();
+    polystats = L.polyStats(track, {
+      chrono: true,
+      speedProfile: getCurrentActivity().speedprofile,
+      onUpdate: showStats,
+    });
+    if (!track.stats) {
+      polystats.updateStatsFrom(0);
+    }
+    showStats();
+    return true;
+  } else {
+    return false;
+  }
 }
 
 function importGeoJson(geojson) {
