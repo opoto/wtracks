@@ -45,6 +45,7 @@
   <!-- Routing Machine -->
   <script src="js/leaflet-routing-machine.js"></script>
   <script src="js/lrm-graphhopper.js"></script>
+  <script src="js/L.Routing.OpenRouteService.js"></script>
 
   <!-- Elevation -->
   <script src="js/d3.v3.min.js" charset="utf-8"></script>
@@ -412,6 +413,16 @@
         <td>
         </td>
         <td>
+          <div>
+            <span class="setting-name">OpenRoute:</span>
+            <input id="orskey-chk" class="no-trim" type="checkbox" />
+            <input id="orskey-value" placeholder="Your OpenRouteService key" class="setting-input" />
+            <span id="orskeytxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+            <p id="orskeytxt-help" class="help-p">
+              This key is used for the (i) computing point and track elevation, and (ii) routing feature, which draws tracks along map roads.
+              Get your free API key/token from <a target="_blank" href="https://openrouteservice.org/">OpenRoute Service</a>.
+            </p>
+          </div>
           <div>
             <span class="setting-name">GraphHopper:</span>
             <input id="ghkey-chk" class="no-trim" type="checkbox" />

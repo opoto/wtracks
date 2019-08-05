@@ -81,6 +81,7 @@ var editMode = -1;
 var mapsCloseOnClick = getBoolVal("wt.mapsCloseOnClick", config.mapsCloseOnClick.toString());
 var ghkey = getVal("wt.ghkey", undefined);
 var ggkey = getVal("wt.ggkey", undefined);
+var orskey = getVal("wt.orskey", undefined);
 
 var MARKER_ICON = L.icon({
   iconUrl: 'img/marker-icon.png',
@@ -556,7 +557,7 @@ function showApiKey(name, value) {
   var input = $("#" + name + "-value");
   debug(name + ": " + value);
   setChecked("#" + name + "-chk", !useDefault);
-  input.val(useDefault ? "Using WTracks key" : value);
+  input.val(useDefault ? "Using WTracks defaults" : value);
   input.attr("disabled", useDefault);
 }
 
@@ -580,17 +581,27 @@ function checkApikey(name) {
   return key;
 }
 
+$("#orskey-chk").on("change", function() {
+  orskey = checkApikey("orskey");
+  setElevationService();
+});
 $("#ghkey-chk").on("change", function() {
   ghkey = checkApikey("ghkey");
 });
 $("#ggkey-chk").on("change", function() {
   ggkey = checkApikey("ggkey");
+  setElevationService();
+});
+$("#orskey-value").on("focusout", function() {
+  orskey = updateApiKey("orskey");
+  setElevationService();
 });
 $("#ghkey-value").on("focusout", function() {
   ghkey = updateApiKey("ghkey");
 });
 $("#ggkey-value").on("focusout", function() {
   ggkey = updateApiKey("ggkey");
+  setElevationService();
 });
 
 function resetApiKey(name) {
@@ -600,10 +611,12 @@ function resetApiKey(name) {
 
 $("#keys-reset").on("click", function() {
   ga('send', 'event', 'setting', 'keys', 'reset');
+  resetApiKey("orskey");
   resetApiKey("ghkey");
   resetApiKey("ggkey");
 });
 
+showApiKey("orskey", orskey);
 showApiKey("ghkey", ghkey);
 showApiKey("ggkey", ggkey);
 
@@ -1251,6 +1264,7 @@ function saveSettings() {
   saveValOpt("wt.baseLayer", baseLayer);
   saveValOpt("wt.ggkey", ggkey);
   saveValOpt("wt.ghkey", ghkey);
+  saveValOpt("wt.orskey", orskey);
   saveValOpt("wt.joinOnLoad", joinOnLoad);
   saveJsonValOpt("wt.mymaps", mymaps);
   saveJsonValOpt("wt.overlaysOn", overlaysOn);
@@ -1383,6 +1397,7 @@ function clearSavedState() {
   storeVal("wt.editMode", undefined);
   storeVal("wt.ggkey", undefined);
   storeVal("wt.ghkey", undefined);
+  storeVal("wt.orskey", undefined);
   storeVal("wt.gpx", undefined);
   storeVal("wt.joinOnLoad", undefined);
   storeVal("wt.mymaps", undefined);
@@ -1617,7 +1632,7 @@ function orsElevationService(locations, points, inc, done, fail) {
     // single point
     $.get({
       url: "https://api.openrouteservice.org/elevation/point?" +
-        "api_key=" + config.openrouteservice.key() +
+        "api_key=" + orskey +
         "&geometry=" + locations[0].lng + "," + locations[0].lat,
       dataType: "json"
     })
@@ -1641,7 +1656,7 @@ function orsElevationService(locations, points, inc, done, fail) {
   $.ajax({
     url: "https://api.openrouteservice.org/elevation/line",
     headers: {
-      "Authorization": config.openrouteservice.key()
+      "Authorization": orskey
     },
     method: "POST",
     contentType: "application/json",
@@ -1727,11 +1742,15 @@ function callElevationService(callerName, locations, points, inc, cb) {
 // Select elevation service
 var elevate = elevatePoints;
 var elevatePoint = elevatePoints;
-var defaultElevatonService = orsElevationService; //openElevationService
-var elevationService = ggkey ?
-  googleElevationService :
-  defaultElevatonService;
+var defaultElevatonService = openElevationService;
+var elevationService;
 
+function setElevationService() {
+  elevationService = ggkey ?
+    googleElevationService :
+    (orskey ? orsElevationService : defaultElevatonService);
+}
+setElevationService();
 
 // ---------------------------------------------------------------------------
 
@@ -2817,11 +2836,22 @@ function newMarker(e) {
       } else {
         var fromPt = routeStart,
           toPt = e.latlng,
+          router;
+        if (ghkey || !orskey) {
           router = L.Routing.graphHopper(
             ghkey ? ghkey : config.graphhopper.key(),
             { urlParameters: { vehicle: getCurrentActivity().vehicle } }
           );
-        router.on("response", checkGraphHopperCredit);
+          router.on("response", checkGraphHopperCredit);
+        } else {
+          router = new L.Routing.openrouteservice(orskey, {
+            urlParameters: {
+              instructions: false,
+              elevation: false,
+              profile: getCurrentActivity().vehicle == "foot" ? "foot-hiking" : "cycling-regular"
+            }
+          });
+        }
         route = L.Routing.control({
           router: router,
           waypoints: [fromPt, toPt],
