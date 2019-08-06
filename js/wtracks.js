@@ -555,7 +555,7 @@ function initTrackDisplaySettings() {
 function showApiKey(name, value) {
   var useDefault = isUndefined(value);
   var input = $("#" + name + "-value");
-  debug(name + ": " + value);
+  //debug(name + ": " + value);
   setChecked("#" + name + "-chk", !useDefault);
   input.val(useDefault ? "Using WTracks defaults" : value);
   input.attr("disabled", useDefault);
@@ -568,7 +568,7 @@ function updateApiKey(name) {
   key = (key === "") ? undefined : key;
   var gav = useDefault ? -1 : key ? 1 : 0;
   ga('send', 'event', 'setting', 'keys', name, gav);
-  debug(name + "= " + key + " (" + gav + ")");
+  //debug(name + "= " + key + " (" + gav + ")");
   saveValOpt("wt." + name, key);
   return key;
 }
@@ -2844,11 +2844,11 @@ function newMarker(e) {
           );
           router.on("response", checkGraphHopperCredit);
         } else {
-          router = new L.Routing.openrouteservice(orskey, {
-            urlParameters: {
+          router = L.Routing.openrouteservice(orskey, {
+            profile: getCurrentActivity().vehicle == "foot" ? "foot-hiking" : "cycling-regular",
+            parameters: {
               instructions: false,
               elevation: false,
-              profile: getCurrentActivity().vehicle == "foot" ? "foot-hiking" : "cycling-regular"
             }
           });
         }
