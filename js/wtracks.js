@@ -161,6 +161,7 @@ var apikeyTimer;
 
 $("#apikeys-close").click(closeApiKeyInfo);
 
+
 function closeApiKeyInfo(evt) {
   if (apikeyTimer) {
     clearTimeout(apikeyTimer);
@@ -648,6 +649,11 @@ showApiKey("orskey", orskey);
 showApiKey("ghkey", ghkey);
 showApiKey("ggkey", ggkey);
 
+$("#apikeys-suggest").change(function() {
+  apikeyNoMore = !isChecked("#apikeys-suggest");
+  saveValOpt("wt.apikeyNoMore", apikeyNoMore);
+})
+
 /* ------------------------ MENU ---------------------------------- */
 
 function closeMenu() {
@@ -659,6 +665,7 @@ function openMenu() {
   if (isMenuVisible()) return;
   setEditMode(EDIT_NONE);
   setChecked("#merge", false);
+  setChecked("#apikeys-suggest", !apikeyNoMore);
   menu("file");
   prepareTrim();
 }
