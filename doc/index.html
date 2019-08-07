@@ -93,7 +93,7 @@
 							<div id="edit-tools-img"><img src="images/edit-tools.png" alt="edition tools" /></div>
 							<ul class="default">
 								<li>Step-by-step edition: Click on map to create new track points, move points by dragging them, and create intermediate points by clicking on grayed markers. Click on a marker to get detailed information about this track step, and get the option to delete it.</li>
-								<li>Routing edition: Click on map to set the starting point and destination, the routing engine will automically compute the track following map constraints. Click on the route to create intermediate waypoints that you may drag around.</li>
+								<li>Routing edition: Click on map to set the starting point and destination, the routing engine will automically compute the track following map constraints. Click on the route to create intermediate waypoints that you may drag around. To overcome issues with GraphHopper credit expiration, set your personal <a href="#api-keys">API keys</a></li>
 								<li>Open and edit multi-segment tracks. Create and delete segments using the "+" and "-" icons in the edition tools. Use the "Join Segments" tool to combine all segments into a single one. Split a segment in two by clicking on the scissors (<i class='material-icons'>&#xE14E;</i>) in a track point popup dialog.</li>
 								<li>Create named waypoints: Click on map to set points of interest. Click on a waypoint to edit its name.</li>
 							</ul>
@@ -179,6 +179,7 @@
 								<li>Elevate computes the elevation of each point of the track. If an elevation value was already stored, it is overridden with new computed value. Due to the elevation service payment fees, we limit the number of computed elevation values to 512 per track.</li>
 								<li>Cleanup selectively deletes each track point's elevation and time data.</li>
 							</ul>
+							<p>To overcome issues with missing elevation data, set your personal <a href="#api-keys">API keys</a></p>
 							<p>You can display a graphical interactive height profile of your track by clicking on the statistic table at the bottom of the map.</p>
 							<p><img src="images/elevation.png" alt="elevation"/></p>
 
@@ -206,10 +207,36 @@
 									<li>Personal background map: Define your own map backgrounds in WMS or WMTS format (see above).</li>
 									<li>Personal activities: Define your own activities based on your individual performances (see above).</li>
 									<li>Track display: Define the color and width of the track on the map.</li>
-									<li>API keys: Set and use your own Google and GraphHopper API keys in order to overcome the WTracks quota limit.</li>
+									<li>API keys: Set and use your own <a href="#api-keys">API keys</a> in order to overcome the WTracks quota limit.</li>
 									<li>Distance Unit: Choose between metric and imperial units.</li>
 								</ul>
 
+								<h3 id="api-keys">API Keys</h3>
+
+									<p>By default, all WTracks users are using a shared account to connect to third-party services offering elevation
+										and routing features. This shared account has limited daily quotas of requests, which are frequently exhausted 
+										by the many WTracks users. The consequence is that users are facing elevation or routing errors.</p>
+									<p>To bypass this quotas, each user is free to configure his/her own third-party service accounts. This gives each user 
+										full control on his/her own individual credits, with the option to use free or paying accounts. For this users must enter
+										their personal API keys in the "API keys" section of the Settings window. The way users obtain these personal keys
+										depends on the service, and is not under control of WTracks. You will first need to create an account on the service
+										you want, and then click on the "Get API key" link below.</p>
+
+									<p><img src="images/api-keys.png" alt="api keys" /></p>
+
+									<p>WTracks supports the following services:</p>
+									<ul class="default">
+										<li><a href="https://cloud.google.com/maps-platform/maps/">Google Maps</a>: provides track elevation data.
+											<a href="https://graphhopper.com/dashboard/#/api-keys">Get API key</a></li>
+										<li><a href="https://www.graphhopper.com/">GraphHopper</a>: provides routing data.
+											<a href="https://graphhopper.com/dashboard/#/api-keys">Get API key</a></li>
+										<li><a href="https://openrouteservice.org/">OpenRoute Service</a>: provides elevation and routing data. This service
+											is <strong>FREE</strong>. <a href="https://openrouteservice.org/dev/#/home">Get API key</a></li>
+										</li>
+									</ul>
+									<p>We suggest either to (i) create a Google + GraphHopper account, which provide high quality services, but
+										with potential fees, or (ii) create a free OpenRouteService account that provides both elevation and
+										routing at a reasonable quality.</p>
 							</div>
 						</section>
 
