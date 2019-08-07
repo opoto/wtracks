@@ -82,6 +82,7 @@ var mapsCloseOnClick = getBoolVal("wt.mapsCloseOnClick", config.mapsCloseOnClick
 var ghkey = getVal("wt.ghkey", undefined);
 var ggkey = getVal("wt.ggkey", undefined);
 var orskey = getVal("wt.orskey", undefined);
+var apikeyNoMore = getBoolVal("wt.apikeyNoMore", false);
 
 var MARKER_ICON = L.icon({
   iconUrl: 'img/marker-icon.png',
@@ -153,6 +154,33 @@ $("#prompt-desc").keyup(promptKeyEvent);
 $("#prompt-ok").click(validatePrompt);
 $("#prompt-cancel").click(closeTrackNamePrompt);
 $("#track-name-edit").click(promptTrackName);
+
+/* ----------------------------------------------------- */
+
+var apikeyTimer;
+
+$("#apikeys-close").click(closeApiKeyInfo);
+
+function closeApiKeyInfo(evt) {
+  if (apikeyTimer) {
+    clearTimeout(apikeyTimer);
+    apikeyTimer = undefined;
+  }
+  $("#apikeys").hide();
+  apikeyNoMore = isChecked("#apikeys-nomore");
+  saveValOpt("wt.apikeyNoMore", apikeyNoMore);
+  if (evt) {
+    evt.preventDefault();
+  }
+}
+
+function openApiKeyInfo() {
+  if (!apikeyNoMore && !apikeyTimer) {
+    log("apikey");
+    $("#apikeys").show();
+    apikeyTimer = setTimeout(closeApiKeyInfo, 10000);
+  }
+}
 
 /* ----------------------------------------------------- */
 
@@ -1001,6 +1029,7 @@ function hideGraphHopperCredit() {
 
 function showGraphHopperMessage(msg) {
   setStatus(msg, { timeout: 5, class: "status-error" });
+  openApiKeyInfo();
 }
 
 function setEditMode(mode) {
@@ -1275,6 +1304,7 @@ function saveSettings() {
   saveValOpt("wt.trackWeight", trackWeight);
   saveValOpt("wt.mapslist", mapsList);
   saveValOpt("wt.mapsCloseOnClick", mapsCloseOnClick);
+  saveValOpt("wt.apikeyNoMore", apikeyNoMore);
 }
 
 function saveStateFile() {
@@ -1412,6 +1442,7 @@ function clearSavedState() {
   storeVal("wt.share", undefined);
   storeVal("wt.mapslist", undefined);
   storeVal("wt.mapsCloseOnClick", undefined);
+  storeVal("wt.apikeyNomore", undefined);
 }
 
 function getProvider(mapobj) {
@@ -1735,6 +1766,7 @@ function callElevationService(callerName, locations, points, inc, cb) {
       } else {
         setStatus("Elevation failed", { timeout: 3, class: "status-error" });
         warn("elevation request failed");
+        openApiKeyInfo();
       }
     });
 }
