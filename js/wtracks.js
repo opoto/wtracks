@@ -185,7 +185,7 @@ function openApiKeyInfo() {
 function changeApikeyNomore(v) {
   apikeyNoMore = v;
   saveValOpt("wt.apikeyNoMore", apikeyNoMore);
-  ga('send', 'event', 'setting', 'keysNomore', name, apikeyNoMore ? 1 : 0);
+  ga('send', 'event', 'setting', 'keysNomore', undefined, apikeyNoMore ? 1 : 0);
 }
 /* ----------------------------------------------------- */
 
