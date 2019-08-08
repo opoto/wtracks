@@ -168,8 +168,7 @@ function closeApiKeyInfo(evt) {
     apikeyTimer = undefined;
   }
   $("#apikeys").hide();
-  apikeyNoMore = isChecked("#apikeys-nomore");
-  saveValOpt("wt.apikeyNoMore", apikeyNoMore);
+  changeApikeyNomore(isChecked("#apikeys-nomore"));
   if (evt) {
     evt.preventDefault();
   }
@@ -183,6 +182,11 @@ function openApiKeyInfo() {
   }
 }
 
+function changeApikeyNomore(v) {
+  apikeyNoMore = v;
+  saveValOpt("wt.apikeyNoMore", apikeyNoMore);
+  ga('send', 'event', 'setting', 'keysNomore', name, apikeyNoMore ? 1 : 0);
+}
 /* ----------------------------------------------------- */
 
 var selectActivity = $("#activity")[0];
@@ -650,8 +654,7 @@ showApiKey("ghkey", ghkey);
 showApiKey("ggkey", ggkey);
 
 $("#apikeys-suggest").change(function() {
-  apikeyNoMore = !isChecked("#apikeys-suggest");
-  saveValOpt("wt.apikeyNoMore", apikeyNoMore);
+  changeApikeyNomore(!isChecked("#apikeys-suggest"));
 })
 
 /* ------------------------ MENU ---------------------------------- */
