@@ -2101,7 +2101,7 @@ $(".statistics").click(function(e) {
 });
 
 function segmentClickListener(event, noGaEvent) {
-  if ((event.target != track) && (editMode == EDIT_NONE)) {
+  if ((event.target != track) && (editMode <= EDIT_NONE)) {
     if (!noGaEvent) {
       ga('send', 'event', 'edit', 'switch-segment');
     }
