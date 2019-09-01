@@ -40,7 +40,7 @@ var config = {
       // Simple obfscuation below to avoid reuse by ommision
       return strdecode(
         "nf%15%11%3C%0D%2CL-%10%15%20%1FVO%2C%0Az%077%1D(Q2%07KGLY%1C%1D%3C%1A%1FU(%0D%26%1E",
-        "t%04%10%0C%15W%3C.%3C%1E%01%0B%3EEg%25%19I%2F.w%10%15aB%1CSP8%1F%1FZr%1F%1E%17%03_%3F");
+        "t%04%10%0C%15W%3D%3C!%08%16%2C%24%10B%01%0Fr2%14T%03%0A%08%03NB%5ED8%01d%40%7CX%2C%3F%60%15");
     },
     analyticsid: function() {
       // Create a Google analytics trackind ID, and return it here
