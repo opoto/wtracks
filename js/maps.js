@@ -434,7 +434,7 @@ function openImportBox(event, data) {
   if (data) {
     readImportMymaps();
   } else {
-    $("#import-ok").click(readImportMymaps);
+    $("#import-ok").off("click").click(readImportMymaps);
     $("#input-val").focus();
   }
 }
@@ -471,7 +471,7 @@ function readImportMymaps() {
       }
       $("#import-input").hide();
       $("#import-select").show();
-      $("#import-ok").click(importMymaps);
+      $("#import-ok").off("click").click(importMymaps);
       $("#import-ok").focus();
     } catch (ex) {
       $("#input-error").show();
