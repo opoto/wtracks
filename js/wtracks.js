@@ -2229,6 +2229,7 @@ function importGeoJson(geojson) {
   }
   clearStatus();
   if (!segmentClickListener({ target: activeTrack }, true)) {
+    // no segment added, but existing one was (possibly) extended, update it
     polystats.updateStatsFrom(0);
   }
   saveState();

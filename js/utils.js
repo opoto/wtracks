@@ -342,9 +342,8 @@ function arrayForEach(array, func) {
 /* ---------------------- Start service worker ------------------------*/
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker
-    .register('./service-worker.js')
-    .then(function() {
-      console.log('Service Worker Registered');
-    });
+  // Use the window load event to keep the page load performant
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js');
+  });
 }
