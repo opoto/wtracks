@@ -176,7 +176,6 @@ function closeApiKeyInfo(evt) {
 
 function openApiKeyInfo() {
   if (!apikeyNoMore && !apikeyTimer) {
-    log("apikey");
     $("#apikeys").show();
     apikeyTimer = setTimeout(closeApiKeyInfo, 10000);
   }
@@ -1768,14 +1767,12 @@ function callElevationService(callerName, locations, points, inc, cb) {
     },
     function(eventName){
       ga('send', 'event', 'api', eventName, callerName, locations.length);
-      if (eventName === "g.elevate.ko") {
-        // fallback: next time use open-elevation service
-        elevationService = defaultElevatonService;
-        // and redo current elevation request immediality
-        callElevationService(callerName, locations, points, inc, cb);
-      } else {
-        setStatus("Elevation failed", { timeout: 3, class: "status-error" });
-        warn("elevation request failed");
+      warn("elevation request failed");
+      setStatus("Elevation failed", {
+        timeout: 3,
+        class: "status-error"
+      });
+      if (elevationService == defaultElevatonService) {
         openApiKeyInfo();
       }
     });
