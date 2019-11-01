@@ -340,26 +340,33 @@ var config = {
   },
   overlays: {
     "Hills": {
-     //'http://{s}.tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png'
-     url: '//tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png',
-     options: {
-       maxZoom: 17,
-       attribution: 'Hillshading: SRTM3 v2 (<a href="https://www2.jpl.nasa.gov/srtm/">NASA</a>)'
-     }
-   },
-   "Hike": {
-     url: 'http://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png',
-     options: {
-       maxZoom: 17,
-       attribution: 'Hiking Routes: (<a href="http://hiking.lonvia.de">Lonvias Hiking Map</a>)'
-     }
-   },
-   "Bike": {
-     url: 'http://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png',
-     options: {
-       maxZoom: 17,
-       attribution: 'Cycling Routes: (<a href="http://cycling.lonvia.de">Lonvias Cycling Map</a>)'
-     }
-   }
+      //'http://{s}.tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png'
+      url: '//tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png',
+      options: {
+        maxZoom: 17,
+        attribution: 'Hillshading: SRTM3 v2 (<a href="https://www2.jpl.nasa.gov/srtm/">NASA</a>)'
+      }
+    },
+    "Cycling": {
+      url: '//tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png',
+      options: {
+        maxZoom: 17,
+        attribution: '<a href="https://waymarkedtrails.org">Waymarked Trails</a>'
+      }
+    },
+    "Hiking": {
+      url: '//tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png',
+      options: {
+        maxZoom: 17,
+        attribution: '<a href="https://waymarkedtrails.org">Waymarked Trails</a>'
+      }
+    },
+    "MTB": {
+      url: '//tile.waymarkedtrails.org/mtb/{z}/{x}/{y}.png',
+      options: {
+        maxZoom: 17,
+        attribution: '<a href="https://waymarkedtrails.org">Waymarked Trails</a>'
+      }
+    }
   }
 };
