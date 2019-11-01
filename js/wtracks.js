@@ -83,6 +83,7 @@ var ghkey = getVal("wt.ghkey", undefined);
 var ggkey = getVal("wt.ggkey", undefined);
 var orskey = getVal("wt.orskey", undefined);
 var apikeyNoMore = getBoolVal("wt.apikeyNoMore", false);
+var myoverlays = getJsonVal("wt.myoverlays", {});
 
 var MARKER_ICON = L.icon({
   iconUrl: 'img/marker-icon.png',
@@ -654,7 +655,7 @@ showApiKey("ggkey", ggkey);
 
 $("#apikeys-suggest").change(function() {
   changeApikeyNomore(!isChecked("#apikeys-suggest"));
-})
+});
 
 /* ------------------------ MENU ---------------------------------- */
 
@@ -1305,6 +1306,7 @@ function saveSettings() {
   saveValOpt("wt.orskey", orskey);
   saveValOpt("wt.joinOnLoad", joinOnLoad);
   saveJsonValOpt("wt.mymaps", mymaps);
+  saveJsonValOpt("wt.myoverlays", myoverlays);
   saveJsonValOpt("wt.overlaysOn", overlaysOn);
   saveValOpt("wt.ovlTrackColor", ovlTrackColor);
   saveValOpt("wt.ovlTrackWeight", ovlTrackWeight);
@@ -1440,6 +1442,7 @@ function clearSavedState() {
   storeVal("wt.gpx", undefined);
   storeVal("wt.joinOnLoad", undefined);
   storeVal("wt.mymaps", undefined);
+  storeVal("wt.myoverlays", undefined);
   storeVal("wt.overlaysOn", undefined);
   storeVal("wt.ovlTrackColor", undefined);
   storeVal("wt.ovlTrackWeight", undefined);
@@ -1493,6 +1496,14 @@ var overlays = {};
 for (var ovly in config.overlays) {
   if (hasOwnProperty.call(config.overlays, ovly)) {
     var tile = getProvider(config.overlays[ovly]);
+    if (tile) {
+      overlays[ovly] = tile;
+    }
+  }
+}
+for (var ovly in myoverlays) {
+  if (hasOwnProperty.call(config.overlays, ovly)) {
+    var tile = getProvider(myoverlays[ovly]);
     if (tile) {
       overlays[ovly] = tile;
     }
