@@ -392,6 +392,7 @@ a.button {
 .leaflet-control-layers-base .material-icons {
   font-size: 18px;
   color: #777;
+  width: 22px;
 }
 
 .popupdiv {
