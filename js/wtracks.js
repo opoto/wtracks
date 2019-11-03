@@ -1574,6 +1574,7 @@ if (JSON.parse && JSON.stringify) {
   }
 
   map.on("overlayadd", function(e) {
+    ga('send', 'event', 'map', 'overlay', e.name);
     setOverlay(e.name, true);
   });
 
