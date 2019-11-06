@@ -465,8 +465,10 @@ div.trumbowyg-editor {
   right: 0;
   background: #ddd;
 }
+/*
 #status-msg{
 }
+*/
 .status-info{
   color: black;
 }
@@ -477,7 +479,6 @@ div.trumbowyg-editor {
 /* ---------------- spinner -------------- */
 .spinner {
   margin: 100px auto 0;
-  width: 70px;
   text-align: center;
   display: inline;
 }
@@ -871,9 +872,11 @@ button:active,
   .hide-on-small-screen {
     display: none;
   }
+  /*
   .statistics th, .statistics td {
-    /*font-size: 90%;*/
+    font-size: 90%;
   }
+  */
   .hide-medium, .show-medium {
      display: none;
   }
