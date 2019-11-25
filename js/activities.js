@@ -229,7 +229,7 @@ $("#activitynew").click(function() {
     ++index;
     activityname = "New#" + index;
   }
-  activity = createActivity("feet", L.PolyStats.POLYNOMIAL, [1.2, -0.002, -0.002]);
+  activity = createActivity(config.activities.vehicles[0], L.PolyStats.POLYNOMIAL, [1.2, -0.002, -0.002]);
   displayActivity();
 });
 
