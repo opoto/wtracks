@@ -2210,7 +2210,7 @@ function importGeoJson(geojson) {
     bounds.extend(track.getBounds());
 
     // add segment xml namespaces to track
-    if (xmlnsArr.length) {
+    if (xmlnsArr && xmlnsArr.length) {
       track.xmlnsArr = xmlnsArr;
     }
   }
