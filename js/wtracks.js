@@ -704,9 +704,9 @@ $("#menu-tools").click(function() {
 
 /* ------------------------ EXPORT GPX ---------------------------------- */
 
-function LatLngToGPX(latlng, gpxelt, properties) {
+function LatLngToGPX(ptindent, latlng, gpxelt, properties) {
 
-  var gpx = "<" + gpxelt;
+  var gpx = ptindent + "<" + gpxelt;
   gpx += " lat=\"" + latlng.lat + "\" lon=\"" + latlng.lng + "\">";
   if (properties.title) {
     gpx += "<name>" + htmlEncode(properties.title) + "</name>";
@@ -723,10 +723,10 @@ function LatLngToGPX(latlng, gpxelt, properties) {
   if (properties.time) {
     gpx += "<time>" + (properties.time.toISOString ? properties.time.toISOString() : properties.time) + "</time>";
   }
-  if (properties.hr) {
-    gpx += "<extensions><gpxtpx:TrackPointExtension><gpxtpx:hr>";
-    gpx += properties.hr;
-    gpx += "</gpxtpx:hr></gpxtpx:TrackPointExtension></extensions>";
+  if (properties.ext) {
+    gpx += "\n" + ptindent + "  <extensions>";
+    gpx += properties.ext;
+    gpx += "</extensions>\n" + ptindent;
   }
   gpx += "</" + gpxelt + ">\n";
   return gpx;
@@ -747,7 +747,7 @@ function getSegmentGPX(segment, ptindent, pttag, savetime) {
       } else {
         time = pt.time;
       }
-      gpx += ptindent + LatLngToGPX(pt, pttag, { 'time': time, 'hr' : pt.hr });
+      gpx += LatLngToGPX(ptindent, pt, pttag, { 'time': time, 'ext' : pt.ext });
       j++;
     }
   }
@@ -759,13 +759,31 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
   var now = new Date();
   var xmlname = "<name>" + htmlEncode(trackname) + "</name>";
   var gpx = '<\?xml version="1.0" encoding="UTF-8" standalone="no" \?>\n';
-  gpx += '<gpx creator="' + config.appname +
-    '" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" version="1.1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">\n';
+  gpx += '<gpx creator="' + config.appname + '"\n';
+  gpx += '    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" version="1.1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"';
+  
+  // xmlns from each segment
+  var layers = editLayer.getLayers();
+  var xmlnsArr = [];
+  for (var l = 0; l < layers.length; l++) {
+    var segment = layers[l];
+    if (segment.xmlnsArr && segment.xmlnsArr.length) {
+      for (var i = 0; i < segment.xmlnsArr.length; i++) {
+        var item = segment.xmlnsArr[i];
+        if (xmlnsArr.indexOf(item) < 0) {
+          gpx += '\n    ' + item;
+          xmlnsArr.push(item);
+        }
+      }
+    }
+  }
+  gpx += '>\n';
+
   if (!nometadata) {
     gpx += "<metadata>\n";
     gpx += "  " + xmlname + "\n";
     gpx += "  <desc>" + (metadata.desc ? htmlEncode(metadata.desc) : "") + "</desc>\n";
-    gpx += "  <author><name>" + config.appname + "</name></author>\n";
+      gpx += "  <author><name>" + config.appname + "</name></author>\n";
     gpx += "  <link href='" + window.location.href + "'>\n";
     gpx += "    <text>" + config.appname + "</text>\n";
     gpx += "    <type>text/html</type>\n";
@@ -783,7 +801,7 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
     var i = 0;
     while (i < wpts.length) {
       var wpt = wpts[i];
-      gpx += LatLngToGPX(wpt.getLatLng(), "wpt", wpt.options);
+      gpx += LatLngToGPX("", wpt.getLatLng(), "wpt", wpt.options);
       i++;
     }
   }
@@ -802,7 +820,6 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
 
   gpx += "<" + wraptag + ">" + xmlname + "\n";
   // for each segment
-  var layers = editLayer.getLayers();
   for (var l = 0, len = layers.length; l < len; l++) {
     var segment = layers[l];
     // check if it is a polyline
@@ -2137,6 +2154,7 @@ function segmentClickListener(event, noGaEvent) {
 
 function importGeoJson(geojson) {
 
+  setEditMode(EDIT_NONE);
   setStatus("Loading..", { spinner: true });
   $("#edit-tools").hide();
   var bounds;
@@ -2152,7 +2170,7 @@ function importGeoJson(geojson) {
   var initLayers = editLayer.getLayers().length;
   var activeTrack = track;
 
-  function newPoint(coord, time, hr, i) {
+  function newPoint(coord, time, ext, i) {
     var point = L.latLng(coord[1], coord[0]);
     if (coord.length > 2) {
       // alt
@@ -2161,8 +2179,8 @@ function importGeoJson(geojson) {
     if (!isUndefined(time)) {
       point.time = time;
     }
-    if (!isUndefined(hr)) {
-      point.hr = hr;
+    if (!isUndefined(ext)) {
+      point.ext = ext;
     }
     if (!isUndefined(i)) {
       point.i = i;
@@ -2170,7 +2188,7 @@ function importGeoJson(geojson) {
     return point;
   }
 
-  function importSegment(name, coords, times, heartRates) {
+  function importSegment(name, coords, times, ptExts, xmlnsArr) {
     var v;
 
     if (joinOnLoad || track.getLatLngs().length == 0) {
@@ -2187,12 +2205,17 @@ function importGeoJson(geojson) {
     for (var i = 0; i < coords.length; i++) {
       v.push(newPoint(coords[i],
         times ? times[i] : undefined,
-        heartRates ? heartRates[i] : undefined,
+        ptExts ? ptExts[i] : undefined,
         i));
     }
 
     track.setLatLngs(v);
     bounds.extend(track.getBounds());
+
+    // add segment xml namespaces to track
+    if (xmlnsArr.length) {
+      track.xmlnsArr = xmlnsArr;
+    }
   }
 
   if ((track.getLatLngs().length === 0) && (geojson.metadata)) {
@@ -2202,15 +2225,17 @@ function importGeoJson(geojson) {
 
   L.geoJson(geojson, {
     onEachFeature: function(f) {
-      var name, coords, times, heartRates;
+      var name, coords, times, ptExts, xmlnsArr;
       if (f.geometry.type === "LineString") {
         name = f.properties.name ? f.properties.name : NEW_TRACK_NAME;
         coords = f.geometry.coordinates;
         times = f.properties.coordTimes && (f.properties.coordTimes.length == coords.length) ?
           f.properties.coordTimes : undefined;
-        heartRates = f.properties.heartRates && (f.properties.heartRates.length == coords.length) ?
-          f.properties.heartRates: undefined;
-        importSegment(name, coords, times, heartRates);
+        ptExts = f.properties.ptExts 
+          && (f.properties.ptExts.length == coords.length) ?
+          f.properties.ptExts : undefined;
+        xmlnsArr = f.properties.xmlnsArr;
+        importSegment(name, coords, times, ptExts, xmlnsArr);
       }
       if (f.geometry.type === "MultiLineString") {
         name = f.properties.name ? f.properties.name : NEW_TRACK_NAME;
@@ -2219,10 +2244,12 @@ function importGeoJson(geojson) {
           times = f.properties.coordTimes && f.properties.coordTimes[i] &&
             (f.properties.coordTimes[i].length == coords.length) ?
             f.properties.coordTimes[i] : undefined;
-          heartRates = f.properties.heartRates && f.properties.heartRates[i] &&
-            (f.properties.heartRates[i].length == coords.length) ?
-            f.properties.heartRates[i]: undefined;
-          importSegment(name, coords, times, heartRates);
+          ptExts = f.properties.ptExts && f.properties.ptExts[i] &&
+            (f.properties.ptExts[i].length == coords.length) ?
+            f.properties.ptExts[i] : undefined;
+          xmlnsArr = f.properties.xmlnsArr && f.properties.xmlnsArr[i] ?
+              f.properties.xmlnsArr[i] : undefined;
+          importSegment(name, coords, times, ptExts, xmlnsArr);
         }
       } else if (f.geometry.type === "Point") {
         // import marker
@@ -2957,10 +2984,12 @@ map.on('editable:vertex:click', function(e) {
     var i = e.latlng.i;
     var seg1 = track.getLatLngs().slice(0,i),
         seg2 = track.getLatLngs().slice(i);
+    var xmlnsArr = track.xmlnsArr;
     track.setLatLngs(seg1);
     polystats.updateStatsFrom(0);
     newSegment();
     track.setLatLngs(seg2);
+    track.xmlnsArr = xmlnsArr;
     polystats.updateStatsFrom(0);
     saveState();
     setEditMode(EDIT_MANUAL_TRACK);

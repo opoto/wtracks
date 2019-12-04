@@ -51,23 +51,50 @@ var toGeoJSON = (function() {
         }
         return o;
     }
+    function appendUnique(arrto, arrfrom, preproc) {
+        if (arrfrom && arrfrom.length) {
+            arrto = arrto ? arrto : [];
+            for (var i = 0; i < arrfrom.length; i++) {
+                var item = preproc ? preproc(arrfrom[i]) : arrfrom[i];
+                if (arrto.indexOf(item) < 0) {
+                    arrto.push(item);
+                }
+            }
+        }
+        return arrto;
+    }
     function coordPair(x) {
         var ll = [attrf(x, 'lon'), attrf(x, 'lat')],
             ele = get1(x, 'ele'),
             // handle namespaced attribute in browser
             heartRate = get1(x, 'gpxtpx:hr') || get1(x, 'hr'),
+            ptExt = get1(x, 'extensions'),
             time = get1(x, 'time'),
-            e;
+            e, xmlnsArr;
         if (ele) {
             e = parseFloat(nodeVal(ele));
             if (!isNaN(e)) {
                 ll.push(e);
             }
         }
+        if (ptExt) {
+            ptExt = ptExt.innerHTML.trim();
+            ptExt = ptExt.replace(/\s+</g, "<");
+            var xmlnsAll = ptExt.match(/\sxmlns\:\w+="[^"]+"/g);
+            xmlnsArr = appendUnique(xmlnsArr, xmlnsAll, 
+                function(x){
+                    return x.trim()
+                }
+            );
+            ptExt = ptExt.replace(/\s+xmlns\:\w+="[^"]+"/g, "")
+            ptExt = ptExt.replace(/\s+xmlns="[^"]+"/g, "")
+        }
         return {
             coordinates: ll,
             time: time ? nodeVal(time) : null,
-            heartRate: heartRate ? parseFloat(nodeVal(heartRate)) : null
+            heartRate: heartRate ? parseFloat(nodeVal(heartRate)) : null,
+            ptExt: ptExt,
+            xmlnsArr: xmlnsArr
         };
     }
 
@@ -357,6 +384,7 @@ var toGeoJSON = (function() {
                     line = [],
                     times = [],
                     heartRates = [],
+                    ptExts = [],
                     l = pts.length;
                 if (l < 2) return {};  // Invalid line in GeoJSON
                 for (var i = 0; i < l; i++) {
@@ -367,11 +395,17 @@ var toGeoJSON = (function() {
                         if (!heartRates.length) initializeArray(heartRates, i);
                         heartRates.push(c.heartRate || null);
                     }
+                    if (c.ptExt || ptExts.length) {
+                        if (!ptExts.length) initializeArray(ptExts, i);
+                        ptExts.push(c.ptExt || null);
+                    }
                 }
                 return {
                     line: line,
                     times: times,
-                    heartRates: heartRates
+                    heartRates: heartRates,
+                    ptExts: ptExts,
+                    xmlnsArr: c.xmlnsArr
                 };
             }
             function getTrack(node) {
@@ -379,7 +413,9 @@ var toGeoJSON = (function() {
                     track = [],
                     times = [],
                     heartRates = [],
-                    line;
+                    ptExts = [],
+                    line,
+                    xmlnsArr = [];
                 for (var i = 0; i < segments.length; i++) {
                     line = getPoints(segments[i], 'trkpt');
                     if (line) {
@@ -397,6 +433,26 @@ var toGeoJSON = (function() {
                                 heartRates.push(initializeArray([], line.line.length || 0));
                             }
                         }
+                        if (line.ptExts && line.ptExts.length) {
+                            if (!ptExts.length) {
+                                for (var s = 0; s < i; s++) {
+                                    ptExts.push(initializeArray([], track[s].length));
+                                }
+                            }
+                            ptExts.push(line.ptExts);
+                        } else if (ptExts.length) {
+                            ptExts.push(initializeArray([], line.line.length || 0));
+                        }
+                        if (line.xmlnsArr && line.xmlnsArr.length) {
+                            if (!xmlnsArr.length) {
+                                for (var s = 0; s < i; s++) {
+                                    xmlnsArr[s] = [];
+                                }
+                            }
+                            xmlnsArr[i] = line.xmlnsArr;
+                        } else if (xmlnsArr.length) {
+                            xmlnsArr[i] = [];
+                        }
                     }
                 }
                 if (track.length === 0) return;
@@ -404,6 +460,8 @@ var toGeoJSON = (function() {
                 extend(properties, getLineStyle(get1(node, 'extensions')));
                 if (times.length) properties.coordTimes = track.length === 1 ? times[0] : times;
                 if (heartRates.length) properties.heartRates = track.length === 1 ? heartRates[0] : heartRates;
+                if (ptExts.length) properties.ptExts = track.length === 1 ? ptExts[0] : ptExts;
+                if (xmlnsArr.length) properties.xmlnsArr = xmlnsArr;
                 return {
                     type: 'Feature',
                     properties: properties,
