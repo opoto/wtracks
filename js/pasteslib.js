@@ -121,21 +121,19 @@
 
 
 var pastesLib = {
-   /* not valid https certificate
    "friendpaste": {
      "name": "FriendPaste",
      "web": "https://friendpaste.com/",
      "upload": friendpasteUpload,
      "delete": noDelete
    },
-   */
-   "htput": {
+   "htput": { // expired certificate
      "name": "HTPut",
      "web": "https://htput.com/",
      "upload": htputUpload,
      "delete": htputDelete
    },
-   "dpaste": {
+   "dpaste": { // no HTTPS
      "name": "DPaste",
      "web": "https://dpaste.com/",
      "upload": dpasteUpload,
