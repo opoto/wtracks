@@ -675,6 +675,10 @@ div.trumbowyg-editor {
   color: #999;
 }
 
+.copyonclick {
+  cursor: pointer;
+}
+
 /* ---------------------------------- */
 
 
