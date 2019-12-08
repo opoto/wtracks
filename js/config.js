@@ -166,7 +166,7 @@ var config = {
     "Sigma Cycle": {
       url: '//tiles1.sigma-dc-control.com/layer5/{z}/{x}/{y}.png',
       options: {
-        maxZoom: 18,
+        maxZoom: 16,
         attribution: '&copy; <a href="http://www.sigmasport.com/" target="_blank">SIGMA Sport &reg;</a> Map data <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>'
       },
       visible: true
