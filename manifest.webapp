@@ -1,13 +1,13 @@
 {
   "version": "1.0.0",
   "name": "WTracks",
+  "subtitle": "Create or edit GPX files",
   "description": "Online track editor for outdoor activites",
   "type": "web",
-  "launch_path": "index.html",
+  "launch_path": "/wtracks/index.html",
   "icons": {
-    "48": "img/wtracks-icon-1x.png",
-    "96": "img/wtracks-icon-2x.png",
-    "112": "img/wtracks-icon-4x.png"
+    "56": "/wtracks/img/wtracks-icon-56.png",
+    "112": "/wtracks/img/wtracks-icon-4x.png"
   },
   "developer": {
     "name": "opoto",
@@ -16,13 +16,19 @@
   "permissions": {
     "serviceworker":{}
   },
-  "cursor": "true",
   "locales": {
     "en-US": {
+      "name": "WTracks"
+    },
+    "fr-FR": {
       "name": "WTracks",
-      "subtitle": "Online track editor for outdoor activites",
-      "description": "Create or edit GPX files"
+      "subtitle": "Créez et modifiez vos fichiers GPX",
+      "description": "Editeur de parcours pour les activités de plein air"
     }
   },
-  "default_locale": "en-US"
+  "default_locale": "en-US",
+  "categories": [
+    "utilities",
+    "sports"
+  ]
 }
