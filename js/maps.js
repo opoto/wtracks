@@ -454,13 +454,26 @@ function readImportMymaps() {
       var i = 0;
       objectForEach(importedMymaps, function(name, value) {
         var id = "import-i" + i++;
-        var limap = "<tr><td><input id='" + id  + "' type='checkbox'/></td>";
-        limap += "<td><label for='" + id + "'><span>" + name;
-        var overwrite = mymaps[name];
-        if (overwrite) {
-          limap += "</span> (Overwrite yours)</label>";
+        var limap = "<tr><td><input id='" + id  + "' type='checkbox' checked='checked'/></td>";
+        limap += "<td><label for='" + id + "'><span>" ;
+        var count = 0;
+        var ext = "";
+        while (true) {
+          if (count > 0) {
+            ext = " (" + count + ")";
+          }
+          if (!mymaps[name + ext]) {
+            if (ext) {
+              // replace name
+              importedMymaps[name] = undefined;
+              name += ext;
+              importedMymaps[name] = value;
+            }
+            break;
+          }
+          count++;
         }
-        limap += "</span></td></tr>";
+        limap += name + "</span></td></tr>";
         $("#import-list").append(limap);
       });
       // show info about persistence activation if needed
