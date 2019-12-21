@@ -336,10 +336,9 @@ var config = {
         attribution: '<a href="http://www.maanmittauslaitos.fi/en/digituotteet/laser-scanning-data" target="_blank">Laser scanning</a> and <a href="http://www.maanmittauslaitos.fi/en/digituotteet/topographic-database" target="_blank">topographic</a> data provided by the <a href="http://www.maanmittauslaitos.fi/en" target="_blank">National Land Survey of Finland</a> under the <a href="https://creativecommons.org/licenses/by/4.0/legalcode">Creative Commons license</a>.'
       },
       visible: false
-    }
-  },
-  overlays: {
+    },
     "Hills": {
+      type: "overlay",
       //'http://{s}.tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png'
       url: '//tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png',
       options: {
@@ -348,6 +347,7 @@ var config = {
       }
     },
     "Cycling": {
+      type: "overlay",
       url: '//tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png',
       options: {
         maxZoom: 17,
@@ -355,6 +355,7 @@ var config = {
       }
     },
     "Hiking": {
+      type: "overlay",
       url: '//tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png',
       options: {
         maxZoom: 17,
@@ -362,6 +363,7 @@ var config = {
       }
     },
     "MTB": {
+      type: "overlay",
       url: '//tile.waymarkedtrails.org/mtb/{z}/{x}/{y}.png',
       options: {
         maxZoom: 17,

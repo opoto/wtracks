@@ -83,7 +83,6 @@ var ghkey = getVal("wt.ghkey", undefined);
 var ggkey = getVal("wt.ggkey", undefined);
 var orskey = getVal("wt.orskey", undefined);
 var apikeyNoMore = getBoolVal("wt.apikeyNoMore", false);
-var myoverlays = getJsonVal("wt.myoverlays", {});
 
 var MARKER_ICON = L.icon({
   iconUrl: 'img/marker-icon.png',
@@ -1320,7 +1319,6 @@ function saveSettings() {
   saveValOpt("wt.orskey", orskey);
   saveValOpt("wt.joinOnLoad", joinOnLoad);
   saveJsonValOpt("wt.mymaps", mymaps);
-  saveJsonValOpt("wt.myoverlays", myoverlays);
   saveJsonValOpt("wt.overlaysOn", overlaysOn);
   saveValOpt("wt.ovlTrackColor", ovlTrackColor);
   saveValOpt("wt.ovlTrackWeight", ovlTrackWeight);
@@ -1456,7 +1454,6 @@ function clearSavedState() {
   storeVal("wt.gpx", undefined);
   storeVal("wt.joinOnLoad", undefined);
   storeVal("wt.mymaps", undefined);
-  storeVal("wt.myoverlays", undefined);
   storeVal("wt.overlaysOn", undefined);
   storeVal("wt.ovlTrackColor", undefined);
   storeVal("wt.ovlTrackWeight", undefined);
@@ -1479,7 +1476,7 @@ function getProvider(mapobj) {
   if (protocol.length == 0 || protocol == location.protocol) {
     var tileCtor;
     var mapopts = mapobj.options;
-    if (isUnset(mapobj.type) || (mapobj.type === "base")) {
+    if (isUnset(mapobj.type) || (mapobj.type === "base") || (mapobj.type === "overlay")) {
       tileCtor = L.tileLayer;
     } else {
       tileCtor = L.tileLayer[mapobj.type];
@@ -1493,36 +1490,23 @@ function getProvider(mapobj) {
   return p;
 }
 
-// Add background maps to base layers
+// Add maps and overlays
 var baseLayers = {};
+var overlays = {};
 mapsForEach(function(name, props) {
   if (props.on) {
     var inList = props.in == MAP_MY ? mymaps : config.maps;
     var tile = getProvider(inList[name]);
     if (tile) {
+      if (inList[name].type === "overlay") {
+        overlays[name] = tile;
+      } else {
       baseLayers[name] = tile;
     }
   }
+  }
 });
 
-// Add background maps to base layers
-var overlays = {};
-for (var ovly in config.overlays) {
-  if (hasOwnProperty.call(config.overlays, ovly)) {
-    var tile = getProvider(config.overlays[ovly]);
-    if (tile) {
-      overlays[ovly] = tile;
-    }
-  }
-}
-for (var ovly in myoverlays) {
-  if (hasOwnProperty.call(config.overlays, ovly)) {
-    var tile = getProvider(myoverlays[ovly]);
-    if (tile) {
-      overlays[ovly] = tile;
-    }
-  }
-}
 var baseLayerControl = L.control.layers(baseLayers, overlays);
 baseLayerControl.addTo(map);
 

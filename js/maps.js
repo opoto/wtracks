@@ -22,8 +22,14 @@ function addMymapsItem(name, props, addHandlers) {
     mymapbtns += "<i class='material-icons map-delete' title='Delete'>delete</i> ";
     mymapclass = " mymap-name";
   }
+  var inList = props.in == MAP_MY ? mymaps : config.maps;
+  var mapv = inList[name];
+
   var mapitem = "<li><span class='map-item'>";
   mapitem += "<i class='material-icons map-drag' title='Drag to reorder'>drag_indicator</i> ";
+  if (mapv.type === "overlay") {
+    mapitem += "<i class='material-icons' title='Map overlay'>layers</i>";
+  }
   mapitem += "<span class='map-name" + mymapclass + "'>" + name + "</span> ";
   mapitem += "<i class='material-icons map-visibility' title='Show/Hide' isVisible='??'>??</i> ";
   mapitem += mymapbtns;
@@ -278,7 +284,7 @@ function changeMymapType(evt) {
   var type = getMapType();
   $(".map-wmts").hide();
   $(".map-wms").hide();
-  if (type != "base") {
+  if ((type != "base") && (type != "overlay")) {
     $(".map-" + type).show();
   }
   clearLayerList();
