@@ -197,13 +197,11 @@ function loadActivities() {
     saveJsonValOpt("wt.activities", activities);
   }
   // append activities
-  for (var a in activities) {
-    if (hasOwnProperty.call(activities, a)) {
-      if (!selectActivity.options[a]) {
-        addSelectOption(selectActivity, a);
-      }
+  objectForEach(activities, function(aname, aobj) {
+    if (!selectActivity.options[aname]) {
+      addSelectOption(selectActivity, aname);
     }
-  }
+  });
   // remove deleted activities
   $("#activity option").each(function(i, v) {
     if (!activities[v.innerHTML]) {
@@ -1501,9 +1499,9 @@ mapsForEach(function(name, props) {
       if (inList[name].type === "overlay") {
         overlays[name] = tile;
       } else {
-      baseLayers[name] = tile;
+        baseLayers[name] = tile;
+      }
     }
-  }
   }
 });
 
@@ -1559,17 +1557,17 @@ function setOverlay(name, yesno) {
 
 if (JSON.parse && JSON.stringify) {
 
-  for (var name in overlaysOn) {
-    if (overlaysOn.hasOwnProperty(name) && overlaysOn[name]) {
-      var ol = overlays[name];
-      if (ol) {
-        map.addLayer(overlays[name]);
-      } else {
-        // doesn't exist anymore, delete it
-        setOverlay(name, undefined);
+  objectForEach(overlaysOn, function(oname, oon) {
+    var ovl =  overlays[oname];
+    if (ovl) {
+      if (oon) {
+        map.addLayer(ovl);
       }
+    } else {
+      // doesn't exist anymore, delete it
+      setOverlay(oname, undefined);
     }
-  }
+  });
 
   map.on("overlayadd", function(e) {
     ga('send', 'event', 'map', 'overlay', e.name);

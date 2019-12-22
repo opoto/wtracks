@@ -20,7 +20,6 @@ var config = {
     ovlTrackWeight: 3
   },
   maxfilesize: 1024 * 1024, // 1GB
-  scaleCtrlPopups: 10,
   compressdefault: 5,
   qrCodeService: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&bgcolor=fff&data=",
   //qrCodeService: "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chld=M&chl=",
