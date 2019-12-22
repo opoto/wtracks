@@ -344,7 +344,8 @@ var config = {
       options: {
         maxZoom: 17,
         attribution: 'Hillshading: SRTM3 v2 (<a href="https://www2.jpl.nasa.gov/srtm/">NASA</a>)'
-      }
+      },
+      visible: true
     },
     "Cycling": {
       type: "overlay",
@@ -352,7 +353,8 @@ var config = {
       options: {
         maxZoom: 17,
         attribution: '<a href="https://waymarkedtrails.org">Waymarked Trails</a>'
-      }
+      },
+      visible: true
     },
     "Hiking": {
       type: "overlay",
@@ -360,7 +362,8 @@ var config = {
       options: {
         maxZoom: 17,
         attribution: '<a href="https://waymarkedtrails.org">Waymarked Trails</a>'
-      }
+      },
+      visible: true
     },
     "MTB": {
       type: "overlay",
@@ -368,7 +371,8 @@ var config = {
       options: {
         maxZoom: 17,
         attribution: '<a href="https://waymarkedtrails.org">Waymarked Trails</a>'
-      }
+      },
+      visible: true
     }
   }
 };
