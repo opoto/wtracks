@@ -860,7 +860,6 @@ $("#track-download").click(function() {
   var blob = new Blob([gpx],
     isSafari() ? {type: "text/plain;charset=utf-8"} : {type: "application/gpx+xml;charset=utf-8"}
   );
-  var blob = new Blob([gpx], { type: "application/gpx+xml;charset=utf-8" });
   saveAs(blob, getTrackName() + ".gpx");
   clearStatus();
   closeMenu();
