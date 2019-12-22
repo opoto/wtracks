@@ -857,6 +857,9 @@ $("#track-download").click(function() {
   setStatus("Formatting..", { spinner: true });
   var gpx = getTrackGPX(true);
   ga('send', 'event', 'file', 'save', undefined, Math.round(gpx.length / 1000));
+  var blob = new Blob([gpx],
+    isSafari() ? {type: "text/plain;charset=utf-8"} : {type: "application/gpx+xml;charset=utf-8"}
+  );
   var blob = new Blob([gpx], { type: "application/gpx+xml;charset=utf-8" });
   saveAs(blob, getTrackName() + ".gpx");
   clearStatus();
@@ -1341,11 +1344,7 @@ function saveStateFile() {
     }
   }
   var blob = new Blob([JSON.stringify(fullState)],
-    isSafari() ? {
-      type: "text/plain;charset=utf-8"
-    } : {
-      type: "application/json;charset=utf-8"
-    }
+    isSafari() ? {type: "text/plain;charset=utf-8"} : {type: "application/json;charset=utf-8"}
   );
   saveAs(blob, "wtracks.cfg");
   ga('send', 'event', 'setting', 'export');
