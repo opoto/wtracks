@@ -3068,7 +3068,7 @@ function menu(item, event) {
 $(".tablinks").click(function(event) {
   menu(event.target.id.replace("tab", ""), event);
 });
-$("#donate").click(function(event) {
+$(".donatebtn").click(function(event) {
   ga('send', 'event', 'menu', 'donate');
 });
 
