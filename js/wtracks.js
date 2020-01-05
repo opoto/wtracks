@@ -3137,27 +3137,15 @@ $(document).ready(function() {
   var ONE_MONTH = Math.round(1000*60*60*24*30.5); // 1 month in ms
   var FIRST_VISIT = "1";
   var showAbout = false;
-  var resetAbout = false;
   if (about) {
-    if (about == FIRST_VISIT) {
-      resetAbout = true;
-    } else {
-      about = new Date(about).getTime();
-      if (now.getTime() > about + 6 * ONE_MONTH) {
-        resetAbout = true;
-        showAbout = true;
-      }
+    if ((about == FIRST_VISIT) || (now.getTime() > new Date(about).getTime() + ONE_MONTH)) {
+      // reset about tag
+      storeVal("wt.about", now.toISOString());
+      // wait for potential urlparam to be loaded
+      setTimeout(function(){ menu("about"); }, 4000);
     }
   } else {
     storeVal("wt.about", FIRST_VISIT);
-  }
-  if (resetAbout) {
-    // reset about tag
-    storeVal("wt.about", new Date(now - 5 * ONE_MONTH).toISOString());
-  }
-  if (showAbout) {
-    // wait for potential urlparam to be loaded
-    setTimeout(function(){ menu("about"); }, 4000);
   }
 
   initTrackDisplaySettings();
