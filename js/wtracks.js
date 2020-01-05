@@ -3069,7 +3069,7 @@ $(".tablinks").click(function(event) {
   menu(event.target.id.replace("tab", ""), event);
 });
 $(".donatebtn").click(function(event) {
-  ga('send', 'event', 'menu', 'donate');
+  ga('send', 'event', 'menu', 'donate', event.target.id);
 });
 
 
