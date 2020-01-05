@@ -96,7 +96,7 @@ function setChecked(selector, val) {
 
 // Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent
 window.cookieconsent_options = {
-  "message": "This website uses cookies to ensure you get the best experience on our website",
+  "message": "This website uses cookies and browser's local storage to restore your status and settings on your next visits",
   "dismiss": "Got it!",
   "learnMore": "More",
   "link": "doc/#privacy",

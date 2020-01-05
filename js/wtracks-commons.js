@@ -15,7 +15,7 @@ function saveJsonValOpt(name, val) {
 }
 
 function getStateSaved() {
-  return getVal("wt.saveState", null);
+  return getVal("wt.saveState", "true");
 }
 function isStateSaved() {
   return getStateSaved() === "true";

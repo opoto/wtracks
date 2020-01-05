@@ -1411,29 +1411,7 @@ function restoreTrack() {
   }
 }
 
-function saveInfo(save) {
-  $("#save-info").hide();
-  setChecked("#cfgsave", save);
-  $("#cfgsave").change();
-}
-$("#save-yes").click(function() {
-  saveInfo(true);
-});
-$("#save-no").click(function() {
-  saveInfo(false);
-  menu("settings");
-  openFolder("settings-savstg");
-  var saveSetting = $("#menusettings tr:nth-child(-n+2)");
-  saveSetting.addClass("highlight");
-  setTimeout(function(){
-    saveSetting.removeClass("highlight");
-  }, 10000);
-});
-
-function restoreState(showSaveInfo) {
-  if (showSaveInfo) {
-    $("#save-info").show();
-  }
+function restoreState() {
   restorePosition();
   restoreTrack();
   restoreEditMode();
@@ -3129,7 +3107,7 @@ $(document).ready(function() {
     });
     setEditMode(EDIT_NONE);
   } else {
-    restoreState(about && !getStateSaved());
+    restoreState();
   }
 
   /* Show About dialog if not shown since a while */
