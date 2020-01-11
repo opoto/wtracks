@@ -905,7 +905,7 @@ function uploadClicked(){
       params += "&key=" + "01" + strencode(cipher.iv + pwd);
       gpx = cipher.ciphertext;
       ga('send', 'event', 'file', 'encrypt', undefined, Math.round(gpx.length / 1000));
-      shareGpx(gpx, keyparam);
+      shareGpx(gpx, params, "cipher-yes");
     })
     .catch(function(err) {
       ga('send', 'event', 'error', 'crypto-encrypt', err);
@@ -913,12 +913,12 @@ function uploadClicked(){
       $("#wtshare-box").hide();
     });
   } else {
-    shareGpx(gpx, params);
+    shareGpx(gpx, params, isCryptoSupported() ? "cipher-no" : "cipher-unavailable");
   }
 }
 
-function shareGpx(gpx, params) {
-  ga('send', 'event', 'file', 'share', undefined, Math.round(gpx.length / 1000));
+function shareGpx(gpx, params, cryptoMode) {
+  ga('send', 'event', 'file', 'share', cryptoMode, Math.round(gpx.length / 1000));
   share.upload(
     getTrackName(), gpx,
     function (gpxurl, rawgpxurl) {

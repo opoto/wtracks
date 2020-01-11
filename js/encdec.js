@@ -8,9 +8,12 @@
  * Check if required dependencies are available
  */
 function isCryptoSupported() {
- return crypto && crypto.subtle && crypto.subtle.importKey && crypto.subtle.digest &&
+ var supported = crypto && crypto.subtle && crypto.subtle.importKey && crypto.subtle.digest &&
         crypto.getRandomValues && crypto.subtle.encrypt && crypto.subtle.decrypt &&
-        TextEncoder && TextDecoder && Promise && atob && btoa ? true : false;
+        TextEncoder && TextDecoder && Promise && atob && btoa &&
+        Array && Array.from && Array.prototype.map && Uint8Array && String &&
+        String.fromCharCode && Math && Math.random ? true : false;
+  return supported;
 }
 
  /**
