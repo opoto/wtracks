@@ -519,10 +519,10 @@ function importMymaps() {
   $("#import-list input:checked").each(function(i,elt) {
     var name = elt.parentElement.nextSibling.firstElementChild.firstElementChild.innerText;
     var isnew = !mymaps[name];
+    mymaps[name] = importedMymaps[name];
     if (isnew) {
       addMymapsItem(name, addMapListEntry(name, MAP_MY, true), true);
     }
-    mymaps[name] = importedMymaps[name];
     imported++;
   });
   if (imported > 0) {
