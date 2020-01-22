@@ -347,3 +347,11 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./service-worker.js');
   });
 }
+
+/* ---------------------- track errors ------------------------*/
+
+window.onerror = function(messageOrEvent, source, line, row, error) {
+  if (ga) {
+    ga('send', 'event', 'error', messageOrEvent.toString() +"["+source+":"+line+","+row, navigator.appVersion);
+  }
+}
