@@ -718,7 +718,15 @@ function LatLngToGPX(ptindent, latlng, gpxelt, properties) {
     gpx += "<cmt>" + htmlEncode(properties.cmt) + "</cmt>";
   }
   if (properties.time) {
-    gpx += "<time>" + (properties.time.toISOString ? properties.time.toISOString() : properties.time) + "</time>";
+    var time = properties.time;
+    try {
+      if (time.toISOString) {
+        time = time.toISOString();
+      } 
+    } catch (error) {
+      ga('send', 'event', 'error', 'Invalid properties.time', time);
+    }
+    gpx += "<time>" + time + "</time>";
   }
   if (properties.ext) {
     gpx += "\n" + ptindent + "  <extensions>";
@@ -2389,7 +2397,11 @@ var dropboxLoadOptions = {
   //extensions: ['.gpx', '.json', '.kml', '.geojson'],
 };
 $("#dropbox-chooser").click(function(e) {
-  Dropbox.choose(dropboxLoadOptions);
+  try {
+    Dropbox.choose(dropboxLoadOptions);
+  } catch (error) {
+    ga('send', 'event', 'error', 'Dropbox.choose error', error);
+  }
 });
 
 var dropboxSaveOptions = {
@@ -2447,7 +2459,11 @@ $("#dropbox-saver").click(function(e) {
       dropboxSaveOptions.files[0].url = rawgpxurl;
       dropboxSaveOptions.gpxurl = gpxurl;
       dropboxSaveOptions.passcode = passcode;
-      Dropbox.save(dropboxSaveOptions);
+      try {
+        Dropbox.save(dropboxSaveOptions);
+      } catch (error) {
+        ga('send', 'event', 'error', 'Dropbox.save error', error);
+      }
     }, function(error) {
       var errmsg = error.statusText ? error.statusText : error;
       setStatus("Failed: " + errmsg, { timeout: 5, class: "status-error" });
