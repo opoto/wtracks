@@ -1662,12 +1662,27 @@ function orsElevationService(locations, points, inc, done, fail) {
 
   if (locations.length == 1) {
     // single point
+    $.ajax({
+      url: "https://api.openrouteservice.org/elevation/point",
+      headers: {
+        "Authorization": orskey
+      },
+      method: "POST",
+      contentType: "application/json",
+      data: JSON.stringify({
+        "format_in": "point",
+        "geometry": [ locations[0].lng, locations[0].lat ]
+      }),
+      dataType: "json"
+    })
+    /*
     $.get({
       url: "https://api.openrouteservice.org/elevation/point?" +
         "api_key=" + orskey +
         "&geometry=" + locations[0].lng + "," + locations[0].lat,
       dataType: "json"
     })
+    */
     .done(function (json) {
       if (json.geometry && json.geometry.coordinates && json.geometry.coordinates[0]) {
         points.alt = json.geometry.coordinates[2];
