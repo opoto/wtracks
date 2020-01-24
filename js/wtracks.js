@@ -718,15 +718,7 @@ function LatLngToGPX(ptindent, latlng, gpxelt, properties) {
     gpx += "<cmt>" + htmlEncode(properties.cmt) + "</cmt>";
   }
   if (properties.time) {
-    var time = properties.time;
-    try {
-      if (time.toISOString) {
-        time = time.toISOString();
-      } 
-    } catch (error) {
-      ga('send', 'event', 'error', 'Invalid properties.time', time);
-    }
-    gpx += "<time>" + time + "</time>";
+    gpx += "<time>" + properties.time + "</time>";
   }
   if (properties.ext) {
     gpx += "\n" + ptindent + "  <extensions>";
@@ -746,11 +738,13 @@ function getSegmentGPX(segment, ptindent, pttag, savetime) {
     now = now.getTime();
     while (j < latlngs.length) {
       var pt = latlngs[j];
-      var time;
-      if (savetime) {
-        time = new Date(now + (pt.chrono * 1000));
-      } else {
-        time = pt.time;
+      var time = pt.time;
+      try {
+        if (savetime && Date.prototype.toISOString) {
+          time = new Date(now + (pt.chrono * 1000)).toISOString();
+        }
+      } catch (error) {
+        ga('send', 'event', 'error', 'Failed to build ISO time: ' + error, 'chrono: ' + pt.chrono);
       }
       gpx += LatLngToGPX(ptindent, pt, pttag, { 'time': time, 'ext' : pt.ext });
       j++;
