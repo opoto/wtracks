@@ -904,7 +904,8 @@ function uploadClicked(){
     .then(function(cipher) {
       //log("iv  : " + cipher.iv);
       //log("pwd : " + pwd);
-      params += "&key=" + "01" + strencode(cipher.iv + pwd);
+      var encversion = "01";
+      params += "&key=" + encversion + strencode(cipher.iv + pwd);
       gpx = cipher.ciphertext;
       ga('send', 'event', 'file', 'encrypt', undefined, Math.round(gpx.length / 1000));
       shareGpx(gpx, params, "cipher-yes");
@@ -2293,7 +2294,7 @@ function loadFromUrl(url, options) {
           newTrack();
           return;
         }
-        var v = options.key.substring(0,2); // version, ignored for now
+        var encversion = options.key.substring(0,2); // version, ignored for now
         var key = encodeURIComponent(options.key.substring(2));
         var deckey = strdecode(key, key);
         var iv = deckey.substring(0,24);
