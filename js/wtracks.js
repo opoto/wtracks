@@ -1358,9 +1358,16 @@ function saveStateFile() {
 }
 
 function loadStateFile(filedata) {
-  var state = JSON.parse(filedata);
+  var state;
+  try {
+    state = JSON.parse(filedata);
+  } catch (error) {
+    alert("Invalid file");
+  }
   objectForEach(state, function (name, value) {
-    saveValOpt(name, value);
+    if (name.startsWith("wt.")) {
+      saveValOpt(name, value);
+    }
   });
   $(window).off("unload");
   ga('send', 'event', 'setting', 'import');
