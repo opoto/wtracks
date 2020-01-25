@@ -96,8 +96,16 @@ var MARKER_ICON = L.icon({
   shadowAnchor: [8, 26]
 });
 
+var OFF_KEY = "OFF_";
+function getApiKey(apikey, defkey) {
+  return !apikey || apikey.startsWith(OFF_KEY) ? defkey : apikey;
+}
+function getApiKeyVal(apikey) {
+  return apikey.replace(OFF_KEY, "");
+}
+
 // load Google Maps API
-var gk = ggkey ? ggkey : config.google.mapsapikey();
+var gk = getApiKey(ggkey, config.google.mapsapikey());
 $.getScript("https://maps.googleapis.com/maps/api/js" + (gk ? "?key=" + gk : ""));
 
 // load Dropbox API
@@ -583,19 +591,22 @@ function initTrackDisplaySettings() {
 // API keys
 
 function showApiKey(name, value) {
-  var useDefault = isUndefined(value);
+  var useDefault = isUndefined(getApiKey(value));
   var input = $("#" + name + "-value");
   //debug(name + ": " + value);
   setChecked("#" + name + "-chk", !useDefault);
-  input.val(useDefault ? "Using WTracks defaults" : value);
+  input.val(isUndefined(value) ? "" : getApiKeyVal(value));
   input.attr("disabled", useDefault);
 }
 
 function updateApiKey(name) {
   var useDefault = !isChecked("#" + name + "-chk");
-  var key = useDefault ? undefined : $("#" + name + "-value").val().trim();
-  // empty is considered undefined
-  key = (key === "") ? undefined : key;
+  var key = $("#" + name + "-value").val().trim();
+  if (key === "") {
+    key = undefined;
+  } else if (useDefault) {
+    key = OFF_KEY + key;
+  }
   var gav = useDefault ? -1 : key ? 1 : 0;
   ga('send', 'event', 'setting', 'keys', name, gav);
   //debug(name + "= " + key + " (" + gav + ")");
@@ -605,7 +616,6 @@ function updateApiKey(name) {
 
 function checkApikey(name) {
   var useDefault = !isChecked("#" + name + "-chk");
-  $("#" + name + "-value").val(useDefault ? "Using WTracks defaults": "");
   $("#" + name + "-value").attr("disabled", useDefault);
   var key = updateApiKey(name);
   return key;
@@ -636,6 +646,7 @@ $("#ggkey-value").on("focusout", function() {
 
 function resetApiKey(name) {
   setChecked("#" + name + "-chk", false);
+  $("#" + name + "-value").val("");
   $("#" + name + "-chk").change();
 }
 
@@ -1672,7 +1683,7 @@ function orsElevationService(locations, points, inc, done, fail) {
     $.ajax({
       url: "https://api.openrouteservice.org/elevation/point",
       headers: {
-        "Authorization": orskey
+        "Authorization": getApiKey(orskey)
       },
       method: "POST",
       contentType: "application/json",
@@ -1685,7 +1696,7 @@ function orsElevationService(locations, points, inc, done, fail) {
     /*
     $.get({
       url: "https://api.openrouteservice.org/elevation/point?" +
-        "api_key=" + orskey +
+        "api_key=" + getApiKey(orskey) +
         "&geometry=" + locations[0].lng + "," + locations[0].lat,
       dataType: "json"
     })
@@ -1710,7 +1721,7 @@ function orsElevationService(locations, points, inc, done, fail) {
   $.ajax({
     url: "https://api.openrouteservice.org/elevation/line",
     headers: {
-      "Authorization": orskey
+      "Authorization": getApiKey(orskey)
     },
     method: "POST",
     contentType: "application/json",
@@ -1799,9 +1810,9 @@ var defaultElevatonService = openElevationService;
 var elevationService;
 
 function setElevationService() {
-  elevationService = ggkey ?
+  elevationService = getApiKey(ggkey) ?
     googleElevationService :
-    (orskey ? orsElevationService : defaultElevatonService);
+    (getApiKey(orskey) ? orsElevationService : defaultElevatonService);
 }
 setElevationService();
 
@@ -2866,7 +2877,7 @@ function checkGraphHopperCredit(e) {
         message = "Invalid GraphHopper API key, please fix in Settings";
         ga('send', 'event', 'api', 'gh-invalid');
       } else {
-        if (isUndefined(ghkey)) {
+        if (isUndefined(getApiKey(ghkey))) {
           ga('send', 'event', 'api', 'gh-wt-max');
           gh.credits = -1;
         } else {
@@ -2876,14 +2887,14 @@ function checkGraphHopperCredit(e) {
       }
     } else {
       ga('send', 'event', 'api', 'gh-ok', e.credits);
-      if ((gh.credits >= 0) && isUndefined(ghkey)) {
+      if ((gh.credits >= 0) && isUndefined(getApiKey(ghkey))) {
         gh.credits += e.credits;
       }
     }
     storeJsonVal("wt.gh", gh);
   }
 
-  if (isUndefined(ghkey)) {
+  if (isUndefined(getApiKey(ghkey))) {
     // user does not have personal gh key, check wtrack key usage
     if (gh.credits < 0) {
       message = "WTracks exhausted its daily GraphHopper quota";
@@ -2917,14 +2928,14 @@ function newMarker(e) {
         var fromPt = routeStart,
           toPt = e.latlng,
           router;
-        if (ghkey || !orskey) {
+        if (getApiKey(ghkey) || !getApiKey(orskey)) {
           router = L.Routing.graphHopper(
-            ghkey ? ghkey : config.graphhopper.key(),
+            getApiKey(ghkey, config.graphhopper.key()),
             { urlParameters: { vehicle: getCurrentActivity().vehicle } }
           );
           router.on("response", checkGraphHopperCredit);
         } else {
-          router = L.Routing.openrouteservice(orskey, {
+          router = L.Routing.openrouteservice(getApiKey(orskey), {
             profile: getCurrentActivity().vehicle == "foot" ? "foot-hiking" : "cycling-regular",
             parameters: {
               instructions: false,
