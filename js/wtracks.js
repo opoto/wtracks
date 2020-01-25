@@ -740,7 +740,7 @@ function getSegmentGPX(segment, ptindent, pttag, savetime) {
       var pt = latlngs[j];
       var time = pt.time;
       try {
-        if (savetime && Date.prototype.toISOString) {
+        if (savetime && Date.prototype.toISOString && pt.chrono) {
           time = new Date(now + (pt.chrono * 1000)).toISOString();
         }
       } catch (error) {
