@@ -1063,6 +1063,11 @@ function setEditMode(mode) {
   if (mode === editMode) {
     return;
   }
+  if ((mode != EDIT_NONE) && !map.editTools) {
+    ga('send', 'event', 'error', "no editTools", navigator.userAgent);
+    alert("Your browser does not support GPX edition");
+    return;
+  }
   switch (editMode) {
     case EDIT_MANUAL_TRACK:
       if (track) {
@@ -2487,7 +2492,11 @@ var MAX_ROUTE_WPTS = 2;
 
 function newRouteWaypoint(i, waypoint, n) {
 
-  function getRouteWaypoinContent(latlng, index) {
+  function getRouteWaypoinContent(latlng, index, marker) {
+    if (!route) {
+      marker.off("click");
+      return; // ignore
+    }
     var div = document.createElement("div");
 
     p = L.DomUtil.create("div", "popupdiv ptbtn", div);
@@ -2528,7 +2537,7 @@ function newRouteWaypoint(i, waypoint, n) {
 
     L.popup({ "className" : "overlay" })
       .setLatLng(e.latlng)
-      .setContent(getRouteWaypoinContent(e.latlng, i))
+      .setContent(getRouteWaypoinContent(e.latlng, i, marker))
       .openOn(map);
 
   });
