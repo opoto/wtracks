@@ -614,6 +614,37 @@ function updateApiKey(name) {
   return key;
 }
 
+function updateApiServices() {
+
+  // elevation
+  if (getApiKey(ggkey)) {
+    $("#elevation-srv").text("Google");
+    $("#elevation-key").text("your");
+  } else if (getApiKey(orskey)) {
+    $("#elevation-srv").text("OpenRoute");
+    $("#elevation-key").text("your");
+  } else {
+    $("#elevation-srv").text("OpenElevation");
+    $("#elevation-key").text("no");
+  }
+
+  // routing
+  if (getApiKey(ghkey)) {
+    $("#routing-srv").text("GraphHopper");
+    $("#routing-key").text("your");
+  } else {
+    if (getApiKey(orskey)) {
+      $("#routing-srv").text("OpenRoute");
+      $("#routing-key").text("your");
+    } else {
+      $("#routing-srv").text("GraphHopper");
+      $("#routing-key").text("WTracks");
+    }
+  }
+
+  setElevationService();
+}
+
 function checkApikey(name) {
   var useDefault = !isChecked("#" + name + "-chk");
   $("#" + name + "-value").attr("disabled", useDefault);
@@ -621,27 +652,17 @@ function checkApikey(name) {
   return key;
 }
 
-$("#orskey-chk").on("change", function() {
+$("#orskey-chk").on("change focusout", function() {
   orskey = checkApikey("orskey");
-  setElevationService();
+  updateApiServices();
 });
-$("#ghkey-chk").on("change", function() {
+$("#ghkey-chk").on("change focusout", function() {
   ghkey = checkApikey("ghkey");
+  updateApiServices();
 });
-$("#ggkey-chk").on("change", function() {
+$("#ggkey-chk").on("change focusout", function() {
   ggkey = checkApikey("ggkey");
-  setElevationService();
-});
-$("#orskey-value").on("focusout", function() {
-  orskey = updateApiKey("orskey");
-  setElevationService();
-});
-$("#ghkey-value").on("focusout", function() {
-  ghkey = updateApiKey("ghkey");
-});
-$("#ggkey-value").on("focusout", function() {
-  ggkey = updateApiKey("ggkey");
-  setElevationService();
+  updateApiServices();
 });
 
 function resetApiKey(name) {
@@ -660,6 +681,7 @@ $("#keys-reset").on("click", function() {
 showApiKey("orskey", orskey);
 showApiKey("ghkey", ghkey);
 showApiKey("ggkey", ggkey);
+updateApiServices();
 
 $("#apikeys-suggest").change(function() {
   changeApikeyNomore(!isChecked("#apikeys-suggest"));
