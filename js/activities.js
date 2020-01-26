@@ -372,7 +372,9 @@ function displayFormula(method) {
   var spf = spFormula[method];
   if (activity.speedprofile.method !== method) {
     activity.speedprofile.method = method;
-    activity.speedprofile.parameters = spf.defaultFormulaParams;
+    if (spf.defaultFormulaParams) {
+      activity.speedprofile.parameters = spf.defaultFormulaParams;
+    }
   }
   spf.displayFormulaParams();
 }
@@ -445,6 +447,11 @@ function displaySpeedProfile(sp) {
 }
 
 function computeSpeedProfile() {
+
+  if (!inputdata.length) {
+    alert("Select input data first");
+    return;
+  }
 
   var method = $("#method option:selected").text();
   var degree = Number($("#degree option:selected").text());
