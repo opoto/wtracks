@@ -652,18 +652,13 @@ function checkApikey(name) {
   return key;
 }
 
-$("#orskey-chk").on("change focusout", function() {
-  orskey = checkApikey("orskey");
+function apiKeyChange(evt) {
+  var keyname = evt.target.id.match(/^[^\\-]+/)[0];
+  window[keyname] = checkApikey(keyname);
   updateApiServices();
-});
-$("#ghkey-chk").on("change focusout", function() {
-  ghkey = checkApikey("ghkey");
-  updateApiServices();
-});
-$("#ggkey-chk").on("change focusout", function() {
-  ggkey = checkApikey("ggkey");
-  updateApiServices();
-});
+}
+$(".key-chk").on("change", apiKeyChange);
+$(".key-value").on("focusout", apiKeyChange);
 
 function resetApiKey(name) {
   setChecked("#" + name + "-chk", false);

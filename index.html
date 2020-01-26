@@ -403,8 +403,9 @@
             <span id="keystxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
             <p id="keystxt-help" class="help-p">
               Set your own API keys to bypass WTracks quota limits.
-              Keys will be stored in your browser (Make sure the "save editor state" option above is checked).
-              Do not use or click "Reset" if you're not sure about how to use this.
+              Current config is using:<br/>
+              Elevation: <span id="elevation-srv"></span>, with <span id="elevation-key"></span> key.<br/>
+              Routing: <span id="routing-srv"></span>, with <span id="routing-key"></span> key.
             </p>
           </div>
         </td>
@@ -415,8 +416,8 @@
         <td>
           <div>
             <span class="setting-name">OpenRoute:</span>
-            <input id="orskey-chk" class="no-trim" type="checkbox" />
-            <input id="orskey-value" placeholder="Your OpenRouteService key" class="setting-input" />
+            <input id="orskey-chk" class="no-trim key-chk" type="checkbox" />
+            <input id="orskey-value" placeholder="Your OpenRouteService key" class="setting-input key-value" />
             <span id="orskeytxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
             <p id="orskeytxt-help" class="help-p">
               This key is used for the (i) computing point and track elevation, and (ii) routing feature, which draws tracks along map roads.
@@ -425,8 +426,8 @@
           </div>
           <div>
             <span class="setting-name">GraphHopper:</span>
-            <input id="ghkey-chk" class="no-trim" type="checkbox" />
-            <input id="ghkey-value" placeholder="Your GraphHopper key" class="setting-input" />
+            <input id="ghkey-chk" class="no-trim key-chk" type="checkbox" />
+            <input id="ghkey-value" placeholder="Your GraphHopper key" class="setting-input key-value" />
             <span id="ghkeytxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
             <p id="ghkeytxt-help" class="help-p">
               This key is used for the routing feature, which draws tracks along map roads.
@@ -435,8 +436,8 @@
           </div>
           <div>
             <span class="setting-name">Google:</span>
-            <input id="ggkey-chk" class="no-trim" type="checkbox" />
-            <input id="ggkey-value" placeholder="Your Google API key" class="setting-input" />
+            <input id="ggkey-chk" class="no-trim key-chk" type="checkbox" />
+            <input id="ggkey-value" placeholder="Your Google API key" class="setting-input key-value" />
             <span id="ggkeytxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
             <p id="ggkeytxt-help" class="help-p">
               This key is used for the Google Elevation service, which gets the elevation of each track point.
