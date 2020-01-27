@@ -441,7 +441,7 @@ var toGeoJSON = (function() {
                             }
                             ptExts.push(line.ptExts);
                         } else if (ptExts.length) {
-                            ptExts.push(initializeArray([], line.line.length || 0));
+                            ptExts.push(initializeArray([], line.line ? line.line.length : 0));
                         }
                         if (line.xmlnsArr && line.xmlnsArr.length) {
                             if (!xmlnsArr.length) {
