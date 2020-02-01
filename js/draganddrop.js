@@ -16,6 +16,7 @@ function Sortable(el, options) {
             container: container_type,
             container_type: container_type,
             same_depth: false,
+            make_unselectable: false,
             nodes: node_type,
             nodes_type: node_type,
             placeholder_class: null,
@@ -33,7 +34,7 @@ function Sortable(el, options) {
     self.init();
 }
 
-Sortable.prototype.invoke = function(command) {
+Sortable.prototype.invoke = function (command) {
     var self = this;
     if (command === 'destroy') {
         return self.destroy();
@@ -42,19 +43,21 @@ Sortable.prototype.invoke = function(command) {
     }
 };
 
-Sortable.prototype.init = function() {
+Sortable.prototype.init = function () {
     var self = this,
         $clone,
         $placeholder,
         origin;
 
-    $('html').unselectable();
+    if (self.options.make_unselectable) {
+        $('html').unselectable();
+    }
 
     self.$sortable
-    .addClass('sortable')
-    .on('destroy.sortable', function() {
-        self.destroy();
-    });
+        .addClass('sortable')
+        .on('destroy.sortable', function () {
+            self.destroy();
+        });
 
     function find_insert_point($node, offset) {
         var containers,
@@ -66,20 +69,20 @@ Sortable.prototype.init = function() {
         }
 
         containers = self.$sortable
-        .add(self.$sortable.find(self.options.container))
-        .not($node.find(self.options.container))
-        .not($clone.find(self.options.container))
-        .not(self.find_nodes());
+            .add(self.$sortable.find(self.options.container))
+            .not($node.find(self.options.container))
+            .not($clone.find(self.options.container))
+            .not(self.find_nodes());
 
         if (self.options.same_depth) {
             depth = $node.parent().nestingDepth('ul');
-            containers = containers.filter(function() {
+            containers = containers.filter(function () {
                 return $(this).nestingDepth('ul') == depth;
             });
         }
 
         $placeholder.hide();
-        containers.each(function(ix, container) {
+        containers.each(function (ix, container) {
             var $trailing = $(self.create_placeholder()).appendTo(container),
                 $children = $(container).children(self.options.nodes).not('.sortable_clone'),
                 $candidate,
@@ -90,7 +93,7 @@ Sortable.prototype.init = function() {
                 $candidate = $children.eq(n);
                 dist = self.square_dist($candidate.offset(), offset);
                 if (!best || best.dist > dist) {
-                    best = {container: container, before: $candidate[0], dist: dist};
+                    best = { container: container, before: $candidate[0], dist: dist };
                 }
             }
 
@@ -115,24 +118,24 @@ Sortable.prototype.init = function() {
         /**
          * drag start - create clone and placeholder, keep drag start origin.
          */
-        dragstart: function(evt) {
+        dragstart: function (evt) {
             var $node = $(this);
 
             $clone = $node.clone()
-                          .removeAttr('id')
-                          .addClass('sortable_clone')
-                          .css({position: 'absolute'})
-                          .insertAfter($node)
-                          .offset($node.offset());
+                .removeAttr('id')
+                .addClass('sortable_clone')
+                .css({ position: 'absolute' })
+                .insertAfter($node)
+                .offset($node.offset());
             $placeholder = self.create_placeholder()
-                               .css({height: $node.outerHeight(), width: $node.outerWidth()})
-                               .insertAfter($node);
+                .css({ height: $node.outerHeight(), width: $node.outerWidth() })
+                .insertAfter($node);
             $node.hide();
 
             origin = new PositionHelper($clone.offset());
 
             if (self.options.autocreate) {
-                self.find_nodes().filter(function(ix, el) {
+                self.find_nodes().filter(function (ix, el) {
                     return $(el).find(self.options.container).length == 0;
                 }).append('<' + self.options.container_type + ' class="' + self.options.auto_container_class + '"/>');
             }
@@ -141,7 +144,7 @@ Sortable.prototype.init = function() {
         /**
          * drag - reposition clone, check for best insert position, move placeholder in dom accordingly.
          */
-        drag: function(evt, pos) {
+        drag: function (evt, pos) {
             var $node = $(this),
                 offset = origin.absolutize(pos),
                 best = find_insert_point($node, offset);
@@ -153,7 +156,7 @@ Sortable.prototype.init = function() {
         /**
          * drag stop - clean up.
          */
-        dragstop: function(evt, pos) {
+        dragstop: function (evt, pos) {
             var $node = $(this),
                 offset = origin.absolutize(pos),
                 best = find_insert_point($node, offset);
@@ -180,24 +183,26 @@ Sortable.prototype.init = function() {
     }));
 };
 
-Sortable.prototype.destroy = function() {
+Sortable.prototype.destroy = function () {
     var self = this;
 
-    $('html').unselectable('destroy');
+    if (self.options.make_unselectable) {
+        $('html').unselectable('destroy');
+    }
 
     self.$sortable
-    .removeClass('sortable')
-    .off('.sortable')
-    .dragaware('destroy');
+        .removeClass('sortable')
+        .off('.sortable')
+        .dragaware('destroy');
 };
 
-Sortable.prototype.serialize = function(container) {
+Sortable.prototype.serialize = function (container) {
     var self = this;
-    return container.children(self.options.nodes).not(self.options.container).map(function(ix, el) {
+    return container.children(self.options.nodes).not(self.options.container).map(function (ix, el) {
         var $el = $(el),
             text = $el.clone().children().remove().end().text().trim(), //text only without children
             id = $el.attr('id'),
-            node = {id: id || text};
+            node = { id: id || text };
         if ($el.find(self.options.nodes).length) {
             node.children = self.serialize($el.children(self.options.container));
         }
@@ -205,19 +210,19 @@ Sortable.prototype.serialize = function(container) {
     }).get();
 };
 
-Sortable.prototype.find_nodes = function() {
+Sortable.prototype.find_nodes = function () {
     var self = this;
     return self.$sortable.find(self.options.nodes).not(self.options.container);
 };
 
-Sortable.prototype.create_placeholder = function() {
+Sortable.prototype.create_placeholder = function () {
     var self = this;
     return $('<' + self.options.nodes_type + '/>')
-    .addClass('sortable_placeholder')
-    .addClass(self.options.placeholder_class);
+        .addClass('sortable_placeholder')
+        .addClass(self.options.placeholder_class);
 };
 
-Sortable.prototype.square_dist = function(pos1, pos2) {
+Sortable.prototype.square_dist = function (pos1, pos2) {
     return Math.pow(pos2.left - pos1.left, 2) + Math.pow(pos2.top - pos1.top, 2);
 };
 
@@ -246,16 +251,16 @@ function Draggable(el, options) {
     self.init();
 }
 
-Draggable.prototype.init = function() {
+Draggable.prototype.init = function () {
     var self = this,
         $clone,
         origin;
 
     self.$draggable
-    .addClass('draggable')
-    .on('destroy.draggable', function() {
-        self.destroy();
-    });
+        .addClass('draggable')
+        .on('destroy.draggable', function () {
+            self.destroy();
+        });
 
     function check_droptarget(pos) {
         var $over;
@@ -276,15 +281,15 @@ Draggable.prototype.init = function() {
         /**
          * drag start - create clone, keep drag start origin.
          */
-        dragstart: function(evt) {
+        dragstart: function (evt) {
             var $this = $(this);
             if (self.options.placeholder || self.options.revert) {
                 $clone = $this.clone()
-                              .removeAttr('id')
-                              .addClass('draggable_clone')
-                              .css({position: 'absolute'})
-                              .appendTo(self.options.container || $this.parent())
-                              .offset($this.offset());
+                    .removeAttr('id')
+                    .addClass('draggable_clone')
+                    .css({ position: 'absolute' })
+                    .appendTo(self.options.container || $this.parent())
+                    .offset($this.offset());
                 if (!self.options.placeholder) {
                     $(this).invisible();
                 }
@@ -298,7 +303,7 @@ Draggable.prototype.init = function() {
         /**
          * drag - reposition clone.
          */
-        drag: function(evt, pos) {
+        drag: function (evt, pos) {
             var $droptarget = check_droptarget(pos);
             $clone.offset(origin.absolutize(pos));
         },
@@ -306,7 +311,7 @@ Draggable.prototype.init = function() {
         /**
          * drag stop - clean up.
          */
-        dragstop: function(evt, pos) {
+        dragstop: function (evt, pos) {
             var $this = $(this),
                 $droptarget = check_droptarget(pos);
 
@@ -337,13 +342,13 @@ Draggable.prototype.init = function() {
     }));
 };
 
-Draggable.prototype.destroy = function() {
+Draggable.prototype.destroy = function () {
     var self = this;
 
     self.$draggable
-    .dragaware('destroy')
-    .removeClass('draggable')
-    .off('.draggable');
+        .dragaware('destroy')
+        .removeClass('draggable')
+        .off('.draggable');
 };
 
 
@@ -364,30 +369,30 @@ function Droppable(el, options) {
     self.init();
 }
 
-Droppable.prototype.init = function() {
+Droppable.prototype.init = function () {
     var self = this;
 
     self.$droppable
-    .addClass('droppable')
-    .on('drop', function(evt, $draggable) {
-        if (self.options.accept && !$draggable.is(self.options.accept)) {
-            return;
-        }
-        if (self.options.drop) {
-            self.options.drop.call(self.$droppable, evt, $draggable);
-        }
-    })
-    .on('destroy.droppable', function() {
-        self.destroy();
-    });
+        .addClass('droppable')
+        .on('drop', function (evt, $draggable) {
+            if (self.options.accept && !$draggable.is(self.options.accept)) {
+                return;
+            }
+            if (self.options.drop) {
+                self.options.drop.call(self.$droppable, evt, $draggable);
+            }
+        })
+        .on('destroy.droppable', function () {
+            self.destroy();
+        });
 };
 
-Droppable.prototype.destroy = function() {
+Droppable.prototype.destroy = function () {
     var self = this;
 
     self.$droppable
-    .removeClass('droppable')
-    .off('.droppable');
+        .removeClass('droppable')
+        .off('.droppable');
 };
 
 
@@ -442,7 +447,7 @@ function Dragaware(el, options) {
         //TODO: allow window scrolling
         //TODO: handle nested scroll containers
         var sp = $dragaware.scrollParent(),
-            mouse = {x: pos.pageX, y: pos.pageY},
+            mouse = { x: pos.pageX, y: pos.pageY },
             offset = sp.offset(),
             scrollLeft = sp.scrollLeft(),
             scrollTop = sp.scrollTop(),
@@ -463,7 +468,7 @@ function Dragaware(el, options) {
             return; //so we don't set the next timeout
         }
 
-        scrolltimeout = window.setTimeout(function() { autoscroll(pos); }, options.scrolltimeout);
+        scrolltimeout = window.setTimeout(function () { autoscroll(pos); }, options.scrolltimeout);
     }
 
     function start(evt) {
@@ -482,8 +487,8 @@ function Dragaware(el, options) {
 
             //late binding of event listeners
             $(document)
-            .on('touchend.dragaware mouseup.dragaware click.dragaware', end)
-            .on('touchmove.dragaware mousemove.dragaware', move);
+                .on('touchend.dragaware mouseup.dragaware click.dragaware', end)
+                .on('touchmove.dragaware mousemove.dragaware', move);
             return false
         }
     }
@@ -519,19 +524,19 @@ function Dragaware(el, options) {
 
         //unbinding of event listeners
         $(document)
-        .off('.dragaware');
+            .off('.dragaware');
 
         return false;
     }
 
     $dragaware
-    .addClass('dragaware')
-    .on('touchstart.dragaware mousedown.dragaware', options.delegate, start);
+        .addClass('dragaware')
+        .on('touchstart.dragaware mousedown.dragaware', options.delegate, start);
 
-    $dragaware.on('destroy.dragaware', function() {
+    $dragaware.on('destroy.dragaware', function () {
         $dragaware
-        .removeClass('dragaware')
-        .off('.dragaware');
+            .removeClass('dragaware')
+            .off('.dragaware');
     });
 }
 
@@ -541,11 +546,11 @@ function Dragaware(el, options) {
 function PositionHelper(origin) {
     this.origin = origin;
 }
-PositionHelper.prototype.absolutize = function(pos) {
+PositionHelper.prototype.absolutize = function (pos) {
     if (!pos) {
         return this.origin;
     }
-    return {top: this.origin.top + pos.dY, left: this.origin.left + pos.dX};
+    return { top: this.origin.top + pos.dY, left: this.origin.left + pos.dX };
 };
 
 
@@ -557,10 +562,10 @@ PositionHelper.prototype.absolutize = function(pos) {
 /**
  * Sortable plugin.
  */
-$.fn.sortable = function(options) {
-    var filtered = this.not(function() {
-            return $(this).is('.sortable') || $(this).closest('.sortable').length;
-        });
+$.fn.sortable = function (options) {
+    var filtered = this.not(function () {
+        return $(this).is('.sortable') || $(this).closest('.sortable').length;
+    });
 
     if (this.data('sortable') && typeof options === 'string') {
         return this.data('sortable').invoke(options);
@@ -569,7 +574,7 @@ $.fn.sortable = function(options) {
     if (filtered.length && options && options.group) {
         new Sortable(filtered, options);
     } else {
-        filtered.each(function(ix, el) {
+        filtered.each(function (ix, el) {
             new Sortable(el, options);
         });
     }
@@ -580,11 +585,11 @@ $.fn.sortable = function(options) {
 /**
  * Draggable plugin.
  */
-$.fn.draggable = function(options) {
+$.fn.draggable = function (options) {
     if (options === 'destroy') {
         this.trigger('destroy.draggable');
     } else {
-        this.not('.draggable').each(function(ix, el) {
+        this.not('.draggable').each(function (ix, el) {
             new Draggable(el, options);
         });
     }
@@ -595,11 +600,11 @@ $.fn.draggable = function(options) {
 /**
  * Droppable plugin.
  */
-$.fn.droppable = function(options) {
+$.fn.droppable = function (options) {
     if (options === 'destroy') {
         this.trigger('destroy.droppable');
     } else {
-        this.not('.droppable').each(function(ix, el) {
+        this.not('.droppable').each(function (ix, el) {
             new Droppable(el, options);
         });
     }
@@ -610,11 +615,11 @@ $.fn.droppable = function(options) {
 /**
  * Dragaware plugin.
  */
-$.fn.dragaware = function(options) {
+$.fn.dragaware = function (options) {
     if (options === 'destroy') {
         this.trigger('destroy.dragaware');
     } else {
-        this.not('.dragaware').each(function(ix, el) {
+        this.not('.dragaware').each(function (ix, el) {
             new Dragaware(el, options);
         });
     }
@@ -625,44 +630,44 @@ $.fn.dragaware = function(options) {
 /**
  * Disables mouse selection.
  */
-$.fn.unselectable = function(command) {
+$.fn.unselectable = function (command) {
     function disable() {
         return false;
     }
 
     if (command == 'destroy') {
         return this
-        .removeClass('unselectable')
-        .removeAttr('unselectable')
-        .off('selectstart.unselectable');
+            .removeClass('unselectable')
+            .removeAttr('unselectable')
+            .off('selectstart.unselectable');
     } else {
         return this
-        .addClass('unselectable')
-        .attr('unselectable','on')
-        .on('selectstart.unselectable', disable);
+            .addClass('unselectable')
+            .attr('unselectable', 'on')
+            .on('selectstart.unselectable', disable);
     }
 };
 
 
-$.fn.invisible = function() {
-    return this.css({visibility: 'hidden'});
+$.fn.invisible = function () {
+    return this.css({ visibility: 'hidden' });
 };
 
 
-$.fn.visible = function() {
-    return this.css({visibility: 'visible'});
+$.fn.visible = function () {
+    return this.css({ visibility: 'visible' });
 };
 
 
-$.fn.scrollParent = function() {
-    return this.parents().addBack().filter(function() {
+$.fn.scrollParent = function () {
+    return this.parents().addBack().filter(function () {
         var p = $(this);
         return (/(scroll|auto)/).test(p.css("overflow-x") + p.css("overflow-y") + p.css("overflow"));
     });
 };
 
-$.fn.nestingDepth = function(selector) {
-    var parent = this.parent().closest(selector || '*');
+$.fn.nestingDepth = function (selector) {
+    var parent = this.parent().closest(selector || '*');
     if (parent.length) {
         return parent.nestingDepth(selector) + 1;
     } else {
