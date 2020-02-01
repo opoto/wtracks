@@ -38,6 +38,14 @@ function isUnset(v) {
   return (typeof v === "undefined") || (v === null);
 }
 
+// IE polyfill
+if (!String.prototype.startsWith) {
+  String.prototype.startsWith = function(searchString, position) {
+    position = position || 0;
+    return this.indexOf(searchString, position) === position;
+  };
+}
+
 /* ----------------------- Html encode/decode ---------------------- */
 
 function htmlEncode(txt) {

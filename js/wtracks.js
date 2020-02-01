@@ -887,11 +887,15 @@ $("#track-download").click(function() {
   setStatus("Formatting..", { spinner: true });
   var gpx = getTrackGPX(true);
   ga('send', 'event', 'file', 'save', undefined, Math.round(gpx.length / 1000));
-  var blob = new Blob([gpx],
-    isSafari() ? {type: "text/plain;charset=utf-8"} : {type: "application/gpx+xml;charset=utf-8"}
-  );
-  saveAs(blob, getTrackName() + ".gpx");
-  clearStatus();
+  try {
+    var blob = new Blob([gpx],
+      isSafari() ? {type: "text/plain;charset=utf-8"} : {type: "application/gpx+xml;charset=utf-8"}
+    );
+    saveAs(blob, getTrackName() + ".gpx");      
+    clearStatus();
+  } catch (error) {
+    setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
+  }
   closeMenu();
 });
 
@@ -2231,7 +2235,7 @@ function importGeoJson(geojson) {
     }
   }
 
-  if ((track.getLatLngs().length === 0) && (geojson.metadata)) {
+  if ((track.getLatLngs().length === 0)) {
     metadata = geojson.metadata ? geojson.metadata : {};
     setTrackName(metadata.name ? metadata.name : NEW_TRACK_NAME);
   }
