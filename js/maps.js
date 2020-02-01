@@ -547,21 +547,20 @@ $(document).ready(function() {
     //scroll: true,
     handle: ".map-drag, .map-name",
     update: function(evt) {
-      // get map-item
-      var item = $(evt.target).parents(".map-item");
-      // NOTE: item may be detached from the list at this step
-      // moved item name
-      var name = item.find(".map-name").text();
-      // get new index
-      var toIdx = getMapItem(name).index();
-      // get old index
-      var fromIdx = getMapListEntryIndex(name);
-      if (fromIdx != toIdx) {
-        // update list data
-        moveMapListEntry(fromIdx, toIdx);
-        saveMapList();
-        ga('send', 'event', 'map', 'move');
-      }
+      // reorder MapListEntry according to MapItems
+      $("#mymaps-list .map-name").each(function(i, v) {
+        var name = v.innerText;
+        // get new index
+        var toIdx = getMapItem(name).index();
+        // get old index
+        var fromIdx = getMapListEntryIndex(name);
+        if (fromIdx != toIdx) {
+          // update list data
+          moveMapListEntry(fromIdx, toIdx);
+          saveMapList();
+          ga('send', 'event', 'map', 'move');
+        }
+      });
     }
   });
 
