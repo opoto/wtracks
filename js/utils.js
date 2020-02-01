@@ -358,7 +358,8 @@ if ('serviceWorker' in navigator) {
 
 /* ---------------------- track errors ------------------------*/
 
-window.onerror = function(messageOrEvent, source, line, row, error) {
+window.onerror = function(messageOrEvent, source, line, row, err) {
+  error(messageOrEvent.toString() + " [" + source + ": " + line + ", " + row);
   if (ga) {
     ga('send', 'event', 'error', messageOrEvent.toString() +" ["+source+":"+line+","+row, navigator.userAgent);
   }
