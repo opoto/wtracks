@@ -893,7 +893,7 @@ $("#track-download").click(function() {
     );
     saveAs(blob, getTrackName() + ".gpx");      
     clearStatus();
-  } catch (error) {
+  } catch (err) {
     setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
   }
   closeMenu();
@@ -1393,8 +1393,8 @@ function loadStateFile(filedata) {
   var state;
   try {
     state = JSON.parse(filedata);
-  } catch (error) {
-    alert("Invalid file");
+  } catch (err) {
+    setStatus("Invalid file: " + err, { timeout: 5, class: "status-error" });
   }
   objectForEach(state, function (name, value) {
     if (name.startsWith("wt.")) {
@@ -2453,8 +2453,9 @@ var dropboxLoadOptions = {
 $("#dropbox-chooser").click(function(e) {
   try {
     Dropbox.choose(dropboxLoadOptions);
-  } catch (error) {
-    ga('send', 'event', 'error', 'Dropbox.choose error', error);
+  } catch (err) {
+    setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
+    ga('send', 'event', 'error', 'Dropbox.choose error', err);
   }
 });
 
@@ -2515,8 +2516,9 @@ $("#dropbox-saver").click(function(e) {
       dropboxSaveOptions.passcode = passcode;
       try {
         Dropbox.save(dropboxSaveOptions);
-      } catch (error) {
-        ga('send', 'event', 'error', 'Dropbox.save error', error);
+      } catch (err) {
+          setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
+          ga('send', 'event', 'error', 'Dropbox.save error', error);
       }
     }, function(error) {
       var errmsg = error.statusText ? error.statusText : error;
