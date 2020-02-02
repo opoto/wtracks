@@ -2451,6 +2451,11 @@ var dropboxLoadOptions = {
   //extensions: ['.gpx', '.json', '.kml', '.geojson'],
 };
 $("#dropbox-chooser").click(function(e) {
+  // Check Dropbox is supported
+  if (!Dropbox.isBrowserSupported()){
+   alert("Sorry, your browser does not support Dropbox loading");
+   return;
+  }
   try {
     Dropbox.choose(dropboxLoadOptions);
   } catch (err) {
@@ -2503,26 +2508,48 @@ var dropboxSaveOptions = {
 
 };
 
+function dropboxSaver(evt) {
+  $("#confirm-dropbox").hide();
+  var gpxurl = $("#dbs_gpxurl").text();
+  var rawgpxurl = $("#dbs_rawgpxurl").text();
+  var passcode = $("#dbs_passcode").text();
+  dropboxSaveOptions.files[0].filename = name + ".gpx";
+  dropboxSaveOptions.files[0].url = rawgpxurl;
+  dropboxSaveOptions.gpxurl = gpxurl;
+  dropboxSaveOptions.passcode = passcode;
+  try {
+    Dropbox.save(dropboxSaveOptions);
+  } catch (err) {
+      setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
+      ga('send', 'event', 'error', 'Dropbox.save error', error);
+  }
+}
+$("#dbs-ok").click(dropboxSaver);
+$("#dbs-cancel").click(function(){
+  $("#confirm-dropbox").hide();
+});
+
 $("#dropbox-saver").click(function(e) {
+  // Check Dropbox is supported
+  if (!Dropbox.isBrowserSupported()){
+    alert("Sorry, your browser does not support Dropbox saving");
+    return;
+  }
   var name = getConfirmedTrackName();
   var gpx = getTrackGPX(false);
+  ga('send', 'event', 'file', 'save-dropbox', undefined, Math.round(gpx.length / 1000));
   dropboxTempShare.upload(
     name, gpx,
     function (gpxurl, rawgpxurl, passcode) {
-      ga('send', 'event', 'file', 'save-dropbox', undefined, Math.round(gpx.length / 1000));
-      dropboxSaveOptions.files[0].filename = name + ".gpx";
-      dropboxSaveOptions.files[0].url = rawgpxurl;
-      dropboxSaveOptions.gpxurl = gpxurl;
-      dropboxSaveOptions.passcode = passcode;
-      try {
-        Dropbox.save(dropboxSaveOptions);
-      } catch (err) {
-          setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
-          ga('send', 'event', 'error', 'Dropbox.save error', error);
-      }
+      //closeMenu();
+      $("#dbs_gpxurl").text(gpxurl);
+      $("#dbs_rawgpxurl").text(rawgpxurl);
+      $("#dbs_passcode").text(passcode);
+      $("#confirm-dropbox").show();
     }, function(error) {
       var errmsg = error.statusText ? error.statusText : error;
       setStatus("Failed: " + errmsg, { timeout: 5, class: "status-error" });
+      ga('send', 'event', 'error', 'dropboxTempShare.upload failed', errmsg);
     }
   );
 });
