@@ -795,7 +795,7 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
   var gpx = '<\?xml version="1.0" encoding="UTF-8" standalone="no" \?>\n';
   gpx += '<gpx creator="' + config.appname + '"\n';
   gpx += '    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" version="1.1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"';
-  
+
   // xmlns from each segment
   var layers = editLayer.getLayers();
   var xmlnsArr = [];
@@ -898,7 +898,7 @@ $("#track-download").click(function() {
     var blob = new Blob([gpx],
       isSafari() ? {type: "text/plain;charset=utf-8"} : {type: "application/gpx+xml;charset=utf-8"}
     );
-    saveAs(blob, getTrackName() + ".gpx");      
+    saveAs(blob, getTrackName() + ".gpx");
     clearStatus();
   } catch (err) {
     setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
@@ -2248,7 +2248,7 @@ function importGeoJson(geojson) {
         coords = f.geometry.coordinates;
         times = f.properties.coordTimes && (f.properties.coordTimes.length == coords.length) ?
           f.properties.coordTimes : undefined;
-        ptExts = f.properties.ptExts 
+        ptExts = f.properties.ptExts
           && (f.properties.ptExts.length == coords.length) ?
           f.properties.ptExts : undefined;
         xmlnsArr = f.properties.xmlnsArr;
@@ -2590,6 +2590,7 @@ function newRouteWaypoint(i, waypoint, n) {
 
   var nwpts = route ? route.getWaypoints().length : 0;
   if (nwpts > MAX_ROUTE_WPTS) {
+    error("route-pts-overlimit");
     ga('send', 'event', 'error', 'route-pts-overlimit', location.toString() + ", " + navigator.userAgent, nwpts);
   }
 
@@ -2914,48 +2915,54 @@ function checkGraphHopperCredit(e) {
   var gh = getJsonVal("wt.gh", { credits: 0, reset: new Date(0) });
   var message;
 
-  // check GraphHopper response
-  if (!isUnset(e)) {
-    //log("GraphHopper credits: " + e.credits);
-    var now = new Date();
-    var resetDate = new Date(now.getTime() + (e.reset * 1000));
-    if (resetDate > Date.parse(gh.reset)) {
-      gh.reset = resetDate;
-      gh.credits = 0;
-    }
-    if ((e.status >= 400) || (e.remaining === 0)) {
-        if (e.status == 401) {
-        message = "Invalid GraphHopper API key, please fix in Settings";
-        ga('send', 'event', 'api', 'gh-invalid');
-      } else {
-        if (isUndefined(getApiKey(ghkey))) {
-          ga('send', 'event', 'api', 'gh-wt-max');
-          gh.credits = -1;
+  try {
+    // check GraphHopper response
+    if (!isUnset(e)) {
+      //log("GraphHopper credits: " + e.credits);
+      var now = new Date();
+      var resetDate = new Date(now.getTime() + (e.reset * 1000));
+      if (resetDate > Date.parse(gh.reset)) {
+        gh.reset = resetDate;
+        gh.credits = 0;
+      }
+      if ((e.status >= 400) || (e.remaining === 0)) {
+          if (e.status == 401) {
+          message = "Invalid GraphHopper API key, please fix in Settings";
+          ga('send', 'event', 'api', 'gh-invalid');
         } else {
-          ga('send', 'event', 'api', 'gh-perso-max');
-          message = "Your GraphHopper API key exhausted its daily quota";
+          if (isUndefined(getApiKey(ghkey))) {
+            ga('send', 'event', 'api', 'gh-wt-max');
+            gh.credits = -1;
+          } else {
+            ga('send', 'event', 'api', 'gh-perso-max');
+            message = "Your GraphHopper API key exhausted its daily quota";
+          }
+        }
+      } else {
+        ga('send', 'event', 'api', 'gh-ok', e.credits);
+        if ((gh.credits >= 0) && isUndefined(getApiKey(ghkey))) {
+          gh.credits += e.credits;
         }
       }
-    } else {
-      ga('send', 'event', 'api', 'gh-ok', e.credits);
-      if ((gh.credits >= 0) && isUndefined(getApiKey(ghkey))) {
-        gh.credits += e.credits;
+      storeJsonVal("wt.gh", gh);
+    }
+
+    if (isUndefined(getApiKey(ghkey))) {
+      // user does not have personal gh key, check wtrack key usage
+      if (gh.credits < 0) {
+        message = "WTracks exhausted its daily GraphHopper quota";
+      } else if (gh.credits >= MAX_GH_CREDITS) {
+        message = "You exhausted your daily GraphHopper quota";
+        if (!isUnset(e)) {
+          ga('send', 'event', 'api', 'gh-user-max');
+        }
       }
     }
-    storeJsonVal("wt.gh", gh);
+  } catch (err) {
+    ga('send', 'event', 'error', 'checkGraphHopperCredit', err);
+    message = err;
   }
 
-  if (isUndefined(getApiKey(ghkey))) {
-    // user does not have personal gh key, check wtrack key usage
-    if (gh.credits < 0) {
-      message = "WTracks exhausted its daily GraphHopper quota";
-    } else if (gh.credits >= MAX_GH_CREDITS) {
-      message = "You exhausted your daily GraphHopper quota";
-      if (!isUnset(e)) {
-        ga('send', 'event', 'api', 'gh-user-max');
-      }
-    }
-  }
   if (message) {
     setEditMode(EDIT_NONE);
     showGraphHopperMessage(message);
