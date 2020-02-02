@@ -218,7 +218,7 @@ function loadActivities() {
   });
 }
 loadActivities();
-selectOption(selectActivity, getVal("wt.activity", undefined));
+selectOption(selectActivity, getVal("wt.activity", Object.keys(activities)[0]));
 
 function getCurrentActivityName() {
   return getSelectedOption("#activity");
@@ -263,6 +263,18 @@ function updateAllOverlayTrackStyle() {
   }
 }
 
+function setPolyStats() {
+  polystats = L.polyStats(track, {
+    chrono: true,
+    speedProfile: getCurrentActivity().speedprofile,
+    onUpdate: showStats,
+  });
+  if (!track.stats) {
+    polystats.updateStatsFrom(0);
+  }
+  showStats();
+}
+
 function newSegment(noStats) {
   if (track) {
     if (track.getLatLngs().length == 0) {
@@ -275,12 +287,7 @@ function newSegment(noStats) {
   editLayer.addLayer(track);
   track.on('click', segmentClickListener);
   if (!noStats) {
-    polystats = L.polyStats(track, {
-      chrono: true,
-      speedProfile: getCurrentActivity().speedprofile,
-      onUpdate: showStats,
-    });
-    showStats();
+    setPolyStats();
   }
   updateTrackStyle();
   return track;
@@ -2155,15 +2162,7 @@ function segmentClickListener(event, noGaEvent) {
     track = event.target;
     track.bringToFront();
     updateTrackStyle();
-    polystats = L.polyStats(track, {
-      chrono: true,
-      speedProfile: getCurrentActivity().speedprofile,
-      onUpdate: showStats,
-    });
-    if (!track.stats) {
-      polystats.updateStatsFrom(0);
-    }
-    showStats();
+    setPolyStats();
     return true;
   } else {
     return false;
