@@ -975,6 +975,7 @@ function shareGpx(gpx, params, cryptoMode) {
       $("#wtshare-val").select();
     }, function(error) {
       var errmsg = error.statusText ? error.statusText : error;
+      ga('send', 'event', 'error', 'share ' + cryptoMode, errmsg, Math.round(gpx.length / 1000));
       setStatus("Failed: " + errmsg, { timeout: 5, class: "status-error" });
       $("#wtshare-box").hide();
     });
@@ -2460,6 +2461,7 @@ $("#dropbox-chooser").click(function(e) {
     Dropbox.choose(dropboxLoadOptions);
   } catch (err) {
     setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
+    alert("Dropbox popup could not open. Make sure you did not forbid popups.")
     ga('send', 'event', 'error', 'Dropbox.choose error', err);
   }
 });
@@ -2546,10 +2548,10 @@ $("#dropbox-saver").click(function(e) {
       $("#dbs_rawgpxurl").text(rawgpxurl);
       $("#dbs_passcode").text(passcode);
       $("#confirm-dropbox").show();
-    }, function(error) {
-      var errmsg = error.statusText ? error.statusText : error;
-      setStatus("Failed: " + errmsg, { timeout: 5, class: "status-error" });
-      ga('send', 'event', 'error', 'dropboxTempShare.upload failed', errmsg);
+    }, function(jqXHR, textStatus, errorThrown) {
+      var errmsg = jqXHR.statusText ? jqXHR.statusText : jqXHR;
+      alert("Upload failed, is file too big? Try compressing it with in 'Tools'");
+      ga('send', 'event', 'error', 'dropboxTempShare.upload failed', errmsg + " (" + gpx.length + ")");
     }
   );
 });
