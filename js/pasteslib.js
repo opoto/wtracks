@@ -91,8 +91,8 @@
  // file.io
  // ------------------------------------------------------------------
 
-
- function fileioUpload(name, gpx, onDone, onFail) {
+// this method only supports small file (< 100KB)
+ function fileioUploadSmall(name, gpx, onDone, onFail) {
    $.post( "//file.io/?expires=1d", { "text": gpx }
    ).done(function(resp) {
      if (resp.success) {
@@ -102,6 +102,32 @@
      }
    }).fail(onFail);
  }
+
+// this method supports BIG files
+function fileioUpload(name, gpx, onDone, onFail) {
+  try {
+    var formData = new FormData();
+    var blob = new Blob([gpx], { type: "text/xml" });
+    formData.append("file", blob, "dummy");
+
+    $.ajax({
+      url: "//file.io/?expires=1d",
+      type: "POST", 
+      data: formData,
+      processData: false,
+      contentType: false,
+    }).done(function (resp) {
+      if (resp.success) {
+        onDone(resp.link, resp.link);
+      } else {
+        onFail(resp.message);
+      }
+    }).fail(onFail);
+  } catch (err) {
+    // browser does not support FormData, fallback to atlernative method
+    fileioUploadSmall(name, gpx, onDone, onFail);
+  }
+}
 
  // ------------------------------------------------------------------
  // Common

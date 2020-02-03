@@ -2511,6 +2511,7 @@ var dropboxSaveOptions = {
 
 function dropboxSaver(evt) {
   $("#confirm-dropbox").hide();
+  var name = $("#dbs_name").text();
   var gpxurl = $("#dbs_gpxurl").text();
   var rawgpxurl = $("#dbs_rawgpxurl").text();
   var passcode = $("#dbs_passcode").text();
@@ -2536,13 +2537,14 @@ $("#dropbox-saver").click(function(e) {
     alert("Sorry, your browser does not support Dropbox saving");
     return;
   }
-  var name = getConfirmedTrackName();
+  var name = getConfirmedTrackName().replace(/[\\\/:\*\?"<>|]/g, "_"); // remove forbidden path chars
   var gpx = getTrackGPX(false);
   ga('send', 'event', 'file', 'save-dropbox', undefined, Math.round(gpx.length / 1000));
   dropboxTempShare.upload(
     name, gpx,
     function (gpxurl, rawgpxurl, passcode) {
       //closeMenu();
+      $("#dbs_name").text(name);
       $("#dbs_gpxurl").text(gpxurl);
       $("#dbs_rawgpxurl").text(rawgpxurl);
       $("#dbs_passcode").text(passcode);
