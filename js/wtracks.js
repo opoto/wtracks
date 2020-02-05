@@ -983,6 +983,7 @@ function shareGpx(gpx, params, cryptoMode) {
     }, function(error) {
       var errmsg = error.statusText ? error.statusText : error;
       ga('send', 'event', 'error', 'share ' + cryptoMode, errmsg, Math.round(gpx.length / 1000));
+      alert("Upload failed, is file too big? Reduce it using Tools/Compress");
       setStatus("Failed: " + errmsg, { timeout: 5, class: "status-error" });
       $("#wtshare-box").hide();
     });
@@ -2551,8 +2552,8 @@ $("#dropbox-saver").click(function(e) {
       $("#confirm-dropbox").show();
     }, function(jqXHR, textStatus, errorThrown) {
       var errmsg = jqXHR.statusText ? jqXHR.statusText : jqXHR;
-      alert("Upload failed, is file too big? Try compressing it with in 'Tools'");
-      ga('send', 'event', 'error', 'dropboxTempShare.upload failed', errmsg + " (" + gpx.length + ")");
+      alert("Upload failed, is file too big? Reduce it using Tools/Compress");
+      ga('send', 'event', 'error', 'dropboxTempShare.upload', errmsg, Math.round(gpx.length / 1000));
     }
   );
 });
