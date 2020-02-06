@@ -137,6 +137,7 @@ function exportA(json) {
   $("#prompt-text").text("Copy and share data below (Ctrl+C & Enter):");
   $("#prompt-ok").hide();
   $("#prompt-val").val(data);
+  $("#import-error").hide();
   $("#prompt").show();
   $("#prompt-val").focus();
   $("#prompt-val").select();
@@ -146,6 +147,7 @@ function promptA() {
   $("#prompt-text").text("Paste exported activity data (Ctrl+V & Enter):");
   $("#prompt-val").val("");
   $("#prompt-ok").show();
+  $("#import-error").hide();
   $("#prompt").show();
   $("#prompt-val").focus();
 }
@@ -159,9 +161,10 @@ $("#prompt-val").keyup(function(event) {
     $("#prompt").hide();
   } else if (event.keyCode == 13) {
     var isImport = $("#prompt-ok").is(":visible");
-    $("#prompt").hide();
     if (isImport) {
       importA();
+    } else {
+      $("#prompt").hide();
     }
   }
 });
@@ -169,17 +172,23 @@ $("#prompt-val").keyup(function(event) {
 $("#prompt-ok").click(importA);
 
 function importA() {
+  $("#import-error").hide();
   var data = $("#prompt-val").val();
-  var importedActivities = JSON.parse(b64DecodeUnicode(data));
   var imported = false;
-  for (var a in importedActivities) {
-    if (hasOwnProperty.call(importedActivities, a)) {
-      var msg = activities[a] ? "Overwrite " : "Import ";
-      if (confirm(msg + a + "?")) {
-        activities[a] = importedActivities[a];
-        imported = true;
+  try {
+    var importedActivities = JSON.parse(b64DecodeUnicode(data));
+    for (var a in importedActivities) {
+      if (hasOwnProperty.call(importedActivities, a)) {
+        var msg = activities[a] ? "Overwrite " : "Import ";
+        if (confirm(msg + a + "?")) {
+          activities[a] = importedActivities[a];
+          imported = true;
+        }
       }
     }
+    $("#prompt").hide();
+  } catch (ex) {
+    $("#import-error").show();
   }
   if (imported) {
     storeJsonVal("wt.activities", activities);

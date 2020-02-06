@@ -120,7 +120,7 @@ function setTrackName(name) {
 }
 
 function getTrackName() {
-  return metadata.name;
+  return metadata ? metadata.name : "";
 }
 
 function askTrackName() {
@@ -200,7 +200,7 @@ var selectActivity = $("#activity")[0];
 var activities = getJsonVal("wt.activities");
 
 function loadActivities() {
-  if (!activities) {
+  if (jQuery.isEmptyObject(activities)) {
     activities = config.activities.defaults;
     saveJsonValOpt("wt.activities", activities);
   }
@@ -3093,7 +3093,7 @@ map.on('editable:vertex:click', function(e) {
     .setContent(getLatLngPopupContent(e.latlng, deleteTrackPoint, splitfn, div))
     .openOn(map);
   $(".leaflet-popup-close-button").click(function(e) {
-    track.editor.continueForward();
+    track.editor && track.editor.continueForward();
     return false;
   });
 });

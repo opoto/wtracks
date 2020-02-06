@@ -22,6 +22,10 @@ h2 {
   font-size: inherit;
 }
 
+.status-error {
+  color: red;
+}
+
 /* The Modal (background) */
 .modal {
   display: none; /* Hidden by default */

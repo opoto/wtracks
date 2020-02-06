@@ -434,18 +434,21 @@ var importedMymaps;
 function openImportBox(event, data) {
   $("#input-val").val(data ? data : "");
   $("#import-input").show();
-  $("#input-error").hide();
   $("#import-select").hide();
   $("#import-box").show();
   if (data) {
-    readImportMymaps();
+    readImportMymaps(event);
   } else {
+    $("#input-error").hide();
+    $("#input-error-url").hide();
     $("#import-ok").off("click").click(readImportMymaps);
     $("#input-val").focus();
   }
 }
 
-function readImportMymaps() {
+function readImportMymaps(event) {
+  $("#input-error").hide();
+  $("#input-error-url").hide();
   var data = $("#input-val").val();
   if (data.match(/^https?\:\/\//)) {
     var pos = data.indexOf("?import=");
@@ -493,17 +496,22 @@ function readImportMymaps() {
       $("#import-ok").off("click").click(importMymaps);
       $("#import-ok").focus();
     } catch (ex) {
-      $("#input-error").show();
+      if (event) {
+        $("#input-error").show();
+      } else {
+        $("#input-val").val("");
+        $("#input-error-url").show();
+      }
       $("#input-val").focus();
     }
   }
 }
-
+$("#import-ok").off("click").click(readImportMymaps);
 $("#import-box").keyup(function(event) {
   if (event.which == 27) {
     $("#import-box").hide();
   } else if (event.keyCode == 13) {
-    readImportMymaps();
+    readImportMymaps(event);
   }
 });
 
