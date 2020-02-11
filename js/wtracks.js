@@ -70,6 +70,7 @@ var route;
 var routeStart;
 var polystats;
 var NEW_TRACK_NAME = "New Track";
+var EMPTY_METADATA = { name: "", desc: "" };
 
 var EDIT_NONE = 0;
 var EDIT_MANUAL_TRACK = 1;
@@ -120,7 +121,7 @@ function setTrackName(name) {
 }
 
 function getTrackName() {
-  return metadata ? metadata.name : "";
+  return metadata.name;
 }
 
 function askTrackName() {
@@ -294,7 +295,7 @@ function newSegment(noStats) {
 }
 
 function newTrack() {
-  metadata = {};
+  metadata = EMPTY_METADATA;
   if (track) {
     editLayer.removeLayer(track);
     track = undefined;
@@ -2215,7 +2216,7 @@ function importGeoJson(geojson) {
       newSegment(true);
     }
     v = track.getLatLngs();
-    if ((v.length === 0) && (metadata.name == NEW_TRACK_NAME)) {
+    if ((v.length === 0) && (getTrackName() == NEW_TRACK_NAME)) {
       setTrackName(name);
     }
 
@@ -2236,9 +2237,13 @@ function importGeoJson(geojson) {
     }
   }
 
-  if ((track.getLatLngs().length === 0)) {
-    metadata = geojson.metadata ? geojson.metadata : {};
-    setTrackName(metadata.name ? metadata.name : NEW_TRACK_NAME);
+  if (getTrackName() == NEW_TRACK_NAME) {
+    if (geojson.metadata && geojson.metadata.name) {
+      setTrackName(geojson.metadata.name);
+    }
+    if (geojson.metadata && geojson.metadata.desc && !metadata.desc) {
+      metadata.desc = geojson.metadata.desc;
+    }
   }
 
   L.geoJson(geojson, {

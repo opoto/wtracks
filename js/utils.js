@@ -125,7 +125,13 @@ function storeVal(name, val) {
       if (isUnset(val)) {
         store.removeItem(name);
       } else {
-        store.setItem(name, val);
+        try {
+          store.setItem(name, val);
+        } catch (err) {
+          var kbsz = val.length ? Math.round(val.length/1024) : 0;
+          error("Cannot store value " + name + ": " + kbsz + "KB");
+          ga('send', 'event', 'error', 'storeVal failed', name, kbsz);
+        }
       }
     }
   }
