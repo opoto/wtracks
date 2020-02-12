@@ -226,10 +226,28 @@ function getCurrentActivityName() {
 }
 
 function getCurrentActivity() {
-  var res = getCurrentActivityName();
+  var aname = getCurrentActivityName();
+  var aerr = "";
   //log("activity: " + res);
-  saveValOpt("wt.activity", res);
-  return activities[res];
+  if (!aname) {
+    ga('send', 'event', 'error', 'no current activity', "Stored: " + getVal("wt.activity"), Object.keys(activities).length);
+    aerr = " nocura"
+    aname = Object.keys(activities)[0];
+    selectOption(selectActivity, aname);
+  }
+  var cura = activities[aname];
+  if (!cura) {
+    ga('send', 'event', 'error', 'activity not found', aname + aerr, Object.keys(activities).length);
+    if (jQuery.isEmptyObject(activities)) {
+      ga('send', 'event', 'error', 'no activity');
+      loadActivities();
+      aname = Object.keys(activities)[0];
+      selectOption(selectActivity, aname);
+      cura = activities[aname];
+    }
+  }
+  saveValOpt("wt.activity", cura);
+  return cura;
 }
 $("#activity").click(loadActivities);
 $("#activity").change(function() {
