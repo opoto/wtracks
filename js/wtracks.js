@@ -272,14 +272,12 @@ function updateOverlayTrackStyle(segment) {
 }
 
 function updateAllOverlayTrackStyle() {
-  var layers = editLayer.getLayers();
-  for (var l = 0, len = layers.length; l < len; l++) {
-    var segment = layers[l];
+  arrayForEach(editLayer.getLayers(), function(idx, segment) {
     // check if it is a polyline
     if (segment.getLatLngs && (segment != track)) {
       updateOverlayTrackStyle(segment);
     }
-  }
+  });
 }
 
 function setPolyStats() {
@@ -816,10 +814,8 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
   gpx += '    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" version="1.1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"';
 
   // xmlns from each segment
-  var layers = editLayer.getLayers();
   var xmlnsArr = [];
-  for (var l = 0; l < layers.length; l++) {
-    var segment = layers[l];
+  arrayForEach(editLayer.getLayers(), function(idx, segment) {
     if (segment.xmlnsArr && segment.xmlnsArr.length) {
       for (var i = 0; i < segment.xmlnsArr.length; i++) {
         var item = segment.xmlnsArr[i];
@@ -829,7 +825,7 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
         }
       }
     }
-  }
+  });
   gpx += '>\n';
 
   if (!nometadata) {
@@ -873,8 +869,7 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
 
   gpx += "<" + wraptag + ">" + xmlname + "\n";
   // for each segment
-  for (var l = 0, len = layers.length; l < len; l++) {
-    var segment = layers[l];
+  arrayForEach(editLayer.getLayers(), function(idx, segment) {
     // check if it is a polyline
     if (segment.getLatLngs) {
       if (segtag) {
@@ -885,7 +880,7 @@ function getGPX(trackname, savealt, savetime, asroute, nometadata) {
         gpx += "  </" + segtag + ">\n";
       }
     }
-  }
+  });
 
   gpx += "</" + wraptag + "></gpx>\n";
   return gpx;
@@ -1371,8 +1366,17 @@ function saveEditMode() {
 
 function saveTrack() {
   var trackname = getTrackName();
-  var numPts = track.getLatLngs().length + waypoints.getLayers().length;
-  if (numPts < 1000) {
+  // Count points to save
+  // 1. waypoints
+  var numPts = waypoints.getLayers().length;
+  // 2. All segment points
+  arrayForEach(editLayer.getLayers(), function(idx, segment) {
+    if (segment.getLatLngs) {
+      numPts += segment.getLatLngs().length;
+    }
+  });
+  // Don't save if more than 1500 points
+  if (numPts < 1500) {
     var gpx = getGPX(trackname, /*savealt*/ false, /*savetime*/ false, /*asroute*/ false, /*nometadata*/ false);
     saveValOpt("wt.gpx", gpx);
   }
