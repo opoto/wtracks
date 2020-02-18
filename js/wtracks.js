@@ -69,6 +69,8 @@ var editLayer;
 var route;
 var routeStart;
 var polystats;
+var prunedist = getVal("wt.prunedist", config.compressdefault);
+var prunealt = getBoolVal("wt.prunealt", false);
 var NEW_TRACK_NAME = "New Track";
 var EMPTY_METADATA = { name: "", desc: "" };
 
@@ -79,7 +81,7 @@ var EDIT_MARKER = 3;
 var EDIT_DEFAULT = EDIT_MANUAL_TRACK;
 var editMode = -1;
 
-var mapsCloseOnClick = getBoolVal("wt.mapsCloseOnClick", config.mapsCloseOnClick.toString());
+var mapsCloseOnClick = getBoolVal("wt.mapsCloseOnClick", config.mapsCloseOnClick);
 var ghkey = getVal("wt.ghkey", undefined);
 var ggkey = getVal("wt.ggkey", undefined);
 var orskey = getVal("wt.orskey", undefined);
@@ -720,6 +722,8 @@ function openMenu() {
   setChecked("#apikeys-suggest", !apikeyNoMore);
   menu("file");
   prepareTrim();
+  $("#prunedist").val(prunedist);
+  setChecked("#prunealt", prunealt);
 }
 function isMenuVisible() {
   return $("#menu").is(":visible");
@@ -1175,26 +1179,30 @@ function setEditMode(mode) {
 
 $("#compress").click(function() {
   // get & check input value
-  var prunedist = $("#prunedist");
-  var input = prunedist.val().trim();
-  var toleranceV;
-  if (input) {
-    toleranceV = parseFloat(input);
+  var prunedistelt = $("#prunedist");
+  var input = prunedistelt.val().trim();
+  if (input && input.match(/^\d+\.?\d*$/)) {
+    prunedist = parseFloat(input);
+  } else {
+    input = undefined;
   }
-  if ((toleranceV === undefined) || isNaN(toleranceV)) {
+  if (!input || (prunedist === undefined) || isNaN(prunedist)) {
     alert("Enter distance in meters");
-    prunedist.focus();
+    prunedistelt.focus();
     return;
   }
   if (isImperial()) {
     prunedist *= 0.9144;
   }
-  var useAltV = isChecked("#prunealt");
+  prunealt = isChecked("#prunealt");
+
+  saveValOpt("wt.prunedist", prunedist);
+  saveValOpt("wt.prunealt", prunealt);
 
   if (track) {
     setEditMode(EDIT_NONE);
     var pts = track.getLatLngs();
-    var pruned = L.PolyPrune.prune(pts, { tolerance: toleranceV, useAlt: useAltV });
+    var pruned = L.PolyPrune.prune(pts, { tolerance: prunedist, useAlt: prunealt });
     var removedpts = (pts.length - pruned.length);
     ga('send', 'event', 'tool', 'compress', undefined, removedpts);
     if (removedpts > 0) {
@@ -1397,6 +1405,8 @@ function saveSettings() {
   saveValOpt("wt.lengthUnit", lengthUnit);
   saveValOpt("wt.trackColor", trackColor);
   saveValOpt("wt.trackWeight", trackWeight);
+  saveValOpt("wt.prunedist", prunedist);
+  saveValOpt("wt.prunealt", prunealt);
   saveValOpt("wt.mapslist", mapsList);
   saveValOpt("wt.mapsCloseOnClick", mapsCloseOnClick);
   saveValOpt("wt.apikeyNoMore", apikeyNoMore);
@@ -1515,6 +1525,8 @@ function clearSavedState() {
   storeVal("wt.lengthUnit", undefined);
   storeVal("wt.trackColor", undefined);
   storeVal("wt.trackWeight", undefined);
+  storeVal("wt.prunedist", undefined);
+  storeVal("wt.prunealt", undefined);
   storeVal("wt.share", undefined);
   storeVal("wt.mapslist", undefined);
   storeVal("wt.mapsCloseOnClick", undefined);
@@ -3174,7 +3186,6 @@ function toggleElevation(e) {
 }
 
 $(".appname").text(config.appname);
-$("#prunedist").val(config.compressdefault);
 setStatus("Welcome to " + config.appname + "!", { timeout: 3 });
 
 function menu(item, event) {
