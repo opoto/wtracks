@@ -62,8 +62,11 @@ var map = L.map('map', {
   }
 });
 
+var NEW_TRACK_NAME = "New Track";
+var EMPTY_METADATA = { name: NEW_TRACK_NAME, desc: "" };
+
 var track;
-var metadata;
+var metadata = EMPTY_METADATA;
 var waypoints;
 var editLayer;
 var route;
@@ -71,8 +74,6 @@ var routeStart;
 var polystats;
 var prunedist = getVal("wt.prunedist", config.compressdefault);
 var prunealt = getBoolVal("wt.prunealt", false);
-var NEW_TRACK_NAME = "New Track";
-var EMPTY_METADATA = { name: "", desc: "" };
 
 var EDIT_NONE = 0;
 var EDIT_MANUAL_TRACK = 1;
