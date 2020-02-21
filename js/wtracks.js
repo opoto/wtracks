@@ -71,6 +71,7 @@ var waypoints;
 var editLayer;
 var route;
 var routeStart;
+var routeLog;
 var polystats;
 var prunedist = getVal("wt.prunedist", config.compressdefault);
 var prunealt = getBoolVal("wt.prunealt", false);
@@ -1084,6 +1085,7 @@ function mergeRouteToTrack() {
 function setRouteStart(latlng) {
   routeStart = latlng;
   $("#map").css("cursor", "alias");
+  routeLog = "S";
 }
 
 function closeOverlays() {
@@ -2631,10 +2633,11 @@ function newRouteWaypoint(i, waypoint, n) {
     return div;
   }
 
+  log(routeLog);
   var nwpts = route ? route.getWaypoints().length : 0;
   if (nwpts > MAX_ROUTE_WPTS) {
     error("route-pts-overlimit");
-    ga('send', 'event', 'error', 'route-pts-overlimit', location.toString() + ", " + navigator.userAgent, nwpts);
+    ga('send', 'event', 'error', 'route-pts-overlimit', location.toString() + ", " + routeLog, nwpts);
   }
 
   if ((track.getLatLngs().length > 0) && (i === 0)) {
@@ -3026,6 +3029,7 @@ function newMarker(e) {
       if (!routeStart) {
         setRouteStart(e.latlng);
       } else {
+        routeLog += "_";
         var fromPt = routeStart,
           toPt = e.latlng,
           router;
@@ -3064,8 +3068,10 @@ function newMarker(e) {
       }
     } else {
       var wpts = route.getWaypoints();
+      routeLog += "#" + wpts.length;
       if (wpts.length >= MAX_ROUTE_WPTS) { // up to 4 with free version
         try {
+          routeLog += "M";
           mergeRouteToTrack();
           restartRoute();
           map.fireEvent("click", { latlng: e.latlng });
@@ -3073,6 +3079,7 @@ function newMarker(e) {
           ga('send', 'event', 'error', 'merge-route-failed', err.toString() + ", " + navigator.userAgent, wpts.length);
         }
       } else {
+        routeLog += "+";
         wpts.push({ latLng: e.latlng });
         route.setWaypoints(wpts);
       }
