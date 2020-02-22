@@ -2965,14 +2965,19 @@ function checkGraphHopperCredit(e) {
     // check GraphHopper response
     if (!isUnset(e)) {
       //log("GraphHopper credits: " + e.credits);
-      var now = new Date();
-      var resetDate = new Date(now.getTime() + (e.reset * 1000));
-      if (resetDate > Date.parse(gh.reset)) {
-        gh.reset = resetDate;
-        gh.credits = 0;
+      if (e.reset) {
+        var now = new Date();
+        var resetDate = new Date(now.getTime() + (e.reset * 1000));
+        if (resetDate > Date.parse(gh.reset)) {
+          gh.reset = resetDate;
+          gh.credits = 0;
+        }
       }
       if ((e.status >= 400) || (e.remaining === 0)) {
-          if (e.status == 401) {
+        if (e.status >= 500) {
+          message = "GraphHopper error";
+          ga('send', 'event', 'api', 'gh-error');
+        } else if (e.status == 401) {
           message = "Invalid GraphHopper API key, please fix in Settings";
           ga('send', 'event', 'api', 'gh-invalid');
         } else {
@@ -2993,7 +2998,7 @@ function checkGraphHopperCredit(e) {
       storeJsonVal("wt.gh", gh);
     }
 
-    if (isUndefined(getApiKey(ghkey))) {
+    if (!message && isUndefined(getApiKey(ghkey))) {
       // user does not have personal gh key, check wtrack key usage
       if (gh.credits < 0) {
         message = "WTracks exhausted its daily GraphHopper quota";

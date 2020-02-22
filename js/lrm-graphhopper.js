@@ -243,14 +243,23 @@ if (typeof module !== undefined) module.exports = polyline;
 
 				clearTimeout(timer);
 				if (!timedOut) {
-					var fired = err ? err : resp;
-					this.fire("response", {
-						status: fired.status,
-						limit: Number(fired.getResponseHeader("X-RateLimit-Limit")),
-						remaining: Number(fired.getResponseHeader("X-RateLimit-Remaining")),
-						reset: Number(fired.getResponseHeader("X-RateLimit-Reset")),
-						credits: Number(fired.getResponseHeader("X-RateLimit-Credits"))
-					});
+					if (resp && resp.getResponseHeader) {
+						this.fire("response", {
+							status: resp.status,
+							limit: Number(resp.getResponseHeader("X-RateLimit-Limit")),
+							remaining: Number(resp.getResponseHeader("X-RateLimit-Remaining")),
+							reset: Number(resp.getResponseHeader("X-RateLimit-Reset")),
+							credits: Number(resp.getResponseHeader("X-RateLimit-Credits"))
+						});
+					} else {
+						this.fire("response", {
+							status: resp && resp.status ? resp.status : 520,
+							limit: 0,
+							remaining: 0,
+							reset: 0,
+							credits: 0
+						});
+					}
 					if (!err) {
 						data = JSON.parse(resp.responseText);
 						this._routeDone(data, wps, callback, context);
