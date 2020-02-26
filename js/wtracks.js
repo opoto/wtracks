@@ -2410,6 +2410,10 @@ function loadFromUrl(url, options) {
 
   $.ajax(req).fail(function(resp) {
     setStatus("Failed: " + resp.statusText, { 'class': 'status-error', 'timeout': 3 });
+    if (!track) {
+      newTrack();
+      restorePosition();
+    }
   });
 }
 
