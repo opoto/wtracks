@@ -93,7 +93,7 @@
 							<div id="edit-tools-img"><img src="images/edit-tools.png" alt="edition tools" /></div>
 							<ul class="default">
 								<li>Step-by-step edition: Click on map to create new track points, move points by dragging them, and create intermediate points by clicking on grayed markers. Click on a marker to get detailed information about this track step, and get the option to delete it.</li>
-								<li>Routing edition: Click on map to set the starting point and destination, the routing engine will automically compute the track following map constraints. Click on the route to create intermediate waypoints that you may drag around. To overcome issues with GraphHopper credit expiration, set your personal <a href="#api-keys">API keys</a></li>
+								<li>Routing edition: Click on map to set the starting point and destination, the routing engine will automically compute the track following map constraints. Click on the route to create intermediate waypoints that you may drag around.</li>
 								<li>Open and edit multi-segment tracks. Create and delete segments using the "+" and "-" icons in the edition tools. Use the "Join Segments" tool to combine all segments into a single one. Split a segment in two by clicking on the scissors (<i class='material-icons'>&#xE14E;</i>) in a track point popup dialog.</li>
 								<li>Create named waypoints: Click on map to set points of interest. Click on a waypoint to edit its name.</li>
 							</ul>
@@ -102,7 +102,7 @@
 							<p>Real-time statistic data about your track</p>
 							<ul class="default">
 								<li>Distance: One way (<span class="material-icons symbol">&#xE31C;</span>) and round-trip (<span class="material-icons symbol">&#xE041;</span>) lenght of the track</li>
-								<li>Duration: Estimated duration (one way and round-trip) of the track itinary based on the activity type. Default activities and timings, but you can configure your own, see below</li>
+								<li>Duration: Estimated duration (one way and round-trip) of the track itinary based on the activity type. WTracks comes with default activities and timings, but you can configure your own, see below</li>
 								<li>Maximum and minimum altitudes of the track</li>
 								<li>Cumulated climbing and descent heights</li>
 							</ul>
@@ -122,7 +122,8 @@
 							<ul class="default">
 								<li>Define your preferred map order</li>
 								<li>Hide/Show maps of your choice</li>
-								<li>Configure your own personal map (standard tile layers or WMS/WMTS)</li>
+								<li>Configure your own personal map (standard tile layers or WMS/WMTS, 
+                  as well as overlays that are displayed on top of the background map)</li>
 							</ul>
 							<p>
 								<img src="images/maps.png" alt="maps"/>
@@ -139,7 +140,8 @@
 							</ul>
 							<p>The simplest way to share a track is using the "Share" button from the File menu tab.</p>
 							<p><img src="images/sharing.png" alt="sharing" /></p>
-							<p>Altenatively, you can manually build a shareable URL using the following syntax:</p>
+							<p>Altenatively, if your track file is available online, you can manually build 
+                a shareable URL using the following syntax:</p>
 							<p class="code">https://opoto.github.io/wtracks/?url=&lt;link to online track file&gt;[&&lt;option&gt;=&lt;value&gt;]</p>
 							<p>where parameters are:</p>
 							<ul class="default">
@@ -170,7 +172,9 @@
 								<li>Consumes less browser memory and processing, leading to faster editor execution</li>
 								<li>Simplifies step-by-step track edition, by only keeping most relevant points</li>
 							</ul>
-							<p>This tools looks at each point in a track, and measures its distance from the line between the previous and next points. If this distance is smaller than the configurable value (e.g., 5 meters) then the point is deleted.</p>
+							<p>This tools looks at each point in a track, and measures its distance from the line
+                 between the previous and next points. If this distance is smaller
+                 than the configurable value (default is 5 meters) then the point is deleted.</p>
 							<p><img src="images/compress.png" alt="compress" /></p>
 
 							<h3>Elevate / Cleanup</h3>
@@ -203,8 +207,10 @@
 
 								<h3>Rich configuration settings</h3>
 								<ul class="default">
-									<li>Persistent settings: Activate persistence of your settings so that your browser stores your WTracks preferences, and restores them on each of your visits. See <a href="#privacy">privacy section</a> for more details.</li>
-									<li>Personal background map: Define your own map backgrounds in WMS or WMTS format (see above).</li>
+									<li>Persistent settings: By default your WTracks preferences and settings are stored
+                     in your browser's local storage, so that they can be restored on each of your visits.
+                     However you can deactivate this storage. See <a href="#privacy">privacy section</a> for more details.</li>
+									<li>Personal background map: Define your own map backgrounds and overlays (see above).</li>
 									<li>Personal activities: Define your own activities based on your individual performances (see above).</li>
 									<li>Track display: Define the color and width of the track on the map.</li>
 									<li>API keys: Set and use your own <a href="#api-keys">API keys</a> in order to overcome the WTracks quota limit.</li>
@@ -259,17 +265,17 @@
 								<li><a href="https://github.com/makinacorpus/Leaflet.FileLayer">Leaflet.FileLayer</a>: A Leaflet plugin to load files (GeoJSON, GPX, KML) into the map without server call.</li>
 								<li><a href="https://github.com/eligrey/FileSaver.js">FileSaver.js</a>: A polyfill implementing the saveAs() FileSaver interface in browsers that do not natively support it.</li>
 								<li><a href="https://github.com/smeijer/L.GeoSearch">Leaflet.GeoSearch</a>: A Leaflet control tool to lookup for addresses using OpenStreetMap.</li>
-								<li><a href="https://graphhopper.com/">GraphHopper</a>: An online routing service.</li>
+								<li><a href="https://github.com/Jorl17/open-elevation">Open Elevation</a>: WTrack's default online elevation service.</li>
+								<!--li><a href="http://www.datasciencetoolkit.org/">Data Science Toolkit</a>: An online service to get the elevation of a latitude/longitude coordinate</li-->
+								<li><a href="https://developers.google.com/maps/">Google Map APIs</a>: Online service to get elevations of latitude/longitude coordinates.</li>
+								<li><a href="https://graphhopper.com/">GraphHopper</a>: WTrack's default online routing service.</li>
 								<li><a href="https://openrouteservice.org/">OpenRoute Service</a>: An online routing and elevation service.</li>
 								<li><a href="https://github.com/MrMufflon/Leaflet.Elevation">Leaflet.Elevation</a>: A Leaflet plugin to display an interactive height profile of a track.</li>
 								<li><a href="http://www.liedman.net/leaflet-routing-machine/">Leaflet Routing Machine</a>: A Leaflet plugin to add routing to a map.</li>
-								<li><a href="https://developers.google.com/maps/">Google Map APIs</a>: Online service to get elevations of latitude/longitude coordinates</li>
-								<li><a href="https://github.com/Jorl17/open-elevation">Open Elevation</a>: Online elevation service used when our Google quota is exhausted</li>
-								<!--li><a href="http://www.datasciencetoolkit.org/">Data Science Toolkit</a>: An online service to get the elevation of a latitude/longitude coordinate</li-->
 								<li><a href="https://extreme-ip-lookup.com/">extreme-ip-lookup.com</a>: an online service to search the geolocation of IP addresses, so that we can center the map on your current location</li>
-								<li><a href="https://alex-d.github.io/Trumbowyg/">Trumbowyg</a>: A lightweight WYSIWYG editor</li>
-								<li><a href="http://jscolor.com/">jscolor Color Picker</a>: The color picker widget to configure the track color</li>
-								<li><a href="https://silktide.com/tools/cookie-consent/">Cookie Consent</a>: to get your consent about storing cookies.</li>
+								<li><a href="https://alex-d.github.io/Trumbowyg/">Trumbowyg</a>: A lightweight WYSIWYG editor.</li>
+								<li><a href="http://jscolor.com/">jscolor Color Picker</a>: The color picker widget to configure the track color.</li>
+								<li><a href="https://alex-d.github.io/Cookies-EU-banner/">Cookies-EU-banner</a>: to inform users about stored cookies and preferences.</li>
 								<li><a href="https://friendpaste.com">Friendpaste</a>: Cloud storage used for sharing tracks.</li>
 								<li><a href="http://file.io/">file.io</a>: Temporary cloud storage used for dropbox uploading.</li>
 								<li><a href="https://github.com/gardiner/draganddrop">draganddrop.js</a>: jQuery plugin to allow dragging and dropping of list elements.</li>
