@@ -111,7 +111,8 @@ function consentCookies() {
   </div>");
   
   new CookiesEuBanner(function () {
-    // code to launch when user accept cookies
+    // user accepted
+    window.hasCookieConsent = true;
   }, true);
 }
 
