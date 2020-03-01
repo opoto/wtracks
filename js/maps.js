@@ -549,6 +549,9 @@ $("#import-box-close").click(closeImportBox);
 // ------------------- ready?
 
 $(document).ready(function() {
+
+  consentCookies();
+
   showMapsList();
   // ----- drag & drop list -----
   $("#mymaps-list").sortable({

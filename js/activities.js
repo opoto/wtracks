@@ -530,6 +530,8 @@ function toggleHelp(e) {
   $("#" + this.id + "-help").toggle();
 }
 
+consentCookies();
+
 $(".help-b").click(toggleHelp);
 $("#data").change(changeData);
 $("#compute").click(computeSpeedProfile);

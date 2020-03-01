@@ -102,16 +102,18 @@ function setChecked(selector, val) {
 }
 /* ----------------------- Local storage -------------------------- */
 
-// Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent
-window.cookieconsent_options = {
-  "message": "This website uses cookies and browser's local storage to restore your status and settings on your next visits",
-  "dismiss": "Got it!",
-  "learnMore": "More",
-  "link": "doc/#privacy",
-  "target": "_blank",
-  //"container":"#map",
-  "theme": "dark-bottom"
-};
+function consentCookies() {
+  $('body').prepend("\
+  <div id='cookies-eu-banner' style='display: none;'>\
+    <button id='cookies-eu-accept'>Got it!</button>\
+    <div>This website uses cookies and browser's local storage to restore your status and settings on your next visits. \
+    <a href='doc/#privacy' id='cookies-eu-more'>Read more</a></div>\
+  </div>");
+  
+  new CookiesEuBanner(function () {
+    // code to launch when user accept cookies
+  }, true);
+}
 
 function canValBeSaved() {
   return window.hasCookieConsent || (window.location.toString().indexOf("file:") === 0);

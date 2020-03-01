@@ -2,7 +2,9 @@ var map;
 var track;
 
 $(document).ready(function() {
-
+  
+  consentCookies();
+    
   function setStatus(msg, options) {
     $("#status-msg").text(msg);
     var statusclass = options && options.class ? options.class : "status-info";

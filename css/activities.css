@@ -182,6 +182,42 @@ table.form tr td:first-child {
   display: inline-block;
 }
 
+#cookies-eu-banner {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: black;
+  color: white;
+  padding: 15px;
+  z-index: 20000;
+}
+#cookies-eu-banner div {
+  padding: 10px 0;
+}
+#cookies-eu-accept {
+  background: yellow;
+  color: black;
+  padding: 10px 20px;
+  width: 33%;
+  margin-left: 10px;
+  float: right;
+  max-width: 120px;
+  border: 0;
+}
+#cookies-eu-more {
+  text-decoration: none;
+  color: #1992ca;
+}
+
+/* for 680px or less */
+@media screen and (max-width: 680px) {
+  #cookies-eu-banner div, cookies-eu-accept {
+    padding: 0;
+    font-size: 80%;
+  }
+}
+
 /* for 480px or less */
 @media screen and (max-width: 800px) {
   #activities-btns {
