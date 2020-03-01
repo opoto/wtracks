@@ -1262,18 +1262,16 @@ $(document).ready(function() {
 
   function getMyIpLocation() {
     log("Getting location from IP address");
-    var geoapi = "//extreme-ip-lookup.com/json/?callback=setMyIpLocation";
-    $.getScript(geoapi)
-      .fail(function(jqxhr, settings, exception) {
-        warn("ip geolocation request failed");
-      });
-  }
-
-  function setMyIpLocation(res) {
-    setLocation({
-      lat: res.lat,
-      lng: res.lon
-    }, false);
+    $.get("//extreme-ip-lookup.com/json/")
+    .done(function(res) {
+      setLocation({
+        lat: res.lat,
+        lng: res.lon
+      }, false);
+    })
+    .fail(function(jqxhr, settings, exception) {
+      warn("ip geolocation request failed");
+    });
   }
 
   var myLocIcon = L.icon({
