@@ -102,6 +102,7 @@ function setChecked(selector, val) {
 }
 /* ----------------------- Local storage -------------------------- */
 
+var cookiesBanner;
 function consentCookies() {
   $('body').prepend("\
   <div id='cookies-eu-banner' style='display: none;'>\
@@ -110,14 +111,11 @@ function consentCookies() {
     <a href='doc/#privacy' id='cookies-eu-more'>Read more</a></div>\
   </div>");
   
-  new CookiesEuBanner(function () {
-    // user accepted
-    window.hasCookieConsent = true;
-  }, true);
+  cookiesBanner = new CookiesEuBanner(function () {}, true);
 }
 
 function canValBeSaved() {
-  return window.hasCookieConsent || (window.location.toString().indexOf("file:") === 0);
+  return (cookiesBanner && cookiesBanner.hasConsent()) || (window.location.toString().indexOf("file:") === 0);
 }
 
 function storeVal(name, val) {
