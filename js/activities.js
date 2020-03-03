@@ -1,27 +1,10 @@
-// -------- ACTIVITIES
-var activities = getJsonVal("wt.activities");
-// initialize activities on first use
-if (!activities) {
-  activities = config.activities.defaults;
-  storeJsonVal("wt.activities", activities);
-}
-
-/*** dummy track required for polystats ***/
-var track = L.polyline([]);
-var polystats = L.polyStats(track, {
-  chrono: true
-});
-
+var polystats;
 var activity;
 var activityname;
-
+var activities;
 
 // vehicle menu
 var selectVehicle = $("#activityvehicle")[0];
-// add vehicles to menu
-for (var i = 0; i < config.activities.vehicles.length; i++) {
-  addSelectOption(selectVehicle, config.activities.vehicles[i]);
-}
 
 // utility function to sort speedRefs by increasing slope
 function sortSpeedRefs(speedRefs) {
@@ -49,12 +32,6 @@ function saveActivity(name, a) {
 
 // activity menu
 var selectActivity = $("#activities")[0];
-// add activities to menu
-for (var a in activities) {
-  if (hasOwnProperty.call(activities, a)) {
-    addSelectOption(selectActivity, a);
-  }
-}
 
 function activitiesLen() {
   return selectActivity.length;
@@ -407,13 +384,6 @@ function displaySelectedActivity() {
     a.speedprofile.parameters);
   displayActivity();
 }
-displaySelectedActivity();
-
-var selectdata = $("#data")[0];
-forEachDataset(function(name) {
-  addSelectOption(selectdata, name);
-});
-
 
 /*** display speed profile graph ***/
 
@@ -492,17 +462,6 @@ function importGeoJson(geojson) {
   refspeeds = sp.refspeeds;
   displaySpeedProfile(activity.speedprofile);
 }
-var fileloader = L.FileLayer.fileLoader(undefined, {
-  layer: importGeoJson,
-  addToMap: false,
-  fileSizeLimit: 1024 * 1024,
-  formats: ['gpx', 'geojson', 'kml']
-});
-$("#trackfile").change(function() {
-  selectOption($("#data"), "none");
-  var file = $("#trackfile")[0].files[0];
-  fileloader.load(file);
-});
 
 /********* speed profile from reference speeds *********/
 
@@ -530,11 +489,61 @@ function toggleHelp(e) {
   $("#" + this.id + "-help").toggle();
 }
 
-consentCookies();
+$(document).ready(function() {
 
-$(".help-b").click(toggleHelp);
-$("#data").change(changeData);
-$("#compute").click(computeSpeedProfile);
-$("#resetcompute").click(resetComputeParams);
-changeData();
-ga('send', 'event', 'activity', 'editor', undefined, activitiesLen());
+  consentCookies();
+
+  // -------- ACTIVITIES
+  activities = getJsonVal("wt.activities");
+  // initialize activities on first use
+  if (!activities) {
+    activities = config.activities.defaults;
+    storeJsonVal("wt.activities", activities);
+  }
+
+  /*** dummy track required for polystats ***/
+  var track = L.polyline([]);
+  polystats = L.polyStats(track, {
+    chrono: true
+  });
+
+
+  // add vehicles to menu
+  for (var i = 0; i < config.activities.vehicles.length; i++) {
+    addSelectOption(selectVehicle, config.activities.vehicles[i]);
+  }
+
+  // add activities to menu
+  for (var a in activities) {
+    if (hasOwnProperty.call(activities, a)) {
+      addSelectOption(selectActivity, a);
+    }
+  }
+
+  var selectdata = $("#data")[0];
+  forEachDataset(function(name) {
+    addSelectOption(selectdata, name);
+  });
+
+  displaySelectedActivity();
+
+  var fileloader = L.FileLayer.fileLoader(undefined, {
+    layer: importGeoJson,
+    addToMap: false,
+    fileSizeLimit: 1024 * 1024,
+    formats: ['gpx', 'geojson', 'kml']
+  });
+  $("#trackfile").change(function() {
+    selectOption($("#data"), "none");
+    var file = $("#trackfile")[0].files[0];
+    fileloader.load(file);
+  });
+  
+  $(".help-b").click(toggleHelp);
+  $("#data").change(changeData);
+  $("#compute").click(computeSpeedProfile);
+  $("#resetcompute").click(resetComputeParams);
+  changeData();
+  ga('send', 'event', 'activity', 'editor', undefined, activitiesLen());
+
+});
