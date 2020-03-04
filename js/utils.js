@@ -115,7 +115,8 @@ function consentCookies() {
 }
 
 function canValBeSaved() {
-  return (cookiesBanner && cookiesBanner.hasConsent()) || (window.location.toString().indexOf("file:") === 0);
+  // (cookiesBanner && cookiesBanner.hasConsent())?
+  return (window.location.toString().indexOf("file:") === 0);
 }
 
 function storeVal(name, val) {
