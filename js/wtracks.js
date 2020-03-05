@@ -1,7 +1,7 @@
 var map;
 var track;
 
-$(document).ready(function() {
+$(window).on("load", function() {
   
   consentCookies();
     

@@ -489,7 +489,7 @@ function toggleHelp(e) {
   $("#" + this.id + "-help").toggle();
 }
 
-$(document).ready(function() {
+$(window).on("load", function() {
 
   consentCookies();
 

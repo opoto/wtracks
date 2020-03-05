@@ -548,7 +548,7 @@ $("#import-box-close").click(closeImportBox);
 
 // ------------------- ready?
 
-$(document).ready(function() {
+$(window).on("load", function() {
 
   consentCookies();
 
