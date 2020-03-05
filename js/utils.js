@@ -369,6 +369,7 @@ if ('serviceWorker' in navigator) {
 window.onerror = function(messageOrEvent, source, line, row, err) {
   error(messageOrEvent.toString() + " [" + source + ": " + line + ", " + row);
   if (ga) {
-    ga('send', 'event', 'error', messageOrEvent.toString() +" ["+source+":"+line+","+row, navigator.userAgent);
+    ga('send', 'event', 'error', messageOrEvent.toString() +" ["+source+":"+line+","+row + "]",
+   "[" + window.location.pathname + "] " + navigator.userAgent);
   }
 }
