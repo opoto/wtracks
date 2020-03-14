@@ -102,20 +102,7 @@ function setChecked(selector, val) {
 }
 /* ----------------------- Local storage -------------------------- */
 
-var cookiesBanner;
-function consentCookies() {
-  $('body').prepend("\
-  <div id='cookies-eu-banner' style='display: none;'>\
-    <button id='cookies-eu-accept'>Got it!</button>\
-    <div>This website uses cookies and browser's local storage to restore your status and settings on your next visits. \
-    <a href='doc/#privacy' id='cookies-eu-more'>Read more</a></div>\
-  </div>");
-  
-  cookiesBanner = new CookiesEuBanner(function () {}, true);
-}
-
 function canValBeSaved() {
-  // (cookiesBanner && cookiesBanner.hasConsent()) || (window.location.toString().indexOf("file:") === 0);
   return true;
 }
 

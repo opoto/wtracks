@@ -27,6 +27,25 @@ function setSaveState(saveCfg) {
   }
 }
 
+function consentCookies() {
+  var now = new Date();
+  var EXPIRATION = Math.round(1000*60*60*24*30.5*18); // 18 months in ms
+  var cookies = getVal("wt.cookies");
+  if ((!cookies) || (now.getTime() > new Date(cookies).getTime() + EXPIRATION)) {
+    $('body').prepend("\
+    <div id='cookies-banner' style='display: none;'>\
+      <button id='cookies-accept'>Got it!</button>\
+      <div>This website uses cookies and browser's local storage to restore your status and settings on your next visits. \
+      <a href='doc/#privacy' id='cookies-more'>Read more</a></div>\
+    </div>");
+    $("#cookies-banner").show();
+    $("#cookies-accept").click(function() {
+      $("#cookies-banner").hide();
+    });
+    storeVal("wt.cookies", now.toISOString());
+  }
+}
+
 /* help buttons */
 function toggleHelp(e) {
   $("#" + this.id + "-help").toggle();

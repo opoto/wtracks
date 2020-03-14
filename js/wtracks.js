@@ -1513,30 +1513,12 @@ $(window).on("load", function() {
   }
 
   function clearSavedState() {
-    storeVal("wt.activity", undefined);
-    storeVal("wt.activities", undefined);
-    storeVal("wt.baseLayer", undefined);
-    storeVal("wt.editMode", undefined);
-    storeVal("wt.ggkey", undefined);
-    storeVal("wt.ghkey", undefined);
-    storeVal("wt.orskey", undefined);
-    storeVal("wt.gpx", undefined);
-    storeVal("wt.joinOnLoad", undefined);
-    storeVal("wt.mymaps", undefined);
-    storeVal("wt.overlaysOn", undefined);
-    storeVal("wt.ovlTrackColor", undefined);
-    storeVal("wt.ovlTrackWeight", undefined);
-    storeVal("wt.poslat", undefined);
-    storeVal("wt.poslng", undefined);
-    storeVal("wt.lengthUnit", undefined);
-    storeVal("wt.trackColor", undefined);
-    storeVal("wt.trackWeight", undefined);
-    storeVal("wt.prunedist", undefined);
-    storeVal("wt.prunealt", undefined);
-    storeVal("wt.share", undefined);
-    storeVal("wt.mapslist", undefined);
-    storeVal("wt.mapsCloseOnClick", undefined);
-    storeVal("wt.apikeyNomore", undefined);
+    for (var i=localStorage.length - 1; i >= 0; i--) {
+      var key = localStorage.key(i);
+      if (key.startsWith("wt.") && (key != "wt.saveState")) {
+        storeVal(key, undefined);
+      }
+    }
   }
 
   function getProvider(mapobj) {
@@ -3288,7 +3270,6 @@ $(window).on("load", function() {
   var now = new Date();
   var ONE_MONTH = Math.round(1000*60*60*24*30.5); // 1 month in ms
   var FIRST_VISIT = "1";
-  var showAbout = false;
   if (about) {
     if ((about == FIRST_VISIT) || (now.getTime() > new Date(about).getTime() + ONE_MONTH)) {
       // reset about tag

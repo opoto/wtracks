@@ -830,7 +830,7 @@ button:active,
     color: black;
 }
 
-#cookies-eu-banner {
+#cookies-banner {
   position: fixed;
   left: 0;
   right: 0;
@@ -840,10 +840,10 @@ button:active,
   padding: 15px;
   z-index: 20000;
 }
-#cookies-eu-banner div {
+#cookies-banner div {
   padding: 10px 0;
 }
-#cookies-eu-accept {
+#cookies-accept {
   background: yellow;
   color: black;
   padding: 10px 20px;
@@ -853,7 +853,7 @@ button:active,
   max-width: 120px;
   border: 0;
 }
-#cookies-eu-more {
+#cookies-more {
   text-decoration: none;
   color: #1992ca;
 }
@@ -885,7 +885,7 @@ button:active,
     font-size: 10%;
   }
 
-  #cookies-eu-banner div, cookies-eu-accept {
+  #cookies-banner div, cookies-accept {
     padding: 0;
     font-size: 80%;
   }
