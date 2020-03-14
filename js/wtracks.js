@@ -722,15 +722,15 @@ $(window).on("load", function() {
     finishTrim();
   }
 
-  function openMenu() {
+  function openMenu(tab) {
     if (isMenuVisible()) return;
     setEditMode(EDIT_NONE);
     setChecked("#merge", false);
     setChecked("#apikeys-suggest", !apikeyNoMore);
-    menu("file");
     prepareTrim();
     $("#prunedist").val(prunedist);
     setChecked("#prunealt", prunealt);
+    menu(tab ? tab : "file");
   }
   function isMenuVisible() {
     return $("#menu").is(":visible");
@@ -3275,7 +3275,7 @@ $(window).on("load", function() {
       // reset about tag
       storeVal("wt.about", now.toISOString());
       // wait for potential urlparam to be loaded
-      setTimeout(function(){ menu("about"); }, 4000);
+      setTimeout(function(){ openMenu("about"); }, 4000);
     }
   } else {
     storeVal("wt.about", FIRST_VISIT);
