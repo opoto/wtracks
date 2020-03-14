@@ -2181,7 +2181,13 @@ $(window).on("load", function() {
         ga('send', 'event', 'edit', 'switch-segment');
       }
       if (track) {
-        updateOverlayTrackStyle(track);
+        if (track.getLatLngs().length == 0) {
+          // delete empty track
+          editLayer.removeLayer(track);
+          saveState();
+        } else {
+          updateOverlayTrackStyle(track);
+        }
       }
       track = event.target;
       track.bringToFront();
