@@ -255,7 +255,7 @@ $(window).on("load", function() {
         cura = activities[aname];
       }
     }
-    saveValOpt("wt.activity", cura);
+    saveValOpt("wt.activity", aname);
     return cura;
   }
   $("#activity").click(loadActivities);
