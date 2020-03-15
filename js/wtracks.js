@@ -1538,7 +1538,9 @@ $(window).on("load", function() {
           mapopts.crs = getCrsFromName(mapopts.crs);
         }
       }
-      p = tileCtor(url, mapopts);
+      if (tileCtor) {
+        p = tileCtor(url, mapopts);
+      }
     }
     return p;
   }
