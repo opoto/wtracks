@@ -1081,7 +1081,7 @@ $(window).on("load", function() {
     for (var j = 0; j < pts.length; j++) {
       track.addLatLng(pts[j]);
     }
-    elevate(pts, function() {
+    elevate(pts, function(success) {
       polystats.updateStatsFrom(initlen);
       saveState();
     });
@@ -1685,7 +1685,11 @@ $(window).on("load", function() {
         if (i>0) strpts += "|";
         strpts += locations[i].lat + "," + locations[i].lng;
       }
-      ajaxreq = "https://api.open-elevation.com/api/v1/lookup?locations=" + strpts;
+      ajaxreq = {
+        url: "https://api.open-elevation.com/api/v1/lookup?locations=" + strpts,
+        method: "GET",
+        timeout: config.elevationTimeout,
+      };
     } else {
       // POST method
       var jsonreq = { locations: [] };
@@ -1700,6 +1704,7 @@ $(window).on("load", function() {
       ajaxreq = {
         url: "https://api.open-elevation.com/api/v1/lookup",
         method: "POST",
+        timeout: config.elevationTimeout,
         contentType: "application/json",
         dataType: "json",
         data: JSON.stringify(jsonreq)
@@ -1741,6 +1746,7 @@ $(window).on("load", function() {
           "Authorization": getApiKey(orskey)
         },
         method: "POST",
+        timeout: config.elevationTimeout,
         contentType: "application/json",
         data: JSON.stringify({
           "format_in": "point",
@@ -1779,6 +1785,7 @@ $(window).on("load", function() {
         "Authorization": getApiKey(orskey)
       },
       method: "POST",
+      timeout: config.elevationTimeout,
       contentType: "application/json",
       data: JSON.stringify({
         "format_in": "polyline",
@@ -1843,7 +1850,7 @@ $(window).on("load", function() {
         ga('send', 'event', 'api', eventName, callerName, locations.length);
         clearStatus();
         // callback
-        if (cb) cb();
+        if (cb) cb(true);
       },
       function(eventName){
         ga('send', 'event', 'api', eventName, callerName, locations.length);
@@ -1855,6 +1862,8 @@ $(window).on("load", function() {
         if (elevationService == defaultElevatonService) {
           openApiKeyInfo();
         }
+        // callback
+        if (cb) cb(false);
       });
   }
 
@@ -2133,7 +2142,7 @@ $(window).on("load", function() {
   function toolElevate(e) {
     ga('send', 'event', 'tool', 'elevate', undefined, track.getLatLngs().length);
     $("#menu").hide();
-    if (track) elevate(track.getLatLngs(), function() {
+    if (track) elevate(track.getLatLngs(), function(success) {
       polystats.updateStatsFrom(0);
       saveState();
     });
@@ -2915,7 +2924,7 @@ $(window).on("load", function() {
     //console.log(e.type + ": " + latlng.i);
     if (i == track.getLatLngs().length - 1) {
       // last vertex
-      elevatePoint(latlng, function() {
+      elevatePoint(latlng, function(success) {
         polystats.updateStatsFrom(i);
       });
     }
@@ -2924,7 +2933,7 @@ $(window).on("load", function() {
 
   function dragVertex(e) {
     var i = e.vertex.getLatLng().i;
-    elevatePoint(e.vertex.getLatLng(), function() {
+    elevatePoint(e.vertex.getLatLng(), function(success) {
       polystats.updateStatsFrom(i);
     });
     //console.log(e.type + ": " + i);
