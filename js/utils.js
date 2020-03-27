@@ -355,8 +355,17 @@ if ('serviceWorker' in navigator) {
 
 window.onerror = function(messageOrEvent, source, line, row, err) {
   error(messageOrEvent.toString() + " [" + source + ": " + line + ", " + row);
+  var label = {
+    path: window.location.pathname,
+    ua: navigator.userAgent
+  };
+  if (err && err.stack) {
+    label.stack = stack;
+  }
   if (ga) {
-    ga('send', 'event', 'error', messageOrEvent.toString() +" ["+source+":"+line+","+row + "]",
-   "[" + window.location.pathname + "] " + navigator.userAgent);
+    ga('send', 'event', 'error', 
+      messageOrEvent.toString() +" ["+source+":"+line+","+row + "]",
+      JSON.stringify(label)
+    );
   }
 }
