@@ -1,25 +1,27 @@
 var map;
 var track;
 
+function setStatus(msg, options) {
+  $("#status-msg").text(msg);
+  var statusclass = options && options.class ? options.class : "status-info";
+  $("#status-msg").attr("class", statusclass);
+  var showspinner = options && !isUnset(options.spinner) && options.spinner;
+  $("#spinner").toggle(showspinner);
+  $("#status").fadeIn();
+  if (options && options.timeout) {
+    setTimeout(function() { clearStatus(); }, 1000 * options.timeout);
+  }
+}
+
+function clearStatus() {
+  $("#status").fadeOut(800);
+}
+
+setStatus("Loading...", { spinner: true });
+
 $(window).on("load", function() {
   
   consentCookies();
-    
-  function setStatus(msg, options) {
-    $("#status-msg").text(msg);
-    var statusclass = options && options.class ? options.class : "status-info";
-    $("#status-msg").attr("class", statusclass);
-    var showspinner = options && !isUnset(options.spinner) && options.spinner;
-    $("#spinner").toggle(showspinner);
-    $("#status").fadeIn();
-    if (options && options.timeout) {
-      setTimeout(function() { clearStatus(); }, 1000 * options.timeout);
-    }
-  }
-
-  function clearStatus() {
-    $("#status").fadeOut(800);
-  }
 
   /* folding settings */
   function toggleElement(e) {
@@ -736,14 +738,6 @@ $(window).on("load", function() {
     return $("#menu").is(":visible");
   }
 
-  $("#menu-button").click(function() {
-    if (isMenuVisible()) {
-      closeMenu();
-    } else {
-      openMenu();
-    }
-    return false;
-  });
   $("#menu-close").click(function() {
     closeMenu();
     return false;
@@ -3328,6 +3322,16 @@ $(window).on("load", function() {
   $("#joinonload").change(function(e) {
     joinOnLoad = isChecked("#joinonload");
     saveValOpt("wt.joinOnLoad", joinOnLoad);
+  });
+
+  // ready
+  $("#menu-button").click(function() {
+    if (isMenuVisible()) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+    return false;
   });
 
   $(window).on("unload", function() {
