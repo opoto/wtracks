@@ -1069,6 +1069,7 @@ $(window).on("load", function() {
     var pts = route._selectedRoute ? route._selectedRoute.coordinates : [];
     pts = L.PolyPrune.prune(pts, { tolerance: config.compressdefault, useAlt: true });
     ga('send', 'event', 'edit', 'merge', undefined, pts.length);
+    route.clearAllEventListeners();
     route.remove();
     route = undefined;
     routeStart = undefined;
@@ -3022,6 +3023,10 @@ $(window).on("load", function() {
     return true;
   }
 
+  function routingError(err) {
+    log("Routing failed " + err);
+  }
+
   function newMarker(e) {
 
     if (editMode == EDIT_MARKER) {
@@ -3053,6 +3058,7 @@ $(window).on("load", function() {
               }
             });
           }
+          router.on("routingerror", routingError);
           route = L.Routing.control({
             router: router,
             waypoints: [fromPt, toPt],

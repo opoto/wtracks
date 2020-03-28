@@ -360,7 +360,7 @@ window.onerror = function(messageOrEvent, source, line, row, err) {
     ua: navigator.userAgent
   };
   if (err && err.stack) {
-    label.stack = stack;
+    label.stack = err.stack;
   }
   if (ga) {
     ga('send', 'event', 'error', 
