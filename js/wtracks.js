@@ -1071,6 +1071,7 @@ $(window).on("load", function() {
     ga('send', 'event', 'edit', 'merge', undefined, pts.length);
     route.clearAllEventListeners();
     route.remove();
+    route._line = undefined;
     route = undefined;
     routeStart = undefined;
     for (var j = 0; j < pts.length; j++) {
@@ -3025,6 +3026,7 @@ $(window).on("load", function() {
 
   function routingError(err) {
     log("Routing failed " + err);
+    ga('send', 'event', 'error', 'routingError', err.toString());
   }
 
   function newMarker(e) {
