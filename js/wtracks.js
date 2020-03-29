@@ -350,6 +350,13 @@ $(window).on("load", function() {
     }
   }
 
+  function newWaypointTooltip(wtp) {
+    var ttip = wtp.bindTooltip(wtp.options.title, {permanent: wptLabel});
+    if (wptLabel) {
+      ttip.openTooltip();
+    }
+  }
+
   function newWaypoint(latlng, properties, wptLayer) {
 
     function deleteMarker(e) {
@@ -473,10 +480,7 @@ $(window).on("load", function() {
 
     if (wptLayer == waypoints) {
       marker.getElement().removeAttribute("title"); // remove default HTML tooltip
-      var ttip = marker.bindTooltip(wptOpts.title, {permanent: wptLabel});
-      if (wptLabel) {
-        ttip.openTooltip();
-      }
+      newWaypointTooltip(marker);
       marker.on("click", function() {
         pop = L.popup({ "className" : "overlay" })
           .setLatLng(marker.getLatLng())
@@ -492,12 +496,9 @@ $(window).on("load", function() {
     wptLabel = !wptLabel;
     storeVal("wt.wptLabel", wptLabel);
     arrayForEach(waypoints.getLayers(), function (idx, wpt) {
-      wpt.options.permanent = wptLabel;
-      if (wptLabel) {
-        wpt.openTooltip()
-      } else {
-        wpt.closeTooltip()
-      }
+      // create new tooltip (they're not mutable!)
+      wpt.unbindTooltip();
+      newWaypointTooltip(wpt);
     })
   });
 
