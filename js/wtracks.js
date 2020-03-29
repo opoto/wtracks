@@ -3051,6 +3051,7 @@ $(window).on("load", function() {
               { urlParameters: { vehicle: getCurrentActivity().vehicle } }
             );
             router.on("response", checkGraphHopperCredit);
+            router.on("routingerror", routingError);
           } else {
             router = L.Routing.openrouteservice(getApiKey(orskey), {
               profile: getCurrentActivity().vehicle == "foot" ? "foot-hiking" : "cycling-regular",
@@ -3060,7 +3061,6 @@ $(window).on("load", function() {
               }
             });
           }
-          router.on("routingerror", routingError);
           route = L.Routing.control({
             router: router,
             waypoints: [fromPt, toPt],
