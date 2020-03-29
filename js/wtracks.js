@@ -1,5 +1,11 @@
 var map;
 var track;
+var waypoints;
+var editLayer;
+var route;
+var routeStart;
+var routeLog;
+var polystats;
 
 function setStatus(msg, options) {
   $("#status-msg").text(msg);
@@ -74,12 +80,6 @@ $(window).on("load", function() {
   var EMPTY_METADATA = { name: NEW_TRACK_NAME, desc: "" };
 
   var metadata = EMPTY_METADATA;
-  var waypoints;
-  var editLayer;
-  var route;
-  var routeStart;
-  var routeLog;
-  var polystats;
   var prunedist = getVal("wt.prunedist", config.compressdefault);
   var prunealt = getBoolVal("wt.prunealt", false);
 
