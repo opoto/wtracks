@@ -359,15 +359,15 @@
           <div>
             <span class="fold fold-settings-closed material-icons" id="settings-trkstg-closed">&#xE5CC;</span>
             <span class="fold-settings trkstg material-icons">&#xE5CF;</span>
-            <span  class="fold fold-link fold-settings" id="settings-trkstg">Track display options</span>
+            <span  class="fold fold-link fold-settings" id="settings-trkstg">Display options</span>
             <span id="trkopts" class="help-b material-icons" title="Help">&#xE8FD;</span>
             <p id="trkopts-help" class="help-p">
-              Configure the color and width of your track on the map.
+              Configure track colors and other display options.
             </p>
           </div>
         </td>
       </tr>
-      <tr class="notopborder fold-settings trkstg">
+      <tr class="notopborder nobottomborder fold-settings trkstg">
         <td>
         </td>
         <td>
@@ -392,6 +392,19 @@
             <span class="setting-name hide-on-small-screen">&nbsp;</span>
             <button id="track-resetcolorweight" class="setting-value">Reset</button>
           </div>
+      </tr>
+      <tr class="notopborder fold-settings trkstg">
+        <td>
+        </td>
+        <td>
+          <input id="wptLabel" class="no-trim" type="checkbox" />
+          <label for="wptLabel">Always display waypoint labels</label>
+          <span id="wptLabelhlp" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <p id="wptLabelhlp-help" class="help-p">
+            When unchecked, waytpoint title is only displayed when 
+            the mouse is over the waypoint.
+          </p>
+      </td>
       </tr>
       <tr class="nobottomborder">
         <td colspan="2">

@@ -17,7 +17,8 @@ var config = {
     trackColor: "#FF0000",
     trackWeight: 3,
     ovlTrackColor: "#FFAAAA",
-    ovlTrackWeight: 3
+    ovlTrackWeight: 3,
+    wptLabel: false
   },
   maxfilesize: 1024 * 1024, // 1GB
   elevationTimeout: 5000,

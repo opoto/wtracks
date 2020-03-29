@@ -82,6 +82,7 @@ $(window).on("load", function() {
   var metadata = EMPTY_METADATA;
   var prunedist = getVal("wt.prunedist", config.compressdefault);
   var prunealt = getBoolVal("wt.prunealt", false);
+  var wptLabel = getBoolVal("wt.wptLabel", config.wptLabel);
 
   var EDIT_NONE = 0;
   var EDIT_MANUAL_TRACK = 1;
@@ -373,8 +374,8 @@ $(window).on("load", function() {
         name.onkeyup = function() {
           var nameval = $(name).val().trim();
           marker.options.title = nameval;
+          marker.getTooltip().setContent(nameval);
           var elt = marker.getElement();
-          elt.title = nameval;
           elt.alt = nameval;
         };
 
@@ -471,6 +472,11 @@ $(window).on("load", function() {
     wptLayer.addLayer(marker);
 
     if (wptLayer == waypoints) {
+      marker.getElement().removeAttribute("title"); // remove default HTML tooltip
+      var ttip = marker.bindTooltip(wptOpts.title, {permanent: wptLabel});
+      if (wptLabel) {
+        ttip.openTooltip();
+      }
       marker.on("click", function() {
         pop = L.popup({ "className" : "overlay" })
           .setLatLng(marker.getLatLng())
@@ -481,6 +487,19 @@ $(window).on("load", function() {
 
     return marker;
   }
+
+  $("#wptLabel").change(function(evt){
+    wptLabel = !wptLabel;
+    storeVal("wt.wptLabel", wptLabel);
+    arrayForEach(waypoints.getLayers(), function (idx, wpt) {
+      wpt.options.permanent = wptLabel;
+      if (wptLabel) {
+        wpt.openTooltip()
+      } else {
+        wpt.closeTooltip()
+      }
+    })
+  });
 
   /* ------------------------ TRIMMING ---------------------------------- */
 
@@ -729,6 +748,7 @@ $(window).on("load", function() {
     setEditMode(EDIT_NONE);
     setChecked("#merge", false);
     setChecked("#apikeys-suggest", !apikeyNoMore);
+    setChecked("#wptLabel", wptLabel);
     prepareTrim();
     $("#prunedist").val(prunedist);
     setChecked("#prunealt", prunealt);
@@ -1412,6 +1432,7 @@ $(window).on("load", function() {
     saveValOpt("wt.mapslist", mapsList);
     saveValOpt("wt.mapsCloseOnClick", mapsCloseOnClick);
     saveValOpt("wt.apikeyNoMore", apikeyNoMore);
+    saveValOpt("wt.wptLabel", wptLabel);
   }
 
   function saveStateFile() {
