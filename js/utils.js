@@ -46,6 +46,11 @@ if (!String.prototype.startsWith) {
   };
 }
 
+function rounddec(number, decimals) {
+  var coef = Math.pow(10, decimals);
+  return Math.round(number * coef) / coef;
+}
+
 /* ----------------------- Html encode/decode ---------------------- */
 
 function htmlEncode(txt) {

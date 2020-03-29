@@ -2827,7 +2827,7 @@ $(window).on("load", function() {
     var p;
 
     p = L.DomUtil.create("div", "popupdiv", div);
-    p.innerHTML = "<span class='popupfield'>Position:</span> " + latlng.lat + "," + latlng.lng;
+    p.innerHTML = "<span class='popupfield'>Position:</span> " + rounddec(latlng.lat,5) + "," + rounddec(latlng.lng,5);
 
     if (editMode != EDIT_NONE) {
 
