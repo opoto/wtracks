@@ -26,7 +26,7 @@ function clearStatus() {
 setStatus("Loading...", { spinner: true });
 
 $(window).on("load", function() {
-  
+
   consentCookies();
 
   /* folding settings */
@@ -279,6 +279,15 @@ $(window).on("load", function() {
       }
     });
     return count;
+  }
+
+  function applySegmentTool(toolFunc) {
+    var onAllSegments = isChecked("#allsegments");
+    if (onAllSegments) {
+      forEachSegment(toolFunc);
+    } else {
+      toolFunc(track);
+    }
   }
 
   /* ------------------------------------------------------------*/
@@ -1217,6 +1226,7 @@ $(window).on("load", function() {
   }
 
   $("#compress").click(function() {
+
     // get & check input value
     var prunedistelt = $("#prunedist");
     var input = prunedistelt.val().trim();
@@ -1239,20 +1249,33 @@ $(window).on("load", function() {
     saveValOpt("wt.prunealt", prunealt);
 
     if (track) {
-      setEditMode(EDIT_NONE);
-      var pts = track.getLatLngs();
-      var pruned = L.PolyPrune.prune(pts, { tolerance: prunedist, useAlt: prunealt });
-      var removedpts = (pts.length - pruned.length);
-      ga('send', 'event', 'tool', 'compress', undefined, removedpts);
+
+      var removedpts = 0;
+      var totalpts = 0;
+
+      applySegmentTool(function (segment) {
+        var pts = segment.getLatLngs();
+        var pruned = L.PolyPrune.prune(pts, { tolerance: prunedist, useAlt: prunealt });
+        totalpts += pts.length;
+        var reduced = pts.length - pruned.length;
+        if (reduced > 0) {
+          // switch to new values
+          removedpts += reduced;
+          segment.setLatLngs(pruned);
+          if (segment == track) {
+            polystats.updateStatsFrom(0);
+          }
+        }
+      });
+
       if (removedpts > 0) {
-        alert("Removed " + removedpts + " points out of " + pts.length + " (" + Math.round((removedpts / pts.length) * 100) + "%)");
-        // switch to new values
-        track.setLatLngs(pruned);
-        polystats.updateStatsFrom(0);
+        ga('send', 'event', 'tool', 'compress', undefined, removedpts);
+        alert("Removed " + removedpts + " points out of " + totalpts + " (" + Math.round((removedpts / totalpts) * 100) + "%)");
         saveState();
       } else {
         setStatus("Already optimized", { timeout: 3 });
       }
+
     }
   });
 
@@ -1904,32 +1927,6 @@ $(window).on("load", function() {
 
   // ---------------------------------------------------------------------------
 
-  function cleanup(toclean) {
-    setStatus("Cleaning up..", { spinner: true });
-    var points = track ? track.getLatLngs() : undefined;
-    if (points && (points.length > 0)) {
-      for (var i = 0; i < points.length; i++) {
-        for (var j = 0; j < toclean.length; j++) {
-          points[i][toclean[j]] = undefined;
-        }
-      }
-    }
-    clearStatus();
-  }
-
-  function revert() {
-    setStatus("Reverting..", { spinner: true });
-    var points = track ? track.getLatLngs() : undefined;
-    if (points && (points.length > 0)) {
-      var newpoints = [];
-      for (var i = points.length - 1; i >= 0; i--) {
-        newpoints.push(points[i]);
-      }
-      track.setLatLngs(newpoints);
-    }
-    clearStatus();
-  }
-
   new L.Control.GeoSearch({
     provider: new L.GeoSearch.Provider.OpenStreetMap(),
     position: 'topleft',
@@ -2164,12 +2161,25 @@ $(window).on("load", function() {
   function toolElevate(e) {
     ga('send', 'event', 'tool', 'elevate', undefined, track.getLatLngs().length);
     $("#menu").hide();
-    if (track) elevate(track.getLatLngs(), function(success) {
-      polystats.updateStatsFrom(0);
-      saveState();
+
+    setStatus("Elevating...", { spinner: true });
+    var count = 0;
+    applySegmentTool(function (segment) {
+      count++;
+      elevate(segment.getLatLngs(), function(success) {
+        if (segment == track) {
+          polystats.updateStatsFrom(0);
+        }
+        if (--count == 0) {
+          saveState();
+          clearStatus();
+        }
+      });
     });
+
     return false;
   }
+
   $("#elevate").click(toolElevate);
 
   $("#cleanup").click(function(e) {
@@ -2180,24 +2190,58 @@ $(window).on("load", function() {
     if (isChecked("#cleanuptime")) {
       toclean.push("time");
     }
-    if (toclean.length == 0 || !track.getLatLngs().length) {
+    if (toclean.length == 0) {
       // nothing to clean
       return;
     }
-    ga('send', 'event', 'tool', 'cleanup', toclean.toString(), track.getLatLngs().length);
-    $("#menu").hide();
-    cleanup(toclean);
-    polystats.updateStatsFrom(0);
-    saveState();
+
+    var count = 0;
+
+    applySegmentTool(function(segment) {
+      var points = segment ? segment.getLatLngs() : undefined;
+      if (points && (points.length > 0)) {
+        count += points.length;
+        for (var i = 0; i < points.length; i++) {
+          for (var j = 0; j < toclean.length; j++) {
+            points[i][toclean[j]] = undefined;
+          }
+        }
+        if (segment == track) {
+          polystats.updateStatsFrom(0);
+        }
+      }
+    });
+
+    if (count) {
+      ga('send', 'event', 'tool', 'cleanup', toclean.toString(), count);
+      saveState();
+    }
+
     return false;
   });
 
   $("#revert").click(function(e) {
-    ga('send', 'event', 'tool', 'revert', undefined, track.getLatLngs().length);
-    $("#menu").hide();
-    revert();
-    polystats.updateStatsFrom(0);
-    saveState();
+    var count = 0;
+    applySegmentTool(function (segment) {
+      var points = segment ? segment.getLatLngs() : undefined;
+      if (points && (points.length > 0)) {
+        var newpoints = [];
+        count += points.length;
+        for (var i = points.length - 1; i >= 0; i--) {
+          newpoints.push(points[i]);
+        }
+        segment.setLatLngs(newpoints);
+        if (segment == track) {
+          polystats.updateStatsFrom(0);
+        }
+      }
+    });
+
+    if (count) {
+      ga('send', 'event', 'tool', 'revert', undefined, count);
+      saveState();
+    }
+
     return false;
   });
 
@@ -3371,6 +3415,5 @@ $(window).on("load", function() {
   $(window).on("unload", function() {
     saveState();
   });
-  
-});
 
+});
