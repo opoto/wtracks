@@ -1021,8 +1021,8 @@ $(window).on("load", function() {
         $("#wtshare-val").focus();
         $("#wtshare-val").select();
       }, function(error) {
-        var errmsg = error.statusText ? error.statusText : error;
-        ga('send', 'event', 'error', 'share ' + cryptoMode, errmsg, Math.round(gpx.length / 1000));
+        var errmsg = error.statusText || error;
+        ga('send', 'event', 'error', 'share ' +  share.name + ' ' + cryptoMode, errmsg, Math.round(gpx.length / 1000));
         alert("Upload failed, is file too big? Reduce it using Tools/Compress");
         setStatus("Failed: " + errmsg, { timeout: 5, class: "status-error" });
         $("#wtshare-box").hide();
@@ -2617,9 +2617,9 @@ $(window).on("load", function() {
         $("#dbs_passcode").text(passcode);
         $("#confirm-dropbox").show();
       }, function(jqXHR, textStatus, errorThrown) {
-        var errmsg = jqXHR.statusText ? jqXHR.statusText : jqXHR;
+        var errmsg = jqXHR.statusText || textStatus || jqXHR;
         alert("Upload failed, is file too big? Reduce it using Tools/Compress");
-        ga('send', 'event', 'error', 'dropboxTempShare.upload', errmsg, Math.round(gpx.length / 1000));
+        ga('send', 'event', 'error', dropboxTempShare.name + ' upload', errmsg, Math.round(gpx.length / 1000));
       }
     );
   });
