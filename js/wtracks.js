@@ -269,6 +269,20 @@ $(window).on("load", function() {
 
   /* ------------------------------------------------------------*/
 
+  function forEachSegment(func) {
+    var count = 0;
+    arrayForEach(editLayer.getLayers(), function(idx, segment) {
+      // check if it is a polyline
+      if (segment.getLatLngs) {
+        count++;
+        func(segment);
+      }
+    });
+    return count;
+  }
+
+  /* ------------------------------------------------------------*/
+
   function updateTrackStyle() {
     track.setStyle({
       color: trackUI.trk.getColor(),
@@ -284,9 +298,9 @@ $(window).on("load", function() {
   }
 
   function updateAllOverlayTrackStyle() {
-    arrayForEach(editLayer.getLayers(), function(idx, segment) {
-      // check if it is a polyline
-      if (segment.getLatLngs && (segment != track)) {
+    forEachSegment(function(segment) {
+      // check it is not current track
+      if (segment != track) {
         updateOverlayTrackStyle(segment);
       }
     });
@@ -1243,24 +1257,16 @@ $(window).on("load", function() {
   });
 
   function joinSegments() {
-    var
-      seg1,
-      count = 0,
-      layers = editLayer.getLayers();
-    for (var i = 0, len = layers.length; i < len; i++) {
-      var segment = layers[i];
-      // check if it is a polyline
-      if (segment.getLatLngs) {
-        count++;
-        if (!seg1) {
-          seg1 = segment;
-        } else {
-          seg1.setLatLngs(seg1.getLatLngs().concat(segment.getLatLngs()));
-          segment.remove();
-          segment.removeFrom(editLayer);
-        }
+    var seg1;
+    var count = forEachSegment(function(segment) {
+      if (!seg1) {
+        seg1 = segment;
+      } else {
+        seg1.setLatLngs(seg1.getLatLngs().concat(segment.getLatLngs()));
+        segment.remove();
+        segment.removeFrom(editLayer);
       }
-    }
+    });
     if (count > 1) {
       track = null;
       segmentClickListener({target: seg1}, true);
@@ -1401,10 +1407,8 @@ $(window).on("load", function() {
     // 1. waypoints
     var numPts = waypoints.getLayers().length;
     // 2. All segment points
-    arrayForEach(editLayer.getLayers(), function(idx, segment) {
-      if (segment.getLatLngs) {
+    forEachSegment(function(segment) {
         numPts += segment.getLatLngs().length;
-      }
     });
     // Don't save if more than 1500 points
     if (numPts < 1500) {
