@@ -243,9 +243,7 @@
     </table>
     <table id="menutools">
       <tr>
-        <td>
-        </td>
-        <td>
+        <td colspan="2">
           <input type="checkbox" id="allsegments" />
           <label for="allsegments">Apply (*) tools on all segments</label>
           <span id="allsegmentstxt" class="help-b material-icons" title="Help">&#xE8FD;</span><br/>
@@ -262,7 +260,7 @@
           Remove track points within a <input id="prunedist" type="text" size="2"/>
           <span class="distUnit"></span>s band
           <span id="compresstxt" class="help-b material-icons" title="Help">&#xE8FD;</span><br/>
-          <label><input id="prunealt" type="checkbox" checked="checked"/> Consider altitude distance</label>
+          <label><input id="prunealt" type="checkbox" checked="checked"/> Consider altitude</label>
           <p id="compresstxt-help" class="help-p">
             Reduces track size without significantly changing track shape.
           </p>
@@ -285,11 +283,11 @@
           <button id="cleanup" class="no-trim">Clean-up*</button>
         </td>
         <td>
-          Delete selected track data:
+          Delete track data:
           <span id="cleanuptxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <br/>
           <label><input id="cleanupalt" type="checkbox"/> Altitude</label>
-          <label><input id="cleanuptime" type="checkbox"/> Recorded time</label>
+          <label><input id="cleanuptime" type="checkbox"/> Time</label>
           <p id="cleanuptxt-help" class="help-p">
             Delete elevation and/or GPS-recorded time data on each track point.
           </p>
@@ -312,7 +310,7 @@
           <button id="join" class="no-trim">Join segments</button>
         </td>
         <td>
-          Combine segments
+          Combine all segments
           <span id="jointxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
           <p id="jointxt-help" class="help-p">
             Removes separation between all track segments in the editor.
