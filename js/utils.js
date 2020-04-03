@@ -359,7 +359,8 @@ if ('serviceWorker' in navigator) {
 /* ---------------------- track errors ------------------------*/
 
 window.onerror = function(messageOrEvent, source, line, row, err) {
-  error(messageOrEvent.toString() + " [" + source + ": " + line + ", " + row);
+  var errmsg = messageOrEvent.toString() + " [" + source + ": " + line + ", " + row + "]";
+  error(errmsg);
   var label = {
     path: window.location.pathname,
     ua: navigator.userAgent
@@ -367,10 +368,9 @@ window.onerror = function(messageOrEvent, source, line, row, err) {
   if (err && err.stack) {
     label.stack = err.stack;
   }
-  if (ga) {
-    ga('send', 'event', 'error', 
-      messageOrEvent.toString() +" ["+source+":"+line+","+row + "]",
-      JSON.stringify(label)
-    );
+  if (getLocalCode() && (errmsg.indexOf("Script error. ")!=0)) {
+    alert(errmsg);
+  } else if (ga) {
+    ga('send', 'event', 'error', errmsg, JSON.stringify(label));
   }
 }
