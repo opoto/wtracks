@@ -78,9 +78,9 @@ function getParameterByName(name, defaultValue) {
 /* ------------------ Drop down menu utils -------------------- */
 
 // add a drop down menu item
-function addSelectOption(select, optval) {
+function addSelectOption(select, optval, optdisplay) {
   var opt = document.createElement("option");
-  opt.innerHTML = optval;
+  opt.innerHTML = optdisplay || optval;
   opt.value = optval;
   opt.setAttribute("name", optval);
   select.appendChild(opt);

@@ -115,12 +115,14 @@ body {
 }
 #menufile td:first-child {
   min-width: 80px;
+  max-width: 140px;
 }
 #menu td:first-child button {
   width: 100%
 }
 #menu td:nth-child(2) {
   padding-right: 10px;
+  min-width: 75%;
 }
 #track-get-url {
   width:95%;
@@ -135,6 +137,7 @@ body {
 #menuabout a:link, #menuabout a:visited,
 #wtshare-ask a:link, #wtshare-ask a:visited,
 #wtshare-done a:link, #wtshare-done a:visited,
+#share-props a:link, #share-props a:visited,
 .text a:link, .text a:visited,
 .help-p a:link, .help-p a:visited {
   text-decoration: none;
@@ -307,6 +310,10 @@ a.button {
 
 .red {
   color: red;
+}
+
+.green {
+  color: green;
 }
 
 .highlight{
@@ -889,7 +896,7 @@ button:active,
     padding: 0;
     font-size: 80%;
   }
-  
+
 }
 
 /* for 480px or less */

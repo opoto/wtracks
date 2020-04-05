@@ -49,6 +49,7 @@ function consentCookies() {
 /* help buttons */
 function toggleHelp(e) {
   $("#" + this.id + "-help").toggle();
+  $("." + this.id + "-help").toggle();
   e.stopPropagation();
   return false;
 }

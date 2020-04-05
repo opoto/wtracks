@@ -1078,18 +1078,8 @@ $(window).on("load", function() {
   $("#wtshare-val").keyup(closeShareBoxOnEscape);
   $("#wtshare-ok").keyup(closeShareBoxOnEscape);
 
-  var setshare = getParameterByName("share");
-  if (setshare) {
-    if (pastesLib[setshare]) {
-      storeVal("wt.share", setshare);
-    } else {
-      storeVal("wt.share", undefined);
-    }
-  }
   var sharename = getVal("wt.share", undefined);
-  var share = sharename ? pastesLib[sharename] : pastesLib[Object.keys(pastesLib)[0]];
-  $("#wtshare-name").text(share.name);
-  $("#wtshare-web").attr("href", share.web);
+  var share = (sharename && pastesLib[sharename]) || pastesLib[Object.keys(pastesLib)[0]];
 
   // fileio automatically deletes paste after download, perfect for dropbox use case
   var dropboxTempShare = sharename ? pastesLib[sharename] : pastesLib.fileio;
@@ -3281,7 +3271,7 @@ $(window).on("load", function() {
 
   function menu(item, event) {
     $("#menu").show();
-    $("#menu table").hide();
+    $("#menu>table").hide();
     $(".tablinks").removeClass("active");
     $("#tab" + item).addClass("active");
     $("#menu #menu" + item).show();
@@ -3371,6 +3361,40 @@ $(window).on("load", function() {
   }
 
   initTrackDisplaySettings();
+
+  /* -------------- Share libs --------------- */
+
+  var pasteLibSelect = $("#share-libs")[0];
+  function initShareLib() {
+    objectForEach(pastesLib, function(name, pl) {
+      if (pl.enabled) {
+        addSelectOption(pasteLibSelect, name, pl.name);
+      }
+    });
+  }
+  function changeShareLib(evt) {
+    var libname = getSelectedOption(pasteLibSelect);
+    share = pastesLib[libname] || share;
+    $("#share-web").html("<a href='" + share.web + "' title='" + share.web + "' >" + share.web + "</a>");
+    $("#share-max-size").html(share.maxSize);
+    $("#share-max-time").html(share.maxTime);
+    $("#share-max-downloads").html(share.maxDownloads);
+    $("#share-status").html("?");
+    share.ping(
+      function() { $("#share-status").html("working <span class='material-icons'>check_circle_outline</span>");},
+      function() { $("#share-status").html("NOT working <span class='red material-icons'>highlight_off</span>");},
+    )
+    // share prompt dialog
+    $("#wtshare-name").text(share.name);
+    $("#wtshare-web").attr("href", share.web);
+    saveValOpt("wt.share", libname);
+  }
+  initShareLib();
+  selectOption(pasteLibSelect, sharename);
+  changeShareLib();
+  $("#share-libs").on("change", changeShareLib);
+
+  /* ------------------------------------------- */
 
   // specific style for personal maps & overlays
   $(".leaflet-control-layers-list .leaflet-control-layers-selector").each(function(idx, elt) {

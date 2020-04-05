@@ -230,15 +230,35 @@
           </div>
         </td>
       </tr>
-      <tr class="notopborder fold-file share">
+      <tr class="notopborder nobottomborder fold-file share">
         <td>
           <button id="track-share" title="Share through a link">
-            Share
+            Share...
           </button>
         </td>
         <td>
-          Share current track
+          track using
+          <select id="share-libs"></select>
+          <span id="sharetxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <br/>
+          <span>Service is <span id="share-status"></span></span>
         </td>
+      </tr>
+      <tr class="notopborder nobottomborder fold-file share share-props">
+        <td class="help-p sharetxt-help">Hosted by:</td>
+        <td class="help-p sharetxt-help" id="share-web"></td>
+      </tr>
+      <tr class="notopborder nobottomborder fold-file share share-props">
+        <td class="help-p sharetxt-help">Max file size:</td>
+        <td class="help-p sharetxt-help" id="share-max-size"></td>
+      </tr>
+      <tr class="notopborder nobottomborder fold-file share share-props">
+        <td class="help-p sharetxt-help">Max storage time:</td>
+        <td class="help-p sharetxt-help" id="share-max-time"></td>
+      </tr>
+      <tr class="notopborder fold-file share share-props">
+        <td class="help-p sharetxt-help">Max downloads:</td>
+        <td class="help-p sharetxt-help" id="share-max-downloads"></td>
       </tr>
     </table>
     <table id="menutools">

@@ -75,7 +75,7 @@
      data: JSON.stringify({
        "title": name,
        "snippet": gpx,
-       "password": "moncode",
+       "password": "dummy",
        "language": "xml"
      })
    }).done(function(resp) {
@@ -112,7 +112,7 @@ function fileioUpload(name, gpx, onDone, onFail) {
 
     $.ajax({
       url: "//file.io/?expires=1d",
-      type: "POST", 
+      type: "POST",
       data: formData,
       processData: false,
       contentType: false,
@@ -130,16 +130,92 @@ function fileioUpload(name, gpx, onDone, onFail) {
 }
 
  // ------------------------------------------------------------------
+ // transfer.sh
+ // ------------------------------------------------------------------
+
+function transferUpload(name, gpx, onDone, onFail) {
+  function getId() {
+    return Math.random().toString(36).substring(2);
+  }
+  var id = getId() + "-" + getId();
+  var sharedurl = "//transfer.sh/" + id;
+  $.ajax({
+    url: sharedurl,
+    type: 'PUT',
+    timeout: 60000,
+    dataType: "json",
+    data: gpx,
+  }).done(function(resp) {
+    if (resp.status === "ok") {
+      onDone(resp.text, resp.text);
+    } else {
+      onFail(resp);
+    }
+  }).fail(onFail);
+}
+
+ // ------------------------------------------------------------------
+ // gofile.io
+ // ------------------------------------------------------------------
+
+function gofileUpload(name, gpx, onDone, onFail) {
+  function _gofileUpload(server, name, gpx, onDone, onFail) {
+    try {
+      var formData = new FormData();
+      var blob = new Blob([gpx], { type: "text/xml" });
+      formData.append("filesUploaded", blob, "wtracks.gpx");
+
+      var gofileUrl = "https://" + server + ".gofile.io/";
+      $.ajax({
+        method: "POST",
+        url: gofileUrl + "upload",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+      }).done(function (resp) {
+        if (resp.status == "ok") {
+          //$.get("https://gofile.io/?c=" + resp.data.code);
+          onDone("https://gofile.io/?c=" + resp.data.code,
+            gofileUrl + "download/" + resp.data.code + "/wtracks.gpx");
+        } else {
+          onFail("gofile upload failed: " + resp.status);
+        }
+      }).fail(onFail);
+    } catch (err) {
+      onFail("gofile upload failed: formData not supported");
+    }
+  }
+
+  $.get("//apiv2.gofile.io/getServer").done(function (resp) {
+    if (resp.status == "ok" && resp.data && resp.data.server) {
+      _gofileUpload(resp.data.server, name, gpx, onDone, onFail);
+    } else {
+      onFail("failed to get gofile server");
+    }
+  }).fail(onFail);
+
+}
+
+ // ------------------------------------------------------------------
  // Common
  // ------------------------------------------------------------------
 
-
- // for shares who cannot delete
- function noDelete() {
-     warn("Delete of temp sharing no implemented");
+ function pingUrl(url, onDone, onFail) {
+  try {
+    $.ajax({
+      method: "GET",
+      url: url,
+    })
+    .done(onDone)
+    .fail(onFail);
+  } catch (err) {
+    onFail();
+  }
  }
- // silently does nothing
- function nop() {}
+
+ // when no delete API available
+ var noDelete;
 
  // ------------------------------------------------------------------
  // The share library
@@ -147,28 +223,66 @@ function fileioUpload(name, gpx, onDone, onFail) {
 
 
 var pastesLib = {
-   "friendpaste": {
-     "name": "FriendPaste",
-     "web": "https://friendpaste.com/",
-     "upload": friendpasteUpload,
-     "delete": noDelete
-   },
-   "htput": { // expired certificate
-     "name": "HTPut",
-     "web": "https://htput.com/",
-     "upload": htputUpload,
-     "delete": htputDelete
-   },
-   "dpaste": { // no HTTPS
-     "name": "DPaste",
-     "web": "https://dpaste.com/",
-     "upload": dpasteUpload,
-     "delete": noDelete
-   },
-   "fileio": {
-     "name": "file.io",
-     "web": "https://file.io/",
-     "upload": fileioUpload,
-     "delete": nop // no need to delete
-   }
- };
+  "friendpaste": {
+    "enabled": true,
+    "name": "FriendPaste",
+    "web": "https://friendpaste.com/",
+    "maxSize": "Approx. 80KB",
+    "maxTime": "Unknown",
+    "maxDownloads": "Unlimited",
+    "upload": friendpasteUpload,
+    "ping": function(done, fail) { pingUrl("https://friendpaste.com/dummy", done, fail); },
+    "delete": noDelete
+  },
+  "htput": { // expired certificate
+    "name": "HTPut",
+    "enabled": true,
+    "web": "https://htput.com/",
+    "maxSize": "1MB per day",
+    "maxTime": "Unknown",
+    "maxDownloads": "Unlimited",
+    "upload": htputUpload,
+    "ping": function(done, fail) { pingUrl("https://htput.com/dummy", done, fail); },
+    "delete": htputDelete
+  },
+  "dpaste": { // no HTTPS
+    "name": "DPaste",
+    "enabled": false,
+    "web": "https://dpaste.com/",
+    "maxSize": "Unknown",
+    "maxTime": "2 months",
+    "maxDownloads": "Unlimited",
+    "upload": dpasteUpload,
+    "delete": noDelete
+  },
+    "fileio": {
+    "name": "file.io",
+    "enabled": false, // sharing requires more than 1 request
+    "web": "https://file.io/",
+    "maxSize": "5GB",
+    "maxTime": "1 day",
+    "maxDownloads": "<span class='material-icons symbol'>warning</span> Once only!",
+    "upload": fileioUpload,
+    "delete": noDelete // automatic deletion on first download
+  },
+  "transfer.sh": {
+    "name": "transfer.sh",
+    "enabled": false,
+    "web": "https://transfer.sh",
+    "maxSize": "10GB",
+    "maxTime": "14 days",
+    "maxDownloads": "Unlimited",
+    "upload": transferUpload,
+    "delete": noDelete
+  },
+  "gofile": {
+    "name": "gofile.io",
+    "enabled": false,
+    "web": "https://gofile.io/",
+    "maxSize": "No limit!",
+    "maxTime": "Unknown",
+    "maxDownloads": "Unlimited",
+    "upload": gofileUpload,
+    "delete": noDelete
+  }
+};
