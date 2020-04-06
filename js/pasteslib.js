@@ -231,7 +231,7 @@ var pastesLib = {
     "maxTime": "Unknown",
     "maxDownloads": "Unlimited",
     "upload": friendpasteUpload,
-    "ping": function(done, fail) { pingUrl("https://friendpaste.com/dummy", done, fail); },
+    "ping": function(done, fail) { pingUrl("https://friendpaste.com/4yufAYfTKm8xKMJuXPDRhs/raw", done, fail); },
     "delete": noDelete
   },
   "htput": { // expired certificate
