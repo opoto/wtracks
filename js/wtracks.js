@@ -3381,7 +3381,7 @@ $(window).on("load", function() {
     $("#share-max-downloads").html(share.maxDownloads);
     $("#share-status").html("?");
     share.ping(
-      function() { $("#share-status").html("working <span class='material-icons'>check_circle_outline</span>");},
+      function() { $("#share-status").html("working <span class='green material-icons'>check_circle_outline</span>");},
       function() { $("#share-status").html("NOT working <span class='red material-icons'>highlight_off</span>");},
     )
     // share prompt dialog
