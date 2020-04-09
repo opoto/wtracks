@@ -1023,7 +1023,7 @@ $(window).on("load", function() {
   }
 
   function shareGpx(gpx, params, cryptoMode) {
-    ga('send', 'event', 'file', 'share', cryptoMode, Math.round(gpx.length / 1000));
+    ga('send', 'event', 'file', 'share', share.name + ', ' + cryptoMode, Math.round(gpx.length / 1000));
     share.upload(
       getTrackName(), gpx,
       function (gpxurl, rawgpxurl) {
