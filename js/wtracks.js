@@ -1,6 +1,7 @@
 var map;
 var track;
 var waypoints;
+var extremities;
 var editLayer;
 var route;
 var routeStart;
@@ -82,7 +83,8 @@ $(window).on("load", function() {
   var metadata = EMPTY_METADATA;
   var prunedist = getVal("wt.prunedist", config.compressdefault);
   var prunealt = getBoolVal("wt.prunealt", false);
-  var wptLabel = getBoolVal("wt.wptLabel", config.wptLabel);
+  var wptLabel = getBoolVal("wt.wptLabel", config.display.wptLabel);
+  var extMarkers = getBoolVal("wt.extMarkers", config.display.extMarkers);
 
   var EDIT_NONE = 0;
   var EDIT_MANUAL_TRACK = 1;
@@ -107,6 +109,18 @@ $(window).on("load", function() {
     shadowRetinaUrl: 'img/marker-shadow-2x.png',
     shadowSize: [26, 26],
     shadowAnchor: [8, 26]
+  });
+  var START_MARKER_ICON = L.icon({
+    iconUrl: 'img/marker-start.png',
+    iconSize: [17, 17],
+    iconAnchor: [8, 8],
+    popupAnchor: [0, 0],
+  });
+  var END_MARKER_ICON = L.icon({
+    iconUrl: 'img/marker-end.png',
+    iconSize: [17, 17],
+    iconAnchor: [8, 8],
+    popupAnchor: [0, 0],
   });
 
   var OFF_KEY = "OFF_";
@@ -275,7 +289,7 @@ $(window).on("load", function() {
       // check if it is a polyline
       if (segment.getLatLngs) {
         count++;
-        func(segment);
+        return func(segment);
       }
     });
     return count;
@@ -345,6 +359,59 @@ $(window).on("load", function() {
     return track;
   }
 
+  function createExtremities() {
+    function createExtremity(name, icon) {
+      var mkOpts = {
+        title: name,
+        alt: name,
+        icon: icon
+      };
+      var marker = L.marker([0,0], mkOpts);
+      extremities.addLayer(marker);
+    }
+    extremities = L.featureGroup([]);
+    editLayer.addLayer(extremities);
+    createExtremity("Start", START_MARKER_ICON);
+    createExtremity("End", END_MARKER_ICON);
+    setExtrimityVisibility(extMarkers);
+  }
+
+  function setExtrimityVisibility(visible) {
+    if (extremities) {
+      if (visible && extMarkers) {
+        extremities.addTo(map);
+      } else {
+        extremities.remove();
+      }
+    }
+  }
+
+  function updateExtremity(latlng, i) {
+    var eidx = -1;
+    if (i == 0) {
+      eidx = 0;
+    } else if (i == track.getLatLngs().length -1) {
+      eidx = 1;
+    }
+    if (eidx >= 0) {
+      extremities.getLayers()[eidx].setLatLng(latlng);
+    }
+  }
+
+  function updateExtremities() {
+    if (extremities && track) {
+      updateExtremity(track.getLatLngs()[0], 0);
+      var last = track.getLatLngs().length - 1;
+      updateExtremity(track.getLatLngs()[last], last);
+    }
+  }
+
+  $("#extMarkers").change(function(evt){
+    extMarkers = !extMarkers;
+    storeVal("wt.extMarkers", extMarkers);
+    setExtrimityVisibility(extMarkers);
+  });
+
   function newTrack() {
     metadata = EMPTY_METADATA;
     if (track) {
@@ -366,6 +433,7 @@ $(window).on("load", function() {
     waypoints = L.featureGroup([]);
     editLayer.addLayer(waypoints);
     newSegment();
+    createExtremities();
     setTrackName(NEW_TRACK_NAME);
     // reset URL if it contains query parameters
     if (window.location.search && window.history && window.history.pushState) {
@@ -773,6 +841,7 @@ $(window).on("load", function() {
     setChecked("#merge", false);
     setChecked("#apikeys-suggest", !apikeyNoMore);
     setChecked("#wptLabel", wptLabel);
+    setChecked("#extMarkers", extMarkers);
     prepareTrim();
     $("#prunedist").val(prunedist);
     setChecked("#prunealt", prunealt);
@@ -1111,6 +1180,9 @@ $(window).on("load", function() {
     for (var j = 0; j < pts.length; j++) {
       track.addLatLng(pts[j]);
     }
+    if (j > 0) {
+      updateExtremity(pts[j-1], track.getLatLngs().length -1);
+    }
     elevate(pts, function(success) {
       polystats.updateStatsFrom(initlen);
       saveState();
@@ -1187,8 +1259,10 @@ $(window).on("load", function() {
       // reset mouse pointer
       $("#map").css("cursor", "");
     }
+    setExtrimityVisibility(false);
     switch (mode) {
       case EDIT_NONE:
+        setExtrimityVisibility(true);
         break;
       case EDIT_MANUAL_TRACK:
         $("#edit-manual").addClass("control-selected");
@@ -1201,6 +1275,7 @@ $(window).on("load", function() {
         restartRoute();
         break;
       case EDIT_MARKER:
+        setExtrimityVisibility(true);
         $("#edit-marker").addClass("control-selected");
         $("#map").css("cursor", "url(img/marker-icon.cur),text");
         $("#map").css("cursor", "url(img/marker-icon.png) 7 25,text");
@@ -1451,6 +1526,7 @@ $(window).on("load", function() {
     saveValOpt("wt.mapsCloseOnClick", mapsCloseOnClick);
     saveValOpt("wt.apikeyNoMore", apikeyNoMore);
     saveValOpt("wt.wptLabel", wptLabel);
+    saveValOpt("wt.extMarkers", extMarkers);
   }
 
   function saveStateFile() {
@@ -2140,7 +2216,11 @@ $(window).on("load", function() {
     if (editLayer.getLayers().length > 2) {
       editLayer.removeLayer(segment);
       track = null;
-      segmentClickListener({ target: editLayer.getLayers()[1] }, true);
+      forEachSegment(function(segment) {
+        segmentClickListener({ target: segment }, true);
+        // stop on first segment
+        return true;
+      });
     } else {
       segment.setLatLngs([]);
       polystats.updateStatsFrom(0);
@@ -2224,6 +2304,7 @@ $(window).on("load", function() {
         if (segment == track) {
           polystats.updateStatsFrom(0);
         }
+        updateExtremities();
       }
     });
 
@@ -2260,6 +2341,7 @@ $(window).on("load", function() {
       track.bringToFront();
       updateTrackStyle();
       setPolyStats();
+      updateExtremities();
       return true;
     } else {
       return false;
@@ -2388,6 +2470,7 @@ $(window).on("load", function() {
     }
     saveState();
     closeMenu();
+    updateExtremities();
     var addedLayers = editLayer.getLayers().length - initLayers;
     if (addedLayers) {
       ga('send', 'event', 'file', 'load-segment', undefined, addedLayers);
@@ -2984,15 +3067,18 @@ $(window).on("load", function() {
         polystats.updateStatsFrom(i);
       });
     }
+    updateExtremity(latlng, i);
   }
   map.on('editable:vertex:new', newVertex);
 
   function dragVertex(e) {
-    var i = e.vertex.getLatLng().i;
-    elevatePoint(e.vertex.getLatLng(), function(success) {
+    var latlng = e.vertex.getLatLng();
+    var i = latlng.i;
+    elevatePoint(latlng, function(success) {
       polystats.updateStatsFrom(i);
     });
     //console.log(e.type + ": " + i);
+    updateExtremity(latlng, i);
   }
   map.on('editable:vertex:dragend', dragVertex);
 
@@ -3419,7 +3505,7 @@ $(window).on("load", function() {
   });
 
   // Persist joinOnLoad option
-  joinOnLoad = getBoolVal("wt.joinOnLoad", true);
+  joinOnLoad = getBoolVal("wt.joinOnLoad", false);
   setChecked("#joinonload", joinOnLoad);
   $("#joinonload").change(function(e) {
     joinOnLoad = isChecked("#joinonload");

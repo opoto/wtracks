@@ -150,7 +150,7 @@ function getNumVal(name, defval) {
 
 function getBoolVal(name, defval) {
   var v = getVal(name, defval);
-  return v && v == "true";
+  return v && (v == "true" || v === true);
 }
 
 function getJsonVal(name, defval) {
