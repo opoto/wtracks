@@ -3096,6 +3096,7 @@ $(window).on("load", function() {
     var i = e.latlng.i;
     //console.log(e.type + ": " + i);
     polystats.updateStatsFrom(i);
+    updateExtremities();
   });
 
 
