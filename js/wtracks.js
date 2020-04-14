@@ -8,6 +8,31 @@ var routeStart;
 var routeLog;
 var polystats;
 
+  /*
+    setInteractive "plugin" from
+    https://github.com/Leaflet/Leaflet/issues/5442#issuecomment-424014428
+    Thanks https://github.com/Jadaw1n
+  */
+ L.Layer.prototype.setInteractive = function (interactive) {
+  if (this.getLayers) {
+      this.getLayers().forEach(layer => {
+          layer.setInteractive(interactive);
+      });
+      return;
+  }
+  if (!this._path) {
+      return;
+  }
+
+  this.options.interactive = interactive;
+
+  if (interactive) {
+      L.DomUtil.addClass(this._path, 'leaflet-interactive');
+  } else {
+      L.DomUtil.removeClass(this._path, 'leaflet-interactive');
+  }
+};
+
 function setStatus(msg, options) {
   $("#status-msg").text(msg);
   var statusclass = options && options.class ? options.class : "status-info";
@@ -114,13 +139,13 @@ $(window).on("load", function() {
     iconUrl: 'img/marker-start.png',
     iconSize: [17, 17],
     iconAnchor: [8, 8],
-    popupAnchor: [0, 0],
+    popupAnchor: [0, 0]
   });
   var END_MARKER_ICON = L.icon({
     iconUrl: 'img/marker-end.png',
     iconSize: [17, 17],
     iconAnchor: [8, 8],
-    popupAnchor: [0, 0],
+    popupAnchor: [0, 0]
   });
 
   var OFF_KEY = "OFF_";
@@ -311,6 +336,7 @@ $(window).on("load", function() {
       color: trackUI.trk.getColor(),
       weight: trackUI.trk.getWeight()
     });
+    track.setInteractive(false);
   }
 
   function updateOverlayTrackStyle(segment) {
@@ -318,6 +344,7 @@ $(window).on("load", function() {
       color: trackUI.ovl.getColor(),
       weight: trackUI.ovl.getWeight()
     });
+    track.setInteractive(true);
   }
 
   function updateAllOverlayTrackStyle() {
@@ -364,7 +391,9 @@ $(window).on("load", function() {
       var mkOpts = {
         title: name,
         alt: name,
-        icon: icon
+        icon: icon,
+        keyboard: false,
+        interactive: false
       };
       var marker = L.marker([0,0], mkOpts);
       extremities.addLayer(marker);
