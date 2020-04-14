@@ -400,9 +400,11 @@ $(window).on("load", function() {
 
   function updateExtremities() {
     if (extremities && track) {
-      updateExtremity(track.getLatLngs()[0], 0);
       var last = track.getLatLngs().length - 1;
-      updateExtremity(track.getLatLngs()[last], last);
+      if (last >= 0) {
+        updateExtremity(track.getLatLngs()[0], 0);
+        updateExtremity(track.getLatLngs()[last], last);
+      }
     }
   }
 
