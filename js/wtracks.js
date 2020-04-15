@@ -1205,21 +1205,23 @@ $(window).on("load", function() {
     routeStart = undefined;
     if (!route) return;
     var initlen = getTrackLength();
-    var pts = route._selectedRoute ? route._selectedRoute.coordinates : [];
-    pts = L.PolyPrune.prune(pts, { tolerance: config.compressdefault, useAlt: true });
-    ga('send', 'event', 'edit', 'merge', undefined, pts.length);
+    var pts = route._selectedRoute ? route._selectedRoute.coordinates : undefined;
+    if (pts && (pts.length > 0)) {
+      pts = L.PolyPrune.prune(pts, { tolerance: config.compressdefault, useAlt: true });
+      ga('send', 'event', 'edit', 'merge', undefined, pts.length);
+      for (var j = 0; j < pts.length; j++) {
+        track.addLatLng(pts[j]);
+      }
+      updateExtremities();
+      elevate(pts, function(success) {
+        polystats.updateStatsFrom(initlen);
+        saveState();
+      });
+    }
     route.clearAllEventListeners();
     route.remove();
     route._line = undefined;
     route = undefined;
-    for (var j = 0; j < pts.length; j++) {
-      track.addLatLng(pts[j]);
-    }
-    updateExtremities();
-    elevate(pts, function(success) {
-      polystats.updateStatsFrom(initlen);
-      saveState();
-    });
   }
 
   function setRouteStart(latlng) {
