@@ -8,28 +8,28 @@ var routeStart;
 var routeLog;
 var polystats;
 
-  /*
-    setInteractive "plugin" from
-    https://github.com/Leaflet/Leaflet/issues/5442#issuecomment-424014428
-    Thanks https://github.com/Jadaw1n
-  */
- L.Layer.prototype.setInteractive = function (interactive) {
+/*
+  setInteractive "plugin" from
+  https://github.com/Leaflet/Leaflet/issues/5442#issuecomment-424014428
+  Thanks https://github.com/Jadaw1n
+*/
+L.Layer.prototype.setInteractive = function (interactive) {
   if (this.getLayers) {
-      this.getLayers().forEach(layer => {
-          layer.setInteractive(interactive);
-      });
-      return;
+    arrayForEach(getLayers(), function (idx, layer) {
+      layer.setInteractive(interactive);
+    });
+    return;
   }
   if (!this._path) {
-      return;
+    return;
   }
 
   this.options.interactive = interactive;
 
   if (interactive) {
-      L.DomUtil.addClass(this._path, 'leaflet-interactive');
+    L.DomUtil.addClass(this._path, 'leaflet-interactive');
   } else {
-      L.DomUtil.removeClass(this._path, 'leaflet-interactive');
+    L.DomUtil.removeClass(this._path, 'leaflet-interactive');
   }
 };
 
@@ -344,7 +344,7 @@ $(window).on("load", function() {
       color: trackUI.ovl.getColor(),
       weight: trackUI.ovl.getWeight()
     });
-    track.setInteractive(true);
+    segment.setInteractive(true);
   }
 
   function updateAllOverlayTrackStyle() {
