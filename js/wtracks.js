@@ -1202,6 +1202,7 @@ $(window).on("load", function() {
   }
 
   function mergeRouteToTrack() {
+    routeStart = undefined;
     if (!route) return;
     var initlen = getTrackLength();
     var pts = route._selectedRoute ? route._selectedRoute.coordinates : [];
@@ -1211,13 +1212,10 @@ $(window).on("load", function() {
     route.remove();
     route._line = undefined;
     route = undefined;
-    routeStart = undefined;
     for (var j = 0; j < pts.length; j++) {
       track.addLatLng(pts[j]);
     }
-    if (j > 0) {
-      updateExtremity(pts[j-1], getTrackLength() -1);
-    }
+    updateExtremities();
     elevate(pts, function(success) {
       polystats.updateStatsFrom(initlen);
       saveState();
