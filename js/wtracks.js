@@ -370,7 +370,7 @@ $(window).on("load", function() {
 
   function newSegment(noStats) {
     if (track) {
-      if (track.getLatLngs().length == 0) {
+      if (getTrackLength() == 0) {
         // current track is empty, don't create another one
         return track;
       }
@@ -384,6 +384,10 @@ $(window).on("load", function() {
     }
     updateTrackStyle();
     return track;
+  }
+
+  function getTrackLength() {
+    return track ? track.getLatLngs().length : 0;
   }
 
   function createExtremities() {
@@ -407,7 +411,7 @@ $(window).on("load", function() {
 
   function setExtrimityVisibility(visible) {
     if (extremities) {
-      if (visible && extMarkers) {
+      if (visible && extMarkers && (getTrackLength() > 0)) {
         extremities.addTo(map);
       } else {
         extremities.remove();
@@ -419,7 +423,7 @@ $(window).on("load", function() {
     var eidx = -1;
     if (i == 0) {
       eidx = 0;
-    } else if (i == track.getLatLngs().length -1) {
+    } else if (i == getTrackLength() - 1) {
       eidx = 1;
     }
     if (eidx >= 0) {
@@ -429,7 +433,7 @@ $(window).on("load", function() {
 
   function updateExtremities() {
     if (extremities && track) {
-      var last = track.getLatLngs().length - 1;
+      var last = getTrackLength() - 1;
       if (last >= 0) {
         updateExtremity(track.getLatLngs()[0], 0);
         updateExtremity(track.getLatLngs()[last], last);
@@ -629,7 +633,7 @@ $(window).on("load", function() {
   var polytrim;
 
   function prepareTrim() {
-    var trimMax = Math.round(track.getLatLngs().length / 2);
+    var trimMax = Math.round(getTrackLength() / 2);
     $("#trim-txt").text("");
     $("#trim-range").attr("max", trimMax);
     $("#trim-range").val(0);
@@ -652,7 +656,7 @@ $(window).on("load", function() {
       ga('send', 'event', 'tool', 'trim', undefined, n);
       if (polytrim.getDirection() === polytrim.FROM_END) {
         // From End
-        polystats.updateStatsFrom(track.getLatLngs().length - 1);
+        polystats.updateStatsFrom(getTrackLength() - 1);
       } else {
         // From Start
         polystats.updateStatsFrom(0);
@@ -1199,7 +1203,7 @@ $(window).on("load", function() {
 
   function mergeRouteToTrack() {
     if (!route) return;
-    var initlen = track.getLatLngs().length;
+    var initlen = getTrackLength();
     var pts = route._selectedRoute ? route._selectedRoute.coordinates : [];
     pts = L.PolyPrune.prune(pts, { tolerance: config.compressdefault, useAlt: true });
     ga('send', 'event', 'edit', 'merge', undefined, pts.length);
@@ -1212,7 +1216,7 @@ $(window).on("load", function() {
       track.addLatLng(pts[j]);
     }
     if (j > 0) {
-      updateExtremity(pts[j-1], track.getLatLngs().length -1);
+      updateExtremity(pts[j-1], getTrackLength() -1);
     }
     elevate(pts, function(success) {
       polystats.updateStatsFrom(initlen);
@@ -2232,7 +2236,7 @@ $(window).on("load", function() {
   });
 
   $("#delete-segment").click(function(e) {
-    if ((track.getLatLngs().length == 0) ||
+    if ((getTrackLength() == 0) ||
       !confirm("Delete current segment?")) {
       return;
     }
@@ -2252,6 +2256,10 @@ $(window).on("load", function() {
         // stop on first segment
         return true;
       });
+      if (!track) {
+        newSegment();
+        setEditMode(EDIT_MANUAL_TRACK);
+      }
     } else {
       segment.setLatLngs([]);
       polystats.updateStatsFrom(0);
@@ -2260,7 +2268,7 @@ $(window).on("load", function() {
   }
 
   function toolElevate(e) {
-    ga('send', 'event', 'tool', 'elevate', undefined, track.getLatLngs().length);
+    ga('send', 'event', 'tool', 'elevate', undefined, getTrackLength());
     $("#menu").hide();
 
     setStatus("Elevating...", { spinner: true });
@@ -2360,7 +2368,7 @@ $(window).on("load", function() {
         ga('send', 'event', 'edit', 'switch-segment');
       }
       if (track) {
-        if (track.getLatLngs().length == 0) {
+        if (getTrackLength() == 0) {
           // delete empty track
           editLayer.removeLayer(track);
           saveState();
@@ -2418,7 +2426,7 @@ $(window).on("load", function() {
     function importSegment(name, coords, times, ptExts, xmlnsArr) {
       var v;
 
-      if (joinOnLoad || track.getLatLngs().length == 0) {
+      if (joinOnLoad || getTrackLength() == 0) {
         // extend current 'track'
         track.stats = undefined;
       } else {
@@ -2816,7 +2824,7 @@ $(window).on("load", function() {
       ga('send', 'event', 'error', 'route-pts-overlimit', location.toString() + ", " + routeLog, nwpts);
     }
 
-    if ((track.getLatLngs().length > 0) && (i === 0)) {
+    if ((getTrackLength() > 0) && (i === 0)) {
       // no start marker for routes that continue an existing track
       return undefined;
     }
@@ -3092,7 +3100,7 @@ $(window).on("load", function() {
     i = isUndefined(prev) ? 0 : prev.latlng.i + 1;
     latlng.i = i;
     //console.log(e.type + ": " + latlng.i);
-    if (i == track.getLatLngs().length - 1) {
+    if (i == getTrackLength() - 1) {
       // last vertex
       elevatePoint(latlng, function(success) {
         polystats.updateStatsFrom(i);
@@ -3314,7 +3322,7 @@ $(window).on("load", function() {
       return;
     }
     track.editor.commitDrawing();
-    if (track.getLatLngs().length === 0) {
+    if (getTrackLength() === 0) {
       setEditMode(EDIT_MANUAL_TRACK);
       return;
     }
@@ -3322,7 +3330,7 @@ $(window).on("load", function() {
     var div = getTrackPointPopupContent(e.latlng);
     var splitfn,
         i = e.latlng.i,
-        len = track.getLatLngs().length;
+        len = getTrackLength();
     if ((i>1) & (i<len-1)) {
       splitfn = splitSegment;
     }
@@ -3347,7 +3355,7 @@ $(window).on("load", function() {
     // is elevation currently displayed?
     if (!elevation) {
       // ignore if track has less than 2 points
-      if (track && track.getLatLngs().length > 1) {
+      if (track && getTrackLength() > 1) {
         setEditMode(EDIT_NONE);
         map.closePopup();
         var options = $(document).width() < 600 ? {
