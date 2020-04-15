@@ -2720,7 +2720,7 @@ $(window).on("load", function() {
         dropboxSaveOptions.gpxurl,
         dropboxSaveOptions.files[0].url,
         dropboxSaveOptions.passcode,
-        nop, function(msg) {
+        undefined, function(msg) {
           warn("Failed to delete temp share");
         }
       );

@@ -215,7 +215,7 @@ function gofileUpload(name, gpx, onDone, onFail) {
  }
 
  // when no delete API available
- var noDelete;
+ var noDelete = function() {};
 
  // ------------------------------------------------------------------
  // The share library
@@ -236,7 +236,7 @@ var pastesLib = {
   },
   "htput": { // expired certificate
     "name": "HTPut",
-    "enabled": true,
+    "enabled": false,
     "web": "https://htput.com/",
     "maxSize": "1MB per day",
     "maxTime": "Unknown",
