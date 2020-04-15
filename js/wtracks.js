@@ -2510,6 +2510,7 @@ $(window).on("load", function() {
     saveState();
     closeMenu();
     updateExtremities();
+    setExtrimityVisibility(extMarkers);
     var addedLayers = editLayer.getLayers().length - initLayers;
     if (addedLayers) {
       ga('send', 'event', 'file', 'load-segment', undefined, addedLayers);
