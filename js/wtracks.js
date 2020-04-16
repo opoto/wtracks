@@ -5,7 +5,6 @@ var extremities;
 var editLayer;
 var route;
 var routeStart;
-var routeLog;
 var polystats;
 
 /*
@@ -310,13 +309,15 @@ $(window).on("load", function() {
 
   function forEachSegment(func) {
     var count = 0;
-    arrayForEach(editLayer.getLayers(), function(idx, segment) {
-      // check if it is a polyline
-      if (segment.getLatLngs) {
-        count++;
-        return func(segment);
-      }
-    });
+    if (editLayer) {
+      arrayForEach(editLayer.getLayers(), function(idx, segment) {
+        // check if it is a polyline
+        if (segment.getLatLngs) {
+          count++;
+          return func(segment);
+        }
+      });
+    }
     return count;
   }
 
@@ -1190,6 +1191,14 @@ $(window).on("load", function() {
 
   //---------------------------------------------------
 
+  function setInactiveSegmentClickable(clickable) {
+    forEachSegment(function(segment) {
+      if (segment != track) {
+        segment.setInteractive(clickable);
+      }
+    });
+  }
+
   function editableWaypoints(editable) {
     var wpts = waypoints.getLayers();
     for (var i = 0; i < wpts.length; i++) {
@@ -1227,7 +1236,6 @@ $(window).on("load", function() {
   function setRouteStart(latlng) {
     routeStart = latlng;
     $("#map").css("cursor", "alias");
-    routeLog = "S";
   }
 
   function closeOverlays() {
@@ -1298,16 +1306,19 @@ $(window).on("load", function() {
     switch (mode) {
       case EDIT_NONE:
         setExtrimityVisibility(true);
+        setInactiveSegmentClickable(true);
         break;
       case EDIT_MANUAL_TRACK:
         $("#edit-manual").addClass("control-selected");
         track.enableEdit();
         track.editor.continueForward();
+        setInactiveSegmentClickable(false);
         break;
       case EDIT_AUTO_TRACK:
         $("#edit-auto").addClass("control-selected");
         showGraphHopperCredit();
         restartRoute();
+        setInactiveSegmentClickable(false);
         break;
       case EDIT_MARKER:
         setExtrimityVisibility(true);
@@ -1315,6 +1326,7 @@ $(window).on("load", function() {
         $("#map").css("cursor", "url(img/marker-icon.cur),text");
         $("#map").css("cursor", "url(img/marker-icon.png) 7 25,text");
         editableWaypoints(true);
+        setInactiveSegmentClickable(false);
         break;
       default:
         error("invalid edit mode: " + mode);
@@ -2818,11 +2830,10 @@ $(window).on("load", function() {
       return div;
     }
 
-    log(routeLog);
     var nwpts = route ? route.getWaypoints().length : 0;
     if (nwpts > MAX_ROUTE_WPTS) {
       error("route-pts-overlimit");
-      ga('send', 'event', 'error', 'route-pts-overlimit', location.toString() + ", " + routeLog, nwpts);
+      ga('send', 'event', 'error', 'route-pts-overlimit', location.toString(), nwpts);
     }
 
     if ((getTrackLength() > 0) && (i === 0)) {
@@ -3228,7 +3239,6 @@ $(window).on("load", function() {
         if (!routeStart) {
           setRouteStart(e.latlng);
         } else {
-          routeLog += "_";
           var fromPt = routeStart,
             toPt = e.latlng,
             router;
@@ -3258,7 +3268,8 @@ $(window).on("load", function() {
               styles: [{
                 color: trackColor,
                 weight: trackWeight,
-                opacity: 1
+                opacity: 1,
+                interactive: false
               }],
               addWaypoints: true
             },
@@ -3268,10 +3279,8 @@ $(window).on("load", function() {
         }
       } else {
         var wpts = route.getWaypoints();
-        routeLog += "#" + wpts.length;
         if (wpts.length >= MAX_ROUTE_WPTS) { // up to 4 with free version
           try {
-            routeLog += "M";
             mergeRouteToTrack();
             restartRoute();
             map.fireEvent("click", { latlng: e.latlng });
@@ -3279,7 +3288,6 @@ $(window).on("load", function() {
             ga('send', 'event', 'error', 'merge-route-failed', err.toString() + ", " + navigator.userAgent, wpts.length);
           }
         } else {
-          routeLog += "+";
           wpts.push({ latLng: e.latlng });
           route.setWaypoints(wpts);
         }
