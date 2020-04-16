@@ -122,7 +122,6 @@ body {
 }
 #menu td:nth-child(2) {
   padding-right: 10px;
-  min-width: 75%;
 }
 #track-get-url {
   width:95%;
