@@ -471,10 +471,6 @@ $(window).on("load", function() {
     newSegment();
     createExtremities();
     setTrackName(NEW_TRACK_NAME);
-    // reset URL if it contains query parameters
-    if (window.location.search && window.history && window.history.pushState) {
-      window.history.pushState({}, document.title, window.location.pathname);
-    }
   }
 
   function newWaypointTooltip(wtp) {
@@ -1659,7 +1655,6 @@ $(window).on("load", function() {
       fileloader.loadData(gpx, "dummy", "gpx");
       return true;
     } else {
-      newTrack();
       return false;
     }
   }
@@ -3454,6 +3449,9 @@ $(window).on("load", function() {
   // set saving status
   setStateSaved(isStateSaved());
 
+  // make sure we have a track
+  newTrack();
+
   // map parameter
   var mapname = getParameterByName("map");
   if (mapname) {
@@ -3570,6 +3568,11 @@ $(window).on("load", function() {
     }
     return false;
   });
+
+  // reset URL if it contains query parameters
+  if (window.location.search && window.history && window.history.pushState) {
+    window.history.pushState({}, document.title, window.location.pathname);
+  }
 
   $(window).on("unload", function() {
     saveState();
