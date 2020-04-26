@@ -433,7 +433,9 @@ function displaySpeedProfile(sp) {
 
 function computeSpeedProfile() {
 
-  if (!inputdata.length) {
+  if (inputdata.features) {
+    importGeoJson(inputdata);
+  } else if (!inputdata.length) {
     alert("Select input data first");
     return;
   }
