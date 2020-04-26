@@ -54,9 +54,9 @@ $("#activitydel").click(function() {
 // activity save button
 $("#activitysave").click(function() {
   ga('send', 'event', 'activity', 'save', undefined, activitiesLen());
-  var name = $("#activities").children(':selected').val();
-  if (activity && activityname) {
-    saveActivity(activityname, activity);
+  var name = $("#activityname").val();
+  if (activity && name) {
+    saveActivity(name, activity);
     displaySelectedActivity();
   }
 });
@@ -356,6 +356,14 @@ spFormula[L.PolyStats.POLYNOMIAL] = {
 
 function displayFormula(method) {
   var spf = spFormula[method];
+  if (!spf) {
+    window.onerror("No speed profile for " + method, "activities.js", "displayFormula", "-");
+    return;
+  }
+  if (!activity.speedprofile) {
+    window.onerror("Activity has no speed profile", "activities.js", "displayFormula", "-");
+    return;
+  }
   if (activity.speedprofile.method !== method) {
     activity.speedprofile.method = method;
     if (spf.defaultFormulaParams) {
@@ -378,11 +386,13 @@ $("#activityname").keyup(function() {
 
 function displaySelectedActivity() {
   activityname = $("#activities").children(':selected').val();
-  // clone a copy to edit
-  var a = activities[activityname];
-  activity = createActivity(a.vehicle, a.speedprofile.method,
-    a.speedprofile.parameters);
-  displayActivity();
+  if (activityname) {
+    // clone a copy to edit
+    var a = activities[activityname];
+    activity = createActivity(a.vehicle, a.speedprofile.method,
+      a.speedprofile.parameters);
+      displayActivity();
+  }
 }
 
 /*** display speed profile graph ***/
@@ -467,9 +477,13 @@ function importGeoJson(geojson) {
 
 function changeData() {
   var dataname = $("#data option:selected").text();
-  refspeeds = inputdata = getDataset(dataname);
+  if (dataname) {
+    refspeeds = inputdata = getDataset(dataname);
+  }
   importfnname = "computeSpeedProfileFromSpeeds";
-  displaySpeedProfile(activity.speedprofile);
+  if (activity && activity.speedprofile) {
+    displaySpeedProfile(activity.speedprofile);
+  }
 }
 
 
@@ -509,16 +523,14 @@ $(window).on("load", function() {
 
 
   // add vehicles to menu
-  for (var i = 0; i < config.activities.vehicles.length; i++) {
-    addSelectOption(selectVehicle, config.activities.vehicles[i]);
-  }
+  arrayForEach(config.activities.vehicles, function(idx, vehicle) {
+    addSelectOption(selectVehicle, vehicle);
+  });
 
   // add activities to menu
-  for (var a in activities) {
-    if (hasOwnProperty.call(activities, a)) {
-      addSelectOption(selectActivity, a);
-    }
-  }
+  objectForEach(activities, function(activity) {
+    addSelectOption(selectActivity, activity);
+  });
 
   var selectdata = $("#data")[0];
   forEachDataset(function(name) {
@@ -538,7 +550,7 @@ $(window).on("load", function() {
     var file = $("#trackfile")[0].files[0];
     fileloader.load(file);
   });
-  
+
   $(".help-b").click(toggleHelp);
   $("#data").change(changeData);
   $("#compute").click(computeSpeedProfile);
