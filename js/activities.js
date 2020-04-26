@@ -66,18 +66,16 @@ function moveActivity(inc) {
   var idx = selectActivity.selectedIndex + inc;
   var newActivities = {};
   var i = 0;
-  for (var a in activities) {
-    if (hasOwnProperty.call(activities, a)) {
-      if (i == idx) {
-        newActivities[name] = activities[name];
-        i++;
-      }
-      if (a != name) {
-        newActivities[a] = activities[a];
-        i++;
-      }
+  objectForEach(activities, function(a) {
+    if (i == idx) {
+      newActivities[name] = activities[name];
+      i++;
     }
-  }
+    if (a != name) {
+      newActivities[a] = activities[a];
+      i++;
+    }
+  });
   if (i == idx) {
     newActivities[name] = activities[name];
     i++;
@@ -154,15 +152,13 @@ function importA() {
   var imported = false;
   try {
     var importedActivities = JSON.parse(b64DecodeUnicode(data));
-    for (var a in importedActivities) {
-      if (hasOwnProperty.call(importedActivities, a)) {
-        var msg = activities[a] ? "Overwrite " : "Import ";
-        if (confirm(msg + a + "?")) {
-          activities[a] = importedActivities[a];
-          imported = true;
-        }
+    objectForEach(importedActivities, function(a) {
+      var msg = activities[a] ? "Overwrite " : "Import ";
+      if (confirm(msg + a + "?")) {
+        activities[a] = importedActivities[a];
+        imported = true;
       }
-    }
+    });
     $("#prompt").hide();
   } catch (ex) {
     $("#import-error").show();
@@ -286,10 +282,10 @@ function genericSpFormula() {
     };
   }
   $("#spformula input").off("keyup");
-  for (var i = activity.speedprofile.parameters.length - 1; i >= 0; i--) {
-    $("#spformula #p" + i).val(activity.speedprofile.parameters[i]);
+  arrayForEach(activity.speedprofile.parameters, function(i, params) {
+    $("#spformula #p" + i).val(params);
     $("#spformula #p" + i).on("keyup", updParam(i));
-  }
+  });
 }
 
 var spFormula = {};
@@ -302,9 +298,9 @@ spFormula[L.PolyStats.REFSPEEDS] = {
     $("#spformula").empty();
     $("#spformula").append("<table></table>");
     $("#spformula table").append("<thead><tr><th>Slope (%)</th><th>Speed (m/s)</th></tr></thead><tbody></tbody>");
-    for (var i = 0; i < activity.speedprofile.parameters.length; i++) {
-      addRefSpeedLine(i);
-    }
+    arrayForEach(activity.speedprofile.parameters, function(idx, params) {
+      addRefSpeedLine(idx);
+    });
     var addrs = document.createElement("a");
     addrs.setAttribute("href", "#");
     addrs.setAttribute("class", "btn-link");
