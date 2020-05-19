@@ -30,11 +30,12 @@ function addMymapsItem(name, props, addHandlers) {
   if (mapv.type === "overlay") {
     mapitem += "<i class='material-icons' title='Map overlay'>layers</i>";
   }
-  mapitem += "<span class='map-name" + mymapclass + "'>" + name + "</span> ";
+  mapitem += "<span class='map-name" + mymapclass + "'></span> ";
   mapitem += "<i class='material-icons map-visibility' title='Show/Hide' isVisible='??'>??</i> ";
   mapitem += mymapbtns;
   mapitem += "</span></li>";
   $("#mymaps-list").append(mapitem);
+  $("#mymaps-list li:last .map-name").text(name);
   var newitem = $("#mymaps-list").children().last();
   setMapItemVisibility(newitem.find(".map-visibility"), props);
   if (addHandlers) {
