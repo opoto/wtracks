@@ -155,6 +155,9 @@
             "parameters": [],
             "refspeeds": refspeeds,
           };
+          if (refspeeds.length == 0) {
+            return sp;
+          }
 
           var engine = computeSpeedEngines[method];
 
