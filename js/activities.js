@@ -224,12 +224,15 @@ $("#activityreset").click(function() {
   }
 });
 
-function refSpeedInput(val, paramidx, col) {
+function refSpeedInput(val, col) {
   var rs = document.createElement("input");
   rs.setAttribute("type", "text");
   rs.setAttribute("value", val);
   rs.onkeyup = function() {
-    activity.speedprofile.parameters[paramidx][col] = parseFloat(this.value);
+    // compute parameter index
+    // (it may have changed since lines may have been deleted)
+    var rowIdx = $(this).closest("tr").index();
+    activity.speedprofile.parameters[rowIdx][col] = parseFloat(this.value);
     displaySpeedProfile(activity.speedprofile);
   };
   return rs;
@@ -245,8 +248,8 @@ function addRefSpeedLine(i) {
   var p = activity.speedprofile.parameters[i];
   $("#spformula table tbody").append("<tr><td></td><td></td></tr>");
   var tr = $("#spformula table tbody tr:last-of-type()")[0];
-  $(tr.children[0]).append(refSpeedInput(p[0], i, 0));
-  $(tr.children[1]).append(refSpeedInput(p[1], i, 1));
+  $(tr.children[0]).append(refSpeedInput(p[0], 0));
+  $(tr.children[1]).append(refSpeedInput(p[1], 1));
   var delrs = document.createElement("a");
   delrs.setAttribute("href", "#");
   delrs.setAttribute("class", "btn-link");
@@ -254,12 +257,7 @@ function addRefSpeedLine(i) {
   delrs.addEventListener("click", function(e) {
     // compute parameter index
     // (it may have changed since lines may have been deleted)
-    var line = this.parentElement.parentElement;
-    var index = 0;
-    while (line.previousElementSibling) {
-      line = line.previousElementSibling;
-      index++;
-    }
+    var index = $(this).closest("tr").index();
     delRefSpeed(index);
     e.preventDefault();
   });
