@@ -1,5 +1,7 @@
 /* ----------------- My maps edition ------------------- */
 
+var OVERLAY_ICON = "<i class='material-icons map-overlay' title='Map overlay'>layers</i>";
+
 function setMapItemVisibility(elt, props) {
   //var isVisible = e.target.getAttribute("isVisible") == "true";
   var isVisible = props.on;
@@ -28,7 +30,7 @@ function addMymapsItem(name, props, addHandlers) {
   var mapitem = "<li><span class='map-item'>";
   mapitem += "<i class='material-icons map-drag' title='Drag to reorder'>drag_indicator</i> ";
   if (mapv.type === "overlay") {
-    mapitem += "<i class='material-icons' title='Map overlay'>layers</i>";
+    mapitem += OVERLAY_ICON;
   }
   mapitem += "<span class='map-name" + mymapclass + "'></span> ";
   mapitem += "<i class='material-icons map-visibility' title='Show/Hide' isVisible='??'>??</i> ";
@@ -64,12 +66,24 @@ function getMapItem(name) {
   return res;
 }
 
-function changeMymapsItem(oldname, newname) {
+function changeMymapsItem(oldname, newname, oldtype, newtype) {
   var mapItem = getMapItem(oldname);
   if (mapItem) {
     if (newname) {
-      // name changed
-      mapItem.find(".map-name").text(newname);
+      if (newname != oldname) {
+        // name changed
+        mapItem.find(".map-name").text(newname);
+      }
+      if (oldtype != newtype) {
+        if (oldtype == "overlay")  {
+          // remove overlay icon
+          mapItem.find(".map-overlay").remove();
+        } else if (newtype == "overlay") {
+          // add overlay icon
+          mapItem.find(".map-name").before(OVERLAY_ICON);
+        }
+      }
+
     } else {
       // item deleted
       mapItem.remove();
@@ -192,6 +206,7 @@ function validateMymapBox(evt) {
     }
   });
   var oldname = mymap.name;
+  var oldtype = mymap.type;
   var newname = $("#mymap-name").val().trim();
   if ((oldname != newname) && (getMapListEntryIndex(newname) >= 0)) {
     $("#mymap-name").trigger("invalid");
@@ -220,6 +235,7 @@ function validateMymapBox(evt) {
     }
     mymap.options.attribution = $("#mymap-attr").val().trim();
     if (oldname && mymaps[oldname]) {
+      changeMymapsItem(oldname, newname, oldtype, mymap.type);
       if (oldname != newname) {
         // rebuild object to preserve order
         var tmp = {};
@@ -232,7 +248,6 @@ function validateMymapBox(evt) {
         });
         mymaps = tmp;
         renameMapListEntry(oldname, newname);
-        changeMymapsItem(oldname, newname);
         saveMapList();
       } else {
         mymaps[newname] = mymap;
