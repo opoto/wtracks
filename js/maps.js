@@ -47,7 +47,12 @@ function addMymapsItem(name, props, addHandlers) {
 }
 
 function getMapName(elt) {
-  return elt.parentNode.querySelector(".map-name").innerText;
+  try {
+    return elt.parentNode.querySelector(".map-name").innerText;
+  } catch (err) {
+    window.onerror("no map name: " + elt.parentNode.innerHTML, "map.js", "getMapName", "", err);
+    return "";
+  }
 }
 
 function getMapProps(elt) {
