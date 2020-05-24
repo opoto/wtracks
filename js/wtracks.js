@@ -2982,9 +2982,14 @@ $(window).on("load", function() {
     data.innerHTML = "<span class='popupfield'>Distance:</span> " +
       dist2txt(latlng.dist) + " / " + dist2txt(last.dist * 2 - latlng.dist);
     data = L.DomUtil.create('div', "popupdiv", div);
-    data.innerHTML = "<span class='popupfield'>Time:</span> " +
+    data.innerHTML = "<span class='popupfield'>Est. time:</span> " +
       time2txt(latlng.chrono) + " / " + time2txt(latlng.chrono_rt);
-
+    var trackStart = track.getLatLngs()[0];
+    if (latlng.time && trackStart.time) {
+      data = L.DomUtil.create('div', "popupdiv", div);
+      data.innerHTML = "<span class='popupfield'>Rec. time:</span> " +
+      time2txt((new Date(latlng.time) - new Date(trackStart.time))/1000);
+    }
     return div;
 
   }
