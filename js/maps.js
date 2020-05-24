@@ -1,6 +1,9 @@
 /* ----------------- My maps edition ------------------- */
 
-var OVERLAY_ICON = "<i class='material-icons map-overlay' title='Map overlay'>layers</i>";
+var OVERLAY_ICON = "<i class='material-icons map-overlay' title='Map overlay'>layers</i> ";
+var MYMAPS_BTNS = "<i class='material-icons map-edit' title='Edit'>create</i> "
+                  + "<i class='material-icons map-share' title='Share'>share</i> "
+                  + "<i class='material-icons map-delete' title='Delete'>delete</i> ";
 
 function setMapItemVisibility(elt, props) {
   //var isVisible = e.target.getAttribute("isVisible") == "true";
@@ -19,9 +22,7 @@ function addMymapsItem(name, props, addHandlers) {
   var mymapbtns = "",
     mymapclass = "";
   if (props.in == MAP_MY) {
-    mymapbtns += "<i class='material-icons map-edit' title='Edit'>create</i> ";
-    mymapbtns += "<i class='material-icons map-share' title='Share'>share</i> ";
-    mymapbtns += "<i class='material-icons map-delete' title='Delete'>delete</i> ";
+    mymapbtns = MYMAPS_BTNS;
     mymapclass = " mymap-name";
   }
   var inList = props.in == MAP_MY ? mymaps : config.maps;
@@ -37,8 +38,8 @@ function addMymapsItem(name, props, addHandlers) {
   mapitem += mymapbtns;
   mapitem += "</span></li>";
   $("#mymaps-list").append(mapitem);
-  $("#mymaps-list li:last .map-name").text(name);
-  var newitem = $("#mymaps-list").children().last();
+  var newitem = $("#mymaps-list li:last");
+  newitem.find(".map-name").text(name);
   setMapItemVisibility(newitem.find(".map-visibility"), props);
   if (addHandlers) {
     addMapItemHandlers(newitem);
