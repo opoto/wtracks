@@ -48,7 +48,7 @@ function addMymapsItem(name, props, addHandlers) {
 
 function getMapName(elt) {
   try {
-    return elt.parentNode.querySelector(".map-name").innerText;
+    return $(elt).parents(".map-item").find(".map-name").text();
   } catch (err) {
     window.onerror("no map name: " + elt.parentNode.innerHTML, "map.js", "getMapName", "", err);
     return "";
@@ -547,7 +547,7 @@ function closeImportBox() {
 function importMymaps() {
   var imported = 0;
   $("#import-list input:checked").each(function(i,elt) {
-    var name = elt.parentElement.nextSibling.firstElementChild.firstElementChild.innerText;
+    var name = $(elt).parents("tr").find("span").text();
     var isnew = !mymaps[name];
     mymaps[name] = importedMymaps[name];
     if (isnew) {
