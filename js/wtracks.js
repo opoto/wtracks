@@ -1273,7 +1273,7 @@ $(window).on("load", function() {
     }
     if ((mode != EDIT_NONE) && !map.editTools) {
       ga('send', 'event', 'error', "no editTools", navigator.userAgent);
-      alert("Your browser does not support GPX edition");
+      alert("Your browser does not support GPX editing");
       return;
     }
     switch (editMode) {
@@ -2175,7 +2175,7 @@ $(window).on("load", function() {
     // ignore if an overlay is open
     if ((nOverlays > 0) || isUserInputOngoing()) return;
     switch (event.which) {
-      case 27: // escape - exit edition
+      case 27: // escape - exit edit tool
         if (editMode == EDIT_NONE) {
           openMenu();
         } else {

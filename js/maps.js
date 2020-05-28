@@ -1,4 +1,4 @@
-/* ----------------- My maps edition ------------------- */
+/* ----------------- My maps editing ------------------- */
 
 var OVERLAY_ICON = "<i class='material-icons map-overlay' title='Map overlay'>layers</i> ";
 var MYMAPS_BTNS = "<i class='material-icons map-edit' title='Edit'>create</i> "
@@ -133,7 +133,7 @@ function addMapItemHandlers(selector) {
   selector.find(".map-share").click(shareMapItem);
 }
 
-// ----------------------- Personal map edition ----------------------
+// ----------------------- Personal map editing ----------------------
 
 var mymap;
 
