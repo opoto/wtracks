@@ -32,6 +32,7 @@ function addMymapsItem(name, props, addHandlers) {
   mapitem += "<i class='material-icons map-drag' title='Drag to reorder'>drag_indicator</i> ";
   if (mapv.type === "overlay") {
     mapitem += OVERLAY_ICON;
+    mymapclass += " overlay-name";
   }
   mapitem += "<span class='map-name" + mymapclass + "'></span> ";
   mapitem += "<i class='material-icons map-visibility' title='Show/Hide' isVisible='??'>??</i> ";
@@ -84,9 +85,11 @@ function changeMymapsItem(oldname, newname, oldtype, newtype) {
         if (oldtype == "overlay")  {
           // remove overlay icon
           mapItem.find(".map-overlay").remove();
+          mapItem.find(".map-name").removeClass("overlay-name");
         } else if (newtype == "overlay") {
           // add overlay icon
           mapItem.find(".map-name").before(OVERLAY_ICON);
+          mapItem.find(".map-name").addClass("overlay-name");
         }
       }
 

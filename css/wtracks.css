@@ -643,6 +643,9 @@ div.trumbowyg-editor {
   display: inline-block;
   user-select: text;
 }
+.overlay-name {
+  width: 172px;
+}
 .map-edit, .map-delete, .map-share, .map-visibility {
   cursor: pointer;
   margin-left: 10px;
@@ -936,6 +939,9 @@ button:active,
   }
   .map-name {
     width: 135px;
+  }
+  .overlay-name {
+    width: 107px;
   }
   #mymap-layerslist {
     width: 80%;
