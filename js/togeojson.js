@@ -81,7 +81,7 @@ var toGeoJSON = (function() {
             ptExt = ptExt.innerHTML.trim();
             ptExt = ptExt.replace(/\s+</g, "<");
             var xmlnsAll = ptExt.match(/\sxmlns\:\w+="[^"]+"/g);
-            xmlnsArr = appendUnique(xmlnsArr, xmlnsAll, 
+            xmlnsArr = appendUnique(xmlnsArr, xmlnsAll,
                 function(x){
                     return x.trim()
                 }
@@ -386,7 +386,7 @@ var toGeoJSON = (function() {
                     heartRates = [],
                     ptExts = [],
                     l = pts.length;
-                if (l < 2) return {};  // Invalid line in GeoJSON
+                if (l < 2) return undefined;  // Invalid line in GeoJSON
                 for (var i = 0; i < l; i++) {
                     var c = coordPair(pts[i]);
                     line.push(c.coordinates);
