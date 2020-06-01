@@ -51,6 +51,7 @@ var toGeoJSON = (function() {
         }
         return o;
     }
+    // Utility method to append an item in an array only if array does not already contain it
     function appendUnique(arrto, arrfrom, preproc) {
         if (arrfrom && arrfrom.length) {
             arrto = arrto ? arrto : [];
@@ -68,6 +69,7 @@ var toGeoJSON = (function() {
             ele = get1(x, 'ele'),
             // handle namespaced attribute in browser
             heartRate = get1(x, 'gpxtpx:hr') || get1(x, 'hr'),
+            // get full extensions element
             ptExt = get1(x, 'extensions'),
             time = get1(x, 'time'),
             e, xmlnsArr;
@@ -78,15 +80,20 @@ var toGeoJSON = (function() {
             }
         }
         if (ptExt) {
+            // remove spaces
             ptExt = ptExt.innerHTML.trim();
             ptExt = ptExt.replace(/\s+</g, "<");
+            // extract xml name spaces used in the extensions
             var xmlnsAll = ptExt.match(/\sxmlns\:\w+="[^"]+"/g);
+            // store in array, in not already stored
             xmlnsArr = appendUnique(xmlnsArr, xmlnsAll,
                 function(x){
                     return x.trim()
                 }
             );
+            // remove xmlns details (only keep name)
             ptExt = ptExt.replace(/\s+xmlns\:\w+="[^"]+"/g, "")
+            // remove the base GPX xmlns
             ptExt = ptExt.replace(/\s+xmlns="[^"]+"/g, "")
         }
         return {
@@ -342,15 +349,14 @@ var toGeoJSON = (function() {
                 tracks = get(doc, 'trk'),
                 routes = get(doc, 'rte'),
                 waypoints = get(doc, 'wpt'),
-                metadata = get(doc, 'metadata'), // Olivier
+                metadata = get(doc, 'metadata'),
                 // a feature collection
                 gj = fc(),
                 feature;
-            // Olivier
+            // keep metadata
             if (metadata && metadata[0]) {
               gj.metadata = getMetadata(metadata[0]);
             }
-            //
             for (i = 0; i < tracks.length; i++) {
                 feature = getTrack(tracks[i]);
                 if (feature) gj.features.push(feature);
@@ -362,7 +368,7 @@ var toGeoJSON = (function() {
             for (i = 0; i < waypoints.length; i++) {
                 gj.features.push(getPoint(waypoints[i]));
             }
-            // Olivier
+            // returns GPX metadata
             function getMetadata(metadata) {
               var md = {};
               var item = metadata.firstElementChild;
@@ -372,7 +378,6 @@ var toGeoJSON = (function() {
               }
               return md;
             }
-            //
             function initializeArray(arr, size) {
                 for (var h = 0; h < size; h++) {
                     arr.push(null);
@@ -395,6 +400,7 @@ var toGeoJSON = (function() {
                         if (!heartRates.length) initializeArray(heartRates, i);
                         heartRates.push(c.heartRate || null);
                     }
+                    // GPX trkpt extensions
                     if (c.ptExt || ptExts.length) {
                         if (!ptExts.length) initializeArray(ptExts, i);
                         ptExts.push(c.ptExt || null);
@@ -433,6 +439,7 @@ var toGeoJSON = (function() {
                                 heartRates.push(initializeArray([], line.line.length || 0));
                             }
                         }
+                        // GPX trkpt extensions
                         if (line.ptExts && line.ptExts.length) {
                             if (!ptExts.length) {
                                 for (var s = 0; s < i; s++) {
@@ -443,6 +450,7 @@ var toGeoJSON = (function() {
                         } else if (ptExts.length) {
                             ptExts.push(initializeArray([], line.line ? line.line.length : 0));
                         }
+                        // store xmlns per segment, so that app can ignore xmlns from discarded/ignored segments
                         if (line.xmlnsArr && line.xmlnsArr.length) {
                             if (!xmlnsArr.length) {
                                 for (var s = 0; s < i; s++) {
