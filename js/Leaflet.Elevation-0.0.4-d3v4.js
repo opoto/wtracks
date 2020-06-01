@@ -272,7 +272,9 @@ L.Control.Elevation = L.Control.extend({
         var start = Math.min(index1, index2),
             end = Math.max(index1, index2);
 
-        var ext = this._calculateFullExtent(this._data.slice(start, end));
+        var ext = this._calculateFullExtent((end != start)
+            ? this._data.slice(start, end)
+            : [ this._data[start] ]);
 
         this._map.fitBounds(ext);
 
