@@ -98,7 +98,7 @@ L.Control.Elevation = L.Control.extend({
             .style("stroke", "none")
             .style("pointer-events", "all");
 
-        if (L.Browser.touch) {
+        if (L.Browser.mobile) {
 
             background.on("touchmove.drag", this._dragHandler.bind(this)).
             on("touchstart.drag", this._dragStartHandler.bind(this)).
@@ -287,7 +287,7 @@ L.Control.Elevation = L.Control.extend({
         //Makes this work on IE10 Touch devices by stopping it from firing a mouseout event when the touch is released
         container.setAttribute('aria-haspopup', true);
 
-        if (!L.Browser.touch) {
+        if (!L.Browser.mobile) {
             L.DomEvent
                 .disableClickPropagation(container);
             //.disableScrollPropagation(container);
@@ -308,7 +308,7 @@ L.Control.Elevation = L.Control.extend({
             link.href = '#';
             link.title = this.options.controlButton.title;
 
-            if (L.Browser.touch) {
+            if (L.Browser.mobile) {
                 L.DomEvent
                     .on(link, 'click', L.DomEvent.stop)
                     .on(link, 'click', this._expand, this);
@@ -553,14 +553,17 @@ L.Control.Elevation = L.Control.extend({
                 var e = new L.LatLng(coords[i ? i - 1 : 0][1], coords[i ? i - 1 : 0][0]);
                 var newdist = opts.imperial ? s.distanceTo(e) * this.__mileFactor : s.distanceTo(e);
                 dist = dist + Math.round(newdist / 1000 * 100000) / 100000;
-                ele = ele < coords[i][2] ? coords[i][2] : ele;
-                data.push({
-                    dist: dist,
-                    altitude: opts.imperial ? coords[i][2] * this.__footFactor : coords[i][2],
-                    x: coords[i][0],
-                    y: coords[i][1],
-                    latlng: s
-                });
+                // skip point if it has not elevation
+                if (typeof coords[i][2] !== "undefined") {
+                    ele = ele < coords[i][2] ? coords[i][2] : ele;
+                    data.push({
+                        dist: dist,
+                        altitude: opts.imperial ? coords[i][2] * this.__footFactor : coords[i][2],
+                        x: coords[i][0],
+                        y: coords[i][1],
+                        latlng: s
+                    });
+                }
             }
             this._dist = dist;
             this._data = data;
