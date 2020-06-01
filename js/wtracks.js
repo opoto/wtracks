@@ -2811,6 +2811,9 @@ $(window).on("load", function() {
       del.title = "Delete";
       del.innerHTML = "<span class='popupfield'><i class='material-icons'>&#xE872;</i></span>";
       del.onclick = function(e) {
+        if (!route) {
+          return; // ignore
+        }
         var wpts = route.getWaypoints();
         if (wpts.length > 2) {
           wpts.splice(index, 1);
