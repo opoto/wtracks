@@ -473,10 +473,23 @@ $(window).on("load", function() {
     setTrackName(NEW_TRACK_NAME);
   }
 
-  function newWaypointTooltip(wtp) {
-    var ttip = wtp.bindTooltip(wtp.options.title, {permanent: wptLabel});
-    if (wptLabel) {
-      ttip.openTooltip();
+  function setWaypointTooltip(wpt) {
+    var ttip = wpt.getTooltip();
+    if (wpt.options.title) {
+      if (ttip) {
+        // already exists, just update text
+        ttip.setContent(wpt.options.title);
+      } else{
+        // new tooltip
+        var ttip = wpt.bindTooltip(wpt.options.title, {permanent: wptLabel});
+        if (wptLabel) {
+          ttip.openTooltip();
+        }
+      }
+    } else {
+      if (ttip) {
+        wpt.unbindTooltip();
+      }
     }
   }
 
@@ -504,7 +517,7 @@ $(window).on("load", function() {
         name.onkeyup = function() {
           var nameval = $(name).val().trim();
           marker.options.title = nameval;
-          marker.getTooltip().setContent(nameval);
+          setWaypointTooltip(marker);
           var elt = marker.getElement();
           elt.alt = nameval;
         };
@@ -603,7 +616,7 @@ $(window).on("load", function() {
 
     if (wptLayer == waypoints) {
       marker.getElement().removeAttribute("title"); // remove default HTML tooltip
-      newWaypointTooltip(marker);
+      setWaypointTooltip(marker);
       marker.on("click", function() {
         pop = L.popup({ "className" : "overlay" })
           .setLatLng(marker.getLatLng())
@@ -621,7 +634,7 @@ $(window).on("load", function() {
     arrayForEach(waypoints.getLayers(), function (idx, wpt) {
       // create new tooltip (they're not mutable!)
       wpt.unbindTooltip();
-      newWaypointTooltip(wpt);
+      setWaypointTooltip(wpt);
     })
   });
 
