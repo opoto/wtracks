@@ -98,8 +98,17 @@
     url: "https://tmpfile.glitch.me",
     data: gpx
   }).done(function(resp) {
-    onDone(resp.url, resp.url);
+    onDone(resp.urlAdmin, resp.url);
   }).fail(onFail);
+}
+
+function htputDelete(url, rawurl, passcode, onDone, onFail) {
+  $.ajax({
+    method: "DELETE",
+    url: rawurl
+  })
+  .done(onDone)
+  .fail(onFail);
 }
 
  // ------------------------------------------------------------------
@@ -258,7 +267,7 @@ var pastesLib = {
     "maxDownloads": "Unlimited",
     "upload": tmpfileUpload,
     "ping": function(done, fail) { pingUrl("https://tmpfile.glitch.me/ping", done, fail); },
-    "delete": noDelete
+    "delete": htputDelete
   },
   "htput": { // expired certificate
     "name": "HTPut",
