@@ -87,6 +87,21 @@
    }).fail(onFail);
  }
 
+
+ // ------------------------------------------------------------------
+ // TmpFile
+ // ------------------------------------------------------------------
+
+ function tmpfileUpload(name, gpx, onDone, onFail) {
+  $.ajax({
+    method: "POST",
+    url: "https://tmpfile.glitch.me",
+    data: gpx
+  }).done(function(resp) {
+    onDone(resp.url, resp.url);
+  }).fail(onFail);
+}
+
  // ------------------------------------------------------------------
  // file.io
  // ------------------------------------------------------------------
@@ -232,6 +247,17 @@ var pastesLib = {
     "maxDownloads": "Unlimited",
     "upload": friendpasteUpload,
     "ping": function(done, fail) { pingUrl("https://friendpaste.com/4yufAYfTKm8xKMJuXPDRhs/raw", done, fail); },
+    "delete": noDelete
+  },
+  "tmpfile": {
+    "enabled": true,
+    "name": "TmpFile",
+    "web": "https://glitch.com/edit/#!/tmpfile?path=README.md%3A1%3A0",
+    "maxSize": "500KB",
+    "maxTime": "1 month after unused",
+    "maxDownloads": "Unlimited",
+    "upload": tmpfileUpload,
+    "ping": function(done, fail) { pingUrl("https://tmpfile.glitch.me/ping", done, fail); },
     "delete": noDelete
   },
   "htput": { // expired certificate
