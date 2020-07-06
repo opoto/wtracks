@@ -102,10 +102,10 @@
   }).fail(onFail);
 }
 
-function htputDelete(url, rawurl, passcode, onDone, onFail) {
+function tmpfileDelete(url, rawurl, passcode, onDone, onFail) {
   $.ajax({
     method: "DELETE",
-    url: rawurl
+    url: url
   })
   .done(onDone)
   .fail(onFail);
@@ -267,7 +267,7 @@ var pastesLib = {
     "maxDownloads": "Unlimited",
     "upload": tmpfileUpload,
     "ping": function(done, fail) { pingUrl("https://tmpfile.glitch.me/ping", done, fail); },
-    "delete": htputDelete
+    "delete": tmpfileDelete
   },
   "htput": { // expired certificate
     "name": "HTPut",
