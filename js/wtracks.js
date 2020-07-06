@@ -1196,7 +1196,8 @@ $(window).on("load", function() {
   var share = (sharename && pastesLib[sharename]) || pastesLib[Object.keys(pastesLib)[0]];
 
   // fileio automatically deletes paste after download, perfect for dropbox use case
-  var dropboxTempShare = sharename ? pastesLib[sharename] : pastesLib.fileio;
+  var dropboxTempShare = pastesLib.fileio;
+  //var dropboxTempShare = sharename ? pastesLib[sharename] : pastesLib.fileio;
 
   //---------------------------------------------------
 
