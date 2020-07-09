@@ -262,7 +262,7 @@ var pastesLib = {
     "enabled": true,
     "name": "TmpFile",
     "web": "https://glitch.com/edit/#!/tmpfile?path=README.md%3A1%3A0",
-    "maxSize": "500KB",
+    "maxSize": "200KB",
     "maxTime": "1 month after unused",
     "maxDownloads": "Unlimited",
     "upload": tmpfileUpload,
