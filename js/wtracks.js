@@ -2760,14 +2760,6 @@ $(window).on("load", function() {
 
   function dropboxSaver(evt) {
     $("#confirm-dropbox").hide();
-    var name = $("#dbs_name").text();
-    var gpxurl = $("#dbs_gpxurl").text();
-    var rawgpxurl = $("#dbs_rawgpxurl").text();
-    var passcode = $("#dbs_passcode").text();
-    dropboxSaveOptions.files[0].filename = name + ".gpx";
-    dropboxSaveOptions.files[0].url = rawgpxurl;
-    dropboxSaveOptions.gpxurl = gpxurl;
-    dropboxSaveOptions.passcode = passcode;
     try {
       Dropbox.save(dropboxSaveOptions);
     } catch (err) {
@@ -2777,6 +2769,7 @@ $(window).on("load", function() {
   }
   $("#dbs-ok").click(dropboxSaver);
   $("#dbs-cancel").click(function(){
+    dropboxSaveOptions.deleteTemp();
     $("#confirm-dropbox").hide();
   });
 
@@ -2792,11 +2785,10 @@ $(window).on("load", function() {
     dropboxTempShare.upload(
       name, gpx,
       function (gpxurl, rawgpxurl, passcode) {
-        //closeMenu();
-        $("#dbs_name").text(name);
-        $("#dbs_gpxurl").text(gpxurl);
-        $("#dbs_rawgpxurl").text(rawgpxurl);
-        $("#dbs_passcode").text(passcode);
+        dropboxSaveOptions.files[0].filename = name + ".gpx";
+        dropboxSaveOptions.files[0].url = rawgpxurl;
+        dropboxSaveOptions.gpxurl = gpxurl;
+        dropboxSaveOptions.passcode = passcode;
         $("#confirm-dropbox").show();
       }, function(jqXHR, textStatus, errorThrown) {
         var errmsg = jqXHR.statusText || textStatus || jqXHR;

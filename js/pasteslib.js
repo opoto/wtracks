@@ -153,6 +153,11 @@ function fileioUpload(name, gpx, onDone, onFail) {
   }
 }
 
+// fileio deletes file after 1st download
+function fileioDelete(url, rawurl, passcode, onDone, onFail) {
+  $.get(rawurl).done(onDone); // read file to delete it, ignore it was already read & deleted
+}
+
  // ------------------------------------------------------------------
  // transfer.sh
  // ------------------------------------------------------------------
@@ -298,7 +303,7 @@ var pastesLib = {
     "maxTime": "1 day",
     "maxDownloads": "<span class='material-icons symbol'>warning</span> Once only!",
     "upload": fileioUpload,
-    "delete": noDelete // automatic deletion on first download
+    "delete": fileioDelete 
   },
   "transfer.sh": {
     "name": "transfer.sh",
