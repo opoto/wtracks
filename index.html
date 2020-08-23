@@ -370,13 +370,15 @@
       </tr>
       <tr class="notopborder fold-settings savstg">
         <td>
-          <input id="cfgsave" class="no-trim" type="checkbox" />
         </td>
         <td>
+          <input id="cfgsave" class="no-trim" type="checkbox" />
           <label for="cfgsave">Locally save editor's state between sessions</label>
           <br/>
           Privacy warning: state is shared with all users of this browser profile
-          <br />
+          <br/>
+          You can also export/import settings to/from files:
+          <br/>
           <button id="save-state-file" class="state-file">Export</button>
           <label id="state-load-label" class="state-file">
             <input type="file" name="track" id="load-state-file" class="state-file">
@@ -504,7 +506,7 @@
           </div>
           <div>
             <span class="setting-name hide-on-small-screen">&nbsp;</span>
-            <label><input id="apikeys-suggest" type="checkbox" />Suggest API keys on errors</label>
+            <label><input id="apikeys-suggest" type="checkbox" /> Suggest API keys on errors</label>
             <span id="apikeys-suggesttxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
             <p id="apikeys-suggesttxt-help" class="help-p">
               If checked an info box will pop up when elevation or routing fails, suggesting to set API keys.
