@@ -118,9 +118,12 @@ $(window).on("load", function() {
   var editMode = -1;
 
   var mapsCloseOnClick = getBoolVal("wt.mapsCloseOnClick", config.mapsCloseOnClick);
-  var ghkey = getVal("wt.ghkey", undefined);
-  var ggkey = getVal("wt.ggkey", undefined);
-  var orskey = getVal("wt.orskey", undefined);
+
+  var apikeys = {};
+  arrayForEach(["ghkey", "ggkey", "orskey"], function name(i, kname) {
+    apikeys[kname] = getVal("wt."+kname, undefined);
+  });
+
   var apikeyNoMore = getBoolVal("wt.apikeyNoMore", false);
 
   var MARKER_ICON = L.icon({
@@ -156,7 +159,7 @@ $(window).on("load", function() {
   }
 
   // load Google Maps API
-  var gk = getApiKey(ggkey, config.google.mapsapikey());
+  var gk = getApiKey(apikeys.ggkey, config.google.mapsapikey());
   $.getScript("https://maps.googleapis.com/maps/api/js" + (gk ? "?key=" + gk : ""));
 
   // load Dropbox API
@@ -781,7 +784,8 @@ $(window).on("load", function() {
   /* --------------------------------------*/
   // API keys
 
-  function showApiKey(name, value) {
+  function showApiKey(name) {
+    var value = apikeys[name];
     var useDefault = isUndefined(getApiKey(value));
     var input = $("#" + name + "-value");
     //debug(name + ": " + value);
@@ -808,10 +812,10 @@ $(window).on("load", function() {
   function updateApiServices() {
 
     // elevation
-    if (getApiKey(ggkey)) {
+    if (getApiKey(apikeys.ggkey)) {
       $("#elevation-srv").text("Google");
       $("#elevation-key").text("your");
-    } else if (getApiKey(orskey)) {
+    } else if (getApiKey(apikeys.orskey)) {
       $("#elevation-srv").text("OpenRoute");
       $("#elevation-key").text("your");
     } else {
@@ -820,11 +824,11 @@ $(window).on("load", function() {
     }
 
     // routing
-    if (getApiKey(ghkey)) {
+    if (getApiKey(apikeys.ghkey)) {
       $("#routing-srv").text("GraphHopper");
       $("#routing-key").text("your");
     } else {
-      if (getApiKey(orskey)) {
+      if (getApiKey(apikeys.orskey)) {
         $("#routing-srv").text("OpenRoute");
         $("#routing-key").text("your");
       } else {
@@ -845,7 +849,7 @@ $(window).on("load", function() {
 
   function apiKeyChange(evt) {
     var keyname = evt.target.id.match(/^[^\\-]+/)[0];
-    window[keyname] = checkApikey(keyname);
+    apikeys[keyname] = checkApikey(keyname);
     updateApiServices();
   }
   $(".key-chk").on("change", apiKeyChange);
@@ -859,14 +863,14 @@ $(window).on("load", function() {
 
   $("#keys-reset").on("click", function() {
     ga('send', 'event', 'setting', 'keys', 'reset');
-    resetApiKey("orskey");
-    resetApiKey("ghkey");
-    resetApiKey("ggkey");
+    objectForEach(apikeys, function name(kname, kval) {
+      resetApiKey(kname);
+    });
   });
 
-  showApiKey("orskey", orskey);
-  showApiKey("ghkey", ghkey);
-  showApiKey("ggkey", ggkey);
+  objectForEach(apikeys, function name(kname, kval) {
+    showApiKey(kname);
+  });
   updateApiServices();
 
   $("#apikeys-suggest").change(function() {
@@ -1566,9 +1570,9 @@ $(window).on("load", function() {
     saveValOpt("wt.activity", getCurrentActivityName());
     saveJsonValOpt("wt.activities", activities);
     saveValOpt("wt.baseLayer", baseLayer);
-    saveValOpt("wt.ggkey", ggkey);
-    saveValOpt("wt.ghkey", ghkey);
-    saveValOpt("wt.orskey", orskey);
+    objectForEach(apikeys, function name(kname, kval) {
+      saveValOpt("wt."+kname, kval);
+    });
     saveValOpt("wt.joinOnLoad", joinOnLoad);
     saveJsonValOpt("wt.mymaps", mymaps);
     saveJsonValOpt("wt.overlaysOn", overlaysOn);
@@ -1910,7 +1914,7 @@ $(window).on("load", function() {
       $.ajax({
         url: "https://api.openrouteservice.org/elevation/point",
         headers: {
-          "Authorization": getApiKey(orskey)
+          "Authorization": getApiKey(apikeys.orskey)
         },
         method: "POST",
         timeout: config.elevationTimeout,
@@ -1924,7 +1928,7 @@ $(window).on("load", function() {
       /*
       $.get({
         url: "https://api.openrouteservice.org/elevation/point?" +
-          "api_key=" + getApiKey(orskey) +
+          "api_key=" + getApiKey(apikeys.orskey) +
           "&geometry=" + locations[0].lng + "," + locations[0].lat,
         dataType: "json"
       })
@@ -1949,7 +1953,7 @@ $(window).on("load", function() {
     $.ajax({
       url: "https://api.openrouteservice.org/elevation/line",
       headers: {
-        "Authorization": getApiKey(orskey)
+        "Authorization": getApiKey(apikeys.orskey)
       },
       method: "POST",
       timeout: config.elevationTimeout,
@@ -2041,9 +2045,9 @@ $(window).on("load", function() {
   var elevationService;
 
   function setElevationService() {
-    elevationService = getApiKey(ggkey) ?
+    elevationService = getApiKey(apikeys.ggkey) ?
       googleElevationService :
-      (getApiKey(orskey) ? orsElevationService : defaultElevatonService);
+      (getApiKey(apikeys.orskey) ? orsElevationService : defaultElevatonService);
   }
   setElevationService();
 
@@ -3190,7 +3194,7 @@ $(window).on("load", function() {
             message = "Invalid GraphHopper API key, please fix in Settings";
             ga('send', 'event', 'api', 'gh-invalid');
           } else {
-            if (isUndefined(getApiKey(ghkey))) {
+            if (isUndefined(getApiKey(apikeys.ghkey))) {
               ga('send', 'event', 'api', 'gh-wt-max');
               gh.credits = -1;
             } else {
@@ -3200,14 +3204,14 @@ $(window).on("load", function() {
           }
         } else {
           ga('send', 'event', 'api', 'gh-ok', e.credits);
-          if ((gh.credits >= 0) && isUndefined(getApiKey(ghkey))) {
+          if ((gh.credits >= 0) && isUndefined(getApiKey(apikeys.ghkey))) {
             gh.credits += e.credits;
           }
         }
         storeJsonVal("wt.gh", gh);
       }
 
-      if (!message && isUndefined(getApiKey(ghkey))) {
+      if (!message && isUndefined(getApiKey(apikeys.ghkey))) {
         // user does not have personal gh key, check wtrack key usage
         if (gh.credits < 0) {
           message = "WTracks exhausted its daily GraphHopper quota";
@@ -3251,15 +3255,15 @@ $(window).on("load", function() {
           var fromPt = routeStart,
             toPt = e.latlng,
             router;
-          if (getApiKey(ghkey) || !getApiKey(orskey)) {
+          if (getApiKey(apikeys.ghkey) || !getApiKey(apikeys.orskey)) {
             router = L.Routing.graphHopper(
-              getApiKey(ghkey, config.graphhopper.key()),
+              getApiKey(apikeys.ghkey, config.graphhopper.key()),
               { urlParameters: { vehicle: getCurrentActivity().vehicle } }
             );
             router.on("response", checkGraphHopperCredit);
             router.on("routingerror", routingError);
           } else {
-            router = L.Routing.openrouteservice(getApiKey(orskey), {
+            router = L.Routing.openrouteservice(getApiKey(apikeys.orskey), {
               profile: getCurrentActivity().vehicle == "foot" ? "foot-hiking" : "cycling-regular",
               parameters: {
                 instructions: false,
