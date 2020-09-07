@@ -452,7 +452,7 @@ $(window).on("load", function() {
   });
 
   function newTrack() {
-    metadata = EMPTY_METADATA;
+    metadata = Object.assign({}, EMPTY_METADATA);
     if (track) {
       editLayer.removeLayer(track);
       track = undefined;
@@ -1705,6 +1705,7 @@ $(window).on("load", function() {
       } else {
         tileCtor = L.tileLayer[mapobj.type];
         if (mapobj.type === "wms" && mapopts.crs) {
+          // warning: no deep copy
           mapopts = Object.assign({}, mapopts);
           mapopts.crs = getCrsFromName(mapopts.crs);
         }
