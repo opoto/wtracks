@@ -476,6 +476,71 @@ $(window).on("load", function() {
     setTrackName(NEW_TRACK_NAME);
   }
 
+  // =================== UNDO ====================
+
+  var ICON_UNDO = "undo";
+  var ICON_EDIT_AUTO = "navigation";
+
+  var UndoRoute = {
+    setUndoFrom: function(fromPt) {
+      this.fromI = fromPt.i ? fromPt.i : 0;
+    },
+    undo: function(){
+      if (!route && (track.getLatLngs().length > this.fromI)) {
+        track.setLatLngs(track.getLatLngs().slice(0,this.fromI+1));
+        polystats.updateStatsFrom(0);
+        updateExtremities();
+        saveState();
+      }
+      restartRoute();
+      if (track.getLatLngs().length <= 1) {
+        // restart blank segment
+        deleteSegment(track);
+        newSegment();
+        setEditMode(EDIT_NONE);
+        setEditMode(EDIT_AUTO_TRACK);
+      }
+    },
+    startUndo: function() {
+      setUndoIcon("edit-auto");
+    },
+    endUndo: function() {
+      unsetUndoIcon("edit-auto");
+    }
+  }
+
+  var undos = [];
+  function undo() {
+    if (undos.length < 1) {
+      log("nothing to undo");
+      return;
+    }
+    var toUndo = undos.pop();
+    toUndo.undo();
+    if (undos.length < 1) {
+      toUndo.endUndo();
+    }
+  }
+  function addUndo(newUndo) {
+    undos.push(newUndo);
+    if (undos.length == 1) {
+      newUndo.startUndo();
+    }
+  }
+  function setUndoIcon(id) {
+    $("#" + id).attr("oldhtml", $("#" + id + " span").html());
+    $("#" + id).attr("oldtitle", $("#" + id).attr("title"));
+    $("#" + id + " span").html(ICON_UNDO);
+    $("#" + id).attr("title", "Undo last edit");
+  }
+  function unsetUndoIcon(id) {
+    $("#" + id + " span").html($("#" + id).attr("oldhtml"));
+    $("#" + id).attr("title", $("#" + id).attr("oldtitle"));
+    undos = [];
+  }
+
+  // ==============================================
+
   function setWaypointTooltip(wpt) {
     var ttip = wpt.getTooltip();
     if (wpt.options.title) {
@@ -1288,6 +1353,9 @@ $(window).on("load", function() {
     closeOverlays();
     if (mode === editMode) {
       return;
+    }
+    if (undos.length > 0) {
+      undos[0].endUndo();
     }
     if ((mode != EDIT_NONE) && !map.editTools) {
       ga('send', 'event', 'error', "no editTools", navigator.userAgent);
@@ -2134,7 +2202,7 @@ $(window).on("load", function() {
       editopts.id = 'edit-tools';
       editopts.class = 'wtracks-control-icon';
       editopts.innerHTML = '<a href="#" title="Manual Track (e)" id="edit-manual"><span class="material-icons wtracks-control-icon">&#xE922;</span></a>' +
-      '<a href="#" title="Auto Track (a)" id="edit-auto"><span class="material-icons wtracks-control-icon">&#xE55D;</span></a>' +
+      '<a href="#" title="Auto Track (a)" id="edit-auto"><span class="material-icons wtracks-control-icon">' + ICON_EDIT_AUTO + '</span></a>' +
       '<a href="#" title="Add segment" id="add-segment">' +
         '<span class="material-icons wtracks-control-icon segment-icon">&#xe6e1</span>' +
         '<span class="material-icons wtracks-control-icon add-segment-icon">&#xe145</span>' +
@@ -2241,9 +2309,13 @@ $(window).on("load", function() {
     e.preventDefault();
   });
   $("#edit-auto").click(function(e) {
-    ga('send', 'event', 'edit', 'auto');
-    if (checkGraphHopperCredit()) {
-      setEditMode(EDIT_AUTO_TRACK);
+    if (editMode == EDIT_AUTO_TRACK) {
+      undo();
+    } else {
+      if (checkGraphHopperCredit()) {
+        ga('send', 'event', 'edit', 'auto');
+        setEditMode(EDIT_AUTO_TRACK);
+      }
     }
     e.preventDefault();
   });
@@ -2845,8 +2917,8 @@ $(window).on("load", function() {
       ga('send', 'event', 'error', 'route-pts-overlimit', location.toString(), nwpts);
     }
 
-    if ((getTrackLength() > 0) && (i === 0)) {
-      // no start marker for routes that continue an existing track
+    if (i === 0) {
+      // no start marker
       return undefined;
     }
     var marker = L.marker(waypoint.latLng, {
@@ -2862,6 +2934,10 @@ $(window).on("load", function() {
         .openOn(map);
 
     });
+
+    var newUndo = Object.create(UndoRoute);
+    newUndo.setUndoFrom(routeStart);
+    addUndo(newUndo);
 
     return marker;
   }
