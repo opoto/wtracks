@@ -482,6 +482,9 @@ $(window).on("load", function() {
   var ICON_EDIT_AUTO = "navigation";
 
   var UndoRoute = {
+    getType: function() {
+      return "route";
+    },
     setUndoFrom: function(fromPt) {
       this.fromI = fromPt.i ? fromPt.i : 0;
     },
@@ -516,6 +519,7 @@ $(window).on("load", function() {
       return;
     }
     var toUndo = undos.pop();
+    ga('send', 'event', 'edit', 'undo', toUndo.getType());
     toUndo.undo();
     if (undos.length < 1) {
       toUndo.endUndo();
