@@ -478,19 +478,22 @@ $(window).on("load", function() {
 
   // =================== UNDO ====================
 
-  var ICON_UNDO = "undo";
-  var ICON_EDIT_AUTO = "navigation";
+  var UNDO_ICON = "undo";
+  var EDIT_AUTO_ICON = "navigation";
+  var EDIT_AUTO_ID = "edit-auto";
+  var EDIT_MANUAL_ICON = "timeline";
+  var EDIT_MANUAL_ID = "edit-manual";
 
   var UndoRoute = {
     getType: function() {
       return "route";
     },
-    setUndoFrom: function(fromPt) {
-      this.fromI = fromPt.i ? fromPt.i : 0;
+    init: function(args) {
+      this.fromPt = args.fromPt;
     },
     undo: function(){
-      if (!route && (track.getLatLngs().length > this.fromI)) {
-        track.setLatLngs(track.getLatLngs().slice(0,this.fromI+1));
+      if (!route && (track.getLatLngs().length > this.fromPt.i)) {
+        track.setLatLngs(track.getLatLngs().slice(0,this.fromPt.i+1));
         polystats.updateStatsFrom(0);
         updateExtremities();
         saveState();
@@ -504,11 +507,8 @@ $(window).on("load", function() {
         setEditMode(EDIT_AUTO_TRACK);
       }
     },
-    startUndo: function() {
-      setUndoIcon("edit-auto");
-    },
-    endUndo: function() {
-      unsetUndoIcon("edit-auto");
+    getIcon: function() {
+      return EDIT_AUTO_ID;
     }
   }
 
@@ -522,22 +522,25 @@ $(window).on("load", function() {
     ga('send', 'event', 'edit', 'undo', toUndo.getType());
     toUndo.undo();
     if (undos.length < 1) {
-      toUndo.endUndo();
+      endUndo(toUndo.getIcon());
     }
   }
-  function addUndo(newUndo) {
+  function addUndo(undoObjectType, args) {
+    var newUndo = Object.create(undoObjectType);
+    newUndo.init(args);
     undos.push(newUndo);
     if (undos.length == 1) {
-      newUndo.startUndo();
+      var id = newUndo.getIcon();
+      $("#" + id).attr("oldhtml", $("#" + id + " span").html());
+      $("#" + id).attr("oldtitle", $("#" + id).attr("title"));
+      $("#" + id + " span").html(UNDO_ICON);
+      $("#" + id).attr("title", "Undo last edit");
     }
   }
-  function setUndoIcon(id) {
-    $("#" + id).attr("oldhtml", $("#" + id + " span").html());
-    $("#" + id).attr("oldtitle", $("#" + id).attr("title"));
-    $("#" + id + " span").html(ICON_UNDO);
-    $("#" + id).attr("title", "Undo last edit");
-  }
-  function unsetUndoIcon(id) {
+  function endUndo(id) {
+    if (!id) {
+      id = undos[0].getIcon();
+    }
     $("#" + id + " span").html($("#" + id).attr("oldhtml"));
     $("#" + id).attr("title", $("#" + id).attr("oldtitle"));
     undos = [];
@@ -1359,7 +1362,7 @@ $(window).on("load", function() {
       return;
     }
     if (undos.length > 0) {
-      undos[0].endUndo();
+      endUndo();
     }
     if ((mode != EDIT_NONE) && !map.editTools) {
       ga('send', 'event', 'error', "no editTools", navigator.userAgent);
@@ -2205,8 +2208,8 @@ $(window).on("load", function() {
 
       editopts.id = 'edit-tools';
       editopts.class = 'wtracks-control-icon';
-      editopts.innerHTML = '<a href="#" title="Manual Track (e)" id="edit-manual"><span class="material-icons wtracks-control-icon">&#xE922;</span></a>' +
-      '<a href="#" title="Auto Track (a)" id="edit-auto"><span class="material-icons wtracks-control-icon">' + ICON_EDIT_AUTO + '</span></a>' +
+      editopts.innerHTML = '<a href="#" title="Manual Track (e)" id="' + EDIT_MANUAL_ID + '"><span class="material-icons wtracks-control-icon">' + EDIT_MANUAL_ICON + '</span></a>' +
+      '<a href="#" title="Auto Track (a)" id="' + EDIT_AUTO_ID + '"><span class="material-icons wtracks-control-icon">' + EDIT_AUTO_ICON + '</span></a>' +
       '<a href="#" title="Add segment" id="add-segment">' +
         '<span class="material-icons wtracks-control-icon segment-icon">&#xe6e1</span>' +
         '<span class="material-icons wtracks-control-icon add-segment-icon">&#xe145</span>' +
@@ -2939,9 +2942,7 @@ $(window).on("load", function() {
 
     });
 
-    var newUndo = Object.create(UndoRoute);
-    newUndo.setUndoFrom(routeStart);
-    addUndo(newUndo);
+    addUndo(UndoRoute, { fromPt : routeStart });
 
     return marker;
   }
