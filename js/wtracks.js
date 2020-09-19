@@ -491,9 +491,9 @@ $(window).on("load", function() {
     init: function(args) {
       this.fromPt = args.fromPt;
     },
-    undo: function(){
+    undo: function() {
       if (!route && (track.getLatLngs().length > this.fromPt.i)) {
-        track.setLatLngs(track.getLatLngs().slice(0,this.fromPt.i+1));
+        track.setLatLngs(track.getLatLngs().slice(0, this.fromPt.i + 1));
         polystats.updateStatsFrom(0);
         updateExtremities();
         saveState();
@@ -507,8 +507,83 @@ $(window).on("load", function() {
         setEditMode(EDIT_AUTO_TRACK);
       }
     },
-    getIcon: function() {
+    getIconId: function() {
       return EDIT_AUTO_ID;
+    }
+  }
+
+  var UndoNewPt = {
+    getType: function() {
+      return "newPt";
+    },
+    init: function(args) {
+      this.newPt = args.newPt;
+    },
+    undo: function() {
+      if (track.getLatLngs().length > this.newPt.i) {
+        track.editor.endDrawing();
+        if (track.getLatLngs().length > 0) {
+          this.newPt.undoing = true; // prevent deletion to add new undo item
+          track.editor.removeLatLng(this.newPt);
+          this.newPt.undoing = undefined;
+        }
+        track.editor.continueForward();
+        polystats.updateStatsFrom(0);
+        updateExtremities();
+        saveState();
+      }
+    },
+    getIconId: function() {
+      return EDIT_MANUAL_ID;
+    }
+  }
+
+  var UndoMovePt = {
+    getType: function() {
+      return "movePt";
+    },
+    init: function(args) {
+      this.pt = args.pt;
+      this.backupPt = Object.assign({}, args.pt);
+    },
+    undo: function() {
+      if (track.getLatLngs().length > this.pt.i) {
+        track.editor.endDrawing();
+        this.pt.lat = this.backupPt.lat;
+        this.pt.lng = this.backupPt.lng;
+        this.pt.alt = this.backupPt.alt;
+        track.editor.refresh();
+        track.editor.continueForward();
+        polystats.updateStatsFrom(0);
+        updateExtremities();
+        saveState();
+      }
+    },
+    getIconId: function() {
+      return EDIT_MANUAL_ID;
+    }
+  }
+
+  var UndoDeletePt = {
+    getType: function() {
+      return "deletePt";
+    },
+    init: function(args) {
+      this.pt = args.pt;
+    },
+    undo: function() {
+      if (track.getLatLngs().length > this.pt.i) {
+        track.editor.endDrawing();
+        track.getLatLngs().splice(this.pt.i, 0, this.pt);
+        track.editor.refresh();
+        track.editor.continueForward();
+        polystats.updateStatsFrom(0);
+        updateExtremities();
+        saveState();
+      }
+    },
+    getIconId: function() {
+      return EDIT_MANUAL_ID;
     }
   }
 
@@ -522,7 +597,7 @@ $(window).on("load", function() {
     ga('send', 'event', 'edit', 'undo', toUndo.getType());
     toUndo.undo();
     if (undos.length < 1) {
-      endUndo(toUndo.getIcon());
+      endUndo(toUndo.getIconId());
     }
   }
   function addUndo(undoObjectType, args) {
@@ -530,7 +605,7 @@ $(window).on("load", function() {
     newUndo.init(args);
     undos.push(newUndo);
     if (undos.length == 1) {
-      var id = newUndo.getIcon();
+      var id = newUndo.getIconId();
       $("#" + id).attr("oldhtml", $("#" + id + " span").html());
       $("#" + id).attr("oldtitle", $("#" + id).attr("title"));
       $("#" + id + " span").html(UNDO_ICON);
@@ -539,7 +614,7 @@ $(window).on("load", function() {
   }
   function endUndo(id) {
     if (!id) {
-      id = undos[0].getIcon();
+      id = undos[0].getIconId();
     }
     $("#" + id + " span").html($("#" + id).attr("oldhtml"));
     $("#" + id).attr("title", $("#" + id).attr("oldtitle"));
@@ -2305,14 +2380,18 @@ $(window).on("load", function() {
   });
 
 
-  L.DomEvent.disableClickPropagation(L.DomUtil.get("edit-manual"));
-  L.DomEvent.disableClickPropagation(L.DomUtil.get("edit-auto"));
+  L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_MANUAL_ID));
+  L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_AUTO_ID));
   L.DomEvent.disableClickPropagation(L.DomUtil.get("edit-marker"));
   L.DomEvent.disableClickPropagation(L.DomUtil.get("add-segment"));
   L.DomEvent.disableClickPropagation(L.DomUtil.get("delete-segment"));
   $("#edit-manual").click(function(e) {
-    ga('send', 'event', 'edit', 'manual');
-    setEditMode(EDIT_MANUAL_TRACK);
+    if (editMode == EDIT_MANUAL_TRACK) {
+      undo();
+    } else {
+      ga('send', 'event', 'edit', 'manual');
+      setEditMode(EDIT_MANUAL_TRACK);
+    }
     e.preventDefault();
   });
   $("#edit-auto").click(function(e) {
@@ -3213,6 +3292,7 @@ $(window).on("load", function() {
         polystats.updateStatsFrom(i);
       });
     }
+    addUndo(UndoNewPt, {newPt: latlng});
     updateExtremity(latlng, i);
   }
   map.on('editable:vertex:new', newVertex);
@@ -3227,6 +3307,11 @@ $(window).on("load", function() {
     updateExtremity(latlng, i);
   }
   map.on('editable:vertex:dragend', dragVertex);
+  function dragVertexStart(e) {
+    var latlng = e.vertex.getLatLng();
+    addUndo(UndoMovePt, {pt: latlng});
+  }
+  map.on('editable:vertex:dragstart', dragVertexStart);
 
   map.on('editable:middlemarker:mousedown', function(e) {
     //console.log(e.type);
@@ -3239,6 +3324,9 @@ $(window).on("load", function() {
   map.on('editable:dragend', dragMarker);
 
   map.on('editable:vertex:deleted', function(e) {
+    if (!e.latlng.undoing) { // ensure we're not running an undo
+      addUndo(UndoDeletePt, {pt: e.latlng});
+    }
     var i = e.latlng.i;
     //console.log(e.type + ": " + i);
     polystats.updateStatsFrom(i);
