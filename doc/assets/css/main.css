@@ -92,7 +92,7 @@
 		width: 1400px;
 	}
 
-  #edit-tools-img {
+  #edit-tools-img, #undo-img {
     float: right;
     margin-right: 40px;
   }
