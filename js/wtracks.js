@@ -590,7 +590,7 @@ $(window).on("load", function() {
   var undos = [];
   function undo() {
     if (undos.length < 1) {
-      log("nothing to undo");
+      debug("nothing to undo");
       return;
     }
     var toUndo = undos.pop();
@@ -2373,8 +2373,8 @@ $(window).on("load", function() {
       case 113: // 'F2' - rename
         promptTrackName();
         break;
-      case 85: // 'u' - unit system
-        updateUnitSystem(1);
+      case 90: // 'z' - undo
+        undo();
         break;
     }
   });
