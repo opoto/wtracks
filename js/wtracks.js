@@ -1095,19 +1095,17 @@ $(window).on("load", function() {
     return gpx;
   }
 
-  function getSegmentGPX(segment, ptindent, pttag, savetime) {
-    var now = new Date();
+  function getSegmentGPX(segment, ptindent, pttag, startdate) {
     var gpx = "";
     var latlngs = segment ? segment.getLatLngs() : undefined;
     if (latlngs && latlngs.length > 0) {
       var j = 0;
-      now = now.getTime();
       while (j < latlngs.length) {
         var pt = latlngs[j];
         var time = pt.time;
         try {
-          if (savetime && Date.prototype.toISOString && pt.chrono) {
-            time = new Date(now + (pt.chrono * 1000)).toISOString();
+          if (startdate && Date.prototype.toISOString && !isUndefined(pt.chrono)) {
+            time = new Date(startdate + (pt.chrono * 1000)).toISOString();
           }
         } catch (error) {
           ga('send', 'event', 'error', 'Failed to build ISO time: ' + error, 'chrono: ' + pt.chrono);
@@ -1121,7 +1119,20 @@ $(window).on("load", function() {
 
   function getGPX(trackname, savealt, savetime, asroute, nometadata) {
 
-    var now = new Date();
+    var startdate = new Date();
+    if (savetime) {
+      // get track's start date from user input
+      var startStr = $("#savetimingdate input").val().trim().replace(" ", "T");
+      if (startStr) try {
+        // browser uses text input, parse it
+        var b = startStr.split(/\D/);
+        startdate = new Date(b[0], b[1]-1, b[2], b[3], b[4]);
+      } catch(err) {
+        // use current date in case of error
+        error("Invalid start date: " + startStr + ". Using current date");
+        startdate = new Date();
+      }
+    }
     var xmlname = "<name>" + htmlEncode(trackname) + "</name>";
     var gpx = '<\?xml version="1.0" encoding="UTF-8" standalone="no" \?>\n';
     gpx += '<gpx creator="' + config.appname + '"\n';
@@ -1151,7 +1162,7 @@ $(window).on("load", function() {
       gpx += "    <text>" + config.appname + "</text>\n";
       gpx += "    <type>text/html</type>\n";
       gpx += "  </link>\n";
-      gpx += "  <time>" + now.toISOString() + "</time>\n";
+      gpx += "  <time>" + startdate.toISOString() + "</time>\n";
       var sw = map.getBounds().getSouthWest();
       var ne = map.getBounds().getNorthEast();
       gpx += '  <bounds minlat="' + Math.min(sw.lat, ne.lat) + '" minlon="' + Math.min(sw.lng, ne.lng) + '" maxlat="' + Math.max(sw.lat, ne.lat) + '" maxlon="' + Math.max(sw.lng, ne.lng) + '"/>\n';
@@ -1182,19 +1193,29 @@ $(window).on("load", function() {
     }
 
     gpx += "<" + wraptag + ">" + xmlname + "\n";
+
+    startdate = startdate.getTime();
+    var selectedSegment = track;
     // for each segment
-    arrayForEach(editLayer.getLayers(), function(idx, segment) {
+    forEachSegment(function(segment) {
+      segmentClickListener({ target: segment }, true);
       // check if it is a polyline
-      if (segment.getLatLngs) {
-        if (segtag) {
-          gpx += "  <" + segtag + ">\n";
-        }
-        gpx += getSegmentGPX(segment, ptindent, pttag, savetime);
-        if (segtag) {
-          gpx += "  </" + segtag + ">\n";
+      if (segtag) {
+        gpx += "  <" + segtag + ">\n";
+      }
+      gpx += getSegmentGPX(segment, ptindent, pttag, savetime ? startdate : undefined);
+      if (segtag) {
+        gpx += "  </" + segtag + ">\n";
+      }
+      if (savetime) {
+        var lastPt = segment.getLatLngs().slice(-1)[0];
+        if (!isUndefined(lastPt.chrono)) {
+          // start date of next segment (if any) is the end of current segment
+          startdate = new Date(startdate + (lastPt.chrono * 1000)).getTime();
         }
       }
     });
+    segmentClickListener({ target: selectedSegment }, true);
 
     gpx += "</" + wraptag + "></gpx>\n";
     return gpx;
@@ -1216,6 +1237,20 @@ $(window).on("load", function() {
     var trackname = doConfirmName ? getConfirmedTrackName() : getTrackName();
     return getGPX(trackname, /*savealt*/ false, savetime, asroute, nometadata);
   }
+
+  function savetimingChanged() {
+    $("#savetimingdate").toggle(isChecked("#savetiming"));
+  }
+  $("#savetiming").change(savetimingChanged);
+  $("#savetimingdate input").keyup(function(event) {
+    var startStr = $("#savetimingdate input").val();
+    if (startStr && !/^([0-2][0-9]{3}-[0-1][0-9]-[0-3][0-9][ T][0-2][0-9]:[0-5][0-9])$/.test(startStr)) {
+      $("#savetimingdate input").addClass("invalid");
+    } else {
+      $("#savetimingdate input").removeClass("invalid");
+    }
+  });
+  savetimingChanged();
 
   $("#track-download").click(function() {
     setEditMode(EDIT_NONE);
