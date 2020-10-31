@@ -2590,7 +2590,6 @@ $(window).on("load", function() {
         if (getTrackLength() == 0) {
           // delete empty track
           editLayer.removeLayer(track);
-          saveState();
         } else {
           updateOverlayTrackStyle(track);
         }
