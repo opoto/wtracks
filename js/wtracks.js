@@ -452,7 +452,7 @@ $(window).on("load", function() {
   });
 
   function newTrack() {
-    metadata = Object.assign({}, EMPTY_METADATA);
+    metadata = jsonClone(EMPTY_METADATA);
     if (track) {
       editLayer.removeLayer(track);
       track = undefined;
@@ -544,7 +544,7 @@ $(window).on("load", function() {
     },
     init: function(args) {
       this.pt = args.pt;
-      this.backupPt = Object.assign({}, args.pt);
+      this.backupPt = jsonClone(args.pt);
     },
     undo: function() {
       if (track.getLatLngs().length > this.pt.i) {
@@ -1891,7 +1891,7 @@ $(window).on("load", function() {
         tileCtor = L.tileLayer[mapobj.type];
         if (mapobj.type === "wms" && mapopts.crs) {
           // warning: no deep copy
-          mapopts = Object.assign({}, mapopts);
+          mapopts = jsonClone(mapopts);
           mapopts.crs = getCrsFromName(mapopts.crs);
         }
       }

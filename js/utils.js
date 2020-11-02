@@ -75,6 +75,10 @@ function getParameterByName(name, defaultValue) {
   return results === null ? (isUnset(defaultValue) ? defaultValue : "") : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
+function jsonClone(obj) {
+  return $.extend(true, {}, obj);
+}
+
 /* ------------------ Drop down menu utils -------------------- */
 
 // add a drop down menu item
