@@ -1071,20 +1071,20 @@ $(window).on("load", function() {
 
     var gpx = ptindent + "<" + gpxelt;
     gpx += " lat=\"" + latlng.lat + "\" lon=\"" + latlng.lng + "\">";
-    if (properties.title) {
-      gpx += "<name>" + htmlEncode(properties.title) + "</name>";
-    }
-    if (properties.desc) {
-      gpx += "<desc>" + htmlEncode(properties.desc) + "</desc>";
-    }
     if (!isNaN(latlng.alt)) {
       gpx += "<ele>" + latlng.alt + "</ele>";
+    }
+    if (properties.time) {
+      gpx += "<time>" + properties.time + "</time>";
+    }
+    if (properties.title) {
+      gpx += "<name>" + htmlEncode(properties.title) + "</name>";
     }
     if (properties.cmt) {
       gpx += "<cmt>" + htmlEncode(properties.cmt) + "</cmt>";
     }
-    if (properties.time) {
-      gpx += "<time>" + properties.time + "</time>";
+    if (properties.desc) {
+      gpx += "<desc>" + htmlEncode(properties.desc) + "</desc>";
     }
     if (properties.ext) {
       gpx += "\n" + ptindent + "  <extensions>";
@@ -1157,7 +1157,7 @@ $(window).on("load", function() {
       gpx += "<metadata>\n";
       gpx += "  " + xmlname + "\n";
       gpx += "  <desc>" + (metadata.desc ? htmlEncode(metadata.desc) : "") + "</desc>\n";
-        gpx += "  <author><name>" + config.appname + "</name></author>\n";
+      gpx += "  <author><name>" + config.appname + "</name></author>\n";
       gpx += "  <link href='" + window.location.href + "'>\n";
       gpx += "    <text>" + config.appname + "</text>\n";
       gpx += "    <type>text/html</type>\n";
