@@ -1,9 +1,9 @@
 /* ----------------- My maps editing ------------------- */
 
-var OVERLAY_ICON = "<i class='material-icons map-overlay' title='Map overlay'>layers</i> ";
-var MYMAPS_BTNS = "<i class='material-icons map-edit' title='Edit'>create</i> "
-                  + "<i class='material-icons map-share' title='Share'>share</i> "
-                  + "<i class='material-icons map-delete' title='Delete'>delete</i> ";
+var OVERLAY_ICON = "<i class='material-icons map-overlay notranslate' title='Map overlay'>layers</i> ";
+var MYMAPS_BTNS = "<i class='material-icons map-edit notranslate' title='Edit'>create</i> "
+                  + "<i class='material-icons map-share notranslate' title='Share'>share</i> "
+                  + "<i class='material-icons map-delete notranslate' title='Delete'>delete</i> ";
 
 function setMapItemVisibility(elt, props) {
   //var isVisible = e.target.getAttribute("isVisible") == "true";
@@ -29,13 +29,13 @@ function addMymapsItem(name, props, addHandlers) {
   var mapv = inList[name];
 
   var mapitem = "<li><span class='map-item'>";
-  mapitem += "<i class='material-icons map-drag' title='Drag to reorder'>drag_indicator</i> ";
+  mapitem += "<i class='material-icons map-drag notranslate' title='Drag to reorder'>drag_indicator</i> ";
   if (mapv.type === "overlay") {
     mapitem += OVERLAY_ICON;
     mymapclass += " overlay-name";
   }
-  mapitem += "<span class='map-name" + mymapclass + "'></span> ";
-  mapitem += "<i class='material-icons map-visibility' title='Show/Hide' isVisible='??'>??</i> ";
+  mapitem += "<span class='map-name notranslate" + mymapclass + "'></span> ";
+  mapitem += "<i class='material-icons map-visibility notranslate' title='Show/Hide' isVisible='??'>??</i> ";
   mapitem += mymapbtns;
   mapitem += "</span></li>";
   $("#mymaps-list").append(mapitem);
@@ -109,23 +109,23 @@ function showMapsList() {
 }
 
 function toggleMapVisibility(e) {
-  var mprops = getMapProps(e.target);
+  var mprops = getMapProps(e.currentTarget);
   mprops.on = !mprops.on;
   saveMapList();
-  setMapItemVisibility($(e.target), mprops);
+  setMapItemVisibility($(e.currentTarget), mprops);
   ga('send', 'event', 'map', 'visibility');
 }
 
 function editMapItem(e) {
-  var name = getMapName(e.target);
+  var name = getMapName(e.currentTarget);
   editMymap(name);
 }
 function deleteMapItem(e) {
-  var name = getMapName(e.target);
+  var name = getMapName(e.currentTarget);
   deleteMymap(name);
 }
 function shareMapItem(e) {
-  var name = getMapName(e.target);
+  var name = getMapName(e.currentTarget);
   openExportMymaps(null, name);
 }
 
@@ -575,6 +575,7 @@ $("#import-box-close").click(closeImportBox);
 
 $(window).on("load", function() {
 
+  noTranslate();
   consentCookies();
 
   showMapsList();

@@ -3,6 +3,8 @@ var activity;
 var activityname;
 var activities;
 
+noTranslate();
+
 // vehicle menu
 var selectVehicle = $("#activityvehicle")[0];
 

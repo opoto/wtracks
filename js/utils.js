@@ -79,6 +79,15 @@ function jsonClone(obj) {
   return $.extend(true, {}, obj);
 }
 
+function noTranslate(selector) {
+  if (selector) {
+    $(selector).addClass("notranslate");
+  } else {
+    // global rules
+    $(".material-icons").addClass("notranslate");
+  }
+}
+
 /* ------------------ Drop down menu utils -------------------- */
 
 // add a drop down menu item

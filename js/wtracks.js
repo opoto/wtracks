@@ -7,6 +7,8 @@ var route;
 var routeStart;
 var polystats;
 
+noTranslate();
+
 /*
   setInteractive "plugin" from
   https://github.com/Leaflet/Leaflet/issues/5442#issuecomment-424014428
@@ -74,7 +76,7 @@ $(window).on("load", function() {
     $("#" + eltInfo[0] + "-" + eltInfo[1]).addClass("fold-selected");
     $("#" + eltInfo[0] + "-" + eltInfo[1]).parent("div").addClass("fold-selected-title");
   }
-  $(".fold").click(function(e) { openFolder(e.target.id); });
+  $(".fold").click(function(e) { openFolder(e.currentTarget.id); });
 
   // defaults
   openFolder("file-newtrk");
@@ -2246,7 +2248,7 @@ $(window).on("load", function() {
     showMarker: false,
     showPopup: true,
     //customIcon: false,
-    customIcon: L.divIcon({html:'<span class="material-icons">&#xE8B6;</span>'}),
+    customIcon: L.divIcon({html:'<span class="material-icons notranslate">&#xE8B6;</span>'}),
     retainZoomLevel: true,
     draggable: false
   }).addTo(map);
@@ -2263,7 +2265,7 @@ $(window).on("load", function() {
 
       link.href = '#';
       link.title = 'My location (l)';
-      link.innerHTML = '<span id="myloc" class="material-icons wtracks-control-icon">&#xE55C;</span>';
+      link.innerHTML = '<span id="myloc" class="material-icons wtracks-control-icon notranslate">&#xE55C;</span>';
       //link.id = 'myloc';
       L.DomEvent.disableClickPropagation(link);
       L.DomEvent.on(link, 'click', L.DomEvent.stop)
@@ -2318,17 +2320,17 @@ $(window).on("load", function() {
 
       editopts.id = 'edit-tools';
       editopts.class = 'wtracks-control-icon';
-      editopts.innerHTML = '<a href="#" title="Manual Track (e)" id="' + EDIT_MANUAL_ID + '"><span class="material-icons wtracks-control-icon">' + EDIT_MANUAL_ICON + '</span></a>' +
-      '<a href="#" title="Auto Track (a)" id="' + EDIT_AUTO_ID + '"><span class="material-icons wtracks-control-icon">' + EDIT_AUTO_ICON + '</span></a>' +
+      editopts.innerHTML = '<a href="#" title="Manual Track (e)" id="' + EDIT_MANUAL_ID + '"><span class="material-icons wtracks-control-icon notranslate">' + EDIT_MANUAL_ICON + '</span></a>' +
+      '<a href="#" title="Auto Track (a)" id="' + EDIT_AUTO_ID + '"><span class="material-icons wtracks-control-icon notranslate">' + EDIT_AUTO_ICON + '</span></a>' +
       '<a href="#" title="Add segment" id="add-segment">' +
-        '<span class="material-icons wtracks-control-icon segment-icon">&#xe6e1</span>' +
-        '<span class="material-icons wtracks-control-icon add-segment-icon">&#xe145</span>' +
+        '<span class="material-icons wtracks-control-icon segment-icon notranslate">&#xe6e1</span>' +
+        '<span class="material-icons wtracks-control-icon add-segment-icon notranslate">&#xe145</span>' +
       '</a>' +
       '<a href="#" title="Delete segment" id="delete-segment">' +
-        '<span class="material-icons wtracks-control-icon segment-icon">&#xe6e1</span>' +
-        '<span class="material-icons wtracks-control-icon delete-segment-icon">&#xe14c</span>' +
+        '<span class="material-icons wtracks-control-icon segment-icon notranslate">&#xe6e1</span>' +
+        '<span class="material-icons wtracks-control-icon delete-segment-icon notranslate">&#xe14c</span>' +
       '</a>' +
-      '<a href="#" title="Waypoint (w)" id="edit-marker"><span class="material-icons wtracks-control-icon">&#xE55F;</span></a>';
+      '<a href="#" title="Waypoint (w)" id="edit-marker"><span class="material-icons wtracks-control-icon notranslate">&#xE55F;</span></a>';
 
       return container;
     }
@@ -2339,7 +2341,7 @@ $(window).on("load", function() {
       position: 'topleft',
       title: 'Toggle Edit',
   //    html: '&#x270e;',
-      html: '<span class="material-icons wtracks-control-icon">&#xE3C9;</span>',
+      html: '<span class="material-icons wtracks-control-icon notranslate">&#xE3C9;</span>',
       event: 'click'
     }
   });
@@ -3012,7 +3014,7 @@ $(window).on("load", function() {
       var del = L.DomUtil.create('a', "", p);
       del.href = "#";
       del.title = "Delete";
-      del.innerHTML = "<span class='popupfield'><i class='material-icons'>&#xE872;</i></span>";
+      del.innerHTML = "<span class='popupfield'><i class='material-icons notranslate'>&#xE872;</i></span>";
       del.onclick = function(e) {
         if (!route) {
           return; // ignore
@@ -3242,7 +3244,7 @@ $(window).on("load", function() {
       var btn = L.DomUtil.create('a', "", p);
       btn.href = "#";
       btn.title = "Delete";
-      btn.innerHTML = "<span class='popupfield'><i class='material-icons'>&#xE872;</i></span>";
+      btn.innerHTML = "<span class='popupfield'><i class='material-icons notranslate'>&#xE872;</i></span>";
       btn.onclick = deletefn;
 
       if (splitfn) {
@@ -3252,7 +3254,7 @@ $(window).on("load", function() {
         btn = L.DomUtil.create('a', "", p);
         btn.href = "#";
         btn.title = "Split segment from this point";
-        btn.innerHTML = "<span class='popupfield'><i class='material-icons'>&#xE14E;</i></span>";
+        btn.innerHTML = "<span class='popupfield'><i class='material-icons notranslate'>&#xE14E;</i></span>";
         btn.onclick = splitfn;
       }
     }
@@ -3633,7 +3635,7 @@ $(window).on("load", function() {
     ga('send', 'event', 'menu', item);
   }
   $(".tablinks").click(function(event) {
-    menu(event.target.id.replace("tab", ""), event);
+    menu(event.currentTarget.id.replace("tab", ""), event);
   });
   $(".donatebtn").click(function(event) {
     ga('send', 'event', 'menu', 'donate', event.target.id);
@@ -3736,8 +3738,8 @@ $(window).on("load", function() {
     $("#share-max-downloads").html(share.maxDownloads);
     $("#share-status").html("?");
     share.ping(
-      function() { $("#share-status").html("working <span class='green material-icons'>check_circle_outline</span>");},
-      function() { $("#share-status").html("NOT working <span class='red material-icons'>highlight_off</span>");}
+      function() { $("#share-status").html("working <span class='green material-icons notranslate'>check_circle_outline</span>");},
+      function() { $("#share-status").html("NOT working <span class='red material-icons notranslate'>highlight_off</span>");}
     );
     // share prompt dialog
     $("#wtshare-name").text(share.name);
@@ -3761,7 +3763,7 @@ $(window).on("load", function() {
   });
   // add "settings" link in map selector
   $(".leaflet-control-layers-base").append(
-    "<label><div>&nbsp;<i class='material-icons'>settings&nbsp;</i><a href='./maps.html'>More...</a></div></label>"
+    "<label><div>&nbsp;<i class='material-icons notranslate'>settings&nbsp;</i><a href='./maps.html'>More...</a></div></label>"
   );
   // add option to automatically close map selector when a listed entry is clicked
   $(".leaflet-control-layers-base").append(
