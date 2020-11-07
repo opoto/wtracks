@@ -472,9 +472,9 @@ function importGeoJson(geojson) {
 /********* speed profile from reference speeds *********/
 
 function changeData() {
-  var dataname = $("#data option:selected").text();
-  if (dataname) {
-    refspeeds = inputdata = getDataset(dataname);
+  var dataidx = $("#data option:selected").val();
+  if (!isUnset(dataidx)) {
+    refspeeds = inputdata = getDataset(dataidx);
   }
   importfnname = "computeSpeedProfileFromSpeeds";
   if (activity && activity.speedprofile) {
@@ -529,8 +529,8 @@ $(window).on("load", function() {
   });
 
   var selectdata = $("#data")[0];
-  forEachDataset(function(name) {
-    addSelectOption(selectdata, name);
+  forEachDataset(function(idx, data) {
+    addSelectOption(selectdata, idx, data.name);
   });
 
   displaySelectedActivity();
