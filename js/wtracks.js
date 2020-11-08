@@ -7,8 +7,6 @@ var route;
 var routeStart;
 var polystats;
 
-noTranslate();
-
 /*
   setInteractive "plugin" from
   https://github.com/Leaflet/Leaflet/issues/5442#issuecomment-424014428
@@ -3622,6 +3620,13 @@ $(window).on("load", function() {
 
   $(".appname").text(config.appname);
   setStatus("Welcome to " + config.appname + "!", { timeout: 3 });
+
+  // Prevent automatic translation on controls, icons, and user data
+  noTranslate();
+  noTranslate(".leaflet-control-layers-list label div span");
+  noTranslate(".leaflet-control-attribution");
+  noTranslate(".leaflet-control-scale-line");
+  noTranslate("#track-name");
 
   function menu(item, event) {
     $("#menu").show();
