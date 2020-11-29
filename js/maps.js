@@ -576,6 +576,7 @@ $("#import-box-close").click(closeImportBox);
 $(window).on("load", function() {
 
   noTranslate();
+  noTranslate("label");
   consentCookies();
 
   showMapsList();

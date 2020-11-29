@@ -80,12 +80,10 @@ function jsonClone(obj) {
 }
 
 function noTranslate(selector) {
-  if (selector) {
+    // default selector
+    selector = selector ? selector : ".material-icons";
     $(selector).addClass("notranslate");
-  } else {
-    // global rules
-    $(".material-icons").addClass("notranslate");
-  }
+    $(selector).attr("translate", "no");
 }
 
 /* ------------------ Drop down menu utils -------------------- */
