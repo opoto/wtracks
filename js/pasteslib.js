@@ -253,7 +253,7 @@ function gofileUpload(name, gpx, onDone, onFail) {
 
 var pastesLib = {
   "friendpaste": {
-    "enabled": true,
+    "enabled": false,
     "name": "FriendPaste",
     "web": "https://friendpaste.com/",
     "maxSize": "Approx. 80KB",
@@ -303,7 +303,7 @@ var pastesLib = {
     "maxTime": "1 day",
     "maxDownloads": "<span class='material-icons symbol'>warning</span> Once only!",
     "upload": fileioUpload,
-    "delete": fileioDelete 
+    "delete": fileioDelete
   },
   "transfer.sh": {
     "name": "transfer.sh",
