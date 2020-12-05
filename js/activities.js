@@ -440,10 +440,10 @@ function computeSpeedProfile() {
     return;
   }
 
-  var method = $("#method option:selected").text();
-  var degree = Number($("#degree option:selected").text());
-  var iterations = Number($("#iterations option:selected").text());
-  var pruning = Number($("#pruning option:selected").text());
+  var method = $("#method option:selected").val();
+  var degree = Number($("#degree option:selected").val());
+  var iterations = Number($("#iterations option:selected").val());
+  var pruning = Number($("#pruning option:selected").val());
 
   activity.speedprofile = polystats[importfnname](inputdata, method, iterations, pruning, degree);
 
@@ -457,7 +457,7 @@ function computeSpeedProfile() {
 $("#method").change(updateMethod);
 
 function updateMethod() {
-  var method = $("#method option:selected").text();
+  var method = $("#method option:selected").val();
   displayFormula(method);
   displaySpeedProfile(activity.speedprofile);
 }

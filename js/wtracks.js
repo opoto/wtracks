@@ -3627,6 +3627,8 @@ $(window).on("load", function() {
   noTranslate(".leaflet-control-attribution");
   noTranslate(".leaflet-control-scale-line");
   noTranslate("#track-name");
+  noTranslate("input");
+  noTranslate("#share-libs");
 
   function menu(item, event) {
     $("#menu").show();
