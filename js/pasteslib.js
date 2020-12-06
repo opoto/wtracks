@@ -13,9 +13,8 @@
    $.post( "//dpaste.com/api/v2/",
       { "content": gpx,
          "title": name,
-         "poster": "WTracks",
          "syntax": "xml",
-         "expiry_days": 60
+         "expiry_days": 60 // 1 day to 365 days (7 days is the default)
    }).done(function(data) {
      onDone(data, data + ".txt");
    }).fail(onFail);
@@ -188,16 +187,18 @@ function transferUpload(name, gpx, onDone, onFail) {
  // ------------------------------------------------------------------
 
 function gofileUpload(name, gpx, onDone, onFail) {
+
   function _gofileUpload(server, name, gpx, onDone, onFail) {
     try {
+      name = encodeURIComponent(name);
       var formData = new FormData();
       var blob = new Blob([gpx], { type: "text/xml" });
-      formData.append("filesUploaded", blob, "wtracks.gpx");
+      formData.append("filesUploaded", blob, name + ".gpx");
 
       var gofileUrl = "https://" + server + ".gofile.io/";
       $.ajax({
         method: "POST",
-        url: gofileUrl + "upload",
+        url: gofileUrl + "uploadFile",
         type: "POST",
         data: formData,
         processData: false,
@@ -206,7 +207,7 @@ function gofileUpload(name, gpx, onDone, onFail) {
         if (resp.status == "ok") {
           //$.get("https://gofile.io/?c=" + resp.data.code);
           onDone("https://gofile.io/?c=" + resp.data.code,
-            gofileUrl + "download/" + resp.data.code + "/wtracks.gpx");
+            gofileUrl + "download/" + resp.data.code + "/" + name + ".gpx");
         } else {
           onFail("gofile upload failed: " + resp.status);
         }
@@ -252,7 +253,7 @@ function gofileUpload(name, gpx, onDone, onFail) {
 
 
 var pastesLib = {
-  "friendpaste": {
+  "friendpaste": { // error 500
     "enabled": false,
     "name": "FriendPaste",
     "web": "https://friendpaste.com/",
@@ -263,7 +264,7 @@ var pastesLib = {
     "ping": function(done, fail) { pingUrl("https://friendpaste.com/4yufAYfTKm8xKMJuXPDRhs/raw", done, fail); },
     "delete": noDelete
   },
-  "tmpfile": {
+  "tmpfile": { // good ;)
     "enabled": true,
     "name": "TmpFile",
     "web": "https://glitch.com/edit/#!/tmpfile?path=README.md%3A1%3A0",
@@ -285,17 +286,18 @@ var pastesLib = {
     "ping": function(done, fail) { pingUrl("https://htput.com/dummy", done, fail); },
     "delete": htputDelete
   },
-  "dpaste": { // no HTTPS
+  "dpaste": {
     "name": "DPaste",
-    "enabled": false,
+    "enabled": true,
     "web": "https://dpaste.com/",
-    "maxSize": "Unknown",
+    "maxSize": "250KB",
     "maxTime": "2 months",
     "maxDownloads": "Unlimited",
     "upload": dpasteUpload,
+    "ping": function(done, fail) { pingUrl("https://dpaste.com", done, fail); },
     "delete": noDelete
   },
-    "fileio": {
+    "fileio": { // download once
     "name": "file.io",
     "enabled": false, // sharing requires more than 1 request
     "web": "https://file.io/",
@@ -305,7 +307,7 @@ var pastesLib = {
     "upload": fileioUpload,
     "delete": fileioDelete
   },
-  "transfer.sh": {
+  "transfer.sh": { // discontinued?
     "name": "transfer.sh",
     "enabled": false,
     "web": "https://transfer.sh",
@@ -315,7 +317,7 @@ var pastesLib = {
     "upload": transferUpload,
     "delete": noDelete
   },
-  "gofile": {
+  "gofile": { // no direct download? CORS?
     "name": "gofile.io",
     "enabled": false,
     "web": "https://gofile.io/",
@@ -323,6 +325,7 @@ var pastesLib = {
     "maxTime": "Unknown",
     "maxDownloads": "Unlimited",
     "upload": gofileUpload,
+    "ping": function(done, fail) { pingUrl("https://apiv2.gofile.io/getServer", done, fail); },
     "delete": noDelete
   }
 };
