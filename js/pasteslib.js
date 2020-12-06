@@ -253,6 +253,17 @@ function gofileUpload(name, gpx, onDone, onFail) {
 
 
 var pastesLib = {
+  "dpaste": {
+    "name": "DPaste",
+    "enabled": true,
+    "web": "https://dpaste.com/",
+    "maxSize": "250KB",
+    "maxTime": "2 months",
+    "maxDownloads": "Unlimited",
+    "upload": dpasteUpload,
+    "ping": function(done, fail) { pingUrl("https://dpaste.com", done, fail); },
+    "delete": noDelete
+  },
   "friendpaste": { // error 500
     "enabled": false,
     "name": "FriendPaste",
@@ -286,18 +297,7 @@ var pastesLib = {
     "ping": function(done, fail) { pingUrl("https://htput.com/dummy", done, fail); },
     "delete": htputDelete
   },
-  "dpaste": {
-    "name": "DPaste",
-    "enabled": true,
-    "web": "https://dpaste.com/",
-    "maxSize": "250KB",
-    "maxTime": "2 months",
-    "maxDownloads": "Unlimited",
-    "upload": dpasteUpload,
-    "ping": function(done, fail) { pingUrl("https://dpaste.com", done, fail); },
-    "delete": noDelete
-  },
-    "fileio": { // download once
+  "fileio": { // download once
     "name": "file.io",
     "enabled": false, // sharing requires more than 1 request
     "web": "https://file.io/",
