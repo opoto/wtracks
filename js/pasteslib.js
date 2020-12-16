@@ -264,8 +264,8 @@ var pastesLib = {
     "ping": function(done, fail) { pingUrl("https://dpaste.com", done, fail); },
     "delete": noDelete
   },
-  "friendpaste": { // error 500
-    "enabled": false,
+  "friendpaste": {
+    "enabled": true,
     "name": "FriendPaste",
     "web": "https://friendpaste.com/",
     "maxSize": "Approx. 80KB",
@@ -275,7 +275,7 @@ var pastesLib = {
     "ping": function(done, fail) { pingUrl("https://friendpaste.com/4yufAYfTKm8xKMJuXPDRhs/raw", done, fail); },
     "delete": noDelete
   },
-  "tmpfile": { // good ;)
+  "tmpfile": { // 15s startup
     "enabled": true,
     "name": "TmpFile",
     "web": "https://glitch.com/edit/#!/tmpfile?path=README.md%3A1%3A0",
