@@ -109,6 +109,8 @@ $(window).on("load", function() {
   var prunealt = getBoolVal("wt.prunealt", false);
   var wptLabel = getBoolVal("wt.wptLabel", config.display.wptLabel);
   var extMarkers = getBoolVal("wt.extMarkers", config.display.extMarkers);
+  var drag = getBoolVal("wt.drag", config.drag);
+  var wasDragged;
 
   var EDIT_NONE = 0;
   var EDIT_MANUAL_TRACK = 1;
@@ -1483,6 +1485,22 @@ $(window).on("load", function() {
       case EDIT_MANUAL_TRACK:
         if (track) {
           track.disableEdit();
+          // disable dragging path
+          track.setInteractive(false);
+          track.dragging.disable();
+          if (wasDragged) {
+            // Track was moved
+            var reelevate = false;
+            if (confirm("Track was moved, do you want to recompute elevation?")) {
+              reelevate = true;
+              // 1. update elevation
+              toolCleanup(["alt"]);
+              toolElevate();
+              // 2. update stats
+              polystats.updateStatsFrom(0);
+            }
+            ga('send', 'event', 'edit', 'drag-track', reelevate);
+          }
         }
         break;
       case EDIT_AUTO_TRACK:
@@ -1512,6 +1530,12 @@ $(window).on("load", function() {
         track.enableEdit();
         track.editor.continueForward();
         setInactiveSegmentClickable(false);
+        if (drag) {
+          // allow dragging path
+          track.setInteractive(true);
+          track.dragging.enable();
+          wasDragged = false;
+        }
         break;
       case EDIT_AUTO_TRACK:
         $("#edit-auto").addClass("control-selected");
@@ -2487,8 +2511,10 @@ $(window).on("load", function() {
   }
 
   function toolElevate(e) {
-    ga('send', 'event', 'tool', 'elevate', undefined, getTrackLength());
-    $("#menu").hide();
+    if (e) {
+      ga('send', 'event', 'tool', 'elevate', undefined, getTrackLength());
+      $("#menu").hide();
+    }
 
     setStatus("Elevating...", { spinner: true });
     var count = 0;
@@ -2510,21 +2536,8 @@ $(window).on("load", function() {
 
   $("#elevate").click(toolElevate);
 
-  $("#cleanup").click(function(e) {
-    var toclean = [];
-    if (isChecked("#cleanupalt")) {
-      toclean.push("alt");
-    }
-    if (isChecked("#cleanuptime")) {
-      toclean.push("time");
-    }
-    if (toclean.length == 0) {
-      // nothing to clean
-      return;
-    }
-
+  function toolCleanup(toclean) {
     var count = 0;
-
     applySegmentTool(function(segment) {
       var points = segment ? segment.getLatLngs() : undefined;
       if (points && (points.length > 0)) {
@@ -2539,12 +2552,26 @@ $(window).on("load", function() {
         }
       }
     });
+    return count;
+  }
 
+  $("#cleanup").click(function(e) {
+    var toclean = [];
+    if (isChecked("#cleanupalt")) {
+      toclean.push("alt");
+    }
+    if (isChecked("#cleanuptime")) {
+      toclean.push("time");
+    }
+    if (toclean.length == 0) {
+      // nothing to clean
+      return;
+    }
+    var count = toolCleanup(toclean);
     if (count) {
       ga('send', 'event', 'tool', 'cleanup', toclean.toString(), count);
       saveState();
     }
-
     return false;
   });
 
@@ -3351,11 +3378,16 @@ $(window).on("load", function() {
     //console.log(e.type);
   });
 
-  function dragMarker(e) {
-    elevatePoint(e.layer.getLatLng());
-    //console.log(e.type);
+  function dragEnd(e) {
+    if (e.layer.getLatLng) {
+      // Dragged a waypoint
+      elevatePoint(e.layer.getLatLng());
+      //console.log(e.type);
+    } else if (e.layer.getLatLngs) {
+      wasDragged = true;
+    }
   }
-  map.on('editable:dragend', dragMarker);
+  map.on('editable:dragend', dragEnd);
 
   map.on('editable:vertex:deleted', function(e) {
     if (!e.latlng.undoing) { // ensure we're not running an undo
@@ -3707,6 +3739,13 @@ $(window).on("load", function() {
     setEditMode(EDIT_NONE);
   } else {
     restoreState();
+  }
+
+  /* opt-in drag feature */
+  var dragsetting = getParameterByName("drag");
+  if (typeof dragsetting == "string") {
+    drag = (dragsetting == "true");
+    storeVal("wt.drag", ""+drag);
   }
 
   /* Show About dialog if not shown since a while */

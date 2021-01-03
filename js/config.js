@@ -27,6 +27,7 @@ var config = {
   qrCodeService: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&bgcolor=fff&data=",
   //qrCodeService: "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chld=M&chl=",
   mapsCloseOnClick: true,
+  drag: false,
   graphhopper: {
     key: function() {
       // Create a GraphHopper account, generate a key, and return it here
