@@ -383,7 +383,7 @@ $(window).on("load", function() {
       }
       updateOverlayTrackStyle(track);
     }
-    track = L.polyline([], {draggable: true});
+    track = L.polyline([]);
     editLayer.addLayer(track);
     track.on('click', segmentClickListener);
     if (!noStats) {
