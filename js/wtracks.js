@@ -2467,6 +2467,7 @@ $(window).on("load", function() {
   L.DomEvent.disableClickPropagation(L.DomUtil.get("edit-marker"));
   L.DomEvent.disableClickPropagation(L.DomUtil.get("add-segment"));
   L.DomEvent.disableClickPropagation(L.DomUtil.get("delete-segment"));
+  L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_DRAG_ID));
   $("#" + EDIT_MANUAL_ID).click(function(e) {
     if (editMode == EDIT_MANUAL_TRACK) {
       undo();
