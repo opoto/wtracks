@@ -109,13 +109,13 @@ $(window).on("load", function() {
   var prunealt = getBoolVal("wt.prunealt", false);
   var wptLabel = getBoolVal("wt.wptLabel", config.display.wptLabel);
   var extMarkers = getBoolVal("wt.extMarkers", config.display.extMarkers);
-  var drag = getBoolVal("wt.drag", config.drag);
   var wasDragged;
 
   var EDIT_NONE = 0;
   var EDIT_MANUAL_TRACK = 1;
   var EDIT_AUTO_TRACK = 2;
   var EDIT_MARKER = 3;
+  var EDIT_DRAG = 4;
   var EDIT_DEFAULT = EDIT_MANUAL_TRACK;
   var editMode = -1;
 
@@ -485,6 +485,8 @@ $(window).on("load", function() {
   var EDIT_AUTO_ID = "edit-auto";
   var EDIT_MANUAL_ICON = "timeline";
   var EDIT_MANUAL_ID = "edit-manual";
+  var EDIT_DRAG_ID = "edit-drag";
+  var EDIT_DRAG_ICON = "open_with";
 
   var UndoRoute = {
     getType: function() {
@@ -770,6 +772,7 @@ $(window).on("load", function() {
       marker.getElement().removeAttribute("title"); // remove default HTML tooltip
       setWaypointTooltip(marker);
       marker.on("click", function() {
+        if (editMode == EDIT_DRAG) return;
         pop = L.popup({ "className" : "overlay" })
           .setLatLng(marker.getLatLng())
           .setContent(getMarkerPopupContent(marker))
@@ -1468,6 +1471,39 @@ $(window).on("load", function() {
     openApiKeyInfo();
   }
 
+  function enterDragMode() {
+    setExtrimityVisibility(true);
+    track.setInteractive(true);
+    track.on("dragend", function(e) {
+      wasDragged = true;
+      updateExtremities();
+    });
+    track.dragging.enable();
+    wasDragged = false;
+    editableWaypoints(true);
+  }
+
+  function exitDragMode() {
+    editableWaypoints(false);
+    // disable dragging path
+    track.setInteractive(false);
+    track.off("dragend");
+    track.dragging.disable();
+    if (wasDragged) {
+      // Track was moved
+      var reelevate = false;
+      if (confirm("Track was moved, do you want to recompute elevation?")) {
+        reelevate = true;
+        // 1. update elevation
+        toolCleanup(["alt"]);
+        toolElevate();
+        // 2. update stats
+        polystats.updateStatsFrom(0);
+      }
+      ga('send', 'event', 'edit', 'drag-track', reelevate);
+    }
+  }
+
   function setEditMode(mode) {
     closeOverlays();
     if (mode === editMode) {
@@ -1485,22 +1521,6 @@ $(window).on("load", function() {
       case EDIT_MANUAL_TRACK:
         if (track) {
           track.disableEdit();
-          // disable dragging path
-          track.setInteractive(false);
-          track.dragging.disable();
-          if (wasDragged) {
-            // Track was moved
-            var reelevate = false;
-            if (confirm("Track was moved, do you want to recompute elevation?")) {
-              reelevate = true;
-              // 1. update elevation
-              toolCleanup(["alt"]);
-              toolElevate();
-              // 2. update stats
-              polystats.updateStatsFrom(0);
-            }
-            ga('send', 'event', 'edit', 'drag-track', reelevate);
-          }
         }
         break;
       case EDIT_AUTO_TRACK:
@@ -1510,11 +1530,15 @@ $(window).on("load", function() {
       case EDIT_MARKER:
         editableWaypoints(false);
         break;
+      case EDIT_DRAG:
+        exitDragMode();
+        break;
       default:
     }
     map.editTools.stopDrawing();
     $("#edit-tools a").removeClass("control-selected");
-    if (editMode > 0) { // exiting edit mode
+    if (editMode > EDIT_NONE) { // exiting edit mode
+      editMode = EDIT_NONE;
       saveState();
       // reset mouse pointer
       $("#map").css("cursor", "");
@@ -1526,22 +1550,20 @@ $(window).on("load", function() {
         setInactiveSegmentClickable(true);
         break;
       case EDIT_MANUAL_TRACK:
-        $("#edit-manual").addClass("control-selected");
+        $("#" + EDIT_MANUAL_ID).addClass("control-selected");
         track.enableEdit();
         track.editor.continueForward();
         setInactiveSegmentClickable(false);
-        if (drag) {
-          // allow dragging path
-          track.setInteractive(true);
-          track.dragging.enable();
-          wasDragged = false;
-        }
         break;
       case EDIT_AUTO_TRACK:
-        $("#edit-auto").addClass("control-selected");
+        $("#" + EDIT_AUTO_ID).addClass("control-selected");
         showGraphHopperCredit();
         restartRoute();
         setInactiveSegmentClickable(false);
+        break;
+      case EDIT_DRAG:
+        $("#" + EDIT_DRAG_ID).addClass("control-selected");
+        enterDragMode();
         break;
       case EDIT_MARKER:
         setExtrimityVisibility(true);
@@ -2352,6 +2374,7 @@ $(window).on("load", function() {
         '<span class="material-icons wtracks-control-icon segment-icon notranslate">&#xe6e1</span>' +
         '<span class="material-icons wtracks-control-icon delete-segment-icon notranslate">&#xe14c</span>' +
       '</a>' +
+      '<a href="#" title="Move track" id="' + EDIT_DRAG_ID + '"><span class="material-icons wtracks-control-icon notranslate">' + EDIT_DRAG_ICON + '</span></a>' +
       '<a href="#" title="Waypoint (w)" id="edit-marker"><span class="material-icons wtracks-control-icon notranslate">&#xE55F;</span></a>';
 
       return container;
@@ -2444,7 +2467,7 @@ $(window).on("load", function() {
   L.DomEvent.disableClickPropagation(L.DomUtil.get("edit-marker"));
   L.DomEvent.disableClickPropagation(L.DomUtil.get("add-segment"));
   L.DomEvent.disableClickPropagation(L.DomUtil.get("delete-segment"));
-  $("#edit-manual").click(function(e) {
+  $("#" + EDIT_MANUAL_ID).click(function(e) {
     if (editMode == EDIT_MANUAL_TRACK) {
       undo();
     } else {
@@ -2453,7 +2476,7 @@ $(window).on("load", function() {
     }
     e.preventDefault();
   });
-  $("#edit-auto").click(function(e) {
+  $("#" + EDIT_AUTO_ID).click(function(e) {
     if (editMode == EDIT_AUTO_TRACK) {
       undo();
     } else {
@@ -2486,6 +2509,10 @@ $(window).on("load", function() {
     ga('send', 'event', 'edit', 'delete-segment');
     deleteSegment(track);
     saveState();
+    e.preventDefault();
+  });
+  $("#" + EDIT_DRAG_ID).click(function(e) {
+    setEditMode(EDIT_DRAG);
     e.preventDefault();
   });
 
@@ -2609,7 +2636,11 @@ $(window).on("load", function() {
   });
 
   function segmentClickListener(event, noGaEvent) {
-    if ((event.target != track) && (editMode <= EDIT_NONE)) {
+    if ((event.target != track)
+    && ((editMode <= EDIT_NONE) || (editMode == EDIT_DRAG))) {
+      if (editMode == EDIT_DRAG) {
+        exitDragMode();
+      }
       if (!noGaEvent) {
         ga('send', 'event', 'edit', 'switch-segment');
       }
@@ -2626,6 +2657,9 @@ $(window).on("load", function() {
       updateTrackStyle();
       setPolyStats();
       updateExtremities();
+      if (editMode == EDIT_DRAG) {
+        enterDragMode();
+      }
       return true;
     } else {
       return false;
@@ -3378,16 +3412,14 @@ $(window).on("load", function() {
     //console.log(e.type);
   });
 
-  function dragEnd(e) {
+  function draggedMark(e) {
     if (e.layer.getLatLng) {
       // Dragged a waypoint
       elevatePoint(e.layer.getLatLng());
       //console.log(e.type);
-    } else if (e.layer.getLatLngs) {
-      wasDragged = true;
     }
   }
-  map.on('editable:dragend', dragEnd);
+  map.on('editable:dragend', draggedMark);
 
   map.on('editable:vertex:deleted', function(e) {
     if (!e.latlng.undoing) { // ensure we're not running an undo
@@ -3739,13 +3771,6 @@ $(window).on("load", function() {
     setEditMode(EDIT_NONE);
   } else {
     restoreState();
-  }
-
-  /* opt-in drag feature */
-  var dragsetting = getParameterByName("drag");
-  if (typeof dragsetting == "string") {
-    drag = (dragsetting == "true");
-    storeVal("wt.drag", ""+drag);
   }
 
   /* Show About dialog if not shown since a while */
