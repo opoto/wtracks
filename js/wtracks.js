@@ -487,6 +487,7 @@ $(window).on("load", function() {
   var EDIT_MANUAL_ID = "edit-manual";
   var EDIT_DRAG_ID = "edit-drag";
   var EDIT_DRAG_ICON = "open_with";
+  var EDIT_MARKER_ID = "edit-marker";
 
   var UndoRoute = {
     getType: function() {
@@ -1567,7 +1568,7 @@ $(window).on("load", function() {
         break;
       case EDIT_MARKER:
         setExtrimityVisibility(true);
-        $("#edit-marker").addClass("control-selected");
+        $("#" + EDIT_MARKER_ID).addClass("control-selected");
         $("#map").css("cursor", "url(img/marker-icon.cur),text");
         $("#map").css("cursor", "url(img/marker-icon.png) 7 25,text");
         editableWaypoints(true);
@@ -2374,8 +2375,8 @@ $(window).on("load", function() {
         '<span class="material-icons wtracks-control-icon segment-icon notranslate">&#xe6e1</span>' +
         '<span class="material-icons wtracks-control-icon delete-segment-icon notranslate">&#xe14c</span>' +
       '</a>' +
-      '<a href="#" title="Move track" id="' + EDIT_DRAG_ID + '"><span class="material-icons wtracks-control-icon notranslate">' + EDIT_DRAG_ICON + '</span></a>' +
-      '<a href="#" title="Waypoint (w)" id="edit-marker"><span class="material-icons wtracks-control-icon notranslate">&#xE55F;</span></a>';
+      '<a href="#" title="Move track (m)" id="' + EDIT_DRAG_ID + '"><span class="material-icons wtracks-control-icon notranslate">' + EDIT_DRAG_ICON + '</span></a>' +
+      '<a href="#" title="Waypoint (w)" id="' + EDIT_MARKER_ID + '"><span class="material-icons wtracks-control-icon notranslate">&#xE55F;</span></a>';
 
       return container;
     }
@@ -2434,13 +2435,17 @@ $(window).on("load", function() {
         }
         break;
       case 69: // 'e' - edit
-        setEditMode(EDIT_MANUAL_TRACK);
+        if (editMode != EDIT_MANUAL_TRACK) {
+          $("#" + EDIT_MANUAL_ID).click();
+        }
         break;
       case 65: // 'a' - auto
-        setEditMode(EDIT_AUTO_TRACK);
+        if (editMode != EDIT_AUTO_TRACK) {
+          $("#" + EDIT_AUTO_ID).click();
+        }
         break;
       case 87: // 'w' - waypoint
-        setEditMode(EDIT_MARKER);
+        $("#" + EDIT_MARKER_ID).click();
         break;
       case 70: // 'f' - find address
         $(".glass")[0].click();
@@ -2449,8 +2454,8 @@ $(window).on("load", function() {
         showLocation = LOC_ONCE;
         gotoMyLocation();
         break;
-      case 77: // 'm' - my location
-        openMenu();
+      case 77: // 'm' - move/drag
+        $("#" + EDIT_DRAG_ID).click();
         break;
       case 113: // 'F2' - rename
         promptTrackName();
@@ -2464,7 +2469,7 @@ $(window).on("load", function() {
 
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_MANUAL_ID));
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_AUTO_ID));
-  L.DomEvent.disableClickPropagation(L.DomUtil.get("edit-marker"));
+  L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_MARKER_ID));
   L.DomEvent.disableClickPropagation(L.DomUtil.get("add-segment"));
   L.DomEvent.disableClickPropagation(L.DomUtil.get("delete-segment"));
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_DRAG_ID));
@@ -2488,7 +2493,7 @@ $(window).on("load", function() {
     }
     e.preventDefault();
   });
-  $("#edit-marker").click(function(e) {
+  $("#" + EDIT_MARKER_ID).click(function(e) {
     ga('send', 'event', 'edit', 'marker');
     setEditMode(EDIT_MARKER);
     e.preventDefault();
