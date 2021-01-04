@@ -94,6 +94,7 @@ $(window).on("load", function() {
 
   map = L.map('map', {
     editable: true,
+    tap: false, // TODO workaround for https://github.com/Leaflet/Leaflet/issues/7331
     editOptions: {
       lineGuideOptions: {
         opacity: 0.5
@@ -382,7 +383,7 @@ $(window).on("load", function() {
       }
       updateOverlayTrackStyle(track);
     }
-    track = L.polyline([]);
+    track = L.polyline([], {draggable: true});
     editLayer.addLayer(track);
     track.on('click', segmentClickListener);
     if (!noStats) {
