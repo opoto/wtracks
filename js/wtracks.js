@@ -94,7 +94,7 @@ $(window).on("load", function() {
 
   map = L.map('map', {
     editable: true,
-    tap: false, // TODO workaround for https://github.com/Leaflet/Leaflet/issues/7331
+    tap: L.Browser.safari && L.Browser.mobile, // TODO workaround for https://github.com/Leaflet/Leaflet/issues/7331
     editOptions: {
       lineGuideOptions: {
         opacity: 0.5
@@ -755,7 +755,7 @@ $(window).on("load", function() {
 
 
       var latlng = marker.getLatLng();
-      var markerDiv = getLatLngPopupContent(latlng, deleteMarker, undefined, div);
+      var markerDiv = getLatLngPopupContent(latlng, deleteMarker, undefined, undefined, div);
       return markerDiv;
     }
 
@@ -3270,7 +3270,7 @@ $(window).on("load", function() {
 
   }
 
-  function getLatLngPopupContent(latlng, deletefn, splitfn, toadd) {
+  function getLatLngPopupContent(latlng, deletefn, splitfn, gotopt, toadd) {
     var div = L.DomUtil.create("div");
     var p;
 
@@ -3305,6 +3305,15 @@ $(window).on("load", function() {
     }
 
     if (editMode != EDIT_NONE) {
+      // Previous point
+      if (gotopt && latlng.i > 0) {
+        p = L.DomUtil.create("div", "popupdiv ptbtn", div);
+        var btn = L.DomUtil.create('a', "", p);
+        btn.href = "#";
+        btn.title = "Previous point";
+        btn.innerHTML = "<span class='popupfield'><i class='material-icons notranslate'>navigate_before</i></span>";
+        btn.onclick = function() { gotopt(-1); };
+      }
       // Delete button
       p = L.DomUtil.create("div", "popupdiv ptbtn", div);
       var btn = L.DomUtil.create('a', "", p);
@@ -3321,8 +3330,19 @@ $(window).on("load", function() {
         btn.href = "#";
         btn.title = "Split segment from this point";
         btn.innerHTML = "<span class='popupfield'><i class='material-icons notranslate'>&#xE14E;</i></span>";
-        btn.onclick = splitfn;
+        btn.onclick = splitfn
       }
+
+      // Next point
+      if (gotopt && latlng.i < (track.getLatLngs().length - 1)) {
+        p = L.DomUtil.create("div", "popupdiv ptbtn", div);
+        var btn = L.DomUtil.create('a', "", p);
+        btn.href = "#";
+        btn.title = "Next point";
+        btn.innerHTML = "<span class='popupfield'><i class='material-icons notranslate'>navigate_next</i></span>";
+        btn.onclick = function() { gotopt(+1); };
+      }
+
     }
 
     return div;
@@ -3587,17 +3607,19 @@ $(window).on("load", function() {
   }
   map.on('click', newMarker);
 
-  map.on('editable:vertex:click', function(e) {
+  function clickVertex(e, vertex) {
+    vertex = vertex || e.vertex;
+    latlng = vertex.latlng;
 
     function deleteTrackPoint(event) {
-      e.vertex.delete();
+      vertex.delete();
       map.closePopup(pop);
       event.preventDefault();
     }
     function splitSegment(event) {
       ga('send', 'event', 'edit', 'split-segment');
       setEditMode(EDIT_NONE);
-      var i = e.latlng.i;
+      var i = latlng.i;
       var seg1 = track.getLatLngs().slice(0,i),
           seg2 = track.getLatLngs().slice(i);
       var xmlnsArr = track.xmlnsArr;
@@ -3612,10 +3634,17 @@ $(window).on("load", function() {
       map.closePopup(pop);
       event.preventDefault();
     }
+    function gotopt(diff) {
+      topt = diff > 0 ? vertex.getNext() : vertex.getPrevious();
+      if (topt) {
+        map.closePopup(pop);
+        clickVertex(null, topt);
+      }
+    }
 
-    if (e.originalEvent.shiftKey) {
+    if (e && e.originalEvent && e.originalEvent.shiftKey) {
       // shortcut to delete a vertex
-      e.vertex.delete();
+      vertex.delete();
       return;
     }
     track.editor.commitDrawing();
@@ -3623,23 +3652,25 @@ $(window).on("load", function() {
       setEditMode(EDIT_MANUAL_TRACK);
       return;
     }
-    e.cancel();
-    var div = getTrackPointPopupContent(e.latlng);
+    e && e.cancel && e.cancel();
+    var div = getTrackPointPopupContent(latlng);
     var splitfn,
-        i = e.latlng.i,
+        i = latlng.i,
         len = getTrackLength();
     if ((i>1) & (i<len-1)) {
       splitfn = splitSegment;
     }
     var pop = L.popup({ "className" : "overlay" })
-      .setLatLng(e.latlng)
-      .setContent(getLatLngPopupContent(e.latlng, deleteTrackPoint, splitfn, div))
+      .setLatLng(latlng)
+      .setContent(getLatLngPopupContent(latlng, deleteTrackPoint, splitfn, gotopt, div))
       .openOn(map);
     $(".leaflet-popup-close-button").click(function(e) {
       track.editor && track.editor.continueForward();
       return false;
     });
-  });
+  }
+  map.on('editable:vertex:click', clickVertex);
+
 
   // ---- ELEVATION
   var elevation;
