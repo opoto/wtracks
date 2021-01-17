@@ -489,6 +489,10 @@ $(window).on("load", function() {
   var EDIT_DRAG_ID = "edit-drag";
   var EDIT_DRAG_ICON = "open_with";
   var EDIT_MARKER_ID = "edit-marker";
+  var EDIT_ADDSEGMENT_ID = "add-segment";
+  var EDIT_ADDSEGMENT_ICON = "add-segment-icon";
+  var EDIT_DELSEGMENT_ID = "delete-segment";
+  var EDIT_DELSEGMENT_ICON = "delete-segment-icon";
 
   var UndoRoute = {
     getType: function() {
@@ -2368,13 +2372,13 @@ $(window).on("load", function() {
       editopts.class = 'wtracks-control-icon';
       editopts.innerHTML = '<a href="#" title="Manual Track (e)" id="' + EDIT_MANUAL_ID + '"><span class="material-icons wtracks-control-icon notranslate">' + EDIT_MANUAL_ICON + '</span></a>' +
       '<a href="#" title="Auto Track (a)" id="' + EDIT_AUTO_ID + '"><span class="material-icons wtracks-control-icon notranslate">' + EDIT_AUTO_ICON + '</span></a>' +
-      '<a href="#" title="Add segment" id="add-segment">' +
+      '<a href="#" title="Add segment" id="' + EDIT_ADDSEGMENT_ID + '">' +
         '<span class="material-icons wtracks-control-icon segment-icon notranslate">&#xe6e1</span>' +
-        '<span class="material-icons wtracks-control-icon add-segment-icon notranslate">&#xe145</span>' +
+        '<span class="material-icons wtracks-control-icon ' + EDIT_ADDSEGMENT_ICON + ' notranslate">&#xe145</span>' +
       '</a>' +
-      '<a href="#" title="Delete segment" id="delete-segment">' +
+      '<a href="#" title="Delete segment" id="' + EDIT_DELSEGMENT_ID + '">' +
         '<span class="material-icons wtracks-control-icon segment-icon notranslate">&#xe6e1</span>' +
-        '<span class="material-icons wtracks-control-icon delete-segment-icon notranslate">&#xe14c</span>' +
+        '<span class="material-icons wtracks-control-icon ' + EDIT_DELSEGMENT_ICON + ' notranslate">&#xe14c</span>' +
       '</a>' +
       '<a href="#" title="Move track (m)" id="' + EDIT_DRAG_ID + '"><span class="material-icons wtracks-control-icon notranslate">' + EDIT_DRAG_ICON + '</span></a>' +
       '<a href="#" title="Waypoint (w)" id="' + EDIT_MARKER_ID + '"><span class="material-icons wtracks-control-icon notranslate">&#xE55F;</span></a>';
@@ -2471,8 +2475,8 @@ $(window).on("load", function() {
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_MANUAL_ID));
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_AUTO_ID));
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_MARKER_ID));
-  L.DomEvent.disableClickPropagation(L.DomUtil.get("add-segment"));
-  L.DomEvent.disableClickPropagation(L.DomUtil.get("delete-segment"));
+  L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_ADDSEGMENT_ID));
+  L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_DELSEGMENT_ID));
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_DRAG_ID));
   $("#" + EDIT_MANUAL_ID).click(function(e) {
     if (editMode == EDIT_MANUAL_TRACK) {
@@ -2499,7 +2503,7 @@ $(window).on("load", function() {
     setEditMode(EDIT_MARKER);
     e.preventDefault();
   });
-  $("#add-segment").click(function(e) {
+  $("#" + EDIT_ADDSEGMENT_ID).click(function(e) {
     ga('send', 'event', 'edit', 'new-segment');
     setEditMode(EDIT_NONE);
     newSegment();
@@ -2508,7 +2512,8 @@ $(window).on("load", function() {
     e.preventDefault();
   });
 
-  $("#delete-segment").click(function(e) {
+  $("#" + EDIT_DELSEGMENT_ID).click(function(e) {
+    e.preventDefault();
     if ((getTrackLength() == 0) ||
       !confirm("Delete current segment?")) {
       return;
@@ -2516,7 +2521,6 @@ $(window).on("load", function() {
     ga('send', 'event', 'edit', 'delete-segment');
     deleteSegment(track);
     saveState();
-    e.preventDefault();
   });
   $("#" + EDIT_DRAG_ID).click(function(e) {
     setEditMode(EDIT_DRAG);
