@@ -1545,6 +1545,9 @@ $(window).on("load", function() {
     $("#edit-tools a").removeClass("control-selected");
     if (editMode > EDIT_NONE) { // exiting edit mode
       editMode = EDIT_NONE;
+      if (track.getLatLngs().length == 0) {
+        selectFirstSegment();
+      }
       saveState();
       // reset mouse pointer
       $("#map").css("cursor", "");
@@ -2527,16 +2530,20 @@ $(window).on("load", function() {
     e.preventDefault();
   });
 
+  function selectFirstSegment() {
+    forEachSegment(function(segment) {
+      segmentClickListener({ target: segment }, true);
+      // stop on first segment
+      return true;
+    });
+  }
+
   function deleteSegment(segment) {
     setEditMode(EDIT_NONE);
     if (editLayer.getLayers().length > 2) {
       editLayer.removeLayer(segment);
       track = null;
-      forEachSegment(function(segment) {
-        segmentClickListener({ target: segment }, true);
-        // stop on first segment
-        return true;
-      });
+      selectFirstSegment();
       if (!track) {
         newSegment();
         setEditMode(EDIT_MANUAL_TRACK);
