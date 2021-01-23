@@ -368,14 +368,18 @@ if ('serviceWorker' in navigator) {
 }
 
 /* ---------------------- track errors ------------------------*/
+var errors = [];
 
 window.onerror = function(messageOrEvent, source, line, row, err) {
   var errmsg = messageOrEvent.toString() + " [" + source + ": " + line + ", " + row + "]";
   error(errmsg);
   var label = {
     path: window.location.pathname,
-    ua: navigator.userAgent
+    ua: navigator.userAgent,
   };
+  if (errors) {
+    label.prev = errors;
+  }
   if (err && err.stack) {
     label.stack = err.stack;
   }
@@ -384,4 +388,5 @@ window.onerror = function(messageOrEvent, source, line, row, err) {
   } else if (ga) {
     ga('send', 'event', 'error', errmsg, JSON.stringify(label));
   }
+  errors.push(errmsg);
 }
