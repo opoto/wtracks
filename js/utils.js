@@ -371,12 +371,17 @@ if ('serviceWorker' in navigator) {
 var errors = [];
 
 window.onerror = function(messageOrEvent, source, line, row, err) {
-  var errmsg = messageOrEvent.toString() + " [" + source + ": " + line + ", " + row + "]";
-  error(errmsg);
   var label = {
     path: window.location.pathname,
     ua: navigator.userAgent,
   };
+  var errmsg = messageOrEvent.toString();
+  if (typeof source == "string") {
+    errmsg +=  " [" + source + ": " + line + ", " + row + "]";
+  } else if (source) {
+    label.details = source;
+  }
+  error(errmsg);
   if (errors) {
     label.prev = errors;
   }

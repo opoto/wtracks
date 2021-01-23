@@ -283,19 +283,24 @@ $(window).on("load", function() {
 
   function getCurrentActivity() {
     var aname = getCurrentActivityName();
-    var aerr = "";
     //log("activity: " + res);
     if (!aname) {
-      ga('send', 'event', 'error', 'no current activity', "Stored: " + getVal("wt.activity"), Object.keys(activities).length);
-      aerr = " nocura"
       aname = Object.keys(activities)[0];
+      onerror( "No current activity", {
+        "Saved": getVal("wt.activity"),
+        "First": aname,
+        "Nb activities": Object.keys(activities).length
+      });
       selectOption(selectActivity, aname);
     }
     var cura = activities[aname];
     if (!cura) {
-      ga('send', 'event', 'error', 'activity not found', aname + aerr, Object.keys(activities).length);
+      onerror( "Activity not found", {
+        "Activity": aname,
+        "Nb activities": Object.keys(activities).length
+      });
       if (jQuery.isEmptyObject(activities)) {
-        ga('send', 'event', 'error', 'no activity');
+        onerror( "No activity");
         loadActivities();
         aname = Object.keys(activities)[0];
         selectOption(selectActivity, aname);
@@ -1119,7 +1124,10 @@ $(window).on("load", function() {
             time = new Date(startdate + (pt.chrono * 1000)).toISOString();
           }
         } catch (error) {
-          ga('send', 'event', 'error', 'Failed to build ISO time: ' + error, 'chrono: ' + pt.chrono);
+          onerror('Failed to build ISO time', {
+            "Error": error,
+            "Chrono": pt.chrono
+          });
         }
         gpx += LatLngToGPX(ptindent, pt, pttag, { 'time': time, 'ext' : pt.ext });
         j++;
@@ -1324,7 +1332,7 @@ $(window).on("load", function() {
         shareGpx(gpx, params, "cipher-yes");
       })
       .catch(function(err) {
-        ga('send', 'event', 'error', 'crypto-encrypt', err);
+        onerror('Crypto-encrypt :' + err);
         setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
         $("#wtshare-box").hide();
       });
@@ -1356,7 +1364,11 @@ $(window).on("load", function() {
         $("#wtshare-val").select();
       }, function(error) {
         var errmsg = error.statusText || error;
-        ga('send', 'event', 'error', 'share ' +  share.name + ' ' + cryptoMode, errmsg, Math.round(gpx.length / 1000));
+        onerror('Share ' +  share.name, {
+          "Cipher" : cryptoMode,
+          "Error": errmsg,
+          "GPX Kpt": Math.round(gpx.length / 1000)
+        });
         alert("Upload failed, is file too big? Reduce it using Tools/Compress");
         setStatus("Failed: " + errmsg, { timeout: 5, class: "status-error" });
         $("#wtshare-box").hide();
@@ -1519,7 +1531,7 @@ $(window).on("load", function() {
       endUndo();
     }
     if ((mode != EDIT_NONE) && !map.editTools) {
-      ga('send', 'event', 'error', "no editTools", navigator.userAgent);
+      onerror('no editTools');
       alert("Your browser does not support GPX editing");
       return;
     }
@@ -2854,7 +2866,7 @@ $(window).on("load", function() {
         loadCount = 0;
         if (options.key) {
           if (!isCryptoSupported()) {
-            ga('send', 'event', 'error', 'crypto-not-supported', navigator.userAgent);
+            onerror('Crypto-not-supported');
             alert("Sorry, you cannot load this file: it is encrypted, and your browser does not provide the required services to decrypt it.");
             newTrack();
             return;
