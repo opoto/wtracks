@@ -382,7 +382,7 @@ window.onerror = function(messageOrEvent, source, line, row, err) {
     label.details = source;
   }
   error(errmsg);
-  if (errors) {
+  if (errors.length > 0) {
     label.prev = errors;
   }
   if (err && err.stack) {
