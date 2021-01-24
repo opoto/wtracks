@@ -2494,15 +2494,16 @@ $(window).on("load", function() {
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_DELSEGMENT_ID));
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_DRAG_ID));
   $("#" + EDIT_MANUAL_ID).click(function(e) {
+    e.preventDefault();
     if (editMode == EDIT_MANUAL_TRACK) {
       undo();
     } else {
       ga('send', 'event', 'edit', 'manual');
       setEditMode(EDIT_MANUAL_TRACK);
     }
-    e.preventDefault();
   });
   $("#" + EDIT_AUTO_ID).click(function(e) {
+    e.preventDefault();
     if (editMode == EDIT_AUTO_TRACK) {
       undo();
     } else {
@@ -2511,20 +2512,24 @@ $(window).on("load", function() {
         setEditMode(EDIT_AUTO_TRACK);
       }
     }
-    e.preventDefault();
   });
   $("#" + EDIT_MARKER_ID).click(function(e) {
+    e.preventDefault();
     ga('send', 'event', 'edit', 'marker');
     setEditMode(EDIT_MARKER);
-    e.preventDefault();
   });
   $("#" + EDIT_ADDSEGMENT_ID).click(function(e) {
+    e.preventDefault();
+    // shortcut
+    if ((editMode == EDIT_MANUAL_TRACK) && getTrackLength() == 0) {
+      // current track is empty, just use it
+      return;
+    }
     ga('send', 'event', 'edit', 'new-segment');
     setEditMode(EDIT_NONE);
     newSegment();
     setEditMode(EDIT_MANUAL_TRACK);
     saveState();
-    e.preventDefault();
   });
 
   $("#" + EDIT_DELSEGMENT_ID).click(function(e) {
@@ -2538,8 +2543,8 @@ $(window).on("load", function() {
     saveState();
   });
   $("#" + EDIT_DRAG_ID).click(function(e) {
-    setEditMode(EDIT_DRAG);
     e.preventDefault();
+    setEditMode(EDIT_DRAG);
   });
 
   function selectFirstSegment() {
