@@ -376,6 +376,10 @@ window.onerror = function(messageOrEvent, source, line, row, err) {
     ua: navigator.userAgent,
   };
   var errmsg = messageOrEvent.toString();
+  var notWTracks =
+    (errmsg.match(/'getReadMode(Render|Extract|Config)'/g)
+    && (navigator.userAgent.index("HeyTapBrowser") > 0))
+    ;
   if (typeof source == "string") {
     errmsg +=  " [" + source + ": " + line + ", " + row + "]";
   } else if (source) {
@@ -388,7 +392,12 @@ window.onerror = function(messageOrEvent, source, line, row, err) {
   if (err && err.stack) {
     label.stack = err.stack;
   }
-  if (getLocalCode() && (errmsg.indexOf("Script error. ")!=0)) {
+  if (notWTracks) {
+    label.details = label.details || {};
+    label.details.notWTracks = errmsg;
+    errmsg = "notWTracks";
+  }
+  if (getLocalCode()) {
     alert(errmsg);
   } else if (ga) {
     ga('send', 'event', 'error', errmsg, JSON.stringify(label));
