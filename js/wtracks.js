@@ -1146,6 +1146,7 @@ $(window).on("load", function() {
         // browser uses text input, parse it
         var b = startStr.split(/\D/);
         startdate = new Date(b[0], b[1]-1, b[2], b[3], b[4]);
+        startdate.toISOString(); // make sure it works
       } catch(err) {
         // use current date in case of error
         error("Invalid start date: " + startStr + ". Using current date");
