@@ -371,31 +371,37 @@ if ('serviceWorker' in navigator) {
 var errors = [];
 
 window.onerror = function(messageOrEvent, source, line, row, err) {
-  var label = {
-    path: window.location.pathname,
-    ua: navigator.userAgent,
-  };
-  var errmsg = messageOrEvent.toString();
-  var notWTracks =
-    (errmsg.match(/'getReadMode(Render|Extract|Config)'/g)
-    && (navigator.userAgent.index("HeyTapBrowser") > 0))
-    ;
-  if (typeof source == "string") {
-    errmsg +=  " [" + source + ": " + line + ", " + row + "]";
-  } else if (source) {
-    label.details = source;
-  }
-  error(errmsg);
-  if (errors.length > 0) {
-    label.prev = errors;
-  }
-  if (err && err.stack) {
-    label.stack = err.stack;
-  }
-  if (notWTracks) {
-    label.details = label.details || {};
-    label.details.notWTracks = errmsg;
-    errmsg = "notWTracks";
+  var label, errmsg, notWTracks;
+  try {
+    label = {
+      path: window.location.pathname,
+      ua: navigator.userAgent,
+    };
+    errmsg = messageOrEvent.toString();
+    notWTracks =
+      (errmsg.match(/'getReadMode(Render|Extract|Config)'/g)
+      && (navigator.userAgent.index("HeyTapBrowser") > 0))
+      ;
+    if (typeof source == "string") {
+      errmsg +=  " [" + source + ": " + line + ", " + row + "]";
+    } else if (source) {
+      label.details = source;
+    }
+    error(errmsg);
+    if (errors.length > 0) {
+      label.prev = errors;
+    }
+    if (err && err.stack) {
+      label.stack = err.stack;
+    }
+    if (notWTracks) {
+      label.details = label.details || {};
+      label.details.notWTracks = errmsg;
+      errmsg = "notWTracks";
+    }
+  } catch(ex) {
+    errmsg = ex.toString();
+    label = ex;
   }
   if (getLocalCode()) {
     alert(errmsg);
