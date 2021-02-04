@@ -1365,7 +1365,8 @@ $(window).on("load", function() {
         $("#wtshare-val").select();
       }, function(error) {
         var errmsg = error.statusText || error;
-        onerror('Share ' +  share.name, {
+        onerror('Share failed', {
+          "Lib" : share.name,
           "Cipher" : cryptoMode,
           "Error": errmsg,
           "GPX Kpt": Math.round(gpx.length / 1000)

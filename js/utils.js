@@ -382,7 +382,9 @@ window.onerror = function(messageOrEvent, source, line, row, err) {
       (errmsg.match(/'getReadMode(Render|Extract|Config)'/g)
       && (navigator.userAgent.index("HeyTapBrowser") > 0))
       ||
-      errmsg.startsWith("Script error.");
+      errmsg.startsWith("Script error.")
+      ||
+      errmsg.indexOf("Refused to evaluate a string as JavaScript because 'unsafe-eval'") >= 0
       ;
     if (typeof source == "string") {
       errmsg +=  " [" + source + ": " + line + ", " + row + "]";
