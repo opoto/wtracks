@@ -381,6 +381,8 @@ window.onerror = function(messageOrEvent, source, line, row, err) {
     notWTracks =
       (errmsg.match(/'getReadMode(Render|Extract|Config)'/g)
       && (navigator.userAgent.index("HeyTapBrowser") > 0))
+      ||
+      errmsg.startsWith("Script error.");
       ;
     if (typeof source == "string") {
       errmsg +=  " [" + source + ": " + line + ", " + row + "]";
