@@ -286,10 +286,17 @@ $(window).on("load", function() {
     //log("activity: " + res);
     if (!aname) {
       aname = Object.keys(activities)[0];
+      var dbgactivities = "";
+      $("#activity option").each(function(i, a) {
+        i > 0 && (dbgactivities += "; ");
+        dbgactivities += (a.innerHTML + ($(a).is(":selected") ? "*" : ""))
+      });
+      $("#activity option").each(function(a) {console.log(a)});
       onerror( "No current activity", {
         "Saved": getVal("wt.activity"),
         "First": aname,
-        "Nb activities": Object.keys(activities).length
+        "Nb activities": Object.keys(activities).length,
+        "Menu": dbgactivities
       });
       selectOption(selectActivity, aname);
     }

@@ -385,6 +385,8 @@ window.onerror = function(messageOrEvent, source, line, row, err) {
       errmsg.startsWith("Script error.")
       ||
       errmsg.indexOf("Refused to evaluate a string as JavaScript because 'unsafe-eval'") >= 0
+      ||
+      errmsg.indexOf("chrome-extension://") >= 0
       ;
     if (typeof source == "string") {
       errmsg +=  " [" + source + ": " + line + ", " + row + "]";
