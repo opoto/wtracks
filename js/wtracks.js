@@ -3787,18 +3787,24 @@ $(window).on("load", function() {
     ga('send', 'event', 'menu', 'donate', event.target.id);
   });
 
+  if (canValBeSaved()) {
+    $("#cfgsave").change(function(e) {
+      var saveCfg = isChecked("#cfgsave");
+      setSaveState(saveCfg);
+      setStateSaved(saveCfg);
+      if (saveCfg) {
+        saveState();
+        saveSettings();
+      } else {
+        clearSavedState();
+      }
+    });
+  } else {
+    $("#cfgsave").attr("title", "Your browser prevents storing data. Did you block cookies?")
+    $("#cfgsave").prop("disabled", true);
+    $("#cfgsave").removeClass("no-trim");
+  }
 
-  $("#cfgsave").change(function(e) {
-    var saveCfg = isChecked("#cfgsave");
-    setSaveState(saveCfg);
-    setStateSaved(saveCfg);
-    if (saveCfg) {
-      saveState();
-      saveSettings();
-    } else {
-      clearSavedState();
-    }
-  });
   function setStateSaved(save) {
     if (save != isChecked()) {
       setChecked("#cfgsave", save);

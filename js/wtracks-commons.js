@@ -15,7 +15,7 @@ function saveJsonValOpt(name, val) {
 }
 
 function getStateSaved() {
-  return getVal("wt.saveState", "true");
+  return getVal("wt.saveState", canValBeSaved() ? "true" : "false");
 }
 function isStateSaved() {
   return getStateSaved() === "true";
@@ -28,6 +28,7 @@ function setSaveState(saveCfg) {
 }
 
 function consentCookies() {
+  if (!canValBeSaved()) return; // skip if cookies are blocked
   var now = new Date();
   var EXPIRATION = Math.round(1000*60*60*24*30.5*18); // 18 months in ms
   var cookies = getVal("wt.cookies");

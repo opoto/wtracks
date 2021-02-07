@@ -1,3 +1,10 @@
+var cookiesBlocked = false;
+try {
+  window.localStorage;
+} catch {
+  cookiesBlocked = true
+}
+
 /* ----------------------- LOGGING SHORTCUTS -------------------------- */
 
 function debug(msg) {
@@ -119,7 +126,7 @@ function setChecked(selector, val) {
 /* ----------------------- Local storage -------------------------- */
 
 function canValBeSaved() {
-  return true;
+  return !cookiesBlocked;
 }
 
 function storeVal(name, val) {
@@ -150,7 +157,7 @@ function storeJsonVal(name, val) {
 }
 
 function getVal(name, defval) {
-  var v = window.localStorage ? window.localStorage.getItem(name) : undefined;
+  var v = canValBeSaved() && window.localStorage ? window.localStorage.getItem(name) : undefined;
   return isUnset(v) ? defval : v;
 }
 
