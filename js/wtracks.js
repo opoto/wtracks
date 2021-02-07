@@ -255,24 +255,29 @@ $(window).on("load", function() {
 
   var selectActivity = $("#activity")[0];
   var activities = getJsonVal("wt.activities");
+  var loadedActivities = ""; // bug tracking
 
   function loadActivities() {
+    loadedActivities = "Loaded ";
     if (jQuery.isEmptyObject(activities)) {
       activities = config.activities.defaults;
       saveJsonValOpt("wt.activities", activities);
     }
+    loadedActivities += " " + Object.keys(activities).length + " activities";
     // append activities
     objectForEach(activities, function(aname, aobj) {
       if (!selectActivity.options[aname]) {
         addSelectOption(selectActivity, aname);
       }
     });
+    loadedActivities += " in " + $("#activity option").length + " options";
     // remove deleted activities
     $("#activity option").each(function(i, v) {
       if (!activities[v.innerHTML]) {
         v.remove();
       }
     });
+    loadedActivities += ", kept " + $("#activity option").length;
   }
   loadActivities();
   selectOption(selectActivity, getVal("wt.activity", Object.keys(activities)[0]));
@@ -283,7 +288,6 @@ $(window).on("load", function() {
 
   function getCurrentActivity() {
     var aname = getCurrentActivityName();
-    //log("activity: " + res);
     if (!aname) {
       aname = Object.keys(activities)[0];
       var dbgactivities = "";
@@ -296,7 +300,9 @@ $(window).on("load", function() {
         "Saved": getVal("wt.activity"),
         "First": aname,
         "Nb activities": Object.keys(activities).length,
-        "Menu": dbgactivities
+        "Menu": dbgactivities,
+        "Loaded": loadedActivities,
+        "Stack":  new Error().stack
       });
       selectOption(selectActivity, aname);
     }
