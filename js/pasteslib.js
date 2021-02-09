@@ -233,10 +233,7 @@ function gofileUpload(name, gpx, onDone, onFail) {
 
  function pingUrl(url, onDone, onFail) {
   try {
-    $.ajax({
-      method: "GET",
-      url: url,
-    })
+    $.get(url)
     .done(onDone)
     .fail(onFail);
   } catch (err) {
@@ -265,10 +262,11 @@ var pastesLib = {
     "delete": noDelete
   },
   "friendpaste": {
+    "#" : "Does not work on Safari when 'prevent cross-site tracking' is set, because of the cookie friendpaste is setting",
     "enabled": true,
     "name": "FriendPaste",
     "web": "https://friendpaste.com/",
-    "maxSize": "Approx. 80KB",
+    "maxSize": "approx. 80KB",
     "maxTime": "Unknown",
     "maxDownloads": "Unlimited",
     "upload": friendpasteUpload,

@@ -1378,13 +1378,16 @@ $(window).on("load", function() {
         $("#wtshare-val").select();
       }, function(error) {
         var errmsg = error.statusText || error;
+        var gpxkb = Math.round(gpx.length / 1000);
         onerror('Share failed', {
           "Lib" : share.name,
           "Cipher" : cryptoMode,
           "Error": errmsg,
-          "GPX Kpt": Math.round(gpx.length / 1000)
+          "GPX KB": gpxkb
         });
-        alert("Upload failed, is file too big? Reduce it using Tools/Compress");
+        alert("Upload failed, is file too big? Your file is "
+         + gpxkb + "KB while " + share.name + " accepts " + share.maxSize
+         + ". Try to reduce it using Tools/Compress");
         setStatus("Failed: " + errmsg, { timeout: 5, class: "status-error" });
         $("#wtshare-box").hide();
       });
