@@ -3639,7 +3639,8 @@ $(window).on("load", function() {
             restartRoute();
             map.fireEvent("click", { latlng: e.latlng });
           } catch(err) {
-            ga('send', 'event', 'error', 'merge-route-failed', err.toString() + ", " + navigator.userAgent, wpts.length);
+            ga('send', 'event', 'error', 'merge-route-failed', err.toString()
+                + ", " + getUserAgent(), wpts.length);
           }
         } else {
           wpts.push({ latLng: e.latlng });

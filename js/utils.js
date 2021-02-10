@@ -71,7 +71,7 @@ function htmlDecode(html) {
 
 // is current bowser safari?
 function isSafari() {
-  return /^((?!chrome|android|ubuntu).)*safari/i.test(navigator.userAgent);
+  return /^((?!chrome|android|ubuntu).)*safari/i.test(getUserAgent());
 }
 
 // Extract URL parameters from current location
@@ -377,17 +377,25 @@ if ('serviceWorker' in navigator) {
 /* ---------------------- track errors ------------------------*/
 var errors = [];
 
+function getUserAgent() {
+  try {
+    return navigator.userAgent;
+  } catch (e) {
+    return "unknown";
+  }
+}
+
 window.onerror = function(messageOrEvent, source, line, row, err) {
   var label, errmsg, notWTracks;
   try {
     label = {
       path: window.location.pathname,
-      ua: navigator.userAgent,
+      ua: getUserAgent(),
     };
     errmsg = messageOrEvent.toString();
     notWTracks =
       (errmsg.match(/'getReadMode(Render|Extract|Config)'/g)
-      && (navigator.userAgent.index("HeyTapBrowser") > 0))
+      && (getUserAgent().index("HeyTapBrowser") > 0))
       ||
       errmsg.startsWith("Script error.")
       ||
