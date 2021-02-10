@@ -273,7 +273,7 @@ $(window).on("load", function() {
     loadedActivities += " in " + $("#activity option").length + " options";
     // remove deleted activities
     $("#activity option").each(function(i, v) {
-      if (!activities[v.innerHTML]) {
+      if (!activities[v.value]) {
         v.remove();
       }
     });
@@ -293,7 +293,7 @@ $(window).on("load", function() {
       var dbgactivities = "";
       $("#activity option").each(function(i, a) {
         i > 0 && (dbgactivities += "; ");
-        dbgactivities += (a.innerHTML + ($(a).is(":selected") ? "*" : ""))
+        dbgactivities += (a.innerText + ($(a).is(":selected") ? "*" : ""))
       });
       $("#activity option").each(function(a) {console.log(a)});
       onerror( "No current activity", {
