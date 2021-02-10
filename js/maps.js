@@ -1,9 +1,9 @@
 /* ----------------- My maps editing ------------------- */
 
-var OVERLAY_ICON = "<i class='material-icons map-overlay notranslate' title='Map overlay'>layers</i> ";
-var MYMAPS_BTNS = "<i class='material-icons map-edit notranslate' title='Edit'>create</i> "
-                  + "<i class='material-icons map-share notranslate' title='Share'>share</i> "
-                  + "<i class='material-icons map-delete notranslate' title='Delete'>delete</i> ";
+var OVERLAY_ICON = "<i class='material-icons map-overlay notranslate' 'translate'='no' title='Map overlay'>layers</i> ";
+var MYMAPS_BTNS = "<i class='material-icons map-edit notranslate' 'translate'='no' title='Edit'>create</i> "
+                  + "<i class='material-icons map-share notranslate' 'translate'='no' title='Share'>share</i> "
+                  + "<i class='material-icons map-delete notranslate' 'translate'='no' title='Delete'>delete</i> ";
 
 function setMapItemVisibility(elt, props) {
   //var isVisible = e.target.getAttribute("isVisible") == "true";
@@ -34,7 +34,7 @@ function addMymapsItem(name, props, addHandlers) {
     mapitem += OVERLAY_ICON;
     mymapclass += " overlay-name";
   }
-  mapitem += "<span class='map-name notranslate" + mymapclass + "'></span> ";
+  mapitem += "<span class='map-name notranslate" + mymapclass + "' 'translate'='no'></span> ";
   mapitem += "<i class='material-icons map-visibility notranslate' title='Show/Hide' isVisible='??'>??</i> ";
   mapitem += mymapbtns;
   mapitem += "</span></li>";
