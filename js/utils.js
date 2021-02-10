@@ -253,8 +253,13 @@ if (config.email && config.email.selector) {
 
 /* ------------------------------ CORS URL  ---------------------------------*/
 function corsUrl(url) {
-    return "https://cors-anywhere.herokuapp.com/" + url;
-    //return config.corsproxy.url() + config.corsproxy.query + encodeURIComponent(url);
+  return "https://api.allorigins.win/raw?url=" + url; // /!\ Uses cookie, fails with Safari with 'prevent cross site tracking' activated
+  //return "https://yacdn.org/proxy/" + url;
+  //return "https://thingproxy.freeboard.io/fetch/" + url;
+  //return "http://cors-proxy.htmldriven.com/get?url=" + url;
+  //return "http://www.whateverorigin.org/get?url=" + url;
+  //return "https://cors-anywhere.herokuapp.com/" + url;
+  //return config.corsproxy.url() + config.corsproxy.query + encodeURIComponent(url);
 }
 
 /* ------------------------------ Encoding ---------------------------------*/
