@@ -35,8 +35,9 @@ function addMymapsItem(name, props, addHandlers) {
     mymapclass += " overlay-name";
   }
   mapitem += "<span class='map-name notranslate" + mymapclass + "' 'translate'='no'></span> ";
-  mapitem += "<i class='material-icons map-visibility notranslate' title='Show/Hide' isVisible='??'>??</i> ";
+  mapitem += "<i class='material-icons map-visibility notranslate' title='Show/Hide' isVisible=''></i>";
   mapitem += mymapbtns;
+  mapitem += "<i></i>"; // TODO workaround for Chrome Android display bug
   mapitem += "</span></li>";
   $("#mymaps-list").append(mapitem);
   var newitem = $("#mymaps-list li:last");
