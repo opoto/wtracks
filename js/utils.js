@@ -252,14 +252,23 @@ if (config.email && config.email.selector) {
 }
 
 /* ------------------------------ CORS URL  ---------------------------------*/
+// /!\ Some set a cookie, which fails with Safari when 'prevent cross site tracking' is activated
+var corsProxy =
+"https://wtracks-cors-proxy.herokuapp.com/"
+;
+/*
+"https://api.codetabs.com/v1/proxy/?quest=" // cookie
+"https://api.allorigins.win/raw?url="// cookie
+"https://cors-nowhere.glitch.me/"
+"https://yacdn.org/proxy/"
+"https://thingproxy.freeboard.io/fetch/"
+"http://cors-proxy.htmldriven.com/get?url="
+"http://www.whateverorigin.org/get?url="
+"https://cors-anywhere.herokuapp.com/"
+  */
 function corsUrl(url) {
-  return "https://api.allorigins.win/raw?url=" + url; // /!\ Uses cookie, fails with Safari with 'prevent cross site tracking' activated
-  //return "https://yacdn.org/proxy/" + url;
-  //return "https://thingproxy.freeboard.io/fetch/" + url;
-  //return "http://cors-proxy.htmldriven.com/get?url=" + url;
-  //return "http://www.whateverorigin.org/get?url=" + url;
-  //return "https://cors-anywhere.herokuapp.com/" + url;
-  //return config.corsproxy.url() + config.corsproxy.query + encodeURIComponent(url);
+  return corsProxy + url;
+  // config.corsproxy.url() + config.corsproxy.query + encodeURIComponent(url);
 }
 
 /* ------------------------------ Encoding ---------------------------------*/
