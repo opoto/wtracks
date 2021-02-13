@@ -2010,7 +2010,20 @@ $(window).on("load", function() {
   // ----------------------
 
   var baseLayer = getVal("wt.baseLayer", config.display.map);
-  map.addLayer(baseLayers[baseLayer] || baseLayers[config.display.map]);
+  var initialLayer = baseLayers[baseLayer] || baseLayers[config.display.map];
+  if (initialLayer) {
+    map.addLayer(initialLayer);
+  } else {
+    var availableLayerNames = "";
+    objectForEach(baseLayers, function(name) {
+      availableLayerNames += name + "; ";
+    });
+    onerror("no initial layer", {
+      "stored": baseLayer,
+      "config": config.display.map,
+      "available": availableLayerNames
+    });
+  }
   var layerInit = true;
 
   map.on("baselayerchange", function(e) {
