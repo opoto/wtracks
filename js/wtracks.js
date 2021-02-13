@@ -1242,7 +1242,7 @@ $(window).on("load", function() {
       }
       if (savetime) {
         var lastPt = segment.getLatLngs().slice(-1)[0];
-        if (!isUndefined(lastPt.chrono)) {
+        if (lastPt && !isUndefined(lastPt.chrono)) {
           // start date of next segment (if any) is the end of current segment
           startdate = new Date(startdate + (lastPt.chrono * 1000)).getTime();
         }
