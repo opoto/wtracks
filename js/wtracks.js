@@ -1571,6 +1571,7 @@ $(window).on("load", function() {
         break;
       default:
     }
+    var wasMode = editMode; // debug
     map.editTools.stopDrawing();
     $("#edit-tools a").removeClass("control-selected");
     if (editMode > EDIT_NONE) { // exiting edit mode
@@ -1590,9 +1591,19 @@ $(window).on("load", function() {
         break;
       case EDIT_MANUAL_TRACK:
         $("#" + EDIT_MANUAL_ID).addClass("control-selected");
-        track.enableEdit();
-        track.editor.continueForward();
-        setInactiveSegmentClickable(false);
+        try {
+          track.enableEdit();
+          track.editor.continueForward();
+          setInactiveSegmentClickable(false);
+        } catch (err) {
+          onerror("Cannot edit", {
+            "err": err.toString(),
+            "points" : track.getLatLngs().length,
+            "wasMode" : wasMode,
+            "stack": err.stack
+          });
+          mode = EDIT_NONE;
+        }
         break;
       case EDIT_AUTO_TRACK:
         $("#" + EDIT_AUTO_ID).addClass("control-selected");
