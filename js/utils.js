@@ -410,7 +410,7 @@ window.onerror = function(messageOrEvent, source, line, row, err) {
       errmsg.indexOf("chrome-extension://") >= 0
       ;
     if (typeof source == "string") {
-      label.location +=  source + ": " + line + ", " + row;
+      label.location =  source + ": " + line + ", " + row;
     } else if (source) {
       label.details = source;
     }
