@@ -850,6 +850,7 @@ $(window).on("load", function() {
         // From Start
         polystats.updateStatsFrom(0);
       }
+      updateExtremities();
       saveState();
       polytrim = undefined;
       $("#trim-range").val(0);
@@ -1056,8 +1057,10 @@ $(window).on("load", function() {
   /* ------------------------ MENU ---------------------------------- */
 
   function closeMenu() {
-    $("#menu").hide();
-    finishTrim();
+    if (! $("#menu").is(":hidden")) {
+      $("#menu").hide();
+      finishTrim();
+    }
   }
 
   function openMenu(tab) {
