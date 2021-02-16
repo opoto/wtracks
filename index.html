@@ -84,8 +84,8 @@
       <tr class="nobottomborder">
         <td colspan="2">
           <div>
-            <span class="fold fold-file-closed material-icons" id="file-newtrk-closed">&#xE5CC;</span>
-            <span class="fold-file newtrk material-icons">&#xE5CF;</span>
+            <span class="fold fold-file-closed material-icons" id="file-newtrk-closed">keyboard_arrow_right</span>
+            <span class="fold-file newtrk material-icons">keyboard_arrow_down</span>
             <span  class="fold fold-link fold-file" id="file-newtrk">New</span>
           </div>
         </td>
@@ -101,8 +101,8 @@
       <tr class="nobottomborder">
         <td colspan="2">
           <div>
-            <span class="fold fold-file-closed material-icons" id="file-load-closed">&#xE5CC;</span>
-            <span class="fold-file load material-icons">&#xE5CF;</span>
+            <span class="fold fold-file-closed material-icons" id="file-load-closed">keyboard_arrow_right</span>
+            <span class="fold-file load material-icons">keyboard_arrow_down</span>
             <span  class="fold fold-link fold-file" id="file-load">Load</span>
           </div>
         </td>
@@ -113,13 +113,13 @@
         </td>
         <td>
           <label><input type="checkbox" id="merge"/>Merge</label>
-          <span id="mergetxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <span id="mergetxt" class="help-b material-icons" title="Help">help_outline</span>
           <p id="mergetxt-help" class="help-p">
             Current edited track will not be discarded, it will be extended with the loaded one.
           </p>
           <br/>
           <label><input type="checkbox" id="joinonload"/>Join segments</label>
-          <span id="joinonloadtxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <span id="joinonloadtxt" class="help-b material-icons" title="Help">help_outline</span>
           <p id="joinonloadtxt-help" class="help-p">
             If loaded track contains multiple segments, they will automatically be joined.
           </p>
@@ -136,7 +136,7 @@
             <option value="kml">KML</option>
             <option value="geojson">GeoJson</option>
           </select>
-          <span id="filetypetxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <span id="filetypetxt" class="help-b material-icons" title="Help">help_outline</span>
           <p id="filetypetxt-help" class="help-p">
             If "Auto" is selected, the type of the file is selected based on the file extension.
           </p>
@@ -162,7 +162,7 @@
         <td>
           <input id="track-get-url" placeholder="https://... (track URL)" type="url" /><br/>
           <label><input id="noproxy" type="checkbox" /> No proxy </label>
-          <span id="noproxytxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <span id="noproxytxt" class="help-b material-icons" title="Help">help_outline</span>
           <p id="noproxytxt-help" class="help-p">
             Load without going through a CORS proxy. Check if target server accepts cross-origin requests, and if you want to use your browser session to fecth the file.
           </p>
@@ -182,8 +182,8 @@
       <tr class="nobottomborder">
         <td colspan="2">
           <div>
-            <span class="fold fold-file-closed material-icons" id="file-save-closed">&#xE5CC;</span>
-            <span class="fold-file save material-icons">&#xE5CF;</span>
+            <span class="fold fold-file-closed material-icons" id="file-save-closed">keyboard_arrow_right</span>
+            <span class="fold-file save material-icons">keyboard_arrow_down</span>
             <span  class="fold fold-link fold-file" id="file-save">Save</span>
           </div>
         </td>
@@ -202,21 +202,21 @@
         <td>
           Download as a GPX file<br/>
           <label><input type="checkbox" id="as-route"/>As route</label>
-          <span id="routetxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <span id="routetxt" class="help-b material-icons" title="Help">help_outline</span>
           <p id="routetxt-help" class="help-p">
             Check to save the track as a GPX route, instead of a GPX track segment.
           </p>
           <br/>
           <!-- Don't know what this is useful for...
           <label><input type="checkbox" id="nometadata"/>Without metadata</label>
-          <span id="nometadatatxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <span id="nometadatatxt" class="help-b material-icons" title="Help">help_outline</span>
           <p id="nometadatatxt-help" class="help-p">
             Check to save without GPX metadata.
           </p>
           <br/>
           -->
           <label><input type="checkbox" id="savetiming"/>Save computed times</label>
-          <span id="savetimingtxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <span id="savetimingtxt" class="help-b material-icons" title="Help">help_outline</span>
           <div id="savetimingdate">Starting from <input type="datetime-local" size="16" placeholder="yyyy-mm-dd HH:MM"/></div>
           <p id="savetimingtxt-help" class="help-p">
             Check to save in the GPX the timings computed by WTracks and displayed in the bottom banner of the page.
@@ -227,8 +227,8 @@
       <tr class="nobottomborder">
         <td colspan="2">
           <div>
-            <span class="fold fold-file-closed material-icons" id="file-share-closed">&#xE5CC;</span>
-            <span class="fold-file share material-icons">&#xE5CF;</span>
+            <span class="fold fold-file-closed material-icons" id="file-share-closed">keyboard_arrow_right</span>
+            <span class="fold-file share material-icons">keyboard_arrow_down</span>
             <span class="fold fold-link fold-file" id="file-share">Share</span>
           </div>
         </td>
@@ -242,7 +242,7 @@
         <td>
           track using
           <select id="share-libs"></select>
-          <span id="sharetxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <span id="sharetxt" class="help-b material-icons" title="Help">help_outline</span>
           <br/>
           <span>Service is <span id="share-status"></span></span>
         </td>
@@ -269,7 +269,7 @@
         <td colspan="2">
           <input type="checkbox" id="allsegments" />
           <label for="allsegments">Apply (*) to all track segments</label>
-          <span id="allsegmentstxt" class="help-b material-icons" title="Help">&#xE8FD;</span><br/>
+          <span id="allsegmentstxt" class="help-b material-icons" title="Help">help_outline</span><br/>
           <p id="allsegmentstxt-help" class="help-p">
             Check to apply the tools below to all track segments instead of just the active one. Ignore if your track only has one segment.
           </p>
@@ -282,7 +282,7 @@
         <td>
           Remove track points within a <input id="prunedist" type="text" size="2"/>
           <span class="distUnit"></span>s band
-          <span id="compresstxt" class="help-b material-icons" title="Help">&#xE8FD;</span><br/>
+          <span id="compresstxt" class="help-b material-icons" title="Help">help_outline</span><br/>
           <label><input id="prunealt" type="checkbox" checked="checked"/> Consider altitude</label>
           <p id="compresstxt-help" class="help-p">
             Reduces track size without significantly changing track shape.
@@ -295,7 +295,7 @@
         </td>
         <td>
           Add altitude information
-          <span id="elevatetxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <span id="elevatetxt" class="help-b material-icons" title="Help">help_outline</span>
           <p id="elevatetxt-help" class="help-p">
             Uses external web service to get elevation of track points.
           </p>
@@ -307,7 +307,7 @@
         </td>
         <td>
           Delete track data:
-          <span id="cleanuptxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <span id="cleanuptxt" class="help-b material-icons" title="Help">help_outline</span>
           <br/>
           <label><input id="cleanupalt" type="checkbox"/> Altitude</label>
           <label><input id="cleanuptime" type="checkbox"/> Time</label>
@@ -322,7 +322,7 @@
         </td>
         <td>
           Revert track direction
-          <span id="reverttxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <span id="reverttxt" class="help-b material-icons" title="Help">help_outline</span>
           <p id="reverttxt-help" class="help-p">
             Inverts all track points so that start of the track becomes the end.
           </p>
@@ -334,7 +334,7 @@
         </td>
         <td>
           Combine all segments
-          <span id="jointxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <span id="jointxt" class="help-b material-icons" title="Help">help_outline</span>
           <p id="jointxt-help" class="help-p">
             Removes separation between all track segments in the editor.
           </p>
@@ -349,7 +349,7 @@
         </td>
         <td>
           <input type="range" id="trim-range" min="0" step="1" value="0" />&nbsp;<span id="trim-txt"></span>
-          <span id="trimtxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <span id="trimtxt" class="help-b material-icons" title="Help">help_outline</span>
           <p id="trimtxt-help" class="help-p">
             Move cursor to delete points from the start or the end of the track.
           </p>
@@ -360,10 +360,10 @@
       <tr class="nobottomborder">
         <td colspan="2">
           <div>
-            <span class="fold fold-settings-closed material-icons" id="settings-savstg-closed">&#xE5CC;</span>
-            <span class="fold-settings savstg material-icons">&#xE5CF;</span>
+            <span class="fold fold-settings-closed material-icons" id="settings-savstg-closed">keyboard_arrow_right</span>
+            <span class="fold-settings savstg material-icons">keyboard_arrow_down</span>
             <span  class="fold fold-link fold-settings" id="settings-savstg">Remember me</span>
-            <span id="cfgsavetxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+            <span id="cfgsavetxt" class="help-b material-icons" title="Help">help_outline</span>
             <p id="cfgsavetxt-help" class="help-p">
               Your WTracks editor status will be saved continuously in your browser local storage,
               so that when you close and reopen it later it will restore the same content and settings.
@@ -392,10 +392,10 @@
       <tr class="nobottomborder">
         <td colspan="2">
           <div>
-            <span class="fold fold-settings-closed material-icons" id="settings-trkstg-closed">&#xE5CC;</span>
-            <span class="fold-settings trkstg material-icons">&#xE5CF;</span>
+            <span class="fold fold-settings-closed material-icons" id="settings-trkstg-closed">keyboard_arrow_right</span>
+            <span class="fold-settings trkstg material-icons">keyboard_arrow_down</span>
             <span  class="fold fold-link fold-settings" id="settings-trkstg">Display options</span>
-            <span id="trkopts" class="help-b material-icons" title="Help">&#xE8FD;</span>
+            <span id="trkopts" class="help-b material-icons" title="Help">help_outline</span>
             <p id="trkopts-help" class="help-p">
               Configure track colors and other display options.
             </p>
@@ -434,7 +434,7 @@
         <td>
           <input id="wptLabel" class="no-trim" type="checkbox" />
           <label for="wptLabel">Always display waypoint labels</label>
-          <span id="wptLabelhlp" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <span id="wptLabelhlp" class="help-b material-icons" title="Help">help_outline</span>
           <p id="wptLabelhlp-help" class="help-p">
             When unchecked, waytpoint title is only displayed when
             the mouse is over the waypoint.
@@ -447,7 +447,7 @@
         <td>
           <input id="extMarkers" class="no-trim" type="checkbox" />
           <label for="extMarkers">Show start/end markers</label>
-          <span id="extMarkershlp" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <span id="extMarkershlp" class="help-b material-icons" title="Help">help_outline</span>
           <p id="extMarkershlp-help" class="help-p">
             When checked, a marker will be shown at start and end of current track segment.
           </p>
@@ -456,10 +456,10 @@
       <tr class="nobottomborder">
         <td colspan="2">
           <div>
-            <span class="fold fold-settings-closed material-icons" id="settings-apistg-closed">&#xE5CC;</span>
-            <span class="fold-settings apistg material-icons" id="apistg2">&#xE5CF;</span>
+            <span class="fold fold-settings-closed material-icons" id="settings-apistg-closed">keyboard_arrow_right</span>
+            <span class="fold-settings apistg material-icons" id="apistg2">keyboard_arrow_down</span>
             <span  class="fold fold-link fold-settings" id="settings-apistg">API keys</span>
-            <span id="keystxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+            <span id="keystxt" class="help-b material-icons" title="Help">help_outline</span>
             <p id="keystxt-help" class="help-p">
               Set your own API keys to bypass WTracks quota limits.
               Current config is using:<br/>
@@ -477,7 +477,7 @@
             <span class="setting-name">OpenRoute:</span>
             <input id="orskey-chk" class="no-trim key-chk" type="checkbox" />
             <input id="orskey-value" placeholder="Your OpenRouteService key" class="setting-input key-value" />
-            <span id="orskeytxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+            <span id="orskeytxt" class="help-b material-icons" title="Help">help_outline</span>
             <p id="orskeytxt-help" class="help-p">
               This key is used for the (i) computing point and track elevation, and (ii) routing feature, which draws tracks along map roads.
               Get your free API key/token from <a target="_blank" href="https://openrouteservice.org/">OpenRoute Service</a>.
@@ -487,7 +487,7 @@
             <span class="setting-name">GraphHopper:</span>
             <input id="ghkey-chk" class="no-trim key-chk" type="checkbox" />
             <input id="ghkey-value" placeholder="Your GraphHopper key" class="setting-input key-value" />
-            <span id="ghkeytxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+            <span id="ghkeytxt" class="help-b material-icons" title="Help">help_outline</span>
             <p id="ghkeytxt-help" class="help-p">
               This key is used for the routing feature, which draws tracks along map roads.
               Get your API key from <a target="_blank" href="https://graphhopper.com/">GraphHopper</a>.
@@ -497,7 +497,7 @@
             <span class="setting-name">Google:</span>
             <input id="ggkey-chk" class="no-trim key-chk" type="checkbox" />
             <input id="ggkey-value" placeholder="Your Google API key" class="setting-input key-value" />
-            <span id="ggkeytxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+            <span id="ggkeytxt" class="help-b material-icons" title="Help">help_outline</span>
             <p id="ggkeytxt-help" class="help-p">
               This key is used for the Google Elevation service, which gets the elevation of each track point.
               Get your API key from <a target="_blank" href="https://console.developers.google.com/apis">Google Developers Console</a>.
@@ -510,7 +510,7 @@
           <div>
             <span class="setting-name hide-on-small-screen">&nbsp;</span>
             <label><input id="apikeys-suggest" type="checkbox" /> Suggest API keys on errors</label>
-            <span id="apikeys-suggesttxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+            <span id="apikeys-suggesttxt" class="help-b material-icons" title="Help">help_outline</span>
             <p id="apikeys-suggesttxt-help" class="help-p">
               If checked an info box will pop up when elevation or routing fails, suggesting to set API keys.
             </p>
@@ -520,10 +520,10 @@
       <tr class="nobottomborder">
         <td colspan="2">
           <div>
-            <span class="fold fold-settings-closed material-icons" id="settings-unitstg-closed">&#xE5CC;</span>
-            <span class="fold-settings unitstg material-icons" id="unitstg2">&#xE5CF;</span>
+            <span class="fold fold-settings-closed material-icons" id="settings-unitstg-closed">keyboard_arrow_right</span>
+            <span class="fold-settings unitstg material-icons" id="unitstg2">keyboard_arrow_down</span>
             <span  class="fold fold-link fold-settings" id="settings-unitstg">Unit of length</span>
-            <span id="unittxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+            <span id="unittxt" class="help-b material-icons" title="Help">help_outline</span>
             <p id="unittxt-help" class="help-p">
               Choose between imperial and metric unit of length.
             </p>
@@ -561,7 +561,7 @@
             Open source project on <a href="https://github.com/opoto/wtracks" target="_blank" title="WTracks project on Github">GitHub</a>.
           </p>
           <p>Check <a href="doc/" target="_blank">documentation</a> for application features and details. You can also join the <a target="_blank" href="https://groups.google.com/forum/#!forum/wtracks">online forum</a> to share questions and hints with other WTracks users</p>
-          <p>WTracks is free to use <i class="material-icons">&#xE7F2;</i> But not to operate <i class="material-icons">&#xE7F3;</i></p>
+          <p>WTracks is free to use <i class="material-icons">mood</i> But not to operate <i class="material-icons">mood_bad</i></p>
           <p>Feel free to donate to help maintaining this service:</p>
           <p>
             <a href="https://paypal.me/wtracks/2" target="_blank" class="donatebtn" title="Donate with PayPal">
@@ -572,7 +572,7 @@
               <img id="donate-cards" src="img/donate-cards.png" alt="Donate with cards"/>
             </a>
           </p>
-          <p><i class="material-icons">&#xE002;</i> Do not check any 'goods and services' option in paypal, you would pay useless fees.</p>
+          <p><i class="material-icons">warning</i> Do not check any 'goods and services' option in paypal, you would pay useless fees.</p>
         </td>
       </tr>
     </table>
@@ -633,7 +633,7 @@
       <div id="wtshare-ask">
         <p>
           Sharing will anonymously upload your track to the cloud and provide you a shareable link to reopen it.
-          <span id="sharetxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+          <span id="sharetxt" class="help-b material-icons" title="Help">help_outline</span>
         </p>
         <p id="sharetxt-help" class="help-p">
           Your track will be stored on a third-party server
@@ -652,7 +652,7 @@
                   Check to include your current background map name (<span id="wtshare-map-name"></span>) in the shared link,
                   so that recipient will get the same visualization of your track as you.
                 </label>
-                <span id="sharemaptxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+                <span id="sharemaptxt" class="help-b material-icons" title="Help">help_outline</span>
                 <br/>
                 <span id="sharemaptxt-help" class="help-p">
                   Note that the map has to be configured and not disabled on your recipient side.
@@ -667,7 +667,7 @@
                 <input id="wtshare-enc" type="checkbox"/>
               </td><td>
                 <label for="wtshare-enc">Check to encrypt your track on the cloud for enhanced privacy</label>
-                <span id="shareenctxt" class="help-b material-icons" title="Help">&#xE8FD;</span>
+                <span id="shareenctxt" class="help-b material-icons" title="Help">help_outline</span>
                 <br/>
                 <span id="shareenctxt-help" class="help-p">
                   If checked your track will be encrypted in your browser before being sent and saved in the cloud.
@@ -695,7 +695,9 @@
           <p>
             <i class="material-icons copyonclick" title="Copy link" id="-wtshare-val">filter_none</i>
             <input id="wtshare-val" type="text" size="50" value="" readonly="readonly" />
-            <a href="#" id="wtshare-viewqr" title="View link as QR Code"><img src='img/qrcode.png' alt='QRCode'></a>
+            <a href="#" id="wtshare-viewqr" title="View link as QR Code" class="wtshare-item">
+              <i class="material-icons">qr_code_scanner</i>
+            </a>
           </p>
           <p>
             <span class="wtshare-item"><a href="#" id="wtshare-open">
@@ -720,10 +722,10 @@
   <table id="tdisplay">
     <tr id="menu-bar">
       <td colspan="7">
-        <a href="#" id="menu-button" title="menu (m)" class="button"><span class="material-icons">&#xE5D2;</span></a>
+        <a href="#" id="menu-button" title="menu (m)" class="button"><span class="material-icons">menu</span></a>
         <span id="track-name-edit" class="link">
           <span class="title" id="track-name"></span>
-          <span class="material-icons symbol" title="Edit track details (F2)">&#xE3C9;</span>
+          <span class="material-icons symbol" title="Edit track details (F2)">edit</span>
         </span>
         <div id="status">
           <div id="spinner" class="spinner">
@@ -739,14 +741,14 @@
       <td id="map" colspan="7"></td>
     </tr>
     <tr class="statistics" title="Click to see elevation profile">
-      <th><span class="hide-medium">Distance</span><span class="material-icons show-medium">&#xE41C;</span></th>
+      <th><span class="hide-medium">Distance</span><span class="material-icons show-medium">straighten</span></th>
       <td title='One Way'>
         <span class="material-icons symbol">trending_flat</span> <span id="distow"></span>
       </td>
       <td title='Round Trip'>
         <span class="material-icons symbol">sync_alt</span> <span id="distrt"></span>
       </td>
-      <th><span class="hide-medium">Alt. Max</span><span class="material-icons show-medium">&#xE25A;</span></th>
+      <th><span class="hide-medium">Alt. Max</span><span class="material-icons show-medium">vertical_align_top</span></th>
       <td>
         &#9650; <span id="altmax"></span>
       </td>
@@ -755,10 +757,10 @@
     </tr>
     <tr class="statistics" title="Click to see elevation profile">
       <th>
-        <span class="hide-medium" title="Estimated time for this activity">Time</span><span class="show-medium material-icons">&#xE422;</span>
+        <span class="hide-medium" title="Estimated time for this activity">Time</span><span class="show-medium material-icons">timelapse</span>
         <select id="activity" size="1" title="Select activity type"></select>
         <a href="activities.html" title="Edit activites">
-          <span class="material-icons symbol link">&#xE3C9;</span>
+          <span class="material-icons symbol link">edit</span>
         </a>
       </th>
       <td title='One Way'>
@@ -767,7 +769,7 @@
       <td title='Round Trip'>
         <span id="timert"></span>
       </td>
-      <th><span class="hide-medium">Alt. Min</span><span class="material-icons show-medium">&#xE258;</span></th>
+      <th><span class="hide-medium">Alt. Min</span><span class="material-icons show-medium">vertical_align_bottom</span></th>
       <td>
         &#9660; <span id="altmin"></span>
       </td>

@@ -281,12 +281,14 @@ a.button {
 #wtshare-links input {
   width: 85%;
 }
-.wtshare-item .material-icons  {
+.wtshare-item .material-icons {
   color: black;
 }
 #wtshare-viewqr {
   float: right;
-  padding-top: 3px;
+}
+#wtshare-viewqr .material-icons {
+  font-size: 30px;
 }
 #wtshare-qrimg {
   display: block;

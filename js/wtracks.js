@@ -2358,7 +2358,7 @@ $(window).on("load", function() {
     showMarker: false,
     showPopup: true,
     //customIcon: false,
-    customIcon: L.divIcon({html:'<span class="material-icons notranslate">&#xE8B6;</span>'}),
+    customIcon: L.divIcon({html:'<span class="material-icons notranslate">search</span>'}),
     retainZoomLevel: true,
     draggable: false
   }).addTo(map);
@@ -2375,7 +2375,7 @@ $(window).on("load", function() {
 
       link.href = '#';
       link.title = 'My location (l)';
-      link.innerHTML = '<span id="myloc" class="material-icons wtracks-control-icon notranslate">&#xE55C;</span>';
+      link.innerHTML = '<span id="myloc" class="material-icons wtracks-control-icon notranslate">my_location</span>';
       //link.id = 'myloc';
       L.DomEvent.disableClickPropagation(link);
       L.DomEvent.on(link, 'click', L.DomEvent.stop)
@@ -2433,15 +2433,15 @@ $(window).on("load", function() {
       editopts.innerHTML = '<a href="#" title="Manual Track (e)" id="' + EDIT_MANUAL_ID + '"><span class="material-icons wtracks-control-icon notranslate">' + EDIT_MANUAL_ICON + '</span></a>' +
       '<a href="#" title="Auto Track (a)" id="' + EDIT_AUTO_ID + '"><span class="material-icons wtracks-control-icon notranslate">' + EDIT_AUTO_ICON + '</span></a>' +
       '<a href="#" title="Add segment" id="' + EDIT_ADDSEGMENT_ID + '">' +
-        '<span class="material-icons wtracks-control-icon segment-icon notranslate">&#xe6e1</span>' +
-        '<span class="material-icons wtracks-control-icon ' + EDIT_ADDSEGMENT_ICON + ' notranslate">&#xe145</span>' +
+        '<span class="material-icons wtracks-control-icon segment-icon notranslate">timeline</span>' +
+        '<span class="material-icons wtracks-control-icon ' + EDIT_ADDSEGMENT_ICON + ' notranslate">add</span>' +
       '</a>' +
       '<a href="#" title="Delete segment" id="' + EDIT_DELSEGMENT_ID + '">' +
-        '<span class="material-icons wtracks-control-icon segment-icon notranslate">&#xe6e1</span>' +
-        '<span class="material-icons wtracks-control-icon ' + EDIT_DELSEGMENT_ICON + ' notranslate">&#xe14c</span>' +
+        '<span class="material-icons wtracks-control-icon segment-icon notranslate">timeline</span>' +
+        '<span class="material-icons wtracks-control-icon ' + EDIT_DELSEGMENT_ICON + ' notranslate">clear</span>' +
       '</a>' +
       '<a href="#" title="Move track (m)" id="' + EDIT_DRAG_ID + '"><span class="material-icons wtracks-control-icon notranslate">' + EDIT_DRAG_ICON + '</span></a>' +
-      '<a href="#" title="Waypoint (w)" id="' + EDIT_MARKER_ID + '"><span class="material-icons wtracks-control-icon notranslate">&#xE55F;</span></a>';
+      '<a href="#" title="Waypoint (w)" id="' + EDIT_MARKER_ID + '"><span class="material-icons wtracks-control-icon notranslate">place</span></a>';
 
       return container;
     }
@@ -2451,8 +2451,7 @@ $(window).on("load", function() {
     options: {
       position: 'topleft',
       title: 'Toggle Edit',
-  //    html: '&#x270e;',
-      html: '<span class="material-icons wtracks-control-icon notranslate">&#xE3C9;</span>',
+      html: '<span class="material-icons wtracks-control-icon notranslate">edit</span>',
       event: 'click'
     }
   });
@@ -3153,7 +3152,7 @@ $(window).on("load", function() {
       var del = L.DomUtil.create('a', "", p);
       del.href = "#";
       del.title = "Delete";
-      del.innerHTML = "<span class='popupfield'><i class='material-icons notranslate'>&#xE872;</i></span>";
+      del.innerHTML = "<span class='popupfield'><i class='material-icons notranslate'>delete</i></span>";
       del.onclick = function(e) {
         if (!route) {
           return; // ignore
@@ -3392,7 +3391,7 @@ $(window).on("load", function() {
       var btn = L.DomUtil.create('a', "", p);
       btn.href = "#";
       btn.title = "Delete";
-      btn.innerHTML = "<span class='popupfield'><i class='material-icons notranslate'>&#xE872;</i></span>";
+      btn.innerHTML = "<span class='popupfield'><i class='material-icons notranslate'>delete</i></span>";
       btn.onclick = deletefn;
 
       if (splitfn) {
@@ -3402,7 +3401,7 @@ $(window).on("load", function() {
         btn = L.DomUtil.create('a', "", p);
         btn.href = "#";
         btn.title = "Split segment from this point";
-        btn.innerHTML = "<span class='popupfield'><i class='material-icons notranslate'>&#xE14E;</i></span>";
+        btn.innerHTML = "<span class='popupfield'><i class='material-icons notranslate'>content_cut</i></span>";
         btn.onclick = splitfn
       }
 
