@@ -121,7 +121,7 @@ function tmpfileDelete(url, rawurl, passcode, onDone, onFail) {
      if (resp.success) {
        onDone(resp.link, resp.link);
      } else {
-       onFail(resp.message);
+       onFail(resp.message + (resp.error ? " (" + resp.error +")" : ""));
      }
    }).fail(onFail);
  }
@@ -143,7 +143,7 @@ function fileioUpload(name, gpx, onDone, onFail) {
       if (resp.success) {
         onDone(resp.link, resp.link);
       } else {
-        onFail(resp.message);
+        onFail(resp.message + (resp.error ? " (" + resp.error +")" : ""));
       }
     }).fail(onFail);
   } catch (err) {

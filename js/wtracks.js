@@ -1358,6 +1358,20 @@ $(window).on("load", function() {
     }
   }
 
+  function uploadFailed(share, gpx, error) {
+    var errmsg = error.statusText || error;
+    var gpxkb = Math.round(gpx.length / 1000);
+    onerror('Share failed', {
+      "Lib" : share.name,
+      "Error": errmsg,
+      "GPX KB": gpxkb
+    });
+    alert("Upload failed, is file too big? Your file is "
+     + gpxkb + "KB while " + share.name + " accepts " + share.maxSize
+     + ". Try to reduce it using Tools/Compress");
+    setStatus("Failed: " + errmsg, { timeout: 5, class: "status-error" });
+  }
+
   function shareGpx(gpx, params, cryptoMode) {
     ga('send', 'event', 'file', 'share', share.name + ', ' + cryptoMode, Math.round(gpx.length / 1000));
     share.upload(
@@ -1380,18 +1394,7 @@ $(window).on("load", function() {
         $("#wtshare-val").focus();
         $("#wtshare-val").select();
       }, function(error) {
-        var errmsg = error.statusText || error;
-        var gpxkb = Math.round(gpx.length / 1000);
-        onerror('Share failed', {
-          "Lib" : share.name,
-          "Cipher" : cryptoMode,
-          "Error": errmsg,
-          "GPX KB": gpxkb
-        });
-        alert("Upload failed, is file too big? Your file is "
-         + gpxkb + "KB while " + share.name + " accepts " + share.maxSize
-         + ". Try to reduce it using Tools/Compress");
-        setStatus("Failed: " + errmsg, { timeout: 5, class: "status-error" });
+        uploadFailed(share, gpx, error);
         $("#wtshare-box").hide();
       });
   }
@@ -3127,10 +3130,8 @@ $(window).on("load", function() {
         dropboxSaveOptions.gpxurl = gpxurl;
         dropboxSaveOptions.passcode = passcode;
         $("#confirm-dropbox").show();
-      }, function(jqXHR, textStatus, errorThrown) {
-        var errmsg = jqXHR.statusText || textStatus || jqXHR;
-        alert("Upload failed, is file too big? Reduce it using Tools/Compress");
-        ga('send', 'event', 'error', dropboxTempShare.name + ' upload', errmsg, Math.round(gpx.length / 1000));
+      }, function(error) {
+        uploadFailed(dropboxTempShare, gpx, error);
       }
     );
   });
