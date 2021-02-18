@@ -1361,7 +1361,7 @@ $(window).on("load", function() {
   function uploadFailed(share, gpx, error) {
     var errmsg = error.statusText || error;
     var gpxkb = Math.round(gpx.length / 1000);
-    onerror('Share failed', {
+    onerror('Upload failed', {
       "Lib" : share.name,
       "Error": errmsg,
       "GPX KB": gpxkb
