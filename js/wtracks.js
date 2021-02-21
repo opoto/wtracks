@@ -2028,18 +2028,22 @@ $(window).on("load", function() {
 
   var baseLayer = getVal("wt.baseLayer", config.display.map);
   var initialLayer = baseLayers[baseLayer] || baseLayers[config.display.map];
-  if (initialLayer) {
-    map.addLayer(initialLayer);
-  } else {
+  if (!initialLayer) {
     var availableLayerNames = "";
     objectForEach(baseLayers, function(name) {
       availableLayerNames += name + "; ";
+      if (!initialLayer) {
+        initialLayer = baseLayers[name]; // use first one
+      }
     });
     onerror("no initial layer", {
       "stored": baseLayer,
       "config": config.display.map,
       "available": availableLayerNames
     });
+  }
+  if (initialLayer) {
+    map.addLayer(initialLayer);
   }
   var layerInit = true;
 
