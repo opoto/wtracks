@@ -50,7 +50,14 @@ function clearStatus() {
 
 setStatus("Loading...", { spinner: true });
 
-$(window).on("load", function() {
+var wtReady = false;
+// on ready event (HTML + scripts loaded and executed):
+$(function(){
+  if (wtReady) {
+    onerror("duplicate ready event");
+    return;
+  }
+  wtReady = true;
 
   consentCookies();
 
