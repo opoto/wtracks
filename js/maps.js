@@ -574,7 +574,16 @@ $("#import-box-close").click(closeImportBox);
 
 // ------------------- ready?
 
-$(window).on("load", function() {
+var wtReady = false;
+// on ready event (HTML + scripts loaded and executed):
+$(function(){
+  if (wtReady) {
+    onerror("duplicate ready event", {
+      "Stack":  new Error().stack
+    });
+    return;
+  }
+  wtReady = true;
 
   noTranslate();
   noTranslate("label");
