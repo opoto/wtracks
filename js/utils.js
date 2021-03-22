@@ -1,7 +1,7 @@
 var cookiesBlocked = false;
 try {
   window.localStorage;
-} catch {
+} catch (err) {
   cookiesBlocked = true
 }
 
