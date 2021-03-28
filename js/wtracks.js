@@ -3960,10 +3960,13 @@ $(function(){
 
   // specific style for personal maps & overlays
   $(".leaflet-control-layers-list .leaflet-control-layers-selector").each(function(idx, elt) {
-    var name = elt.nextSibling.innerText.substring(1);
-    var props = getMapListEntryProps(name);
-    if (props && (props.in == MAP_MY)) {
-      $(elt.nextSibling).addClass("mymap-name");
+    var mname = $(elt.parentNode).find("span");
+    if (mname && mname.text) {
+      var name = mname.text().substring(1);
+      var props = getMapListEntryProps(name);
+      if (props && (props.in == MAP_MY)) {
+        mname.addClass("mymap-name");
+      }
     }
   });
   // add "settings" link in map selector
