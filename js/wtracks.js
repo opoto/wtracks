@@ -2378,7 +2378,7 @@ $(function(){
       getApiKey(apikeys.ghkey, config.graphhopper.key()),
       { urlParameters: { vehicle: getCurrentActivity().vehicle } }
     );
-    router.on("response", checkGraphHopperCredit);
+    router.on("response", checkGraphHopperRes);
     router.on("routingerror", routingError);
     return router;
   }
@@ -2612,10 +2612,8 @@ $(function(){
     if (editMode == EDIT_AUTO_TRACK) {
       undo();
     } else {
-      if (checkGraphHopperCredit()) {
-        ga('send', 'event', 'edit', 'auto');
-        setEditMode(EDIT_AUTO_TRACK);
-      }
+      ga('send', 'event', 'edit', 'auto');
+      setEditMode(EDIT_AUTO_TRACK);
     }
   });
   $("#" + EDIT_MARKER_ID).click(function(e) {
@@ -3594,63 +3592,21 @@ $(function(){
     //console.log("Created: " + e.layer.getEditorClass());
   });
 
-  var MAX_GH_CREDITS = 200;
-
-  function checkGraphHopperCredit(e) {
-    var gh = getJsonVal("wt.gh", { credits: 0, reset: new Date(0) });
+  function checkGraphHopperRes(e) {
     var message;
 
-    try {
-      // check GraphHopper response
-      if (!isUnset(e)) {
-        //log("GraphHopper credits: " + e.credits);
-        if (e.reset) {
-          var now = new Date();
-          var resetDate = new Date(now.getTime() + (e.reset * 1000));
-          if (resetDate > Date.parse(gh.reset)) {
-            gh.reset = resetDate;
-            gh.credits = 0;
-          }
-        }
-        if ((e.status >= 400) || (e.remaining === 0)) {
-          if (e.status >= 500) {
-            message = "GraphHopper error";
-            ga('send', 'event', 'api', 'gh-error');
-          } else if (e.status == 401) {
-            message = "Invalid GraphHopper API key, please fix in Settings";
-            ga('send', 'event', 'api', 'gh-invalid');
-          } else {
-            if (isUndefined(getApiKey(apikeys.ghkey))) {
-              ga('send', 'event', 'api', 'gh-wt-max');
-              gh.credits = -1;
-            } else {
-              ga('send', 'event', 'api', 'gh-perso-max');
-              message = "Your GraphHopper API key exhausted its daily quota";
-            }
-          }
-        } else {
-          ga('send', 'event', 'api', 'gh-ok', e.credits);
-          if ((gh.credits >= 0) && isUndefined(getApiKey(apikeys.ghkey))) {
-            gh.credits += e.credits;
-          }
-        }
-        storeJsonVal("wt.gh", gh);
+    // check GraphHopper response
+    if ((e.status >= 400) || (e.remaining === 0)) {
+      if (e.status >= 500) {
+        message = "GraphHopper error";
+        ga('send', 'event', 'api', 'gh-error');
+      } else if (e.status == 401) {
+        message = "Invalid GraphHopper API key, please fix in Settings";
+        ga('send', 'event', 'api', 'gh-invalid');
+      } else {
+        ga('send', 'event', 'api', 'gh-perso-max');
+        message = "Your GraphHopper API key exhausted its daily quota";
       }
-
-      if (!message && isUndefined(getApiKey(apikeys.ghkey))) {
-        // user does not have personal gh key, check wtrack key usage
-        if (gh.credits < 0) {
-          message = "WTracks exhausted its daily GraphHopper quota";
-        } else if (gh.credits >= MAX_GH_CREDITS) {
-          message = "You exhausted your daily GraphHopper quota";
-          if (!isUnset(e)) {
-            ga('send', 'event', 'api', 'gh-user-max');
-          }
-        }
-      }
-    } catch (err) {
-      ga('send', 'event', 'error', 'checkGraphHopperCredit', err);
-      message = err;
     }
 
     if (message) {
