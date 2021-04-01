@@ -291,13 +291,14 @@
       </tr>
       <tr>
         <td>
-          <button id="elevate" class="no-trim">Elevate*</button>
+          <button id="elevate" class="no-trim isdisabled">Elevate*</button>
         </td>
         <td>
           Add altitude information
           <span id="elevatetxt" class="help-b material-icons" title="Help">help_outline</span>
           <p id="elevatetxt-help" class="help-p">
             Uses external web service to get elevation of track points.
+            <span id="elevatetxt-help-enable"></span>
           </p>
         </td>
       </tr>
@@ -461,10 +462,10 @@
             <span  class="fold fold-link fold-settings" id="settings-apistg">API keys</span>
             <span id="keystxt" class="help-b material-icons" title="Help">help_outline</span>
             <p id="keystxt-help" class="help-p">
-              Set your own API keys to bypass WTracks quota limits.
+              To use elevation and routing services, you must set your own API keys.
               Current config is using:<br/>
-              Elevation: <span id="elevation-srv"></span>, with <span id="elevation-key"></span> key.<br/>
-              Routing: <span id="routing-srv"></span>, with <span id="routing-key"></span> key.
+              Elevation: <span id="elevation-srv"></span>.<br/>
+              Routing: <span id="routing-srv"></span>.
             </p>
           </div>
         </td>
@@ -509,10 +510,10 @@
           </div>
           <div>
             <span class="setting-name hide-on-small-screen">&nbsp;</span>
-            <label><input id="apikeys-suggest" type="checkbox" /> Suggest API keys on errors</label>
+            <label><input id="apikeys-suggest" type="checkbox" /> Suggest API keys</label>
             <span id="apikeys-suggesttxt" class="help-b material-icons" title="Help">help_outline</span>
             <p id="apikeys-suggesttxt-help" class="help-p">
-              If checked an info box will pop up when elevation or routing fails, suggesting to set API keys.
+              If checked an info box will pop up when elevation or routing services are not configured.
             </p>
           </div>
         </td>
@@ -582,8 +583,8 @@
   <!-- Modal content -->
   <div id="apikeys" class="prompt-content">
     <div class="box-header"><a id="apikeys-close" href="#" class="close-button">×</a></div>
-    <a href="doc/#api-keys">Set your own API keys</a> to overcome elevation/routing errors<br />
-    Don't show anymore <input id="apikeys-nomore" type="checkbox"/>
+    <a href="doc/#api-keys">Set your API keys</a> to enable elevation and routing services.
+    <span id="apikeys-dont"><br />Don't show anymore <input id="apikeys-nomore" type="checkbox"/></span>
   </div>
 
   <!-- Prompt box -->

@@ -248,9 +248,10 @@ $(function(){
     }
   }
 
-  function openApiKeyInfo() {
-    if (!apikeyNoMore && !apikeyTimer) {
+  function openApiKeyInfo(force) {
+    if ((force || !apikeyNoMore) && !apikeyTimer) {
       $("#apikeys").show();
+      $("#apikeys-dont").toggle(!force);
       apikeyTimer = setTimeout(closeApiKeyInfo, 10000);
     }
   }
@@ -835,7 +836,7 @@ $(function(){
     $("#trim-txt").text("");
     $("#trim-range").attr("max", trimMax);
     $("#trim-range").val(0);
-    $(".no-trim").prop('disabled', false);
+    $('.no-trim:not([class*="isdisabled"]').prop('disabled', false);
     var trimType = $("#trim-type")[0].selectedIndex;
     polytrim = L.polyTrim(track, trimType);
   }
@@ -844,7 +845,7 @@ $(function(){
     var n = parseInt($("#trim-range").val());
     log("trimming " + n);
     $("#trim-txt").text(n + "/" + polytrim.getPolySize());
-    $(".no-trim").prop('disabled', (n !== 0));
+    $('.no-trim:not([class*="isdisabled"]').prop('disabled', (n !== 0));
     polytrim.trim(n);
   }
 
@@ -1023,7 +1024,7 @@ $(function(){
       }
     }
 
-    setElevationService();
+    setApiKeyServices();
   }
 
   function checkApikey(name) {
@@ -1519,7 +1520,6 @@ $(function(){
 
   function showGraphHopperMessage(msg) {
     setStatus(msg, { timeout: 5, class: "status-error" });
-    openApiKeyInfo();
   }
 
   function enterDragMode() {
@@ -2305,6 +2305,10 @@ $(function(){
 
   // multi-point elevation API
   function elevatePoints(points, cb) {
+    if (!elevationService) {
+      console.info("Skipping elevation");
+      return;
+    }
     if (!points || (points.length === 0)) {
       return;
     }
@@ -2347,26 +2351,60 @@ $(function(){
           timeout: 3,
           class: "status-error"
         });
-        if (elevationService == defaultElevatonService) {
-          openApiKeyInfo();
-        }
         // callback
         if (cb) cb(false);
       });
   }
 
-  // Select elevation service
-  var elevate = elevatePoints;
-  var elevatePoint = elevatePoints;
-  var defaultElevatonService = openElevationService;
-  var elevationService;
+    // Select elevation service
+    var elevate = elevatePoints;
+    var elevatePoint = elevatePoints;
 
-  function setElevationService() {
+  // ---------------------------------------------------------------------------
+
+  function createOrsRouter() {
+    var router = L.Routing.openrouteservice(getApiKey(apikeys.orskey), {
+      profile: getCurrentActivity().vehicle == "foot" ? "foot-hiking" : "cycling-regular",
+      parameters: {
+        instructions: false,
+        elevation: false,
+      }
+    });
+    return router;
+  }
+
+  function createGraphHopperRouter() {
+    var router = L.Routing.graphHopper(
+      getApiKey(apikeys.ghkey, config.graphhopper.key()),
+      { urlParameters: { vehicle: getCurrentActivity().vehicle } }
+    );
+    router.on("response", checkGraphHopperCredit);
+    router.on("routingerror", routingError);
+    return router;
+  }
+
+  // ---------------------------------------------------------------------------
+
+
+  var elevationService;
+  var routerFactory;
+
+  function setApiKeyServices() {
     elevationService = getApiKey(apikeys.ggkey) ?
       googleElevationService :
-      (getApiKey(apikeys.orskey) ? orsElevationService : defaultElevatonService);
+      (getApiKey(apikeys.orskey) ? orsElevationService : null);
+
+    $("#elevate").prop('disabled', isUnset(elevationService));
+    var classOp = elevationService ? "removeClass" : "addClass";
+    $("#elevate")[classOp]("isdisabled");
+    $("#elevatetxt-help-enable").html(elevationService ? "" :
+        "<br><a href='doc/#api-keys'>Set your API keys</a> to enable elevation services.");
+
+    routerFactory = getApiKey(apikeys.ghkey) ?
+      createGraphHopperRouter : getApiKey(apikeys.orskey) ?
+      createOrsRouter : null;
   }
-  setElevationService();
+  //setApiKeyServices();
 
   // ---------------------------------------------------------------------------
 
@@ -2567,6 +2605,10 @@ $(function(){
   });
   $("#" + EDIT_AUTO_ID).click(function(e) {
     e.preventDefault();
+    if (!routerFactory) {
+      openApiKeyInfo(true);
+      return;
+    }
     if (editMode == EDIT_AUTO_TRACK) {
       undo();
     } else {
@@ -3638,23 +3680,8 @@ $(function(){
         } else {
           var fromPt = routeStart,
             toPt = e.latlng,
-            router;
-          if (getApiKey(apikeys.ghkey) || !getApiKey(apikeys.orskey)) {
-            router = L.Routing.graphHopper(
-              getApiKey(apikeys.ghkey, config.graphhopper.key()),
-              { urlParameters: { vehicle: getCurrentActivity().vehicle } }
-            );
-            router.on("response", checkGraphHopperCredit);
-            router.on("routingerror", routingError);
-          } else {
-            router = L.Routing.openrouteservice(getApiKey(apikeys.orskey), {
-              profile: getCurrentActivity().vehicle == "foot" ? "foot-hiking" : "cycling-regular",
-              parameters: {
-                instructions: false,
-                elevation: false,
-              }
-            });
-          }
+            router = routerFactory();
+
           route = L.Routing.control({
             router: router,
             waypoints: [fromPt, toPt],
@@ -3920,6 +3947,11 @@ $(function(){
     }
   } else {
     storeVal("wt.about", FIRST_VISIT);
+  }
+
+  // Suggest setting API keys
+  if (!elevationService || !routerFactory) {
+    openApiKeyInfo();
   }
 
   initTrackDisplaySettings();
