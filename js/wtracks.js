@@ -1510,12 +1510,15 @@ $(function(){
     }
   }
 
-  function showGraphHopperCredit() {
-    $("#map").append("<span class='gh-credit'>Powered by <a href='https://graphhopper.com/#directions-api'>GraphHopper API</a></span>");
+  function showRoutingCredit() {
+    var credit = (routerFactory == createGraphHopperRouter) ?
+      "<a href='https://graphhopper.com'>GraphHopper</a> " :
+      "<a href='https://openrouteservice.org'>OpenRoute Service</a>" ;
+    $("#map").append("<span class='routing-credit'>Powered by " + credit + "</span>");
   }
 
-  function hideGraphHopperCredit() {
-    $(".gh-credit").remove();
+  function hideRoutingCredit() {
+    $(".routing-credit").remove();
   }
 
   function showGraphHopperMessage(msg) {
@@ -1575,7 +1578,7 @@ $(function(){
         }
         break;
       case EDIT_AUTO_TRACK:
-        hideGraphHopperCredit();
+        hideRoutingCredit();
         mergeRouteToTrack();
         break;
       case EDIT_MARKER:
@@ -1622,7 +1625,7 @@ $(function(){
         break;
       case EDIT_AUTO_TRACK:
         $("#" + EDIT_AUTO_ID).addClass("control-selected");
-        showGraphHopperCredit();
+        showRoutingCredit();
         restartRoute();
         setInactiveSegmentClickable(false);
         break;
