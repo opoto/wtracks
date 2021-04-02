@@ -836,8 +836,7 @@ $(function(){
     $("#trim-txt").text("");
     $("#trim-range").attr("max", trimMax);
     $("#trim-range").val(0);
-    //$('.no-trim:not([class*="isdisabled"]').prop('disabled', false);
-    $('.no-trim').prop('disabled', false);
+    $('.no-trim:not([class*="isdisabled"])').prop('disabled', false);
     var trimType = $("#trim-type")[0].selectedIndex;
     polytrim = L.polyTrim(track, trimType);
   }
@@ -846,8 +845,7 @@ $(function(){
     var n = parseInt($("#trim-range").val());
     log("trimming " + n);
     $("#trim-txt").text(n + "/" + polytrim.getPolySize());
-    //$('.no-trim:not([class*="isdisabled"]').prop('disabled', (n !== 0));
-    $('.no-trim').prop('disabled', (n !== 0));
+    $('.no-trim:not([class*="isdisabled"])').prop('disabled', (n !== 0));
     polytrim.trim(n);
   }
 
