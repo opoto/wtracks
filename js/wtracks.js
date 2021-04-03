@@ -971,6 +971,9 @@ $(function(){
   /* --------------------------------------*/
   // API keys
 
+  var elevationService;
+  var routerFactory;
+
   function showApiKey(name) {
     var value = apikeys[name];
     var useDefault = isUndefined(getApiKey(value));
@@ -1001,30 +1004,35 @@ $(function(){
     // elevation
     if (getApiKey(apikeys.ggkey)) {
       $("#elevation-srv").text("Google");
-      $("#elevation-key").text("your");
     } else if (getApiKey(apikeys.orskey)) {
       $("#elevation-srv").text("OpenRoute");
-      $("#elevation-key").text("your");
     } else {
-      $("#elevation-srv").text("OpenElevation");
-      $("#elevation-key").text("no");
+      $("#elevation-srv").text("Disabled - Set your API key");
     }
 
     // routing
     if (getApiKey(apikeys.ghkey)) {
       $("#routing-srv").text("GraphHopper");
-      $("#routing-key").text("your");
+    } else if (getApiKey(apikeys.orskey)) {
+      $("#routing-srv").text("OpenRoute");
     } else {
-      if (getApiKey(apikeys.orskey)) {
-        $("#routing-srv").text("OpenRoute");
-        $("#routing-key").text("your");
-      } else {
-        $("#routing-srv").text("GraphHopper");
-        $("#routing-key").text("WTracks");
-      }
+      $("#routing-srv").text("Disabled - Set your API key");
     }
 
-    setApiKeyServices();
+    elevationService = getApiKey(apikeys.ggkey) ?
+      googleElevationService :
+      (getApiKey(apikeys.orskey) ? orsElevationService : null);
+
+    $("#elevate").prop('disabled', isUnset(elevationService));
+    var classOp = elevationService ? "removeClass" : "addClass";
+    $("#elevate")[classOp]("isdisabled");
+    $("#elevatetxt-help-enable").html(elevationService ? "" :
+        "<br><a href='doc/#api-keys'>Set your API keys</a> to enable elevation services.");
+
+    routerFactory = getApiKey(apikeys.ghkey) ?
+      createGraphHopperRouter : getApiKey(apikeys.orskey) ?
+      createOrsRouter : null;
+
   }
 
   function checkApikey(name) {
@@ -2359,9 +2367,9 @@ $(function(){
       });
   }
 
-    // Select elevation service
-    var elevate = elevatePoints;
-    var elevatePoint = elevatePoints;
+  // Select elevation service
+  var elevate = elevatePoints;
+  var elevatePoint = elevatePoints;
 
   // ---------------------------------------------------------------------------
 
@@ -2385,29 +2393,6 @@ $(function(){
     router.on("routingerror", routingError);
     return router;
   }
-
-  // ---------------------------------------------------------------------------
-
-
-  var elevationService;
-  var routerFactory;
-
-  function setApiKeyServices() {
-    elevationService = getApiKey(apikeys.ggkey) ?
-      googleElevationService :
-      (getApiKey(apikeys.orskey) ? orsElevationService : null);
-
-    $("#elevate").prop('disabled', isUnset(elevationService));
-    var classOp = elevationService ? "removeClass" : "addClass";
-    $("#elevate")[classOp]("isdisabled");
-    $("#elevatetxt-help-enable").html(elevationService ? "" :
-        "<br><a href='doc/#api-keys'>Set your API keys</a> to enable elevation services.");
-
-    routerFactory = getApiKey(apikeys.ghkey) ?
-      createGraphHopperRouter : getApiKey(apikeys.orskey) ?
-      createOrsRouter : null;
-  }
-  //setApiKeyServices();
 
   // ---------------------------------------------------------------------------
 
