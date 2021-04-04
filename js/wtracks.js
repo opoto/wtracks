@@ -1529,7 +1529,7 @@ $(function(){
     $(".routing-credit").remove();
   }
 
-  function showGraphHopperMessage(msg) {
+  function showRoutingError(msg) {
     setStatus(msg, { timeout: 5, class: "status-error" });
   }
 
@@ -2264,13 +2264,13 @@ $(function(){
       .done(function (json) {
         if (json.geometry && json.geometry.coordinates && json.geometry.coordinates[0]) {
           points.alt = json.geometry.coordinates[2];
-          done('ors.elevate1');
+          done('ors.elevate1.ok');
         } else {
-          fail('ors.elevate1.ko');
+          fail('ors.elevate1.ko', json);
         }
       })
       .fail(function(err) {
-        fail('ors.elevate1.ko');
+        fail('ors.elevate1.ko', err); // "error"
       });
       return;
     }
@@ -2304,13 +2304,13 @@ $(function(){
           }
           points[pos].alt = results[i][2];
         }
-        done("ors.elevate");
+        done("ors.elevate.ok");
       } else {
-        fail('ors.elevate.ko');
+        fail('ors.elevate.ko', json);
       }
     })
     .fail(function(err) {
-      fail('ors.elevate.ko');
+      fail('ors.elevate.ko', err); // "error"
     });
   }
 
@@ -2355,8 +2355,8 @@ $(function(){
         // callback
         if (cb) cb(true);
       },
-      function(eventName){
-        ga('send', 'event', 'api', eventName, callerName, locations.length);
+      function(eventName, res){
+        ga('send', 'event', 'api', eventName, callerName, locations.length, JSON.stringify(res));
         warn("elevation request failed");
         setStatus("Elevation failed", {
           timeout: 3,
@@ -2381,6 +2381,7 @@ $(function(){
         elevation: false,
       }
     });
+    //router.on("response", checkOrsRoutingRes);
     return router;
   }
 
@@ -2390,7 +2391,6 @@ $(function(){
       { urlParameters: { vehicle: getCurrentActivity().vehicle } }
     );
     router.on("response", checkGraphHopperRes);
-    router.on("routingerror", routingError);
     return router;
   }
 
@@ -3240,6 +3240,11 @@ $(function(){
 
     });
 
+    var ename = routerFactory == createOrsRouter ?
+      "ors.routing" : (routerFactory == createGraphHopperRouter ?
+      "gh" : "unknownrouter");
+    ga('send', 'event', 'api', ename +'.ok');
+
     addUndo(UndoRoute, { fromPt : routeStart });
 
     return marker;
@@ -3587,27 +3592,30 @@ $(function(){
     if ((e.status >= 400) || (e.remaining === 0)) {
       if (e.status >= 500) {
         message = "GraphHopper error";
-        ga('send', 'event', 'api', 'gh-error');
+        ga('send', 'event', 'api', 'gh.ko', e.statusText);
       } else if (e.status == 401) {
         message = "Invalid GraphHopper API key, please fix in Settings";
-        ga('send', 'event', 'api', 'gh-invalid');
+        ga('send', 'event', 'api', 'gh.ko', 'invalid-key');
       } else {
-        ga('send', 'event', 'api', 'gh-perso-max');
-        message = "Your GraphHopper API key exhausted its daily quota";
+        ga('send', 'event', 'api', 'gh.ko', 'no-credit');
+        message = "You consumed all your GraphHopper daily quota";
       }
     }
 
     if (message) {
       setEditMode(EDIT_NONE);
-      showGraphHopperMessage(message);
+      showRoutingError(message);
       return false;
     }
     return true;
   }
 
-  function routingError(err) {
-    log("Routing failed " + err);
-    ga('send', 'event', 'error', 'routingError', err.toString());
+  // not triggered by gh, only ors
+  function routingError(err, msg) {
+    log("Routing failed " + err.error.message);
+    ga('send', 'event', 'error', 'ors.routing.ko', err.error.message);
+    setEditMode(EDIT_NONE);
+    showRoutingError("OpenRouting failed, check API key and account status");
   }
 
   function newMarker(e) {
@@ -3644,6 +3652,7 @@ $(function(){
             createMarker: newRouteWaypoint,
             show: false
           }).addTo(map);
+          route.on("routingerror", routingError);
         }
       } else {
         var wpts = route.getWaypoints();

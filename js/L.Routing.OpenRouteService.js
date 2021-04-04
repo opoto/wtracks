@@ -28,7 +28,7 @@
         timer,
         wp,
         i,
-        locs = [], 
+        locs = [],
         reqBody;
 
       url = this.options.serviceUrl + '/' + (options.profile ? options.profile : this.options.profile) + '/geojson';
@@ -88,7 +88,7 @@
           if (!timedOut) {
             callback.call(context || callback, {
               status: -1,
-              message: 'HTTP request failed: ' + err
+              message: 'HTTP request failed: ' + err.statusText
             });
           }
         }, this)
