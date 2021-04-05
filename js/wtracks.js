@@ -40,7 +40,7 @@ function setStatus(msg, options) {
   $("#spinner").toggle(showspinner);
   $("#status").fadeIn();
   if (options && options.timeout) {
-    setTimeout(function() { clearStatus(); }, 1000 * options.timeout);
+    setTimeout(clearStatus, 1000 * options.timeout);
   }
 }
 
@@ -2266,11 +2266,23 @@ $(function(){
           points.alt = json.geometry.coordinates[2];
           done('ors.elevate1.ok');
         } else {
-          fail('ors.elevate1.ko', json);
+          // "Server error"
+          fail('ors.elevate1.ko', (json.message ? json.message + ". ": "") + "Area not covered?");
         }
       })
       .fail(function(err) {
-        fail('ors.elevate1.ko', err); // "error"
+        var errmsg = "";
+        if (err.responseJSON && err.responseJSON.message) {
+          errmsg = err.responseJSON.message;
+        } else {
+          if (err.error) {
+            errmsg = err.error + ". ";
+          } else {
+            errmsg = "Request failed. ";
+          }
+          errmsg += "Check API key"
+        }
+        fail('ors.elevate.ko1', errmsg);
       });
       return;
     }
@@ -2306,11 +2318,18 @@ $(function(){
         }
         done("ors.elevate.ok");
       } else {
-        fail('ors.elevate.ko', json);
+          // "Server error"
+          fail('ors.elevate1.ko', (json.message ? json.message + ". ": "") + "Area not covered?");
       }
     })
     .fail(function(err) {
-      fail('ors.elevate.ko', err); // "error"
+      var errmsg;
+      if (err.responseJSON && err.responseJSON.message) {
+        errmsg = err.responseJSON.message;
+      } else {
+        errmsg = "Request failed. Check API key"
+      }
+      fail('ors.elevate.ko', errmsg);
     });
   }
 
@@ -2356,10 +2375,11 @@ $(function(){
         // callback
         if (cb) cb(true);
       },
-      function(eventName, res){
-        ga('send', 'event', 'api', eventName, callerName, locations.length, JSON.stringify(res));
-        warn("elevation request failed");
-        setStatus("Elevation failed", {
+      function(eventName, msg){
+        ga('send', 'event', 'api', eventName,
+          JSON.stringify({ "op": callerName, "msg": msg}), locations.length);
+        warn("elevation request failed: " + msg);
+        setStatus("Elevation failed (" + msg + ")" , {
           timeout: 3,
           class: "status-error"
         });
@@ -2680,7 +2700,9 @@ $(function(){
         }
         if (--count == 0) {
           saveState();
-          clearStatus();
+          if (success) {
+            clearStatus();
+          }
         }
       });
     });
