@@ -185,6 +185,8 @@ function getJsonVal(name, defval) {
 
 /* ---------------------- GOOGLE ANALYTICS ------------------------- */
 
+// ga('send', 'event', category, action, label, value)
+
 function initGoogleAnalytics(trackingid) {
   var gaScriptUrl = 'https://www.google-analytics.com/analytics.js';
   var gadbg = getVal("wt.ga.dbg", "0");
