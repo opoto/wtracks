@@ -2317,7 +2317,8 @@ $(function(){
   // multi-point elevation API
   function elevatePoints(points, cb) {
     if (!elevationService) {
-      console.info("Skipping elevation");
+      // no elevation service configured, go directly to callback
+      if (cb) cb(true);
       return;
     }
     if (!points || (points.length === 0)) {
