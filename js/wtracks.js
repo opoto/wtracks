@@ -3614,7 +3614,7 @@ $(function(){
   // not triggered by gh, only ors
   function routingError(err, msg) {
     log("Routing failed " + err.error.message);
-    ga('send', 'event', 'error', 'ors.routing.ko', err.error.message);
+    ga('send', 'event', 'api', 'ors.routing.ko', err.error.message);
     setEditMode(EDIT_NONE);
     showRoutingError("OpenRouting failed, check API key and account status");
   }
