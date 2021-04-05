@@ -2166,9 +2166,9 @@ $(function(){
             points[pos].alt = results[i].elevation;
           }
         }
-        done("g.elevate");
+        done("gg.elevate.ok");
       } else {
-        fail('g.elevate.ko');
+        fail('gg.elevate.ko');
       }
     });
   }
@@ -2224,10 +2224,10 @@ $(function(){
           points[pos].alt = json.results[i].elevation;
         }
       }
-      done("o.elevate");
+      done("oe.elevate.ok");
     })
     .fail(function(err) {
-      fail('o.elevate.ko');
+      fail('oe.elevate.ko');
     });
   }
 
@@ -3242,7 +3242,7 @@ $(function(){
 
     var ename = routerFactory == createOrsRouter ?
       "ors.routing" : (routerFactory == createGraphHopperRouter ?
-      "gh" : "unknownrouter");
+      "gh.routing" : "unknownrouter");
     ga('send', 'event', 'api', ename +'.ok');
 
     addUndo(UndoRoute, { fromPt : routeStart });
@@ -3592,12 +3592,12 @@ $(function(){
     if ((e.status >= 400) || (e.remaining === 0)) {
       if (e.status >= 500) {
         message = "GraphHopper error";
-        ga('send', 'event', 'api', 'gh.ko', e.statusText);
+        ga('send', 'event', 'api', 'gh.routing.ko', e.statusText);
       } else if (e.status == 401) {
         message = "Invalid GraphHopper API key, please fix in Settings";
-        ga('send', 'event', 'api', 'gh.ko', 'invalid-key');
+        ga('send', 'event', 'api', 'gh.routing.ko', 'invalid-key');
       } else {
-        ga('send', 'event', 'api', 'gh.ko', 'no-credit');
+        ga('send', 'event', 'api', 'gh.routing.ko', 'no-credit');
         message = "You consumed all your GraphHopper daily quota";
       }
     }
