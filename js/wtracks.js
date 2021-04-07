@@ -2282,7 +2282,7 @@ $(function(){
           }
           errmsg += "Check API key"
         }
-        fail('ors.elevate.ko1', errmsg);
+        fail('ors.elevate1.ko', errmsg);
       });
       return;
     }
@@ -2319,7 +2319,7 @@ $(function(){
         done("ors.elevate.ok");
       } else {
           // "Server error"
-          fail('ors.elevate1.ko', (json.message ? json.message + ". ": "") + "Area not covered?");
+          fail('ors.elevate.ko', (json.message ? json.message + ". ": "") + "Area not covered?");
       }
     })
     .fail(function(err) {
