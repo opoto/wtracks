@@ -2152,7 +2152,7 @@ $(function(){
     elevator.getElevationForLocations({
       'locations': locations
     }, function(results, status) {
-      if (status === 'OK') {
+      if (status === google.maps.ElevationStatus.OK) {
         if (isUndefined(points.length)) {
           // single point elevation
           points.alt = results[0].elevation;
@@ -2168,7 +2168,7 @@ $(function(){
         }
         done("gg.elevate.ok");
       } else {
-        fail('gg.elevate.ko');
+        fail('gg.elevate.ko', status);
       }
     });
   }
@@ -2226,8 +2226,8 @@ $(function(){
       }
       done("oe.elevate.ok");
     })
-    .fail(function(err) {
-      fail('oe.elevate.ko');
+    .fail(function(err, msg) {
+      fail('oe.elevate.ko', msg ? msg : err.status);
     });
   }
 
