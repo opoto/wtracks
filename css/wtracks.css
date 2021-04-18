@@ -52,7 +52,7 @@ body {
   display: inline-block;
   white-space: normal;
   word-wrap: break-word;
-  overflow: inherit;
+  overflow: hidden;
   text-overflow: ellipsis;
   vertical-align: middle;
   max-width: 90%;
@@ -703,6 +703,7 @@ div.trumbowyg-editor {
 #mymap-layerslist {
   width: 90%;
   text-overflow: ellipsis;
+  overflow: hidden;
 }
 #mymap-getlayerslist-processing {
   height: 24px;
