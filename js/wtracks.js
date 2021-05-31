@@ -2004,7 +2004,7 @@ $(function(){
     var p = null;
     var protocol = url.split('/')[0];
     // skip HTTP URLs when current is HTTPS
-    if (protocol.length == 0 || protocol == location.protocol) {
+    if ((protocol.length == 0) || (protocol == "https:") || (location.protocol == "http:")) {
       var tileCtor;
       var mapopts = mapobj.options;
       if (isUnset(mapobj.type) || (mapobj.type === "base") || (mapobj.type === "overlay")) {
