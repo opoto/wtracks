@@ -18,6 +18,7 @@ var config = {
     trackWeight: 3,
     ovlTrackColor: "#FFAAAA",
     ovlTrackWeight: 3,
+    fwdGuide: true,
     wptLabel: true,
     extMarkers: true
   },

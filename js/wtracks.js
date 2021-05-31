@@ -93,11 +93,11 @@ $(function(){
     if (!map.editTools) {
       // editor not yet intialized
       map.options.editOptions.lineGuideOptions.color = trackColor;
-      map.options.editOptions.lineGuideOptions.weight = trackWeight;
+      map.options.editOptions.lineGuideOptions.weight = fwdGuide ? trackWeight : 0;
     } else {
       // update editor
       map.editTools.forwardLineGuide.options.color = trackColor;
-      map.editTools.forwardLineGuide.options.weight = trackWeight;
+      map.editTools.forwardLineGuide.options.weight = fwdGuide ? trackWeight : 0;
     }
   }
 
@@ -118,6 +118,8 @@ $(function(){
   var prunedist = getVal("wt.prunedist", config.compressdefault);
   var prunealt = getBoolVal("wt.prunealt", false);
   var wptLabel = getBoolVal("wt.wptLabel", config.display.wptLabel);
+  var fwdGuide = getBoolVal("wt.fwdGuide", config.display.fwdGuide);
+  var fwdGuideGa = true; // collect stats on this user preference
   var extMarkers = getBoolVal("wt.extMarkers", config.display.extMarkers);
   var wasDragged;
 
@@ -827,6 +829,13 @@ $(function(){
     })
   });
 
+  $("#fwdGuide").change(function(evt){
+    fwdGuide = !fwdGuide;
+    storeVal("wt.fwdGuide", fwdGuide);
+    updateMapStyle();
+    fwdGuideGa = true;
+  });
+
   /* ------------------------ TRIMMING ---------------------------------- */
 
   var polytrim;
@@ -1086,6 +1095,7 @@ $(function(){
     setEditMode(EDIT_NONE);
     setChecked("#merge", false);
     setChecked("#apikeys-suggest", !apikeyNoMore);
+    setChecked("#fwdGuide", fwdGuide);
     setChecked("#wptLabel", wptLabel);
     setChecked("#extMarkers", extMarkers);
     prepareTrim();
@@ -1621,6 +1631,10 @@ $(function(){
           track.enableEdit();
           track.editor.continueForward();
           setInactiveSegmentClickable(false);
+          if (fwdGuideGa) {
+            ga('send', 'event', 'setting', 'fwdGuide', undefined, fwdGuide ? 1 : 0);
+            fwdGuideGa = false;
+          }
         } catch (err) {
           onerror("Cannot edit", {
             "err": err.toString(),
@@ -1893,6 +1907,7 @@ $(function(){
     saveValOpt("wt.mapslist", mapsList);
     saveValOpt("wt.mapsCloseOnClick", mapsCloseOnClick);
     saveValOpt("wt.apikeyNoMore", apikeyNoMore);
+    saveValOpt("wt.fwdGuide", fwdGuide);
     saveValOpt("wt.wptLabel", wptLabel);
     saveValOpt("wt.extMarkers", extMarkers);
   }
