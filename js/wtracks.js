@@ -2101,6 +2101,9 @@ $(function(){
       $(".leaflet-control-layers").removeClass("leaflet-control-layers-expanded");
     }
   });
+  map.on('zoomstart zoom zoomend', function(ev){
+    debug('Zoom level: ' + map.getZoom());
+  })
 
   function changeBaseLayer(mapname) {
     var found = false;
