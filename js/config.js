@@ -262,15 +262,25 @@ var config = {
         format: 'image/jpeg',
         attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
       },
+      visible: false
+    },
+    "FR IGN V2": {
+      type: "wmts",
+      url: "//wxs.ign.fr/decouverte/geoportail/wmts",
+      options: {
+        layer: 'GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2',
+        style: 'normal',
+        tilematrixSet: "PM",
+        format: 'image/png',
+        attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
+      },
       visible: true
     },
-    "FR IGN Express": {
+    "FR IGN Satellite": {
       type: "wmts",
-      url: function() {
-        return "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts";
-      },
+      url: "//wxs.ign.fr/decouverte/geoportail/wmts",
       options: {
-        layer: 'GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN-EXPRESS.STANDARD',
+        layer: 'ORTHOIMAGERY.ORTHOPHOTOS',
         style: 'normal',
         tilematrixSet: "PM",
         format: 'image/jpeg',
@@ -278,19 +288,19 @@ var config = {
       },
       visible: false
     },
-    /*
-    "FR IGN Satellite": {
+    "FR IGN Parcelles": {
       type: "wmts",
-      url: "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts",
+      url: "//wxs.ign.fr/essentiels/geoportail/wmts",
       options: {
-          layer: 'ORTHOIMAGERY.ORTHOPHOTOS',
-          style: 'normal',
-          tilematrixSet: "PM",
-          format: 'image/jpeg',
-          attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
-        }
+        maxZoom: 19,
+        layer: 'CADASTRALPARCELS.PARCELLAIRE_EXPRESS',
+        style: 'PCI vecteur',
+        tilematrixSet: "PM",
+        format: 'image/png',
+        attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
+      },
+      visible: false
     },
-    */
     "SP IGN Raster": {
       // https://github.com/sigdeletras/Leaflet.Spain.WMS
       type: "wms",
