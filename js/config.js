@@ -256,6 +256,7 @@ var config = {
         return "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts";
       },
       options: {
+        maxZoom: 18,
         layer: 'GEOGRAPHICALGRIDSYSTEMS.MAPS',
         style: 'normal',
         tilematrixSet: "PM",
@@ -264,10 +265,11 @@ var config = {
       },
       visible: false
     },
-    "FR IGN V2": {
+    "FR IGN Plan V2": {
       type: "wmts",
       url: "//wxs.ign.fr/decouverte/geoportail/wmts",
       options: {
+        maxZoom: 19,
         layer: 'GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2',
         style: 'normal',
         tilematrixSet: "PM",
@@ -280,6 +282,7 @@ var config = {
       type: "wmts",
       url: "//wxs.ign.fr/decouverte/geoportail/wmts",
       options: {
+        maxZoom: 20,
         layer: 'ORTHOIMAGERY.ORTHOPHOTOS',
         style: 'normal',
         tilematrixSet: "PM",
