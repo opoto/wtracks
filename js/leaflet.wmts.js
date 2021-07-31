@@ -1,106 +1,51 @@
 /*
- * Copyright (c) 2008-2016 Institut National de l'Information Geographique et Forestiere (IGN) France.
- * Released under the BSD license.
- */
-/*---------------------------------------------------------
- *New Leaflet's class to support WMTS (based on L.TileLayer.WMS)
- */
- /* Updated by Olivier Potonniée to support Leaflet 1.0 */
-
- var matrixIds3857= new Array(22);
- for (var i= 0; i<22; i++) {
-   matrixIds3857[i]= {
-       identifier    : "" + i,
-       topLeftCorner : new L.LatLng(20037508,-20037508)
-   };
- }
+  * From https://github.com/alexandre-melard/leaflet.TileLayer.WMTS
+  * Updated by Olivier Potonniée
+*/
 
 L.TileLayer.WMTS = L.TileLayer.extend({
-
   defaultWmtsParams: {
     service: 'WMTS',
     request: 'GetTile',
     version: '1.0.0',
     layer: '',
     style: '',
-    tilematrixSet: '',
+    tilematrixset: '',
     format: 'image/jpeg'
   },
 
   initialize: function (url, options) { // (String, Object)
-
     this._url = url;
-
-    // detecting retina displays, adjusting tileSize and zoom levels
-    if (options.detectRetina && Browser.retina && options.maxZoom > 0) {
-
-      options.tileSize = Math.floor(options.tileSize / 2);
-
-      if (!options.zoomReverse) {
-        options.zoomOffset++;
-        options.maxZoom--;
-      } else {
-        options.zoomOffset--;
-        options.minZoom++;
-      }
-
-      options.minZoom = Math.max(0, options.minZoom);
-    }
-
-    if (typeof options.subdomains === 'string') {
-      options.subdomains = options.subdomains.split('');
-    }
-
-    //------------------vv WMTS vv-----------------------
-    var wmtsParams = L.extend({}, this.defaultWmtsParams),
-      tileSize = options.tileSize || this.options.tileSize;
-    if (options.detectRetina && L.Browser.retina) {
+    var lOptions = {};
+    var cOptions = Object.keys(options);
+    cOptions.forEach(element => {
+      lOptions[element.toLowerCase()] = options[element];
+    });
+    var wmtsParams = L.extend({}, this.defaultWmtsParams);
+    var tileSize = lOptions.tileSize || this.options.tileSize;
+    if (lOptions.detectRetina && L.Browser.retina) {
       wmtsParams.width = wmtsParams.height = tileSize * 2;
     } else {
       wmtsParams.width = wmtsParams.height = tileSize;
     }
-    for (var i in options) {
-      // all keys that are not TileLayer or attribution options go to WMTS params
-      if (!this.options.hasOwnProperty(i) && i!="matrixIds" && i!="attribution") {
-        wmtsParams[i] = options[i];
+    for (var i in lOptions) {
+      // all keys that are in defaultWmtsParams options go to WMTS params
+      if (wmtsParams.hasOwnProperty(i) && i != "matrixIds") {
+        wmtsParams[i] = lOptions[i];
       }
     }
     this.wmtsParams = wmtsParams;
-    this.matrixIds = options.matrixIds ?
-    options.matrixIds : matrixIds3857;
-    //------------------^^ WMTS ^^-----------------------
-
-    options = L.Util.setOptions(this, options);
-    // for https://github.com/Leaflet/Leaflet/issues/137
-    if (!L.Browser.android) {
-      this.on('tileunload', this._onTileRemove);
-    }
+    L.setOptions(this, options);
   },
 
   onAdd: function (map) {
+    this._crs = this.options.crs || map.options.crs;
     L.TileLayer.prototype.onAdd.call(this, map);
   },
 
-  getTileUrl: function (tilePoint) { // (Point) -> String
-    var map = this._map;
-    var zoom = tilePoint.z;
-    crs = map.options.crs;
-    tileSize = this.options.tileSize;
-    nwPoint = tilePoint.multiplyBy(tileSize);
-    //+/-1 pour être dans la tuile
-    nwPoint.x+=1;
-    nwPoint.y-=1;
-    sePoint = nwPoint.add(new L.Point(tileSize, tileSize));
-    nw = crs.project(map.unproject(nwPoint, zoom));
-    se = crs.project(map.unproject(sePoint, zoom));
-    tilewidth = se.x-nw.x;
-    ident = this.matrixIds[zoom].identifier;
-    X0 = this.matrixIds[zoom].topLeftCorner.lng;
-    Y0 = this.matrixIds[zoom].topLeftCorner.lat;
-    tilecol=Math.floor((nw.x-X0)/tilewidth);
-    tilerow=-Math.floor((nw.y-Y0)/tilewidth);
-    url = L.Util.template(this._url, {s: this._getSubdomain(tilePoint)});
-    return url + L.Util.getParamString(this.wmtsParams, url) + "&tilematrix=" + ident + "&tilerow=" + tilerow +"&tilecol=" + tilecol ;
+  getTileUrl: function (coords) { // (Point, Number) -> String
+    var url = L.Util.template(this._url, { s: this._getSubdomain(coords) });
+    return url + L.Util.getParamString(this.wmtsParams, url) + "&tilematrix=" + this._getZoomForUrl() + "&tilerow=" + coords.y + "&tilecol=" + coords.x;
   },
 
   setParams: function (params, noRedraw) {
@@ -109,7 +54,8 @@ L.TileLayer.WMTS = L.TileLayer.extend({
       this.redraw();
     }
     return this;
-  }
+  },
+
 });
 
 L.tileLayer.wmts = function (url, options) {

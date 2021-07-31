@@ -253,41 +253,42 @@ var config = {
     "FR IGN Classic": {
       type: "wmts",
       url: function() {
-        return "https://wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts";
+        return "//wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts"
       },
       options: {
         maxZoom: 18,
         layer: 'GEOGRAPHICALGRIDSYSTEMS.MAPS',
         style: 'normal',
-        tilematrixSet: "PM",
+        tilematrixset: 'PM',
         format: 'image/jpeg',
-        attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
+        attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>",
       },
+
       visible: false
     },
     "FR IGN Plan V2": {
       type: "wmts",
-      url: "//wxs.ign.fr/decouverte/geoportail/wmts",
+      url: "//wxs.ign.fr/essentiels/geoportail/wmts",
       options: {
-        maxZoom: 19,
+        maxZoom : 19,
         layer: 'GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2',
         style: 'normal',
-        tilematrixSet: "PM",
+        tilematrixset: 'PM',
         format: 'image/png',
-        attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
+        attribution : "&copy; <a href='http://www.ign.fr'>IGN</a>",
       },
       visible: true
     },
     "FR IGN Satellite": {
       type: "wmts",
-      url: "//wxs.ign.fr/decouverte/geoportail/wmts",
+      url: "//wxs.ign.fr/essentiels/geoportail/wmts",
       options: {
         maxZoom: 20,
         layer: 'ORTHOIMAGERY.ORTHOPHOTOS',
         style: 'normal',
-        tilematrixSet: "PM",
+        tilematrixset: 'PM',
         format: 'image/jpeg',
-        attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
+        attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>",
       },
       visible: false
     },
@@ -298,9 +299,9 @@ var config = {
         maxZoom: 19,
         layer: 'CADASTRALPARCELS.PARCELLAIRE_EXPRESS',
         style: 'PCI vecteur',
-        tilematrixSet: "PM",
+        tilematrixset: 'PM',
         format: 'image/png',
-        attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>"
+        attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>",
       },
       visible: false
     },
@@ -315,19 +316,15 @@ var config = {
         continuousWorld: true,
         attribution: '© <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
       },
-      visible: false
+      visible: true
     },
-    "SP ICGC": {
-      type: "wmts",
-      url: "https://geoserveis.icgc.cat/icc_mapesmultibase/noutm/wmts/service",
+    "SP ICGC Topo": {
+      url: "//geoserveis.icgc.cat/icc_mapesmultibase/noutm/wmts/topo/GRID3857/{z}/{x}/{y}.jpeg",
       options: {
-          layer: 'topo',
-          style: 'normal',
-          tilematrixSet: "GRID3857",
-          format: 'image/jpeg',
-          attribution: "&copy; Institut Cartogràfic i Geològic de Catalunya - ICGC"
-        },
-        visible: true
+        style: 'default',
+        attribution: "&copy; Institut Cartogràfic i Geològic de Catalunya"
+      },
+      visible: false
     },
     "EU Huts": {
       url:'//maps.refuges.info/hiking/{z}/{x}/{y}.png',
