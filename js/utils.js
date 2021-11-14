@@ -121,7 +121,7 @@ function isChecked(selector) {
 }
 // set checkbox status
 function setChecked(selector, val) {
-  $(selector).prop('checked', val);
+  $(selector).prop('checked', val === true);
 }
 /* ----------------------- Local storage -------------------------- */
 

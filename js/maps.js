@@ -30,7 +30,14 @@ function addMymapsItem(name, props, addHandlers) {
 
   var mapitem = "<li><span class='map-item'>";
   mapitem += "<i class='material-icons map-drag notranslate' title='Drag to reorder'>drag_indicator</i> ";
+  // TODO: "overlay" type is a deprecated legacy, should be discarded in Dec 2022
   if (mapv.type === "overlay") {
+    // migrate overlay type to map attribute
+    mapv.type = "base";
+    mapv.overlay = true;
+    saveJsonValOpt("wt.mymaps", mymaps);
+  }
+  if (mapv.overlay) {
     mapitem += OVERLAY_ICON;
     mymapclass += " overlay-name";
   }
@@ -74,7 +81,7 @@ function getMapItem(name) {
   return res;
 }
 
-function changeMymapsItem(oldname, newname, oldtype, newtype) {
+function updateMapItem(oldname, newname, oldoverlay, newoverlay) {
   var mapItem = getMapItem(oldname);
   if (mapItem) {
     if (newname) {
@@ -82,12 +89,12 @@ function changeMymapsItem(oldname, newname, oldtype, newtype) {
         // name changed
         mapItem.find(".map-name").text(newname);
       }
-      if (oldtype != newtype) {
-        if (oldtype == "overlay")  {
+      if (oldoverlay != newoverlay) {
+        if (oldoverlay)  {
           // remove overlay icon
           mapItem.find(".map-overlay").remove();
           mapItem.find(".map-name").removeClass("overlay-name");
-        } else if (newtype == "overlay") {
+        } else if (newoverlay) {
           // add overlay icon
           mapItem.find(".map-name").before(OVERLAY_ICON);
           mapItem.find(".map-name").addClass("overlay-name");
@@ -163,6 +170,7 @@ function openMymapBox() {
   $("#mymap-style").val(mymap.options.style);
   $("#mymap-format").val(mymap.options.format);
   $("#mymap-attr").val(mymap.options.attribution);
+  setChecked("#mymap-overlay", mymap.overlay);
   $("#mymap-box input:radio[name=mymap-type][value=" + mymap.type + "]").prop('checked', true);
   $("#mymap-box").show();
   $("#mymap-name").focus();
@@ -216,7 +224,7 @@ function validateMymapBox(evt) {
     }
   });
   var oldname = mymap.name;
-  var oldtype = mymap.type;
+  var oldoverlay = mymap.overlay;
   var newname = $("#mymap-name").val().trim();
   if ((oldname != newname) && (getMapListEntryIndex(newname) >= 0)) {
     $("#mymap-name").trigger("invalid");
@@ -229,6 +237,7 @@ function validateMymapBox(evt) {
     mymap[name] = undefined;
     mymap.url = $("#mymap-url").val().trim();
     mymap.type = $('input:radio[name=mymap-type]:checked').val();
+    mymap.overlay = isChecked("#mymap-overlay");
     mymap.options = {};
     mymap.options.minZoom= $("#mymap-minz").val().trim();
     mymap.options.maxZoom = $("#mymap-maxz").val().trim();
@@ -245,7 +254,7 @@ function validateMymapBox(evt) {
     }
     mymap.options.attribution = $("#mymap-attr").val().trim();
     if (oldname && mymaps[oldname]) {
-      changeMymapsItem(oldname, newname, oldtype, mymap.type);
+      updateMapItem(oldname, newname, oldoverlay, mymap.overlay);
       if (oldname != newname) {
         // rebuild object to preserve order
         var tmp = {};
@@ -287,7 +296,7 @@ function deleteMymap(mymapname) {
       saveJsonValOpt("wt.mymaps", mymaps);
       // delete map in lists
       delMapListEntry(getMapListEntryIndex(mymapname));
-      changeMymapsItem(mymapname);
+      updateMapItem(mymapname);
       saveMapList();
       ga('send', 'event', 'map', 'delete');
     }
@@ -310,7 +319,7 @@ function changeMymapType(evt) {
   var type = getMapType();
   $(".map-wmts").hide();
   $(".map-wms").hide();
-  if ((type != "base") && (type != "overlay")) {
+  if ((type != "base")) {
     $(".map-" + type).show();
   }
   clearLayerList();

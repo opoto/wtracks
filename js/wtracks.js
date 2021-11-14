@@ -2047,7 +2047,8 @@ $(function(){
       var inList = props.in == MAP_MY ? mymaps : config.maps;
       var tile = getProvider(inList[name]);
       if (tile) {
-        if (inList[name].type === "overlay") {
+        // TODO: "overlay" type is a deprecated legacy, should be discarded in Dec 2022
+        if ((inList[name].type === "overlay") || (inList[name].overlay)) {
           overlays[name] = tile;
         } else {
           baseLayers[name] = tile;

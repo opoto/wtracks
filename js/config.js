@@ -294,6 +294,7 @@ var config = {
     },
     "FR IGN Parcelles": {
       type: "wmts",
+      overlay: true,
       url: "//wxs.ign.fr/essentiels/geoportail/wmts",
       options: {
         maxZoom: 19,
@@ -351,7 +352,7 @@ var config = {
       visible: false
     },
     "Hills": {
-      type: "overlay",
+      overlay: true,
       //'http://{s}.tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png'
       url: '//tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png',
       options: {
@@ -361,7 +362,7 @@ var config = {
       visible: true
     },
     "Cycling": {
-      type: "overlay",
+      overlay: true,
       url: '//tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png',
       options: {
         maxZoom: 17,
@@ -370,7 +371,7 @@ var config = {
       visible: true
     },
     "Hiking": {
-      type: "overlay",
+      overlay: true,
       url: '//tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png',
       options: {
         maxZoom: 17,
@@ -379,7 +380,7 @@ var config = {
       visible: true
     },
     "MTB": {
-      type: "overlay",
+      overlay: true,
       url: '//tile.waymarkedtrails.org/mtb/{z}/{x}/{y}.png',
       options: {
         maxZoom: 17,
