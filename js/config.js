@@ -348,6 +348,23 @@ var config = {
       },
       visible: false
     },
+    "CH Swisstopo slopes": {
+      url: "//wms.geo.admin.ch/",
+      type: "wms",
+      overlay: true,
+      options: {
+        className: "blend-multiply",
+        opacity: 0.5,
+        minZoom: "5",
+        maxZoom: "20",
+        layers: "ch.swisstopo.hangneigung-ueber_30",
+        crs: "EPSG:4326",
+        styles: "",
+        format: "image/png",
+        attribution: '© <a href="https://www.swisstopo.admin.ch/" target="_blank">Federal Office of Topography swisstopo'
+      },
+      visible: false
+    },
     "SP IGN Raster": {
       // https://github.com/sigdeletras/Leaflet.Spain.WMS
       type: "wms",

@@ -403,6 +403,10 @@ a.button {
   width: 22px;
 }
 
+.blend-multiply {
+  mix-blend-mode: multiply;
+}
+
 .popupdiv {
   margin: 5px 0;
 }
