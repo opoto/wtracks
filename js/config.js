@@ -306,6 +306,48 @@ var config = {
       },
       visible: false
     },
+    "CH Swisstopo": {
+      url: "//wms.geo.admin.ch/",
+      type: "wms",
+      options: {
+        minZoom: "5",
+        maxZoom: "20",
+        layers: "ch.swisstopo.pixelkarte-farbe",
+        crs: "EPSG:4326",
+        styles: "",
+        format: "image/png",
+        attribution: '© <a href="https://www.swisstopo.admin.ch/" target="_blank">Federal Office of Topography swisstopo'
+      },
+      visible: false
+    },
+    "CH Swisstopo 25e": {
+      url: "//wms.geo.admin.ch/",
+      type: "wms",
+      options: {
+        minZoom: "5",
+        maxZoom: "20",
+        layers: "ch.swisstopo.pixelkarte-farbe-pk25.noscale",
+        crs: "EPSG:4326",
+        styles: "",
+        format: "image/png",
+        attribution: '© <a href="https://www.swisstopo.admin.ch/" target="_blank">Federal Office of Topography swisstopo'
+      },
+      visible: false
+    },
+    "CH Satellites": {
+      url: "//wms.geo.admin.ch/",
+      type: "wms",
+      options: {
+        minZoom: "5",
+        maxZoom: "20",
+        layers: "ch.swisstopo.images-swissimage",
+        crs: "EPSG:4326",
+        styles: "",
+        format: "image/png",
+        attribution: '© <a href="https://www.swisstopo.admin.ch/" target="_blank">Federal Office of Topography swisstopo'
+      },
+      visible: false
+    },
     "SP IGN Raster": {
       // https://github.com/sigdeletras/Leaflet.Spain.WMS
       type: "wms",
