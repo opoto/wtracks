@@ -393,6 +393,34 @@ var config = {
       },
       visible: false
     },
+    "IT Bugianen": {
+      type: "pmtiles",
+      url: "//maki.s3.fr-par.scw.cloud/Bugianen.pmtiles",
+      options: {
+        minZoom : 11,
+        maxZoom : 19,
+        minNativeZoom : 12,
+        maxNativeZoom : 16,
+        attribution : "&copy; CC BY-NC-SA 3.0 IT <a href='https://tartamillo.wordpress.com'>Maki</a>",
+      },
+      visible: false
+    },
+    "EU E.Slope Western-Alps": {
+      type: "pmtiles",
+      overlay: true,
+      url: "//maps.s3.fr-par.scw.cloud/eslo14_walps.pmtiles",
+      options: {
+        className: "blend-multiply",
+        opacity: 0.45,
+        minNativeZoom : 16,
+        maxNativeZoom : 16,
+        minZoom : 13,
+        maxZoom : 18,
+        attribution : "&copy; CC BY-NC-SA 3.0 <a href='https://github.com/eslopemap'>E.Slope</a>",
+      },
+      visible: false
+    },
+
     "Hills": {
       overlay: true,
       //'http://{s}.tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png'
