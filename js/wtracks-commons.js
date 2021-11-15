@@ -170,7 +170,7 @@ function getMapList() {
     // check default maps
     objectForEach(config.maps, function(name, value) {
       if (getMapListEntryIndex(name) < 0) {
-        addMapListEntry(name, MAP_DEF, true);
+        addMapListEntry(name, MAP_DEF, value.visible);
       }
     });
     // deprecated maps
