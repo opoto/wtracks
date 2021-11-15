@@ -24,7 +24,7 @@ const parseHeader = dataview => {
 }
 
 const bytesToMap = dataview => {
-    let m = new Map() 
+    let m = new Map()
     for (var i = 0; i < dataview.byteLength; i+=17) {
         var z_raw = dataview.getUint8(i,true)
         var z = z_raw & 127
@@ -38,7 +38,7 @@ const bytesToMap = dataview => {
     return m
 }
 
-export class PMTiles {
+class PMTiles {
     constructor(url) {
         this.url = url
         const controller = new AbortController()
@@ -60,6 +60,8 @@ export class PMTiles {
                 metadata: metadata,
                 dir:bytesToMap(new DataView(buf,10+header.json_size,17*header.root_entries))
             }
+        }).catch(error => {
+            console.error('Error fetching PMTile header:', error)
         })
 
         this.step = 0
@@ -128,10 +130,10 @@ export class PMTiles {
                             return null
                         })
                     }
-               } 
+               }
             }
             return null
-        }) 
+        })
     }
 
     // leaflet adapter
@@ -184,7 +186,7 @@ export class PMTiles {
     }
 }
 
-export const addProtocol = maplibre_instance => {
+const addProtocol = maplibre_instance => {
     let re = new RegExp(/pmtiles:\/\/(.+)\/(\d+)\/(\d+)\/(\d+)/)
     let pmtiles_instances = new Map()
     maplibregl.addProtocol('pmtiles', (params, callback) => {

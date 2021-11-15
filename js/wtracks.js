@@ -2024,6 +2024,9 @@ $(function(){
       var mapopts = mapobj.options;
       if (isUnset(mapobj.type) || (mapobj.type === "base") || (mapobj.type === "overlay")) {
         tileCtor = L.tileLayer;
+      } else if (mapobj.type === "pmtiles") {
+        const pmTileCtor = new PMTiles(url,{allow_200:true})
+        p = pmTileCtor.leafletLayer(mapopts)
       } else {
         tileCtor = L.tileLayer[mapobj.type];
         if (mapobj.type === "wms" && mapopts.crs) {
