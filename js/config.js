@@ -365,6 +365,28 @@ var config = {
       },
       visible: false
     },
+    "EU OpenSlopeMap LR": {
+      url: "//tileserver{s}.openslopemap.org/OSloOVERLAY_LR_All_16/{z}/{x}/{y}.png",
+      overlay: true,
+      options: {
+        subdomains: "1234",
+        className: "blend-multiply",
+        opacity: 0.5,
+        minZoom: "8",
+        maxNativeZoom: "15",
+        maxZoom: "19",
+        format: "image/png",
+        attribution:
+          '&copy; <a href="https://www.data.gv.at/auftritte/?organisation=geoland" target="_blank">Geoland.at</a>, <a href="https://creativecommons.org/licenses/by/3.0/at/legalcode" target="_blank">CC BY 3.0 AT</a> | ' +
+          '&copy; <a href="http://www.provinz.bz.it/natur-raum/default.asp" target="_blank">Autonome Provinz Bozen S&uuml;dtirol</a>, <a href="http://www.provinz.bz.it/natur-raum/images/content/CC-BY_License.pdf" target="_blank">CC BY 3.0</a> | ' +
+          '&copy; <a href="http://www.territorio.provincia.tn.it/portal/server.pt/community/lidar/847/licenza_d%27uso/255622" target="_blank">La Provincia Autonoma di Trento</a>, <a href="https://creativecommons.org/licenses/by/2.5/it/legalcode" target="_blank">CC Att. 2.5 IT</a> | ' +
+          '&copy; <a href="https://www.ldbv.bayern.de/" target="_blank">Bayer. Vermessungsverwaltung</a>, <a href="https://creativecommons.org/licenses/by/3.0/de/" target="_blank">CC BY 3.0 DE</a> | ' +
+          '&copy; <a href="https://data.opendataportal.at/dataset/dtm-austria" target="_blank">Sonny</a>, <a href="https://creativecommons.org/licenses/by/3.0/at/legalcode" target="_blank">CC BY 3.0 AT</a> | ' +
+          '&copy; <a href="http://viewfinderpanoramas.org" target="_blank">SRTM</a> | ' +
+          '&copy; <a href="https://www.openslopemap.org/projekt/lizenzen/" target="_blank">OpenSlopeMap</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC-BY-SA</a>',
+      },
+      visible: false
+    },
     "SP IGN Raster": {
       // https://github.com/sigdeletras/Leaflet.Spain.WMS
       type: "wms",
@@ -449,3 +471,4 @@ var config = {
     }
   }
 };
+
