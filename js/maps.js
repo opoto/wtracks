@@ -53,6 +53,8 @@ function addMymapsItem(name, props, addHandlers) {
   if (addHandlers) {
     addMapItemHandlers(newitem);
   }
+  // TODO: Workaround for Android Chrome display bug
+  newitem.hide().show(0);
 }
 
 function getMapName(elt) {
