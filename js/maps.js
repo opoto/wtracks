@@ -5,6 +5,25 @@ var MYMAPS_BTNS = "<i class='material-icons map-edit notranslate' 'translate'='n
                   + "<i class='material-icons map-share notranslate' 'translate'='no' title='Share'>share</i> "
                   + "<i class='material-icons map-delete notranslate' 'translate'='no' title='Delete'>delete</i> ";
 
+
+// --------------------------------------------
+//  Workaround for Android Chrome display bug
+var AndroidChromiumTweak = false;
+if (navigator.userAgentData && navigator.userAgentData.platform == 'Android') {
+  arrayForEach(navigator.userAgentData.brands, function(i, brand) {
+    if (brand.brand == "Chromium") {
+      AndroidChromiumTweak = true;
+      return true;
+    }
+  });
+}
+function doAndroidChromiumTweak(item) {
+  if (AndroidChromiumTweak) {
+    item.hide().show(0);
+  }
+}
+// --------------------------------------------
+
 function setMapItemVisibility(elt, props) {
   //var isVisible = e.target.getAttribute("isVisible") == "true";
   var isVisible = props.on;
@@ -44,7 +63,6 @@ function addMymapsItem(name, props, addHandlers) {
   mapitem += "<span class='map-name notranslate" + mymapclass + "' 'translate'='no'></span> ";
   mapitem += "<i class='material-icons map-visibility notranslate' title='Show/Hide' isVisible=''></i>";
   mapitem += mymapbtns;
-  mapitem += "<i></i>"; // TODO workaround for Chrome Android display bug
   mapitem += "</span></li>";
   $("#mymaps-list").append(mapitem);
   var newitem = $("#mymaps-list li:last");
@@ -54,7 +72,7 @@ function addMymapsItem(name, props, addHandlers) {
     addMapItemHandlers(newitem);
   }
   // TODO: Workaround for Android Chrome display bug
-  newitem.hide().show(0);
+  doAndroidChromiumTweak(newitem);
 }
 
 function getMapName(elt) {
@@ -606,11 +624,13 @@ $(function(){
     //scroll: true,
     handle: ".map-drag, .map-name",
     update: function(evt) {
+      var moved = false;
       // reorder MapListEntry according to MapItems
       $("#mymaps-list .map-name").each(function(i, v) {
         var name = v.innerText;
         // get new index
-        var toIdx = getMapItem(name).index();
+        var item = getMapItem(name);
+        var toIdx = item.index();
         // get old index
         var fromIdx = getMapListEntryIndex(name);
         if (fromIdx != toIdx) {
@@ -618,7 +638,10 @@ $(function(){
           moveMapListEntry(fromIdx, toIdx);
           saveMapList();
           ga('send', 'event', 'map', 'move');
+          moved = true;
         }
+        // TODO: Workaround for Android Chrome display bug
+        moved && doAndroidChromiumTweak(item);
       });
     }
   });
