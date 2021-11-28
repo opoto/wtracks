@@ -352,7 +352,7 @@ function copyToClipboard(msg, text) {
  * Copies the value of an HTML <input> element to the clipboard when another element is clicked
  *
  * @param {string} selector - Selector of the copy button/element
- *    This HTML element MUST HAVE a "data-copyonclick-to" attribute with the id of the input element to copy
+ *    This HTML element MUST HAVE a "data-copyonclick-from" attribute with the id of the input element to copy
  * @param {Object} options - Optional options:
  *    'copyOk': string to display on successful copy (default is "Copied to clipboard")
  *    'copyKO': string to display on successful copy (default is "! Cannot copy !")
@@ -397,12 +397,12 @@ function copyToClipboard(msg, text) {
     }
     let clicked = $(event.target)
     let input
-    if (event.target.attributes["data-copyonclick-to"]) {
-      let inputId = event.target.attributes["data-copyonclick-to"].value
+    if (event.target.attributes["data-copyonclick-from"]) {
+      let inputId = event.target.attributes["data-copyonclick-from"].value
       input = $("#"+inputId)
     }
     if(!input || input.length == 0) {
-      console.error("copyOnClick: invalid or missing 'data-copyonclick-to' attribute")
+      console.error("copyOnClick: invalid or missing 'data-copyonclick-from' attribute")
     }
     if (options && options.preCopy) {
       options.preCopy(input)
