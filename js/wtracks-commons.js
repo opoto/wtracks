@@ -56,26 +56,7 @@ function toggleHelp(e) {
 }
 $(".help-b").click(toggleHelp);
 
-function copyOnClick(event) {
-  if (event.target && document.execCommand) {
-    var button = $("#" + event.target.id);
-    if (button.prop('disabled')) return;
-    button.removeClass("copyonclick")
-    button.prop('disabled', true);
-    var elt = $("#" + event.target.id.substring(1));
-    elt.select();
-    document.execCommand("copy");
-    var tmp = elt.val();
-    elt.val("Text copied to clipboard");
-    setTimeout(function(){
-      elt.val(tmp);
-      button.addClass("copyonclick")
-      button.prop('disabled', false);
-      elt.select();
-     }, 2000);
-  }
-}
-$(".copyonclick").click(copyOnClick);
+copyOnClick(".copyonclick");
 
 var CrsValues = [
   null,

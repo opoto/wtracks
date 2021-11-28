@@ -253,7 +253,7 @@ if (config.email && config.email.selector) {
     config.email.domain, config.email.subject);
 }
 
-/* ------------------------------ CORS URL  ---------------------------------*/
+/* ------------------------------ CORS URL  --------------------------------- */
 // /!\ Some set a cookie, which fails with Safari when 'prevent cross site tracking' is activated
 var corsProxy =
 "https://wtracks-cors-proxy.herokuapp.com/"
@@ -273,7 +273,7 @@ function corsUrl(url) {
   // config.corsproxy.url() + config.corsproxy.query + encodeURIComponent(url);
 }
 
-/* ------------------------------ Encoding ---------------------------------*/
+/* ------------------------------ Encoding --------------------------------- */
 function n10dLocation() {
   var res = window.location.toString();
   res = res.replace(/\?.*$/, "").replace(/\#.*$/, "");
@@ -342,9 +342,88 @@ function b64DecodeUnicode(str) {
   }).join(''));
 }
 
+/* ----------------- Clipboard helpers -------------------- */
+
 function copyToClipboard(msg, text) {
   window.prompt(msg + "\nCopy to clipboard: Ctrl+C, Enter", text);
 }
+
+/**
+ * Copies the value of an HTML <input> element to the clipboard when another element is clicked
+ *
+ * @param {string} selector - Selector of the copy button/element
+ *    This HTML element MUST HAVE a "data-copyonclick-to" attribute with the id of the input element to copy
+ * @param {Object} options - Optional options:
+ *    'copyOk': string to display on successful copy (default is "Copied to clipboard")
+ *    'copyKO': string to display on successful copy (default is "! Cannot copy !")
+ *    'statusDelay': time in ms during which the status message is displayed (default is 1 sec)
+ *    'preCopy': function to call before copy (default is none)
+ *    'postCopy': function to call after copy (default is none)
+ */
+ function copyOnClick(selector, options) {
+
+  let copyOk = (options && options.copyOk) || "Copied to clipboard"
+  let copyKO = (options && options.copyKO) || "! Cannot copy !"
+  let statusDelay = (options && options.statusDelay) || 1000
+
+  function showCopyStatus(clicked, input, statusText) {
+    let temp = input.val()
+    let type = input.attr("type")
+    if (type == "password") {
+      input.attr("type", "text")
+    } else {
+      type = undefined;
+    }
+    input.val(statusText)
+
+    clicked.prop("disabled", true)
+    input.prop("disabled", true)
+    setTimeout(function() {
+      if (type) {
+        input.attr("type", type)
+      }
+      input.val(temp)
+      clicked.prop("disabled", false)
+      input.prop("disabled", false)
+      if (options && options.postCopy) {
+        options.postCopy(input)
+      }
+    }, statusDelay);
+  }
+
+  $(selector).click(function (event) {
+    if (event.target.disabled) {
+      return
+    }
+    let clicked = $(event.target)
+    let input
+    if (event.target.attributes["data-copyonclick-to"]) {
+      let inputId = event.target.attributes["data-copyonclick-to"].value
+      input = $("#"+inputId)
+    }
+    if(!input || input.length == 0) {
+      console.error("copyOnClick: invalid or missing 'data-copyonclick-to' attribute")
+    }
+    if (options && options.preCopy) {
+      options.preCopy(input)
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(input.val())
+      .then(function() { showCopyStatus(clicked, input, copyOk) })
+      .catch(function() { showCopyStatus(clicked, input, copyKO) })
+    } else {
+      input[0].select();
+      try {
+        document.execCommand("copy")
+        showCopyStatus(clicked, input, copyOk)
+      } catch(err) {
+        showCopyStatus(clicked, input, copyKO)
+      }
+    }
+  })
+}
+
+/* ------------------ Iteration helpers ----------------- */
 
 function arrayMove(arr, old_index, new_index) {
     if (new_index >= arr.length) {
@@ -381,7 +460,7 @@ function arrayForEach(array, func) {
   }
 }
 
-/* ---------------------- Start service worker ------------------------*/
+/* ---------------------- Start service worker ------------------------ */
 
 if ('serviceWorker' in navigator) {
   // Use the window load event to keep the page load performant
@@ -390,7 +469,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-/* ---------------------- track errors ------------------------*/
+/* ---------------------- track errors ------------------------ */
 var errors = [];
 
 window.onerror = function(messageOrEvent, source, line, row, err) {
