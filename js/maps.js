@@ -8,17 +8,17 @@ var MYMAPS_BTNS = "<i class='material-icons map-edit notranslate' 'translate'='n
 
 // --------------------------------------------
 //  Workaround for Android Chrome display bug
-var AndroidChromiumTweak = false;
+var needsAndroidChromiumTweak = false;
 if (navigator.userAgentData && navigator.userAgentData.platform == 'Android') {
   arrayForEach(navigator.userAgentData.brands, function(i, brand) {
     if (brand.brand == "Chromium") {
-      AndroidChromiumTweak = true;
+      needsAndroidChromiumTweak = true;
       return true;
     }
   });
 }
 function doAndroidChromiumTweak(item) {
-  if (AndroidChromiumTweak) {
+  if (needsAndroidChromiumTweak) {
     item.hide().show(0);
   }
 }
