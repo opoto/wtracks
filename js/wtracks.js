@@ -2142,7 +2142,6 @@ $(function(){
     var slider = $('<input class="overlay-opacity-slider" type="range" min="0" max="100" value="'
        + initialOpacity*100 + '"></input>')
     .insertAfter($(".leaflet-control-layers-overlays span:contains('" + ovlname + "')"))
-    log("Slider added: " + ovlname);
     slider.on("change", function(evt) {
       // search layer
       objectForEach(map._layers, function(lId, layer) {
