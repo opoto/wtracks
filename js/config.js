@@ -410,7 +410,6 @@ var config = {
       overlay: true,
       url: "//maps.s3.fr-par.scw.cloud/eslo14_walps.pmtiles",
       options: {
-        className: "blend-multiply",
         opacity: 0.45,
         minNativeZoom : 16,
         maxNativeZoom : 16,

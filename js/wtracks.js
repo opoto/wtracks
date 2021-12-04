@@ -2052,6 +2052,7 @@ $(function(){
       if (tile) {
         // TODO: "overlay" type is a deprecated legacy, should be discarded in Dec 2022
         if ((inList[name].type === "overlay") || (inList[name].overlay)) {
+          tile.options.className = "blend-multiply";
           overlays[name] = tile;
         } else {
           baseLayers[name] = tile;
@@ -2133,30 +2134,59 @@ $(function(){
     saveJsonValOpt("wt.overlaysOn", overlaysOn);
   }
 
-  if (JSON.parse && JSON.stringify) {
-
-    objectForEach(overlaysOn, function(oname, oon) {
-      var ovl =  overlays[oname];
-      if (ovl) {
-        if (oon) {
-          map.addLayer(ovl);
+  /********* Overlay opacity control *************/
+  function addOpacityControl(ovlname, ovl) {
+    var layerId = L.Util.stamp(ovl);
+    var initialOpacity = isUndefined(ovl.options.opacity) ? 1 : ovl.options.opacity*1
+    // add slider
+    var slider = $('<input class="overlay-opacity-slider" type="range" min="0" max="100" value="'
+       + initialOpacity*100 + '"></input>')
+    .insertAfter($(".leaflet-control-layers-overlays span:contains('" + ovlname + "')"))
+    log("Slider added: " + ovlname);
+    slider.on("change", function(evt) {
+      // search layer
+      objectForEach(map._layers, function(lId, layer) {
+        if (layer && L.Util.stamp(layer) === layerId) {
+          // set opacity
+          layer.setOpacity(Number(evt.target.value / 100));
+          return true;
         }
-      } else {
-        // doesn't exist anymore, delete it
-        setOverlay(oname, undefined);
-      }
+      });
     });
-
-    map.on("overlayadd", function(e) {
-      ga('send', 'event', 'map', 'overlay', e.name);
-      setOverlay(e.name, true);
-    });
-
-    map.on("overlayremove", function(e) {
-      setOverlay(e.name, false);
-    });
-
   }
+  function removeOpacityControl(ovlname,ovl) {
+    // remove slider
+    $(".leaflet-control-layers-overlays span:contains('" + ovlname + "')")
+    .parent()
+    .find(".overlay-opacity-slider")
+    .remove()
+  }
+
+  objectForEach(overlaysOn, function(oname, oon) {
+    var ovl =  overlays[oname];
+    if (ovl) {
+      if (oon) {
+        map.addLayer(ovl);
+      }
+    } else {
+      // doesn't exist anymore, delete it
+      setOverlay(oname, undefined);
+    }
+  });
+
+  map.on("overlayadd", function(e) {
+    ga('send', 'event', 'map', 'overlay', e.name);
+    setOverlay(e.name, true);
+    setTimeout(function(){
+      addOpacityControl(e.name, overlays[e.name]);
+    },100);
+  });
+
+  map.on("overlayremove", function(e) {
+    setOverlay(e.name, false);
+    removeOpacityControl(e.name);
+  });
+
   setLocation({lat: 0, lng: 0}); // required to initialize map
 
   // ---------------------------------------------------------------------------

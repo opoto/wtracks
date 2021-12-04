@@ -192,6 +192,22 @@ body {
 .mymap-name {
   font-style: italic;
 }
+.blend-multiply {
+  mix-blend-mode: multiply;
+}
+.overlay-opacity-slider {
+  display: block;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+  /*width: 110px;*/
+  height: 5px;
+  margin: 2px 0;
+  border: none;
+  padding: 2px 2px;
+  border-radius: 20px;
+  background: #f2f2f2;
+  outline: none;
+}
 
 #dropbox-chooser, #dropbox-saver {
   font-size: 11px;
