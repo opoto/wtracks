@@ -1102,6 +1102,11 @@ $(function(){
     $("#prunedist").val(prunedist);
     setChecked("#prunealt", prunealt);
     menu(tab ? tab : "file");
+    if (($("#savetimingdate input").val() == "")
+      && (getTrackLength() > 0)
+      && track.getLatLngs()[0].time) {
+        $("#savetimingdate input").val(track.getLatLngs()[0].time.substring(0,16));
+    }
   }
   function isMenuVisible() {
     return $("#menu").is(":visible");
