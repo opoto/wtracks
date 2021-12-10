@@ -2612,6 +2612,7 @@ $(function(){
     }
     // ignore if an overlay is open
     if ((nOverlays > 0) || isUserInputOngoing()) return;
+    //console.log("key: ", event.which)
     switch (event.which) {
       case 27: // escape - exit edit tool
         if (editMode == EDIT_NONE) {
@@ -2648,6 +2649,9 @@ $(function(){
         break;
       case 90: // 'z' - undo
         undo();
+        break;
+      case 84: // 't' - Tools
+        openMenu("tools");
         break;
     }
   });
