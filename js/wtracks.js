@@ -2027,6 +2027,15 @@ $(function(){
     if ((protocol.length == 0) || (protocol == "https:") || (location.protocol == "http:")) {
       var tileCtor;
       var mapopts = mapobj.options;
+      // By default, extend zoom range with down- & up-sampling
+      if (mapopts.minZoom && !mapopts.minNativeZoom) {
+        mapopts.minNativeZoom = mapopts.minZoom
+        mapopts.minZoom = mapopts.minZoom - 1
+      }
+      if (mapopts.maxZoom && !mapopts.maxNativeZoom) {
+        mapopts.maxNativeZoom = mapopts.maxZoom
+        mapopts.maxZoom = mapopts.maxZoom + 2
+      }
       if (isUnset(mapobj.type) || (mapobj.type === "base") || (mapobj.type === "overlay")) {
         tileCtor = L.tileLayer;
       } else if (mapobj.type === "pmtiles") {
