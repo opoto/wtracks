@@ -1368,6 +1368,11 @@ $(function(){
     var params = "";
     if (isChecked("#wtshare-map")) {
       params += "&map=" + encodeURIComponent(baseLayer);
+      overlays = []
+      objectForEach(overlaysOn, function(oname, oon) {
+        if (oon) overlays.push(oname);
+      });
+      params += "&overlays=" + encodeURIComponent(overlays.join(','));
     }
     if (isChecked("#wtshare-enc")) {
       var pwd = Math.random().toString(36).substring(2);
@@ -2061,8 +2066,9 @@ $(function(){
   var overlays = {};
   var baseLayer = getVal("wt.baseLayer", config.display.map);
   var requestedMap = getParameterByName("map")
+  var requestedOverlays = (getParameterByName("overlays") || "").split(',')
   mapsForEach(function(name, props) {
-    if (props.on || name === requestedMap || name == baseLayer) {
+    if (props.on ||  name == baseLayer || name === requestedMap || requestedOverlays.includes(name)) {
       var inList = props.in == MAP_MY ? mymaps : config.maps;
       var tile = getProvider(inList[name]);
       if (tile) {
@@ -2176,17 +2182,26 @@ $(function(){
     .remove()
   }
 
-  objectForEach(overlaysOn, function(oname, oon) {
-    var ovl =  overlays[oname];
-    if (ovl) {
-      if (oon) {
+  if (requestedOverlays) {
+    requestedOverlays.forEach(function(oname) {
+      var ovl =  overlays[oname];
+      if (ovl) {
         map.addLayer(ovl);
       }
-    } else {
-      // doesn't exist anymore, delete it
-      setOverlay(oname, undefined);
-    }
-  });
+    });
+  } else {
+    objectForEach(overlaysOn, function(oname, oon) {
+      var ovl =  overlays[oname];
+      if (ovl) {
+        if (oon) {
+          map.addLayer(ovl);
+        }
+      } else {
+        // doesn't exist anymore, delete it
+        setOverlay(oname, undefined);
+      }
+    });
+  }
 
   map.on("overlayadd", function(e) {
     ga('send', 'event', 'map', 'overlay', e.name);
