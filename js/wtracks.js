@@ -1687,7 +1687,7 @@ $(function(){
     } else {
       input = undefined;
     }
-    if (!input || (prunedist === undefined) || isNaN(prunedist)) {
+    if (!input || (prunedist === undefined) || isNaN(prunedist)) {
       alert("Enter distance in meters");
       prunedistelt.focus();
       return;
@@ -2059,8 +2059,10 @@ $(function(){
   // Add maps and overlays
   var baseLayers = {};
   var overlays = {};
+  var baseLayer = getVal("wt.baseLayer", config.display.map);
+  var requestedMap = getParameterByName("map")
   mapsForEach(function(name, props) {
-    if (props.on) {
+    if (props.on || name === requestedMap || name == baseLayer) {
       var inList = props.in == MAP_MY ? mymaps : config.maps;
       var tile = getProvider(inList[name]);
       if (tile) {
@@ -2080,7 +2082,6 @@ $(function(){
 
   // ----------------------
 
-  var baseLayer = getVal("wt.baseLayer", config.display.map);
   var initialLayer = baseLayers[baseLayer] || baseLayers[config.display.map];
   if (!initialLayer) {
     //var availableLayerNames = "";
@@ -2890,7 +2891,7 @@ $(function(){
     setStatus("Loading..", { spinner: true });
     $("#edit-tools").hide();
     var bounds;
-    var merge = loadCount > 0 ||  isChecked("#merge");
+    var merge = loadCount > 0 || isChecked("#merge");
     loadCount++;
     if (!merge) {
       newTrack();
@@ -3954,10 +3955,9 @@ $(function(){
   newTrack();
 
   // map parameter
-  var mapname = getParameterByName("map");
-  if (mapname) {
+  if (requestedMap) {
     ga('send', 'event', 'file', 'load-mapparam');
-    changeBaseLayer(mapname);
+    changeBaseLayer(requestedMap);
   }
 
   var url = getParameterByName("url");
