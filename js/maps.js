@@ -551,6 +551,7 @@ function readImportMymaps(event) {
       $("#import-ok").off("click").click(importMymaps);
       $("#import-ok").focus();
     } catch (ex) {
+      console.log("Failed to parse data: " + data)
       if (event) {
         $("#input-error").show();
       } else {
@@ -647,7 +648,7 @@ $(function(){
   });
 
   // import maps?
-  var toimport = getParameterByName("import");
+  var toimport = getParameterByName("import").replace(/\ /g, "+");
   if (toimport) {
     openImportBox(null, toimport);
   }
