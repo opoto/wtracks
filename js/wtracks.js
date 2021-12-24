@@ -2005,7 +2005,6 @@ $(function(){
   }
 
   function restoreState() {
-    restorePosition();
     restoreTrack();
     restoreEditMode();
   }
@@ -3976,6 +3975,16 @@ $(function(){
     });
     setEditMode(EDIT_NONE);
   } else {
+    var reqpos = {
+      lat: parseFloat(getParameterByName("lat")),
+      lng: parseFloat(getParameterByName("lng"))
+    };
+    if (reqpos.lat && reqpos.lng) {
+      showLocation = LOC_ONCE;
+      setLocation(reqpos, true);
+    } else {
+      restorePosition();
+    }
     restoreState();
   }
 
