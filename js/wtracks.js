@@ -1368,6 +1368,11 @@ $(function(){
     var params = "";
     if (isChecked("#wtshare-map")) {
       params += "&map=" + encodeURIComponent(baseLayer);
+      overlays = []
+      objectForEach(overlaysOn, function(oname, oon) {
+        if (oon) overlays.push(oname);
+      });
+      params += "&overlays=" + encodeURIComponent(overlays.join(','));
     }
     if (isChecked("#wtshare-enc")) {
       var pwd = Math.random().toString(36).substring(2);
@@ -1687,7 +1692,7 @@ $(function(){
     } else {
       input = undefined;
     }
-    if (!input || (prunedist === undefined) || isNaN(prunedist)) {
+    if (!input || (prunedist === undefined) || isNaN(prunedist)) {
       alert("Enter distance in meters");
       prunedistelt.focus();
       return;
@@ -2058,8 +2063,11 @@ $(function(){
   // Add maps and overlays
   var baseLayers = {};
   var overlays = {};
+  var baseLayer = getVal("wt.baseLayer", config.display.map);
+  var requestedMap = getParameterByName("map")
+  var requestedOverlays = (getParameterByName("overlays") || "").split(',')
   mapsForEach(function(name, props) {
-    if (props.on) {
+    if (props.on ||  name == baseLayer || name === requestedMap || requestedOverlays.includes(name)) {
       var inList = props.in == MAP_MY ? mymaps : config.maps;
       var tile = getProvider(inList[name]);
       if (tile) {
@@ -2079,7 +2087,6 @@ $(function(){
 
   // ----------------------
 
-  var baseLayer = getVal("wt.baseLayer", config.display.map);
   var initialLayer = baseLayers[baseLayer] || baseLayers[config.display.map];
   if (!initialLayer) {
     //var availableLayerNames = "";
@@ -2174,17 +2181,26 @@ $(function(){
     .remove()
   }
 
-  objectForEach(overlaysOn, function(oname, oon) {
-    var ovl =  overlays[oname];
-    if (ovl) {
-      if (oon) {
+  if (requestedOverlays) {
+    requestedOverlays.forEach(function(oname) {
+      var ovl =  overlays[oname];
+      if (ovl) {
         map.addLayer(ovl);
       }
-    } else {
-      // doesn't exist anymore, delete it
-      setOverlay(oname, undefined);
-    }
-  });
+    });
+  } else {
+    objectForEach(overlaysOn, function(oname, oon) {
+      var ovl =  overlays[oname];
+      if (ovl) {
+        if (oon) {
+          map.addLayer(ovl);
+        }
+      } else {
+        // doesn't exist anymore, delete it
+        setOverlay(oname, undefined);
+      }
+    });
+  }
 
   map.on("overlayadd", function(e) {
     ga('send', 'event', 'map', 'overlay', e.name);
@@ -2889,7 +2905,7 @@ $(function(){
     setStatus("Loading..", { spinner: true });
     $("#edit-tools").hide();
     var bounds;
-    var merge = loadCount > 0 ||  isChecked("#merge");
+    var merge = loadCount > 0 || isChecked("#merge");
     loadCount++;
     if (!merge) {
       newTrack();
@@ -3953,10 +3969,9 @@ $(function(){
   newTrack();
 
   // map parameter
-  var mapname = getParameterByName("map");
-  if (mapname) {
+  if (requestedMap) {
     ga('send', 'event', 'file', 'load-mapparam');
-    changeBaseLayer(mapname);
+    changeBaseLayer(requestedMap);
   }
 
   var url = getParameterByName("url");
