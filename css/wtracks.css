@@ -195,6 +195,9 @@ body {
 .blend-multiply {
   mix-blend-mode: multiply;
 }
+.filter-grayscale {
+  filter: grayscale(80%);
+}
 .overlay-opacity-slider {
   display: block;
   -webkit-appearance: none;

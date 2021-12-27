@@ -121,6 +121,7 @@ $(function(){
   var fwdGuide = getBoolVal("wt.fwdGuide", config.display.fwdGuide);
   var fwdGuideGa = true; // collect stats on this user preference
   var extMarkers = getBoolVal("wt.extMarkers", config.display.extMarkers);
+  var autoGrayBaseLayer = getBoolVal("wt.autoGrayBaseLayer", config.display.autoGrayBaseLayer);
   var wasDragged;
 
   var EDIT_NONE = 0;
@@ -1098,6 +1099,7 @@ $(function(){
     setChecked("#fwdGuide", fwdGuide);
     setChecked("#wptLabel", wptLabel);
     setChecked("#extMarkers", extMarkers);
+    setChecked("#autoGrayBaseLayer", autoGrayBaseLayer);
     prepareTrim();
     $("#prunedist").val(prunedist);
     setChecked("#prunealt", prunealt);
@@ -1920,6 +1922,7 @@ $(function(){
     saveValOpt("wt.fwdGuide", fwdGuide);
     saveValOpt("wt.wptLabel", wptLabel);
     saveValOpt("wt.extMarkers", extMarkers);
+    saveValOpt("wt.autoGrayBaseLayer", autoGrayBaseLayer);
   }
 
   function saveStateFile() {
@@ -2125,6 +2128,7 @@ $(function(){
     if (mapsCloseOnClick) {
       $(".leaflet-control-layers").removeClass("leaflet-control-layers-expanded");
     }
+    setAutoGrayBaseLayer(e.layer);
   });
   map.on('zoomstart zoom zoomend', function(ev){
     debug('Zoom level: ' + map.getZoom());
@@ -2152,6 +2156,7 @@ $(function(){
   function setOverlay(name, yesno) {
     overlaysOn[name] = yesno;
     saveJsonValOpt("wt.overlaysOn", overlaysOn);
+    setAutoGrayBaseLayer(null)
   }
 
   /********* Overlay opacity control *************/
@@ -2214,6 +2219,28 @@ $(function(){
     setOverlay(e.name, false);
     removeOpacityControl(e.name);
   });
+
+  $("#autoGrayBaseLayer").change(function(evt){
+    autoGrayBaseLayer = !autoGrayBaseLayer;
+    storeVal("wt.autoGrayBaseLayer", autoGrayBaseLayer);
+    setAutoGrayBaseLayer(null);
+  });
+
+  function hasOverlaysOn() {
+    return Object.values(overlaysOn).some(oon => oon);
+  }
+  function setAutoGrayBaseLayer(layer) {
+    if (!layer) {
+      const layerId = L.Util.stamp(baseLayers[baseLayer]);
+      layer = map._layers[layerId];
+    }
+
+    if (autoGrayBaseLayer && hasOverlaysOn()) {
+      layer.getContainer().classList.add('filter-grayscale');
+    } else {
+      layer.getContainer().classList.remove('filter-grayscale');
+    }
+  }
 
   setLocation({lat: 0, lng: 0}); // required to initialize map
 
