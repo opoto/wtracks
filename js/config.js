@@ -28,6 +28,13 @@ var config = {
   qrCodeService: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&bgcolor=fff&data=",
   //qrCodeService: "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chld=M&chl=",
   mapsCloseOnClick: true,
+  ipLookup: {
+    url: function() {
+      return "https://extreme-ip-lookup.com/json/?key=" +  strdecode(
+        "mv%092W%26(a7%22%04%2B%3B%1B%16.%5EDE%3C",
+        "w%14%0C%2F~%7C9%11%3B%3A%07'%00%5D%1B%03%5BLp%1F")
+    }
+  },
   graphhopper: {
     key: function() {
       // Create a GraphHopper account, generate a key, and return it here

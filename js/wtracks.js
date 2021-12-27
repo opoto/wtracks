@@ -1769,7 +1769,7 @@ $(function(){
 
   function getMyIpLocation() {
     log("Getting location from IP address");
-    $.get("//extreme-ip-lookup.com/json/")
+    $.get(config.ipLookup.url())
     .done(function(res) {
       setLocation({
         lat: res.lat,
