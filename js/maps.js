@@ -648,7 +648,7 @@ $(function(){
   });
 
   // import maps?
-  var toimport = getParameterByName("import").replace(/\ /g, "+");
+  var toimport = getParameterByName("import", "").replace(/\ /g, "+");
   if (toimport) {
     openImportBox(null, toimport);
   }
