@@ -2238,7 +2238,7 @@ $(function(){
     if (autoGrayBaseLayer && hasOverlaysOn()) {
       layer.getContainer().classList.add('filter-grayscale');
     } else {
-      layer.getContainer().classList.remove('filter-grayscale');
+      layer.getContainer()?.classList.remove('filter-grayscale');
     }
   }
 
