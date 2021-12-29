@@ -63,6 +63,10 @@ body {
   display: none
 }
 
+.no-select {
+  user-select: none;
+}
+
 #menu {
   max-width: 90%;
   width: 500px;
