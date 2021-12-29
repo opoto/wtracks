@@ -2247,11 +2247,13 @@ $(function(){
       const layerId = L.Util.stamp(baseLayers[baseLayer]);
       layer = map._layers[layerId];
     }
-
-    if (autoGrayBaseLayer && hasOverlaysOn()) {
-      layer.getContainer().classList.add('filter-grayscale');
-    } else {
-      layer.getContainer()?.classList.remove('filter-grayscale');
+    const container = layer.getContainer()
+    if (container) {
+      if (autoGrayBaseLayer && hasOverlaysOn()) {
+        container.classList.add('filter-grayscale');
+      } else {
+        container.classList.remove('filter-grayscale');
+      }
     }
   }
 
