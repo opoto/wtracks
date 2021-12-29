@@ -1782,7 +1782,7 @@ $(function(){
 
   function getMyIpLocation() {
     log("Getting location from IP address");
-    $.get(config.ipLookup.url() + "lkj")
+    $.get(config.ipLookup.url())
     .done(function(res) {
       setLocation({
         lat: res.lat,
