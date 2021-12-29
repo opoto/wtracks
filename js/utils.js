@@ -75,11 +75,18 @@ function isSafari() {
 }
 
 // Extract URL parameters from current location
+let urlQueryParameters;
 function getParameterByName(name, defaultValue) {
-  name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-  var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-    results = regex.exec(location.search);
-  return results === null ? defaultValue : decodeURIComponent(results[1].replace(/\+/g, " "));
+  urlQueryParameters = urlQueryParameters || new URLSearchParams(location.search)
+  return urlQueryParameters.get(name) || defaultValue
+}
+
+// Remove query parameters from URL if it has some
+function clearUrlQuery() {
+  if (window.location.search && window.history && window.history.pushState) {
+    window.history.pushState({}, document.title, window.location.pathname);
+  }
+  urlQueryParameters = undefined;
 }
 
 function jsonClone(obj) {

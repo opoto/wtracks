@@ -4142,10 +4142,8 @@ $(function(){
     return false;
   });
 
-  // reset URL if it contains query parameters
-  if (window.location.search && window.history && window.history.pushState) {
-    window.history.pushState({}, document.title, window.location.pathname);
-  }
+  // Remove potential query parameters from URL
+  clearUrlQuery()
 
   $(window).on("unload", function() {
     saveState();
