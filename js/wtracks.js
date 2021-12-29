@@ -225,6 +225,31 @@ $(function(){
     }
   }
 
+  let warns = 0;
+  function showWarning(title, msg, timeout) {
+    let warnElt = $("<div class='warning'>")
+    warnElt.append($("<div class='box-header'><span class='warning-title'>" 
+      + title + "</span><a href='#' class='close-button'>×</a></div>"))
+    let warnMsg = $("<div class='warning-msg'>")
+    warnMsg.html(msg)
+    warnElt.append(warnMsg)
+    $("#warning-box").append(warnElt)
+    warns++
+    let closeButton = warnElt.find(".close-button")
+    closeButton.click(function() {
+      warnElt.remove()
+      if (--warns <= 0) {
+        $("#warning-box").hide();
+      }
+    })
+    $("#warning-box").show();
+    /* */
+    setTimeout(function() {
+      closeButton.click()
+    }, timeout ? timeout: 7000);
+    /* */
+  }
+  
   $("#prompt-name").keyup(promptKeyEvent);
   $("#prompt-desc").keyup(promptKeyEvent);
 
@@ -234,36 +259,24 @@ $(function(){
 
   /* ----------------------------------------------------- */
 
-  var apikeyTimer;
-
-  $("#apikeys-close").click(closeApiKeyInfo);
-
-
-  function closeApiKeyInfo(evt) {
-    if (apikeyTimer) {
-      clearTimeout(apikeyTimer);
-      apikeyTimer = undefined;
-    }
-    $("#apikeys").hide();
-    changeApikeyNomore(isChecked("#apikeys-nomore"));
-    if (evt) {
-      evt.preventDefault();
-    }
-  }
-
-  function openApiKeyInfo(force) {
-    if ((force || !apikeyNoMore) && !apikeyTimer) {
-      $("#apikeys").show();
-      $("#apikeys-dont").toggle(!force);
-      apikeyTimer = setTimeout(closeApiKeyInfo, 10000);
-    }
-  }
-
   function changeApikeyNomore(v) {
     apikeyNoMore = v;
     saveValOpt("wt.apikeyNoMore", apikeyNoMore);
     ga('send', 'event', 'setting', 'keysNomore', undefined, apikeyNoMore ? 1 : 0);
   }
+
+  function openApiKeyInfo(force) {
+    if ((force || !apikeyNoMore) && $(".apikeys-dont").length == 0) {
+      let apiKeyInfo = $("<a href='doc/#api-keys'>Set your API keys</a> to enable elevation and routing services."
+      + "<span class='apikeys-dont'><br /><label class='no-select'>Don't show anymore <input class='apikeys-nomore' type='checkbox'/></label></span>")
+      apiKeyInfo.find(".apikeys-dont").toggle(!force);
+      apiKeyInfo.find(".apikeys-nomore").change(function(evt) {
+        changeApikeyNomore(isChecked(evt.target))
+      });
+      showWarning("No API key defined", apiKeyInfo, 10000);
+    }
+  }
+  
   /* ----------------------------------------------------- */
 
   var selectActivity = $("#activity")[0];
@@ -1769,7 +1782,7 @@ $(function(){
 
   function getMyIpLocation() {
     log("Getting location from IP address");
-    $.get(config.ipLookup.url())
+    $.get(config.ipLookup.url() + "lkj")
     .done(function(res) {
       setLocation({
         lat: res.lat,
@@ -1777,7 +1790,7 @@ $(function(){
       }, false);
     })
     .fail(function(jqxhr, settings, exception) {
-      warn("ip geolocation request failed");
+      showWarning("IP Geolocation failed", "Do you you have an ad blocker?<br>Try deactivating it on this page to get geolocation working.")
     });
   }
 
@@ -1847,7 +1860,7 @@ $(function(){
     }
 
 
-    if (navigator.geolocation) {
+    if (false && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         gotLocation, highAccuracyFailed, { maximumAge: 0, timeout: 5000, enableHighAccuracy: true });
     } else {
