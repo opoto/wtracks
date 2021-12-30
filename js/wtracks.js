@@ -2081,9 +2081,10 @@ $(function(){
   var overlays = {};
   var baseLayer = getVal("wt.baseLayer", config.display.map);
   var requestedMap = getParameterByName("map");
-  var requestedOverlays = getParameterByName("overlays")?.split(',');
+  var requestedOverlays = getParameterByName("overlays")
+  requestedOverlays = requestedOverlays ? requestedOverlays.split(',') : undefined;
   mapsForEach(function(name, props) {
-    if (props.on ||  name == baseLayer || name === requestedMap || requestedOverlays?.includes(name)) {
+    if (props.on ||  name == baseLayer || name === requestedMap || (requestedOverlays && requestedOverlays.includes(name))) {
       var inList = props.in == MAP_MY ? mymaps : config.maps;
       var tile = getProvider(inList[name]);
       if (tile) {
