@@ -506,10 +506,7 @@ function readImportMymaps(event) {
   $("#input-error-url").hide();
   var data = $("#input-val").val();
   if (data.match(/^https?\:\/\//)) {
-    var pos = data.indexOf("?import=");
-    if (pos >= 0) {
-      data = data.substring(pos + 8);
-    }
+    data = new URLSearchParams(new URL(data).search).get("import")
   }
   if (data) {
     try {
