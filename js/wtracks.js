@@ -1860,7 +1860,7 @@ $(function(){
     }
 
 
-    if (false && navigator.geolocation) {
+    if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         gotLocation, highAccuracyFailed, { maximumAge: 0, timeout: 5000, enableHighAccuracy: true });
     } else {
