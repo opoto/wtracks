@@ -512,6 +512,9 @@ $(function(){
   // =================== UNDO ====================
 
   var UNDO_ICON = "undo";
+  var UNDO_ID = "undo-id";
+  var REDO_ICON = "redo";
+  var REDO_ID = "redo-id";
   var EDIT_AUTO_ICON = "navigation";
   var EDIT_AUTO_ID = "edit-auto";
   var EDIT_MANUAL_ICON = "timeline";
@@ -546,9 +549,6 @@ $(function(){
         setEditMode(EDIT_NONE);
         setEditMode(EDIT_AUTO_TRACK);
       }
-    },
-    getIconId: function() {
-      return EDIT_AUTO_ID;
     }
   }
 
@@ -572,9 +572,6 @@ $(function(){
         updateExtremities();
         saveState();
       }
-    },
-    getIconId: function() {
-      return EDIT_MANUAL_ID;
     }
   }
 
@@ -598,9 +595,6 @@ $(function(){
         updateExtremities();
         saveState();
       }
-    },
-    getIconId: function() {
-      return EDIT_MANUAL_ID;
     }
   }
 
@@ -621,9 +615,6 @@ $(function(){
         updateExtremities();
         saveState();
       }
-    },
-    getIconId: function() {
-      return EDIT_MANUAL_ID;
     }
   }
 
@@ -637,7 +628,7 @@ $(function(){
     ga('send', 'event', 'edit', 'undo', toUndo.getType());
     toUndo.undo();
     if (undos.length < 1) {
-      endUndo(toUndo.getIconId());
+      endUndo();
     }
   }
   function addUndo(undoObjectType, args) {
@@ -645,19 +636,11 @@ $(function(){
     newUndo.init(args);
     undos.push(newUndo);
     if (undos.length == 1) {
-      var id = newUndo.getIconId();
-      $("#" + id).attr("oldhtml", $("#" + id + " span").html());
-      $("#" + id).attr("oldtitle", $("#" + id).attr("title"));
-      $("#" + id + " span").html(UNDO_ICON);
-      $("#" + id).attr("title", "Undo last edit");
+      map.addControl(undoControl);
     }
   }
-  function endUndo(id) {
-    if (!id) {
-      id = undos[0].getIconId();
-    }
-    $("#" + id + " span").html($("#" + id).attr("oldhtml"));
-    $("#" + id).attr("title", $("#" + id).attr("oldtitle"));
+  function endUndo() {
+    map.removeControl(undoControl);
     undos = [];
   }
 
@@ -2579,6 +2562,44 @@ $(function(){
   });
   map.addControl(new L.EditorControl());
 
+  L.UndoControl = L.Control.extend({
+
+    options: {
+      position: 'topleft',
+      kind: '',
+      html: '',
+      event: 'click'
+    },
+
+    onAdd: function(map) {
+      var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-edit'),
+        undoBtn = L.DomUtil.create('a', '', container),
+        redoBtn = L.DomUtil.create('a', '', container);
+
+      undoBtn.id = UNDO_ID;
+      undoBtn.title = "Undo (z)";
+      undoBtn.innerHTML = '<span class="material-icons wtracks-control-icon notranslate">' + UNDO_ICON + '</span>';
+      L.DomEvent.on(undoBtn, this.options.event, function(e) {
+        undo();
+      }, this);
+      redoBtn.id = REDO_ID;
+      redoBtn.title = "Redo (y)";
+      redoBtn.innerHTML = '<span class="material-icons wtracks-control-icon notranslate">' + REDO_ICON + '</span>';
+      undoBtn.href = redoBtn.href = "#";
+      L.DomEvent.disableClickPropagation(undoBtn);
+      L.DomEvent.disableClickPropagation(redoBtn);
+
+      return container;
+    }
+
+  });
+  var undoControl = new (L.UndoControl.extend({
+    options: {
+      position: 'topleft',
+      event: 'click'
+    }
+  }))();
+
   function isUserInputOngoing() {
     var elt = document.activeElement;
     var tag = elt ? elt.tagName.toLowerCase() : undefined;
@@ -2665,9 +2686,7 @@ $(function(){
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_DRAG_ID));
   $("#" + EDIT_MANUAL_ID).click(function(e) {
     e.preventDefault();
-    if (editMode == EDIT_MANUAL_TRACK) {
-      undo();
-    } else {
+    if (editMode != EDIT_MANUAL_TRACK) {
       ga('send', 'event', 'edit', 'manual');
       setEditMode(EDIT_MANUAL_TRACK);
     }
@@ -2678,9 +2697,7 @@ $(function(){
       openApiKeyInfo(true);
       return;
     }
-    if (editMode == EDIT_AUTO_TRACK) {
-      undo();
-    } else {
+    if (editMode != EDIT_AUTO_TRACK) {
       ga('send', 'event', 'edit', 'auto');
       setEditMode(EDIT_AUTO_TRACK);
     }
