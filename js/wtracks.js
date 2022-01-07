@@ -2580,6 +2580,7 @@ $(function(){
       undoBtn.title = "Undo (z)";
       undoBtn.innerHTML = '<span class="material-icons wtracks-control-icon notranslate">' + UNDO_ICON + '</span>';
       L.DomEvent.on(undoBtn, this.options.event, function(e) {
+        e.preventDefault();
         undo();
       }, this);
       redoBtn.id = REDO_ID;
