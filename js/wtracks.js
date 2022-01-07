@@ -2574,7 +2574,7 @@ $(function(){
     onAdd: function(map) {
       var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-edit'),
         undoBtn = L.DomUtil.create('a', '', container),
-        redoBtn = L.DomUtil.create('a', '', container);
+        redoBtn = L.DomUtil.create('a', 'leaflet-disabled', container);
 
       undoBtn.id = UNDO_ID;
       undoBtn.title = "Undo (z)";
