@@ -121,6 +121,7 @@ $(function(){
   var fwdGuide = getBoolVal("wt.fwdGuide", config.display.fwdGuide);
   var fwdGuideGa = true; // collect stats on this user preference
   var extMarkers = getBoolVal("wt.extMarkers", config.display.extMarkers);
+  var autoGrayBaseLayer = getBoolVal("wt.autoGrayBaseLayer", config.display.autoGrayBaseLayer);
   var wasDragged;
 
   var EDIT_NONE = 0;
@@ -224,6 +225,31 @@ $(function(){
     }
   }
 
+  let warns = 0;
+  function showWarning(title, msg, timeout) {
+    let warnElt = $("<div class='warning'>")
+    warnElt.append($("<div class='box-header'><span class='warning-title'>" 
+      + title + "</span><a href='#' class='close-button'>×</a></div>"))
+    let warnMsg = $("<div class='warning-msg'>")
+    warnMsg.html(msg)
+    warnElt.append(warnMsg)
+    $("#warning-box").append(warnElt)
+    warns++
+    let closeButton = warnElt.find(".close-button")
+    closeButton.click(function() {
+      warnElt.remove()
+      if (--warns <= 0) {
+        $("#warning-box").hide();
+      }
+    })
+    $("#warning-box").show();
+    /* */
+    setTimeout(function() {
+      closeButton.click()
+    }, timeout ? timeout: 7000);
+    /* */
+  }
+  
   $("#prompt-name").keyup(promptKeyEvent);
   $("#prompt-desc").keyup(promptKeyEvent);
 
@@ -233,36 +259,24 @@ $(function(){
 
   /* ----------------------------------------------------- */
 
-  var apikeyTimer;
-
-  $("#apikeys-close").click(closeApiKeyInfo);
-
-
-  function closeApiKeyInfo(evt) {
-    if (apikeyTimer) {
-      clearTimeout(apikeyTimer);
-      apikeyTimer = undefined;
-    }
-    $("#apikeys").hide();
-    changeApikeyNomore(isChecked("#apikeys-nomore"));
-    if (evt) {
-      evt.preventDefault();
-    }
-  }
-
-  function openApiKeyInfo(force) {
-    if ((force || !apikeyNoMore) && !apikeyTimer) {
-      $("#apikeys").show();
-      $("#apikeys-dont").toggle(!force);
-      apikeyTimer = setTimeout(closeApiKeyInfo, 10000);
-    }
-  }
-
   function changeApikeyNomore(v) {
     apikeyNoMore = v;
     saveValOpt("wt.apikeyNoMore", apikeyNoMore);
     ga('send', 'event', 'setting', 'keysNomore', undefined, apikeyNoMore ? 1 : 0);
   }
+
+  function openApiKeyInfo(force) {
+    if ((force || !apikeyNoMore) && $(".apikeys-dont").length == 0) {
+      let apiKeyInfo = $("<a href='doc/#api-keys'>Set your API keys</a> to enable elevation and routing services."
+      + "<span class='apikeys-dont'><br /><label class='no-select'>Don't show anymore <input class='apikeys-nomore' type='checkbox'/></label></span>")
+      apiKeyInfo.find(".apikeys-dont").toggle(!force);
+      apiKeyInfo.find(".apikeys-nomore").change(function(evt) {
+        changeApikeyNomore(isChecked(evt.target))
+      });
+      showWarning("No API key defined", apiKeyInfo, 10000);
+    }
+  }
+  
   /* ----------------------------------------------------- */
 
   var selectActivity = $("#activity")[0];
@@ -1081,6 +1095,7 @@ $(function(){
     setChecked("#fwdGuide", fwdGuide);
     setChecked("#wptLabel", wptLabel);
     setChecked("#extMarkers", extMarkers);
+    setChecked("#autoGrayBaseLayer", autoGrayBaseLayer);
     prepareTrim();
     $("#prunedist").val(prunedist);
     setChecked("#prunealt", prunealt);
@@ -1351,6 +1366,11 @@ $(function(){
     var params = "";
     if (isChecked("#wtshare-map")) {
       params += "&map=" + encodeURIComponent(baseLayer);
+      overlays = []
+      objectForEach(overlaysOn, function(oname, oon) {
+        if (oon) overlays.push(oname);
+      });
+      params += "&overlays=" + encodeURIComponent(overlays.join(','));
     }
     if (isChecked("#wtshare-enc")) {
       var pwd = Math.random().toString(36).substring(2);
@@ -1670,7 +1690,7 @@ $(function(){
     } else {
       input = undefined;
     }
-    if (!input || (prunedist === undefined) || isNaN(prunedist)) {
+    if (!input || (prunedist === undefined) || isNaN(prunedist)) {
       alert("Enter distance in meters");
       prunedistelt.focus();
       return;
@@ -1745,7 +1765,7 @@ $(function(){
 
   function getMyIpLocation() {
     log("Getting location from IP address");
-    $.get("//extreme-ip-lookup.com/json/")
+    $.get(config.ipLookup.url())
     .done(function(res) {
       setLocation({
         lat: res.lat,
@@ -1753,7 +1773,7 @@ $(function(){
       }, false);
     })
     .fail(function(jqxhr, settings, exception) {
-      warn("ip geolocation request failed");
+      showWarning("IP Geolocation failed", "Do you you have an ad blocker?<br>Try deactivating it on this page to get geolocation working.")
     });
   }
 
@@ -1898,6 +1918,7 @@ $(function(){
     saveValOpt("wt.fwdGuide", fwdGuide);
     saveValOpt("wt.wptLabel", wptLabel);
     saveValOpt("wt.extMarkers", extMarkers);
+    saveValOpt("wt.autoGrayBaseLayer", autoGrayBaseLayer);
   }
 
   function saveStateFile() {
@@ -1988,7 +2009,6 @@ $(function(){
   }
 
   function restoreState() {
-    restorePosition();
     restoreTrack();
     restoreEditMode();
   }
@@ -2010,6 +2030,15 @@ $(function(){
     if ((protocol.length == 0) || (protocol == "https:") || (location.protocol == "http:")) {
       var tileCtor;
       var mapopts = mapobj.options;
+      // By default, extend zoom range with down- & up-sampling
+      if (mapopts.minZoom && !mapopts.minNativeZoom) {
+        mapopts.minNativeZoom = mapopts.minZoom
+        mapopts.minZoom = mapopts.minZoom - 1
+      }
+      if (mapopts.maxZoom && !mapopts.maxNativeZoom) {
+        mapopts.maxNativeZoom = mapopts.maxZoom
+        mapopts.maxZoom = mapopts.maxZoom + 2
+      }
       if (isUnset(mapobj.type) || (mapobj.type === "base") || (mapobj.type === "overlay")) {
         tileCtor = L.tileLayer;
       } else if (mapobj.type === "pmtiles") {
@@ -2033,8 +2062,12 @@ $(function(){
   // Add maps and overlays
   var baseLayers = {};
   var overlays = {};
+  var baseLayer = getVal("wt.baseLayer", config.display.map);
+  var requestedMap = getParameterByName("map");
+  var requestedOverlays = getParameterByName("overlays")
+  requestedOverlays = requestedOverlays ? requestedOverlays.split(',') : undefined;
   mapsForEach(function(name, props) {
-    if (props.on) {
+    if (props.on ||  name == baseLayer || name === requestedMap || (requestedOverlays && requestedOverlays.includes(name))) {
       var inList = props.in == MAP_MY ? mymaps : config.maps;
       var tile = getProvider(inList[name]);
       if (tile) {
@@ -2054,7 +2087,6 @@ $(function(){
 
   // ----------------------
 
-  var baseLayer = getVal("wt.baseLayer", config.display.map);
   var initialLayer = baseLayers[baseLayer] || baseLayers[config.display.map];
   if (!initialLayer) {
     //var availableLayerNames = "";
@@ -2093,6 +2125,7 @@ $(function(){
     if (mapsCloseOnClick) {
       $(".leaflet-control-layers").removeClass("leaflet-control-layers-expanded");
     }
+    setAutoGrayBaseLayer(e.layer);
   });
   map.on('zoomstart zoom zoomend', function(ev){
     debug('Zoom level: ' + map.getZoom());
@@ -2120,6 +2153,7 @@ $(function(){
   function setOverlay(name, yesno) {
     overlaysOn[name] = yesno;
     saveJsonValOpt("wt.overlaysOn", overlaysOn);
+    setAutoGrayBaseLayer(null)
   }
 
   /********* Overlay opacity control *************/
@@ -2149,17 +2183,26 @@ $(function(){
     .remove()
   }
 
-  objectForEach(overlaysOn, function(oname, oon) {
-    var ovl =  overlays[oname];
-    if (ovl) {
-      if (oon) {
+  if (requestedOverlays) {
+    requestedOverlays.forEach(function(oname) {
+      var ovl =  overlays[oname];
+      if (ovl) {
         map.addLayer(ovl);
       }
-    } else {
-      // doesn't exist anymore, delete it
-      setOverlay(oname, undefined);
-    }
-  });
+    });
+  } else {
+    objectForEach(overlaysOn, function(oname, oon) {
+      var ovl =  overlays[oname];
+      if (ovl) {
+        if (oon) {
+          map.addLayer(ovl);
+        }
+      } else {
+        // doesn't exist anymore, delete it
+        setOverlay(oname, undefined);
+      }
+    });
+  }
 
   map.on("overlayadd", function(e) {
     ga('send', 'event', 'map', 'overlay', e.name);
@@ -2173,6 +2216,30 @@ $(function(){
     setOverlay(e.name, false);
     removeOpacityControl(e.name);
   });
+
+  $("#autoGrayBaseLayer").change(function(evt){
+    autoGrayBaseLayer = !autoGrayBaseLayer;
+    storeVal("wt.autoGrayBaseLayer", autoGrayBaseLayer);
+    setAutoGrayBaseLayer(null);
+  });
+
+  function hasOverlaysOn() {
+    return Object.values(overlaysOn).some(oon => oon);
+  }
+  function setAutoGrayBaseLayer(layer) {
+    if (!layer) {
+      const layerId = L.Util.stamp(baseLayers[baseLayer]);
+      layer = map._layers[layerId];
+    }
+    const container = layer.getContainer()
+    if (container) {
+      if (autoGrayBaseLayer && hasOverlaysOn()) {
+        container.classList.add('filter-grayscale');
+      } else {
+        container.classList.remove('filter-grayscale');
+      }
+    }
+  }
 
   setLocation({lat: 0, lng: 0}); // required to initialize map
 
@@ -2899,7 +2966,7 @@ $(function(){
     setStatus("Loading..", { spinner: true });
     $("#edit-tools").hide();
     var bounds;
-    var merge = loadCount > 0 ||  isChecked("#merge");
+    var merge = loadCount > 0 || isChecked("#merge");
     loadCount++;
     if (!merge) {
       newTrack();
@@ -3963,10 +4030,9 @@ $(function(){
   newTrack();
 
   // map parameter
-  var mapname = getParameterByName("map");
-  if (mapname) {
+  if (requestedMap) {
     ga('send', 'event', 'file', 'load-mapparam');
-    changeBaseLayer(mapname);
+    changeBaseLayer(requestedMap);
   }
 
   var url = getParameterByName("url");
@@ -3985,6 +4051,16 @@ $(function(){
     });
     setEditMode(EDIT_NONE);
   } else {
+    var reqpos = {
+      lat: parseFloat(getParameterByName("lat")),
+      lng: parseFloat(getParameterByName("lng"))
+    };
+    if (reqpos.lat && reqpos.lng) {
+      showLocation = LOC_ONCE;
+      setLocation(reqpos, true);
+    } else {
+      restorePosition();
+    }
     restoreState();
   }
 
@@ -4087,10 +4163,8 @@ $(function(){
     return false;
   });
 
-  // reset URL if it contains query parameters
-  if (window.location.search && window.history && window.history.pushState) {
-    window.history.pushState({}, document.title, window.location.pathname);
-  }
+  // Remove potential query parameters from URL
+  clearUrlQuery()
 
   $(window).on("unload", function() {
     saveState();

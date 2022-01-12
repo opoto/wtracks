@@ -506,10 +506,7 @@ function readImportMymaps(event) {
   $("#input-error-url").hide();
   var data = $("#input-val").val();
   if (data.match(/^https?\:\/\//)) {
-    var pos = data.indexOf("?import=");
-    if (pos >= 0) {
-      data = data.substring(pos + 8);
-    }
+    data = new URLSearchParams(new URL(data).search).get("import")
   }
   if (data) {
     try {
@@ -551,6 +548,7 @@ function readImportMymaps(event) {
       $("#import-ok").off("click").click(importMymaps);
       $("#import-ok").focus();
     } catch (ex) {
+      console.log("Failed to parse data: " + data)
       if (event) {
         $("#input-error").show();
       } else {
@@ -647,7 +645,7 @@ $(function(){
   });
 
   // import maps?
-  var toimport = getParameterByName("import");
+  var toimport = getParameterByName("import")
   if (toimport) {
     openImportBox(null, toimport);
   }
