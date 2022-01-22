@@ -228,7 +228,7 @@ $(function(){
   let warns = 0;
   function showWarning(title, msg, timeout) {
     let warnElt = $("<div class='warning'>")
-    warnElt.append($("<div class='box-header'><span class='warning-title'>" 
+    warnElt.append($("<div class='box-header'><span class='warning-title'>"
       + title + "</span><a href='#' class='close-button'>×</a></div>"))
     let warnMsg = $("<div class='warning-msg'>")
     warnMsg.html(msg)
@@ -249,7 +249,7 @@ $(function(){
     }, timeout ? timeout: 7000);
     /* */
   }
-  
+
   $("#prompt-name").keyup(promptKeyEvent);
   $("#prompt-desc").keyup(promptKeyEvent);
 
@@ -276,7 +276,7 @@ $(function(){
       showWarning("No API key defined", apiKeyInfo, 10000);
     }
   }
-  
+
   /* ----------------------------------------------------- */
 
   var selectActivity = $("#activity")[0];
@@ -2241,7 +2241,7 @@ $(function(){
   });
 
   function hasOverlaysOn() {
-    return Object.values(overlaysOn).some(oon => oon);
+    return Object.values(overlaysOn).some(function(oon){return oon});
   }
   function setAutoGrayBaseLayer(layer) {
     if (!layer) {
