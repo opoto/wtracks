@@ -3970,7 +3970,7 @@ $(function(){
     ga('send', 'event', 'menu', 'donate', event.target.id);
   });
 
-  if (canValBeSaved()) {
+  if (getValStorage()) {
     $("#cfgsave").change(function(e) {
       var saveCfg = isChecked("#cfgsave");
       setSaveState(saveCfg);

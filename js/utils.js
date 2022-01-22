@@ -1,9 +1,3 @@
-var cookiesBlocked = false;
-try {
-  window.localStorage;
-} catch (err) {
-  cookiesBlocked = true
-}
 
 /* ----------------------- LOGGING SHORTCUTS -------------------------- */
 
@@ -132,25 +126,34 @@ function setChecked(selector, val) {
 }
 /* ----------------------- Local storage -------------------------- */
 
-function canValBeSaved() {
-  return !cookiesBlocked;
+let valStorage
+function getValStorage() {
+  if (valStorage === undefined) {
+    try {
+      window.localStorage.setItem("wt_test_storage", "1");
+      window.localStorage.removeItem("wt_test_storage");
+      valStorage = localStorage
+    } catch (err) {
+      valStorage = window.sessionStorage
+    }
+  }
+  return valStorage
 }
 
 function storeVal(name, val) {
   //log("store " + name + "=" + val);
-  if (canValBeSaved()) {
-    var store = window.localStorage;
-    if (store) {
-      if (isUnset(val)) {
-        store.removeItem(name);
-      } else {
-        try {
-          store.setItem(name, val);
-        } catch (err) {
-          var kbsz = val.length ? Math.round(val.length/1024) : 0;
-          error("Cannot store value " + name + ": " + kbsz + "KB");
-          ga('send', 'event', 'error', 'storeVal failed: ' + err.toString(), name, kbsz);
-        }
+  var store = getValStorage();
+  if (store) {
+    if (isUnset(val)) {
+      store.removeItem(name);
+    } else {
+      try {
+        store.setItem(name, val);
+      } catch (err) {
+        var kbsz = val.length ? Math.round(val.length/1024) : 0;
+        error("Cannot store value " + name + ": " + kbsz + "KB");
+        ga('send', 'event', 'error', 'storeVal failed: ' + err.toString(), name, kbsz);
+        // switch to sessionStorage?
       }
     }
   }
@@ -164,7 +167,8 @@ function storeJsonVal(name, val) {
 }
 
 function getVal(name, defval) {
-  var v = canValBeSaved() && window.localStorage ? window.localStorage.getItem(name) : undefined;
+  var store = getValStorage();
+  var v = store ? store.getItem(name) : undefined;
   return isUnset(v) ? defval : v;
 }
 
