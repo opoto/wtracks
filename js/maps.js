@@ -506,7 +506,7 @@ function readImportMymaps(event) {
   $("#input-error-url").hide();
   var data = $("#input-val").val();
   if (data.match(/^https?\:\/\//)) {
-    data = new URLSearchParams(new URL(data).search).get("import")
+    data = getParameterByName("import", undefined, data)
   }
   if (data) {
     try {

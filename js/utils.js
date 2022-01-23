@@ -68,11 +68,12 @@ function isSafari() {
   return /^((?!chrome|android|ubuntu).)*safari/i.test(navigator.userAgent);
 }
 
-// Extract URL parameters from current location
-let urlQueryParameters;
-function getParameterByName(name, defaultValue) {
-  urlQueryParameters = urlQueryParameters || new URLSearchParams(location.search)
-  return urlQueryParameters.get(name) || defaultValue
+// Extract URL parameters from current location, or optLocation if set (IE compatible version)
+function getParameterByName(name, defaultValue, optLocation) {
+  var
+    regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+    results = regex.exec(optLocation ? optLocation : location.search);
+  return results === null ? defaultValue : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
 // Remove query parameters from URL if it has some
@@ -80,7 +81,6 @@ function clearUrlQuery() {
   if (window.location.search && window.history && window.history.pushState) {
     window.history.pushState({}, document.title, window.location.pathname);
   }
-  urlQueryParameters = undefined;
 }
 
 function jsonClone(obj) {
@@ -126,7 +126,7 @@ function setChecked(selector, val) {
 }
 /* ----------------------- Local storage -------------------------- */
 
-let valStorage
+var valStorage = undefined
 function getValStorage() {
   if (valStorage === undefined) {
     try {
