@@ -1,3 +1,7 @@
+if (window.document.documentMode) {
+  alert("Internet Explorer is not supported anymore. Please use a modern browser, such as Edge, Firefox or Chrome")
+  window.location = "https://www.mozilla.org/firefox/new/"
+}
 
 /* ----------------------- LOGGING SHORTCUTS -------------------------- */
 
@@ -68,12 +72,10 @@ function isSafari() {
   return /^((?!chrome|android|ubuntu).)*safari/i.test(navigator.userAgent);
 }
 
-// Extract URL parameters from current location, or optLocation if set (IE compatible version)
+// Extract URL parameters from current location, or optLocation if set
 function getParameterByName(name, defaultValue, optLocation) {
-  var
-    regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-    results = regex.exec(optLocation ? optLocation : location.search);
-  return results === null ? defaultValue : decodeURIComponent(results[1].replace(/\+/g, " "));
+  let val = new URL(optLocation ? optLocation : document.location).searchParams.get(name)
+  return val ? val : defaultValue
 }
 
 // Remove query parameters from URL if it has some
