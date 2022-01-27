@@ -181,6 +181,7 @@ var config = {
       },
       visible: true
     },
+    /* Not working anymore in Jan 2022
     "OSM HikeBike": {
       //'http://{s}.tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png'
       url: '//tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png',
@@ -190,6 +191,7 @@ var config = {
       },
       visible: true
     },
+    */
     "ESRI Topo": {
       url: '//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
       options: {
@@ -444,9 +446,9 @@ var config = {
       },
       visible: false
     },
+    /* Not working anymore in Jan 2022
     "Hills": {
       overlay: true,
-      //'http://{s}.tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png'
       url: '//tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png',
       options: {
         maxZoom: 17,
@@ -454,6 +456,7 @@ var config = {
       },
       visible: true
     },
+    */
     "Cycling": {
       overlay: true,
       url: '//tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png',
