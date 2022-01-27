@@ -74,7 +74,7 @@ function isSafari() {
 
 // Extract URL parameters from current location, or optLocation if set
 function getParameterByName(name, defaultValue, optLocation) {
-  let val = new URL(optLocation ? optLocation : document.location).searchParams.get(name)
+  let val = new URLSearchParams(optLocation ? optLocation : window.location.search).get(name)
   return val ? val : defaultValue
 }
 
