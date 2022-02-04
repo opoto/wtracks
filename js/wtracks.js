@@ -115,9 +115,9 @@ $(function(){
   var EMPTY_METADATA = { name: NEW_TRACK_NAME, desc: "" };
 
   var metadata = EMPTY_METADATA;
-  var pruneDist = getVal("wt.pruneDist", config.compressdefault);
-  var pruneMaxDist = getVal("wt.pruneMaxDist", config.compressMaxDist);
-  var pruneMaxTime = getVal("wt.pruneMaxTime", config.compressMaxTime);
+  var pruneDist = getVal("wt.pruneDist", config.pruneDist);
+  var pruneMaxDist = getVal("wt.pruneMaxDist", config.pruneMaxDist);
+  var pruneMaxTime = getVal("wt.pruneMaxTime", config.pruneMaxTime);
   var wptLabel = getBoolVal("wt.wptLabel", config.display.wptLabel);
   var fwdGuide = getBoolVal("wt.fwdGuide", config.display.fwdGuide);
   var fwdGuideGa = true; // collect stats on this user preference
@@ -1514,7 +1514,7 @@ $(function(){
     var initlen = getTrackLength();
     var pts = route._selectedRoute ? route._selectedRoute.coordinates : undefined;
     if (pts && (pts.length > 0)) {
-      pts = L.PolyPrune.prune(pts, { tolerance: config.compressdefault, useAlt: true });
+      pts = L.PolyPrune.prune(pts, { tolerance: config.pruneDist, useAlt: true });
       ga('send', 'event', 'edit', 'merge', undefined, pts.length);
       for (var j = 0; j < pts.length; j++) {
         track.addLatLng(pts[j]);
