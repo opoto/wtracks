@@ -283,11 +283,12 @@
           <button id="compress" class="no-trim">Compress*</button>
         </td>
         <td>
-          Discard track points within a <input id="prune-dist" type="number"/>
+          Discard track points within a <input id="prune-dist" type="number" required/>
           <span class="distUnit"></span>s band<br/>
-          Keep points if separated by more than:<br/>
+          Optional: Keep points if separated by more than<br/>
           <label><input id="prune-max-time" type="number"/>seconds</label><br/>
-          <label><input id="prune-max-dist" type="number"/><span class="distUnit"></span>s</label>
+          <label><input id="prune-max-dist" type="number"/><span class="distUnit"></span>s</label><br/>
+          (Leave blank to ignore)
           <span id="compresstxt" class="help-b material-icons" title="Help">help_outline</span>
           <br/>
           <p id="compresstxt-help" class="help-p">

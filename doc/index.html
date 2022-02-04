@@ -237,7 +237,7 @@
           You can share WTracks links to your files hosted in <a href="https://dropbox.com">Dropbox</a> by
           <a href="https://help.dropbox.com/files-folders/share/view-only-access">copying the "view only" file link in Dropbox</a>,
           and use it as the <span class="code">url</span> parameter in the WTracks URL,
-          replacing the trailing <span class="code">dl=0</span> by <span class="code">dl=1</span>, and prefixing with 
+          replacing the trailing <span class="code">dl=0</span> by <span class="code">dl=1</span>, and prefixing with
           the file type, such as <span class="code">ext=gpx</span> parameter. For example:
         </p>
         <p class="code">
@@ -256,7 +256,8 @@
           from the line
           between the previous and next points. If this distance is smaller
           than the configurable value (default is 5 meters) then the point is
-          deleted.</p>
+          deleted. Note that distances are taking into account the elevation: the distance between 2 points separated by 1 meter in a flat line will be measured as 1.41 meters if they have 1 meter elevation difference (square root of (1²+1²).</p>
+          <p>Optionally you can also define the maximum gap in time or distance that compression should not create between 2 points.</p>
         <p><img src="images/compress.png" alt="compress" /></p>
 
         <h3>Elevate / Cleanup</h3>
