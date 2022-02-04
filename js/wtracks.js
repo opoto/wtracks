@@ -115,8 +115,9 @@ $(function(){
   var EMPTY_METADATA = { name: NEW_TRACK_NAME, desc: "" };
 
   var metadata = EMPTY_METADATA;
-  var prunedist = getVal("wt.prunedist", config.compressdefault);
-  var prunealt = getBoolVal("wt.prunealt", false);
+  var pruneDist = getVal("wt.pruneDist", config.compressdefault);
+  var pruneMaxDist = getVal("wt.pruneMaxDist", config.compressMaxDist);
+  var pruneMaxTime = getVal("wt.pruneMaxTime", config.compressMaxTime);
   var wptLabel = getBoolVal("wt.wptLabel", config.display.wptLabel);
   var fwdGuide = getBoolVal("wt.fwdGuide", config.display.fwdGuide);
   var fwdGuideGa = true; // collect stats on this user preference
@@ -1114,8 +1115,9 @@ $(function(){
     setChecked("#extMarkers", extMarkers);
     setChecked("#autoGrayBaseLayer", autoGrayBaseLayer);
     prepareTrim();
-    $("#prunedist").val(prunedist);
-    setChecked("#prunealt", prunealt);
+    $("#prune-dist").val(pruneDist);
+    $("#prune-max-dist").val(pruneMaxDist);
+    $("#prune-max-time").val(pruneMaxTime);
     menu(tab ? tab : "file");
     if (($("#savetimingdate input").val() == "")
       && (getTrackLength() > 0)
@@ -1700,25 +1702,37 @@ $(function(){
   $("#compress").click(function() {
 
     // get & check input value
-    var prunedistelt = $("#prunedist");
-    var input = prunedistelt.val().trim();
+    var pruneDistElt = $("#prune-dist");
+    var input = pruneDistElt.val().trim();
     if (input && input.match(/^\d+\.?\d*$/)) {
-      prunedist = parseFloat(input);
+      pruneDist = parseFloat(input);
     } else {
       input = undefined;
     }
-    if (!input || (prunedist === undefined) || isNaN(prunedist)) {
-      alert("Enter distance in meters");
-      prunedistelt.focus();
+    if (!input || (pruneDist === undefined) || isNaN(pruneDist)) {
+      alert("Enter a valid distance");
+      pruneDistElt.focus();
       return;
     }
-    if (isImperial()) {
-      prunedist *= 0.9144;
-    }
-    prunealt = isChecked("#prunealt");
 
-    saveValOpt("wt.prunedist", prunedist);
-    saveValOpt("wt.prunealt", prunealt);
+    try {
+      pruneMaxDist = parseFloat($("#prune-max-dist").val().trim())
+      pruneMaxTime = parseFloat($("#prune-max-time").val().trim())
+    } catch {
+      pruneMaxDist = undefined
+      pruneMaxTime = undefined
+    }
+    $("#prune-max-dist").val(pruneMaxDist)
+    $("#prune-max-time").val(pruneMaxTime)
+
+    if (isImperial()) {
+      pruneDist *= 0.9144
+      pruneMaxDist && (pruneMaxDist *= 0.9144)
+    }
+
+    saveValOpt("wt.pruneDist", pruneDist);
+    saveValOpt("wt.pruneMaxDist", pruneMaxDist);
+    saveValOpt("wt.pruneMaxTime", pruneMaxTime);
 
     if (track) {
 
@@ -1727,7 +1741,13 @@ $(function(){
 
       applySegmentTool(function (segment) {
         var pts = segment.getLatLngs();
-        var pruned = L.PolyPrune.prune(pts, { tolerance: prunedist, useAlt: prunealt });
+        var compressOptions = {
+          tolerance: pruneDist,
+          useAlt: true,
+          maxDist: pruneMaxDist,
+          maxTimeSec: pruneMaxTime,
+        }
+        var pruned = L.PolyPrune.prune(pts, compressOptions);
         totalpts += pts.length;
         var reduced = pts.length - pruned.length;
         if (reduced > 0) {
@@ -1927,8 +1947,9 @@ $(function(){
     saveValOpt("wt.lengthUnit", lengthUnit);
     saveValOpt("wt.trackColor", trackColor);
     saveValOpt("wt.trackWeight", trackWeight);
-    saveValOpt("wt.prunedist", prunedist);
-    saveValOpt("wt.prunealt", prunealt);
+    saveValOpt("wt.pruneDist", pruneDist);
+    saveValOpt("wt.pruneMaxDist", pruneMaxDist);
+    saveValOpt("wt.pruneMaxTime", pruneMaxTime);
     saveValOpt("wt.mapslist", mapsList);
     saveValOpt("wt.mapsCloseOnClick", mapsCloseOnClick);
     saveValOpt("wt.apikeyNoMore", apikeyNoMore);

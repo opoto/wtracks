@@ -149,6 +149,13 @@ body {
   font-style: italic;
 }
 
+#menu input[type=number] {
+  width: 4em;
+  margin-right: 3px;
+}
+#prune-dist {
+  width: 3em;
+}
 .fold-link,
 .fold-file-closed,
 .fold-settings-closed {

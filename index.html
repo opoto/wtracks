@@ -283,12 +283,15 @@
           <button id="compress" class="no-trim">Compress*</button>
         </td>
         <td>
-          Remove track points within a <input id="prunedist" type="text" size="2"/>
-          <span class="distUnit"></span>s band
-          <span id="compresstxt" class="help-b material-icons" title="Help">help_outline</span><br/>
-          <label><input id="prunealt" type="checkbox" checked="checked"/> Consider altitude</label>
+          Discard track points within a <input id="prune-dist" type="number"/>
+          <span class="distUnit"></span>s band<br/>
+          Keep points if separated by more than:<br/>
+          <label><input id="prune-max-time" type="number"/>seconds</label><br/>
+          <label><input id="prune-max-dist" type="number"/><span class="distUnit"></span>s</label>
+          <span id="compresstxt" class="help-b material-icons" title="Help">help_outline</span>
+          <br/>
           <p id="compresstxt-help" class="help-p">
-            Reduces track size without significantly changing track shape.
+            Reduces track size by discarding points which do not significantly change the track shape.
           </p>
         </td>
       </tr>
