@@ -25,8 +25,8 @@ var config = {
   maxfilesize: 1024 * 1024, // 1GB
   elevationTimeout: 5000,
   pruneDist: 4,
-  pruneMaxTime: 60,
-  pruneMaxDist: 100,
+  pruneMaxTime: "",
+  pruneMaxDist: "",
   qrCodeService: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&bgcolor=fff&data=",
   //qrCodeService: "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chld=M&chl=",
   mapsCloseOnClick: true,

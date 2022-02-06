@@ -269,10 +269,12 @@ $(function(){
   function openApiKeyInfo(force) {
     if ((force || !apikeyNoMore) && $(".apikeys-dont").length == 0) {
       let apiKeyInfo = $("<a href='doc/#api-keys'>Set your API keys</a> to enable elevation and routing services."
-      + "<span class='apikeys-dont'><br /><label class='no-select'>Don't show anymore <input class='apikeys-nomore' type='checkbox'/></label></span>")
+      + "<span class='apikeys-dont'><br />To ignore this warning click <a class='apikeys-nomore' href='#'>stop</a></span>")
       apiKeyInfo.find(".apikeys-dont").toggle(!force);
-      apiKeyInfo.find(".apikeys-nomore").change(function(evt) {
-        changeApikeyNomore(isChecked(evt.target))
+      apiKeyInfo.find(".apikeys-nomore").click(function(evt) {
+        changeApikeyNomore(true)
+        $(evt.target).parents(".warning").find(".close-button").click()
+        return false
       });
       showWarning("No API key defined", apiKeyInfo, 10000);
     }
@@ -1092,8 +1094,8 @@ $(function(){
   });
   updateApiServices();
 
-  $("#apikeys-suggest").change(function() {
-    changeApikeyNomore(!isChecked("#apikeys-suggest"));
+  $("#apikeys-warn").change(function() {
+    changeApikeyNomore(!isChecked("#apikeys-warn"));
   });
 
   /* ------------------------ MENU ---------------------------------- */
@@ -1109,7 +1111,7 @@ $(function(){
     if (isMenuVisible()) return;
     setEditMode(EDIT_NONE);
     setChecked("#merge", false);
-    setChecked("#apikeys-suggest", !apikeyNoMore);
+    setChecked("#apikeys-warn", !apikeyNoMore);
     setChecked("#fwdGuide", fwdGuide);
     setChecked("#wptLabel", wptLabel);
     setChecked("#extMarkers", extMarkers);
@@ -3427,8 +3429,7 @@ $(function(){
   var LENGTH_UNIT_METRIC = "0";
   var LENGTH_UNIT_IMPERIAL = "1";
 
-  var defaultLengthUnit = window.navigator.language === "en-US" ?
-    LENGTH_UNIT_IMPERIAL : LENGTH_UNIT_METRIC;
+  var defaultLengthUnit = LENGTH_UNIT_METRIC;
   var lengthUnit = getVal("wt.lengthUnit", defaultLengthUnit);
 
   function isMetric() {
