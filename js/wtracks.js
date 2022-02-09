@@ -91,12 +91,12 @@ $(function(){
 
   function updateMapStyle() {
     if (!map.editTools) {
-      // editor not yet intialized
-      map.options.editOptions.lineGuideOptions.color = trackColor;
+      // editor not yet initialized
+      map.options.editOptions.lineGuideOptions.color = getSegmentColor(track);
       map.options.editOptions.lineGuideOptions.weight = fwdGuide ? trackWeight : 0;
     } else {
       // update editor
-      map.editTools.forwardLineGuide.options.color = trackColor;
+      map.editTools.forwardLineGuide.options.color = getSegmentColor(track);
       map.editTools.forwardLineGuide.options.weight = fwdGuide ? trackWeight : 0;
     }
   }
@@ -362,8 +362,26 @@ $(function(){
 
   function forEachSegment(func) {
     var count = 0;
+
     if (editLayer) {
-      arrayForEach(editLayer.getLayers(), function(idx, segment) {
+
+      // sort segments on manual ordering if ordered
+      let layers = editLayer.getLayers()
+      function compare( a, b ) {
+        if (a._wtOrder == b._wtOrder) {
+          return 0
+        } else if (!a._wtOrder) {
+            return -1
+        } else if (!b._wtOrder) {
+          return 1
+        }
+        // else
+        return (a._wtOrder < b._wtOrder) ? -1 : 1
+      }
+      layers = layers.sort( compare );
+
+      // iterate on ordered segments
+      arrayForEach(layers, function(idx, segment) {
         // check if it is a polyline
         if (segment.getLatLngs) {
           count++;
@@ -387,7 +405,7 @@ $(function(){
 
   function updateTrackStyle() {
     track.setStyle({
-      color: trackUI.trk.getColor(),
+      color: track.color ? track.color : trackUI.trk.getColor(),
       weight: trackUI.trk.getWeight()
     });
     track.setInteractive(false);
@@ -395,7 +413,7 @@ $(function(){
 
   function updateOverlayTrackStyle(segment) {
     segment.setStyle({
-      color: trackUI.ovl.getColor(),
+      color: segment.color ? segment.color : trackUI.ovl.getColor(),
       weight: trackUI.ovl.getWeight()
     });
     segment.setInteractive(true);
@@ -538,8 +556,8 @@ $(function(){
   var EDIT_MARKER_ID = "edit-marker";
   var EDIT_ADDSEGMENT_ID = "add-segment";
   var EDIT_ADDSEGMENT_ICON = "add-segment-icon";
-  var EDIT_DELSEGMENT_ID = "delete-segment";
-  var EDIT_DELSEGMENT_ICON = "delete-segment-icon";
+  var EDIT_EDITSEGMENT_ID = "edit-segment";
+  var EDIT_EDITSEGMENT_ICON = "edit-segment-icon";
 
   var UndoRoute = {
     getType: function() {
@@ -1105,6 +1123,7 @@ $(function(){
       $("#menu").hide();
       finishTrim();
     }
+    $(".close-on-click").hide()
   }
 
   function openMenu(tab) {
@@ -1280,7 +1299,6 @@ $(function(){
       segtag = "trkseg";
     }
 
-    gpx += "<" + wraptag + ">" + xmlname + "\n";
 
     startdate = startdate.getTime();
     var selectedSegment = track;
@@ -1288,13 +1306,23 @@ $(function(){
     forEachSegment(function(segment) {
       segmentClickListener({ target: segment }, true);
       // check if it is a polyline
+      gpx += "<" + wraptag + ">\n";
+      if (segment.name) {
+        gpx += `  <name>${segment.name}</name>\n`
+      }
+      if (segment.color) {
+        gpx += "  <extensions>\n"
+        gpx += `    <line><color>${segment.color}</color></line>\n`
+        gpx += "  </extensions>\n"
+      }
       if (segtag) {
-        gpx += "  <" + segtag + ">\n";
+        gpx += "  <" + segtag + ">\n"
       }
       gpx += getSegmentGPX(segment, ptindent, pttag, savetime ? startdate : undefined);
       if (segtag) {
         gpx += "  </" + segtag + ">\n";
       }
+      gpx += "</" + wraptag + ">"
       if (savetime) {
         var lastPt = segment.getLatLngs().slice(-1)[0];
         if (lastPt && !isUndefined(lastPt.chrono)) {
@@ -1305,7 +1333,7 @@ $(function(){
     });
     segmentClickListener({ target: selectedSegment }, true);
 
-    gpx += "</" + wraptag + "></gpx>\n";
+    gpx += "</gpx>\n";
     return gpx;
   }
 
@@ -1356,6 +1384,134 @@ $(function(){
     }
     closeMenu();
   });
+
+  //---------------------------------------------------
+  // Segments editor
+
+  function getSegmentColor(segment) {
+    return segment && segment.color ? segment.color : trackUI.trk.getColor()
+  }
+
+  function addEditorSegmentItem(segment, i) {
+
+    function getSegmentName() {
+      return segment.name ? segment.name : "Segment #" + (i+1)
+    }
+
+    function editSegmentName() {
+      let newName = prompt("Enter track name:", getSegmentName())
+      if (newName) {
+        segment.name = newName.trim()
+        itemName.text(segment.name)
+      }
+    }
+
+    function updateSgmentColor() {
+      segment.color = segColor.val()
+      if (segment == track) {
+        updateTrackStyle()
+      } else {
+        updateOverlayTrackStyle(segment)
+      }
+    }
+
+    let segItem = `<li uid='${L.Util.stamp(segment)}'><span class='list-item'>`;
+    segItem += "<i class='material-icons item-drag notranslate' title='Drag to reorder'>drag_indicator</i> ";
+    segItem += "<span class='item-name notranslate' 'translate'='no'></span> ";
+    segItem += "<input type='checkbox' class='seg-join-check'/>"
+    segItem += `<button class='material-icons symbol setting-value item-color-picker-${i} jscolor' data-jscolor='{"valueElement":"segment-color-${i}", "hash":true, "zIndex":10001, "closable":true}'>colorize</button> <input id='segment-color-${i}' class='hidden'/>`
+    segItem += "<i class='material-icons item-delete notranslate' 'translate'='no' title='Delete'>delete</i> ";
+    segItem += "</span></li>";
+    $("#segments-list").append(segItem)
+    let newitem = $("#segments-list li:last")
+
+    // name
+    let segName = getSegmentName()
+    let itemName = newitem.find(".item-name")
+    itemName.text(segName);
+    itemName.click(editSegmentName);
+
+    // color
+    let segColorValue = getSegmentColor(segment)
+    jscolor.installByClassName(`item-color-picker-${i}`)
+    let colorPicker = newitem.find(`.item-color-picker-${i}`)[0].jscolor
+    let segColor = newitem.find(`#segment-color-${i}`)
+    colorPicker.fromString(segColorValue)
+    segColor.val(segColorValue)
+    segColor.change(updateSgmentColor)
+
+    newitem.find(".item-delete").click(() => {
+      if (confirm("Delete " + getSegmentName() + "?")) {
+        ga('send', 'event', 'edit', 'delete-segment')
+        deleteSegment(segment)
+        newitem.remove()
+        saveState()
+      }
+    });
+    // TODO: Workaround for Android Chrome display bug
+    doAndroidChromiumTweak(newitem);
+  }
+
+  function joinCheckedSegments() {
+    let tojoin = [], names = ""
+    $("#segments-list li").each(function(idx) {
+      if (isChecked($(this).find(".seg-join-check"))) {
+        let uid = $(this).attr("uid")
+        tojoin.push(uid)
+        names += $(this).find(".item-name").text() + "\n"
+      }
+    })
+    if ((tojoin.length > 1) && confirm("Join following segments?\n\n" + names)) {
+      setEditMode(EDIT_NONE)
+      joinSegments(tojoin)
+    }
+  }
+
+  function showSegmentsEditor() {
+    let segList = $("#segments-list")
+    if (segList && segList.sortable) {
+      segList.sortable('destroy');
+    }
+    $("#seg-editor-list").empty();
+    $("#seg-editor-list").append("<ul id='segments-list'></ul>");
+    segList = $("#segments-list")
+    let i = 0
+    forEachSegment(function(segment) {
+      addEditorSegmentItem(segment, i++);
+    });
+    if (i == 0) {
+      segList.text("You did not create any segment yet")
+    } else if (i > 1) {
+      $("#seg-editor-list").prepend("<p>Drag and drop segments to re-order</p>")
+      segList.sortable({
+        //scroll: true,
+        handle: ".item-drag",
+        update: function(evt) {
+          // collect segment uids
+          let lyUids = {}
+          forEachSegment(function(segment) {
+            lyUids[L.Util.stamp(segment)] = segment
+          });
+          $("#segments-list li").each(function(idx) {
+            let uid = $(this).attr("uid")
+            lyUids[uid]._wtOrder = idx
+          })
+          // TODO: Workaround for Android Chrome display bug
+          //doAndroidChromiumTweak(item)
+        }
+      })
+      $("#seg-editor-list").append("<button id='join-segs'>Join Checked Segments</button> <span class='material-icons symbol'>arrow_upward</span>")
+      $("#join-segs").click(joinCheckedSegments)
+    } else {
+      $("#seg-editor-list .seg-join-check").hide()
+    }
+    $("#seg-editor-box").show();
+  }
+
+  function closeSegEditBox() {
+    $("#seg-editor-box").hide();
+  }
+  $("#seg-editor-box-close").click(closeSegEditBox);
 
   //---------------------------------------------------
   // Share
@@ -1541,6 +1697,7 @@ $(function(){
   function closeOverlays() {
     // close all
     map.closePopup();
+    $(".close-on-click").hide()
     hideElevation();
   }
 
@@ -1608,6 +1765,9 @@ $(function(){
   function setEditMode(mode) {
     closeOverlays();
     if (mode === editMode) {
+      if (mode == EDIT_NONE) {
+        $("#edit-tools").hide()
+      }
       return;
     }
     if (undos.length > 0) {
@@ -1657,6 +1817,7 @@ $(function(){
       case EDIT_MANUAL_TRACK:
         $("#" + EDIT_MANUAL_ID).addClass("control-selected");
         try {
+          updateMapStyle()
           track.enableEdit();
           track.editor.continueForward();
           setInactiveSegmentClickable(false);
@@ -1773,9 +1934,16 @@ $(function(){
     }
   });
 
-  function joinSegments() {
+  // if uids is present, it contains the list of segment uids to join
+  function joinSegments(uids) {
     var seg1;
-    var count = forEachSegment(function(segment) {
+    let count = 0
+    forEachSegment(function(segment) {
+      if (uids && !uids.includes("" + L.Util.stamp(segment))) {
+        // this segment is not listed, skip it
+        return
+      }
+      count++
       if (!seg1) {
         seg1 = segment;
       } else {
@@ -2632,6 +2800,7 @@ $(function(){
       L.DomEvent.disableClickPropagation(link);
       L.DomEvent.on(link, this.options.event, L.DomEvent.stop)
         .on(link, this.options.event, function(e) {
+          $(".close-on-click").hide();
           map.closePopup();
           var et = $("#edit-tools");
           et.toggle();
@@ -2648,9 +2817,9 @@ $(function(){
         '<span class="material-icons wtracks-control-icon segment-icon notranslate">timeline</span>' +
         '<span class="material-icons wtracks-control-icon ' + EDIT_ADDSEGMENT_ICON + ' notranslate">add</span>' +
       '</a>' +
-      '<a href="#" title="Delete segment" id="' + EDIT_DELSEGMENT_ID + '">' +
+      '<a href="#" title="Edit segments" id="' + EDIT_EDITSEGMENT_ID + '">' +
         '<span class="material-icons wtracks-control-icon segment-icon notranslate">timeline</span>' +
-        '<span class="material-icons wtracks-control-icon ' + EDIT_DELSEGMENT_ICON + ' notranslate">clear</span>' +
+        '<span class="material-icons wtracks-control-icon ' + EDIT_EDITSEGMENT_ICON + ' notranslate">edit</span>' +
       '</a>' +
       '<a href="#" title="Move track (m)" id="' + EDIT_DRAG_ID + '"><span class="material-icons wtracks-control-icon notranslate">' + EDIT_DRAG_ICON + '</span></a>' +
       '<a href="#" title="Waypoint (w)" id="' + EDIT_MARKER_ID + '"><span class="material-icons wtracks-control-icon notranslate">place</span></a>';
@@ -2751,7 +2920,7 @@ $(function(){
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_AUTO_ID));
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_MARKER_ID));
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_ADDSEGMENT_ID));
-  L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_DELSEGMENT_ID));
+  L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_EDITSEGMENT_ID));
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_DRAG_ID));
   $("#" + EDIT_MANUAL_ID).click(function(e) {
     e.preventDefault();
@@ -2794,15 +2963,10 @@ $(function(){
     saveState();
   });
 
-  $("#" + EDIT_DELSEGMENT_ID).click(function(e) {
-    e.preventDefault();
-    if ((getTrackLength() == 0) ||
-      !confirm("Delete current segment?")) {
-      return;
-    }
-    ga('send', 'event', 'edit', 'delete-segment');
-    deleteSegment(track);
-    saveState();
+  $("#" + EDIT_EDITSEGMENT_ID).click(function(e) {
+    e.preventDefault()
+    setEditMode(EDIT_NONE)
+    showSegmentsEditor()
   });
   $("#" + EDIT_DRAG_ID).click(function(e) {
     e.preventDefault();
@@ -3001,7 +3165,7 @@ $(function(){
       return point;
     }
 
-    function importSegment(name, coords, times, ptExts, xmlnsArr) {
+    function importSegment(name, color, coords, times, ptExts, xmlnsArr) {
       var v;
 
       if (joinOnLoad || getTrackLength() == 0) {
@@ -3011,9 +3175,11 @@ $(function(){
         newSegment(true);
       }
       v = track.getLatLngs();
-      if ((v.length === 0) && (getTrackName() == NEW_TRACK_NAME)) {
+      if ((v.length === 0) && (getTrackName() == NEW_TRACK_NAME) && name) {
         setTrackName(name);
       }
+      track.name = name
+      track.color = color
 
       // import polyline vertexes
       for (var i = 0; i < coords.length; i++) {
@@ -3042,9 +3208,8 @@ $(function(){
 
     L.geoJson(geojson, {
       onEachFeature: function(f) {
-        var name, coords, times, ptExts, xmlnsArr;
+        var coords, times, ptExts, xmlnsArr;
         if (f.geometry.type === "LineString") {
-          name = f.properties.name ? f.properties.name : NEW_TRACK_NAME;
           coords = f.geometry.coordinates;
           times = f.properties.coordTimes && (f.properties.coordTimes.length == coords.length) ?
             f.properties.coordTimes : undefined;
@@ -3052,10 +3217,9 @@ $(function(){
             && (f.properties.ptExts.length == coords.length) ?
             f.properties.ptExts : undefined;
           xmlnsArr = f.properties.xmlnsArr;
-          importSegment(name, coords, times, ptExts, xmlnsArr);
+          importSegment(f.properties.name, f.properties.stroke, coords, times, ptExts, xmlnsArr);
         }
         if (f.geometry.type === "MultiLineString") {
-          name = f.properties.name ? f.properties.name : NEW_TRACK_NAME;
           for (var i = 0; i < f.geometry.coordinates.length; i++) {
             coords = f.geometry.coordinates[i];
             times = f.properties.coordTimes && f.properties.coordTimes[i] &&
@@ -3066,7 +3230,7 @@ $(function(){
               f.properties.ptExts[i] : undefined;
             xmlnsArr = f.properties.xmlnsArr && f.properties.xmlnsArr[i] ?
                 f.properties.xmlnsArr[i] : undefined;
-            importSegment(name, coords, times, ptExts, xmlnsArr);
+            importSegment(f.properties.name, f.properties.stroke, coords, times, ptExts, xmlnsArr);
           }
         } else if (f.geometry.type === "Point") {
           // import marker
@@ -3814,7 +3978,7 @@ $(function(){
             fitSelectedRoutes: false,
             lineOptions: {
               styles: [{
-                color: trackColor,
+                color: getSegmentColor(track),
                 weight: trackWeight,
                 opacity: 1,
                 interactive: false

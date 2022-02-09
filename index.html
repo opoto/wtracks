@@ -62,13 +62,17 @@
   <script src="js/leaflet.polytrim.js"></script>
   <script src="js/leaflet.polystats.js"></script>
 
+  <!-- sortable lists  -->
+  <script src="js/draganddrop.js"></script>
+  <link rel="stylesheet" href="css/draganddrop.css" />
+
   <script src="js/pasteslib.js"></script>
   <!-- crypto functions -->
   <script src="js/encdec.js"></script>
 
   <script src="js/pmtiles.js"></script>
 
-  <script src="js/jscolor.min.js"></script>
+  <script src="js/jscolor.js"></script>
   <script type="text/javascript" id="dropboxjs" data-app-key=""></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dropbox.js/0.10.2/dropbox.min.js"></script>
   <link rel="stylesheet" href="css/wtracks.css" />
@@ -742,6 +746,15 @@
         <button id="wtshare-ok" class="ok-btn">Close</button>
       </div>
     </div>
+  </div>
+
+  <!-- Segments editor box -->
+  <div id="seg-editor-box" class="overlay close-on-click">
+    <div class="box-header">
+      Segments editor
+      <a id="seg-editor-box-close" href="#" class="close-button">×</a>
+    </div>
+    <div id="seg-editor-list"></div>
   </div>
 
   <table id="tdisplay">

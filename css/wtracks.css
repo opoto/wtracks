@@ -28,7 +28,7 @@ body {
   position: absolute;
   bottom: 5px;
   left: 100px;
-  z-index: 1000;
+  z-index: 500;
   padding: 0 5px;
   background: #efefef;
   background: rgba(255, 255, 255, 0.7);
@@ -67,7 +67,7 @@ body {
   user-select: none;
 }
 
-#menu {
+#menu, #seg-editor-box {
   max-width: 90%;
   width: 500px;
   background: #eee;
@@ -397,17 +397,12 @@ a.button {
   margin-top: -8px;
   font-size: 18px;
 }
-.add-segment-icon {
+
+.edit-segment-icon, .add-segment-icon {
   font-size: 18px;
   margin-left: -26px;
-  color: green;
   margin-top: 10px;
-}
-.delete-segment-icon {
-  font-size: 18px;
-  margin-left: -26px;
-  color: red;
-  margin-top: 10px;
+  padding-left: 4px;
 }
 
 .leaflet-default-icon-path {
@@ -472,17 +467,6 @@ a.button {
 }
 .popup-desc p, .trumbowyg-editor p {
     margin: 0 0 6px 0;
-}
-
-#scale-ctrl-help {
-  display: none;
-  position: absolute;
-  bottom: 70px;
-  left: 10px;
-  z-index: 1000;
-  padding: 0 10px;
-  background: #fff;
-  background: rgba(255, 255, 255, 0.5);
 }
 
 .rich-text {
@@ -561,7 +545,7 @@ div.trumbowyg-editor {
 .modal {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
-  z-index: 15000; /* Sit on top */
+  z-index: 1000; /* Sit on top */
   left: 0;
   top: 0;
   width: 100%; /* Full width */
@@ -574,7 +558,7 @@ div.trumbowyg-editor {
 #warning-box {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
-  z-index: 15000; /* Sit on top */
+  z-index: 1000; /* Sit on top */
   right: 5px;
   top: 0;
   width: auto; /* Full width */
@@ -658,34 +642,38 @@ div.trumbowyg-editor {
   -webkit-user-drag: element;
 }
 
-#mymaps-list {
+#mymaps-list, #segments-list {
   list-style-type: none;
   padding-left: 0;
+  width: fit-content;
 }
 
-#mymaps-list li {
+#mymaps-list li, #segments-list li {
   width: fit-content;
   padding: 3px 0;
   text-align: left;
-  border-top: 2px solid white;
+  /*border-top: 2px solid white;*/
   user-select: none;
 }
-#mymaps-list li .map-item {
+.list-item {
   padding: 5px;
   border-bottom: 1px solid #ddd;
   border-radius: 10px;
   border: 2px solid #666666;
   background: #c8ffc1;
 }
-.map-invisible {
+#segments-list .list-item {
+  background: #d8ecf0;
+}
+.item-invisible {
   background: #D4D4D4 !important;
 }
-.map-drag, .map-name {
+.item-drag, #mymaps-list .item-name {
   cursor: move;
-  vertical-align: middle;
 }
-.map-name {
+.item-name {
   width: 200px;
+  vertical-align: middle;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -695,10 +683,35 @@ div.trumbowyg-editor {
 .overlay-name {
   width: 172px;
 }
-.map-edit, .map-delete, .map-share, .map-visibility {
+.item-edit, .item-delete, .item-share, .item-visibility {
   cursor: pointer;
   margin-left: 10px;
   padding-bottom: 4px;
+}
+
+#segments-list .jscolor {
+  height: 18px;
+  margin: 0;
+  padding-top: 0;
+  width: 60px;
+}
+#seg-editor-box .box-header {
+  background-color: #CCC;
+  padding: 5px;
+  width: 98%;
+}
+#seg-editor-box-close {
+  color: black;
+  top: 10px;
+  right: 5px;
+}
+#join-segs {
+  padding: 5px 10px;
+  margin: 0 0 20px 70px;
+  width: auto;
+}
+.seg-join-check {
+  margin-right: 20px;
 }
 
 .maps-btns button {
@@ -987,7 +1000,7 @@ button:active,
   #join, #segment-new {
     font-size: 60%;
   }
-  .map-name {
+  .item-name {
     width: 135px;
   }
   .overlay-name {
@@ -996,6 +1009,11 @@ button:active,
   #mymap-layerslist {
     width: 80%;
   }
+
+  #join-segs {
+    margin-left: 5px;
+  }
+
 }
 
 /** hide routing and file controls **/

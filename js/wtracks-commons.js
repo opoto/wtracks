@@ -187,3 +187,21 @@ function mapsForEach(func) {
     func(name, prop);
   });
 }
+
+// --------------------------------------------
+//  Draggable items list: Workaround for Android Chrome display bug
+
+var isAndroidChromium = false;
+if (navigator.userAgentData && navigator.userAgentData.platform == 'Android') {
+  arrayForEach(navigator.userAgentData.brands, function(i, brand) {
+    if (brand.brand == "Chromium") {
+      isAndroidChromium = true;
+      return true;
+    }
+  });
+}
+function doAndroidChromiumTweak(item) {
+  if (isAndroidChromium) {
+    item.hide().show(0);
+  }
+}

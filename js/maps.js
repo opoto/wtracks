@@ -1,27 +1,11 @@
 /* ----------------- My maps editing ------------------- */
 
 var OVERLAY_ICON = "<i class='material-icons map-overlay notranslate' 'translate'='no' title='Map overlay'>layers</i> ";
-var MYMAPS_BTNS = "<i class='material-icons map-edit notranslate' 'translate'='no' title='Edit'>create</i> "
-                  + "<i class='material-icons map-share notranslate' 'translate'='no' title='Share'>share</i> "
-                  + "<i class='material-icons map-delete notranslate' 'translate'='no' title='Delete'>delete</i> ";
+var MYMAPS_BTNS = "<i class='material-icons item-edit notranslate' 'translate'='no' title='Edit'>create</i> "
+                  + "<i class='material-icons item-share notranslate' 'translate'='no' title='Share'>share</i> "
+                  + "<i class='material-icons item-delete notranslate' 'translate'='no' title='Delete'>delete</i> ";
 
 
-// --------------------------------------------
-//  Workaround for Android Chrome display bug
-var needsAndroidChromiumTweak = false;
-if (navigator.userAgentData && navigator.userAgentData.platform == 'Android') {
-  arrayForEach(navigator.userAgentData.brands, function(i, brand) {
-    if (brand.brand == "Chromium") {
-      needsAndroidChromiumTweak = true;
-      return true;
-    }
-  });
-}
-function doAndroidChromiumTweak(item) {
-  if (needsAndroidChromiumTweak) {
-    item.hide().show(0);
-  }
-}
 // --------------------------------------------
 
 function setMapItemVisibility(elt, props) {
@@ -29,11 +13,11 @@ function setMapItemVisibility(elt, props) {
   var isVisible = props.on;
   elt.attr("isVisible", "" + isVisible);
   elt.text(isVisible ? "visibility" : "visibility_off");
-  var parent = elt.parent(".map-item");
+  var parent = elt.parent(".list-item");
   if (isVisible && parent.length) {
-    parent.removeClass("map-invisible");
+    parent.removeClass("item-invisible");
   } else {
-    parent.addClass("map-invisible");
+    parent.addClass("item-invisible");
   }
 }
 
@@ -47,8 +31,8 @@ function addMymapsItem(name, props, addHandlers) {
   var inList = props.in == MAP_MY ? mymaps : config.maps;
   var mapv = inList[name];
 
-  var mapitem = "<li><span class='map-item'>";
-  mapitem += "<i class='material-icons map-drag notranslate' title='Drag to reorder'>drag_indicator</i> ";
+  var mapitem = "<li><span class='list-item'>";
+  mapitem += "<i class='material-icons item-drag notranslate' title='Drag to reorder'>drag_indicator</i> ";
   // TODO: "overlay" type is a deprecated legacy, should be discarded in Dec 2022
   if (mapv.type === "overlay") {
     // migrate overlay type to map attribute
@@ -60,14 +44,14 @@ function addMymapsItem(name, props, addHandlers) {
     mapitem += OVERLAY_ICON;
     mymapclass += " overlay-name";
   }
-  mapitem += "<span class='map-name notranslate" + mymapclass + "' 'translate'='no'></span> ";
-  mapitem += "<i class='material-icons map-visibility notranslate' title='Show/Hide' isVisible=''></i>";
+  mapitem += "<span class='item-name notranslate" + mymapclass + "' 'translate'='no'></span> ";
+  mapitem += "<i class='material-icons item-visibility notranslate' title='Show/Hide' isVisible=''></i>";
   mapitem += mymapbtns;
   mapitem += "</span></li>";
   $("#mymaps-list").append(mapitem);
   var newitem = $("#mymaps-list li:last");
-  newitem.find(".map-name").text(name);
-  setMapItemVisibility(newitem.find(".map-visibility"), props);
+  newitem.find(".item-name").text(name);
+  setMapItemVisibility(newitem.find(".item-visibility"), props);
   if (addHandlers) {
     addMapItemHandlers(newitem);
   }
@@ -77,7 +61,7 @@ function addMymapsItem(name, props, addHandlers) {
 
 function getMapName(elt) {
   try {
-    return $(elt).parents(".map-item").find(".map-name").text();
+    return $(elt).parents(".list-item").find(".item-name").text();
   } catch (err) {
     window.onerror("no map name: " + elt.parentNode.innerHTML, "map.js", "getMapName", "", err);
     return "";
@@ -92,7 +76,7 @@ function getMapProps(elt) {
 
 function getMapItem(name) {
   var res;
-  $("#mymaps-list .map-name").each(function(i, v) {
+  $("#mymaps-list .item-name").each(function(i, v) {
     if (name == v.innerText) {
       res = $(v).parents("li");
       return true;
@@ -107,17 +91,17 @@ function updateMapItem(oldname, newname, oldoverlay, newoverlay) {
     if (newname) {
       if (newname != oldname) {
         // name changed
-        mapItem.find(".map-name").text(newname);
+        mapItem.find(".item-name").text(newname);
       }
       if (oldoverlay != newoverlay) {
         if (oldoverlay)  {
           // remove overlay icon
           mapItem.find(".map-overlay").remove();
-          mapItem.find(".map-name").removeClass("overlay-name");
+          mapItem.find(".item-name").removeClass("overlay-name");
         } else if (newoverlay) {
           // add overlay icon
-          mapItem.find(".map-name").before(OVERLAY_ICON);
-          mapItem.find(".map-name").addClass("overlay-name");
+          mapItem.find(".item-name").before(OVERLAY_ICON);
+          mapItem.find(".item-name").addClass("overlay-name");
         }
       }
 
@@ -158,10 +142,10 @@ function shareMapItem(e) {
 }
 
 function addMapItemHandlers(selector) {
-  selector.find(".map-edit").click(editMapItem);
-  selector.find(".map-visibility").click(toggleMapVisibility);
-  selector.find(".map-delete").click(deleteMapItem);
-  selector.find(".map-share").click(shareMapItem);
+  selector.find(".item-edit").click(editMapItem);
+  selector.find(".item-visibility").click(toggleMapVisibility);
+  selector.find(".item-delete").click(deleteMapItem);
+  selector.find(".item-share").click(shareMapItem);
 }
 
 // ----------------------- Personal map editing ----------------------
@@ -620,11 +604,11 @@ $(function(){
   // ----- drag & drop list -----
   $("#mymaps-list").sortable({
     //scroll: true,
-    handle: ".map-drag, .map-name",
+    handle: ".item-drag, .item-name",
     update: function(evt) {
       var moved = false;
       // reorder MapListEntry according to MapItems
-      $("#mymaps-list .map-name").each(function(i, v) {
+      $("#mymaps-list .item-name").each(function(i, v) {
         var name = v.innerText;
         // get new index
         var item = getMapItem(name);
