@@ -558,7 +558,7 @@ div.trumbowyg-editor {
 #warning-box {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
-  z-index: 1000; /* Sit on top */
+  z-index: 1010; /* Sit on top */
   right: 5px;
   top: 0;
   width: auto; /* Full width */
