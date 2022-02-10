@@ -67,7 +67,7 @@ body {
   user-select: none;
 }
 
-#menu, #seg-editor-box {
+#menu {
   max-width: 90%;
   width: 500px;
   background: #eee;
@@ -689,26 +689,23 @@ div.trumbowyg-editor {
   padding-bottom: 4px;
 }
 
-#segments-list .jscolor {
+#segments-list {
+  margin-top: 3px;
+}
+#segs-check-all-label {
+  margin-left: 92px;
+}
+#segments-list button.jscolor {
   height: 18px;
   margin: 0;
   padding-top: 0;
-  width: 60px;
+  width: 60px !important;
 }
-#seg-editor-box .box-header {
-  background-color: #CCC;
-  padding: 5px;
-  width: 98%;
-}
-#seg-editor-box-close {
-  color: black;
-  top: 10px;
-  right: 5px;
-}
+
 #join-segs {
   padding: 5px 10px;
   margin: 0 0 20px 70px;
-  width: auto;
+  width: auto !important;
 }
 .seg-join-check {
   margin-right: 20px;
@@ -1012,6 +1009,9 @@ button:active,
 
   #join-segs {
     margin-left: 5px;
+  }
+  #segs-check-all-label {
+    margin-left: 26px;
   }
 
 }

@@ -87,6 +87,8 @@
       <li><a href="#" class="tablinks" id="tabsettings">Settings</a></li>
       <li><a href="#" class="tablinks" id="tababout">About</a></li>
     </ul>
+
+    <!-- FILE -->
     <table id="menufile">
       <tr class="nobottomborder">
         <td colspan="2">
@@ -271,8 +273,21 @@
         <td class="help-p sharetxt-help" id="share-max-downloads"></td>
       </tr>
     </table>
+
+    <!-- TOOLS -->
     <table id="menutools">
-      <tr>
+
+      <tr class="nobottomborder">
+        <td colspan="2">
+          <div>
+            <span class="fold fold-tools-closed material-icons" id="tools-trkpts-closed">keyboard_arrow_right</span>
+            <span class="fold-tools trkpts material-icons">keyboard_arrow_down</span>
+            <span  class="fold fold-link fold-tools" id="tools-trkpts">Track Points</span>
+          </div>
+        </td>
+      </tr>
+
+      <tr class="fold-tools trkpts">
         <td colspan="2">
           <input type="checkbox" id="allsegments" />
           <label for="allsegments">Apply (*) to all track segments</label>
@@ -282,7 +297,7 @@
           </p>
         </td>
       </tr>
-      <tr>
+      <tr class="fold-tools trkpts">
         <td>
           <button id="compress" class="no-trim">Compress*</button>
         </td>
@@ -300,7 +315,7 @@
           </p>
         </td>
       </tr>
-      <tr>
+      <tr class="fold-tools trkpts">
         <td>
           <button id="elevate" class="no-trim isdisabled">Elevate*</button>
         </td>
@@ -313,7 +328,7 @@
           </p>
         </td>
       </tr>
-      <tr>
+      <tr class="fold-tools trkpts">
         <td>
           <button id="cleanup" class="no-trim">Clean-up*</button>
         </td>
@@ -328,7 +343,7 @@
           </p>
         </td>
       </tr>
-      <tr>
+      <tr class="fold-tools trkpts">
         <td>
           <button id="revert" class="no-trim">Revert*</button>
         </td>
@@ -340,19 +355,7 @@
           </p>
         </td>
       </tr>
-      <tr>
-        <td>
-          <button id="join" class="no-trim">Join segments</button>
-        </td>
-        <td>
-          Combine all segments
-          <span id="jointxt" class="help-b material-icons" title="Help">help_outline</span>
-          <p id="jointxt-help" class="help-p">
-            Removes separation between all track segments in the editor.
-          </p>
-        </td>
-      </tr>
-      <tr>
+      <tr class="fold-tools trkpts">
         <td>
           <select id="trim-type">
             <option>Trim start</option>
@@ -367,7 +370,35 @@
           </p>
         </td>
       </tr>
+
+      <tr class="nobottomborder">
+        <td colspan="2">
+          <div>
+            <span class="fold fold-tools-closed material-icons" id="tools-segsedit-closed">keyboard_arrow_right</span>
+            <span class="fold-tools segsedit material-icons">keyboard_arrow_down</span>
+            <span  class="fold fold-link fold-tools" id="tools-segsedit">
+              Segments
+              <span id="segsedittxt" class="help-b material-icons" title="Help">help_outline</span>
+            </span>
+          </div>
+        </td>
+      </tr>
+
+      <tr class="fold-tools segsedit notopborder nobottomborder">
+        <td colspan="2" >
+          <p id="segsedittxt-help" class="help-p">
+            Drag and drop to reorder segments. Click on name to rename. Click on color to set color. Click on trash to delete.
+          </p>
+        </td>
+      </tr>
+      <tr class="fold-tools segsedit notopborder">
+        <td colspan="2" id="seg-editor-list">
+        </td>
+      </tr>
+
     </table>
+
+    <!-- SETTINGS -->
     <table id="menusettings">
       <tr class="nobottomborder">
         <td colspan="2">
@@ -583,6 +614,8 @@
         </td>
       </tr>
     </table>
+
+    <!-- ABOUT -->
     <table id="menuabout">
       <tr>
         <td>
@@ -746,15 +779,6 @@
         <button id="wtshare-ok" class="ok-btn">Close</button>
       </div>
     </div>
-  </div>
-
-  <!-- Segments editor box -->
-  <div id="seg-editor-box" class="overlay close-on-click">
-    <div class="box-header">
-      Segments editor
-      <a id="seg-editor-box-close" href="#" class="close-button">×</a>
-    </div>
-    <div id="seg-editor-list"></div>
   </div>
 
   <table id="tdisplay">

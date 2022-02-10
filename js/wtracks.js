@@ -87,6 +87,7 @@ $(function(){
 
   // defaults
   openFolder("file-newtrk");
+  openFolder("tools-trkpts");
   openFolder("settings-savstg");
 
   function updateMapStyle() {
@@ -556,8 +557,6 @@ $(function(){
   var EDIT_MARKER_ID = "edit-marker";
   var EDIT_ADDSEGMENT_ID = "add-segment";
   var EDIT_ADDSEGMENT_ICON = "add-segment-icon";
-  var EDIT_EDITSEGMENT_ID = "edit-segment";
-  var EDIT_EDITSEGMENT_ICON = "edit-segment-icon";
 
   var UndoRoute = {
     getType: function() {
@@ -1145,6 +1144,7 @@ $(function(){
       && track.getLatLngs()[0].time) {
         $("#savetimingdate input").val(track.getLatLngs()[0].time.substring(0,16));
     }
+    openSegmentsEditor()
   }
   function isMenuVisible() {
     return $("#menu").is(":visible");
@@ -1467,7 +1467,7 @@ $(function(){
     }
   }
 
-  function showSegmentsEditor() {
+  function openSegmentsEditor() {
     let segList = $("#segments-list")
     if (segList && segList.sortable) {
       segList.sortable('destroy');
@@ -1482,7 +1482,7 @@ $(function(){
     if (i == 0) {
       segList.text("You did not create any segment yet")
     } else if (i > 1) {
-      $("#seg-editor-list").prepend("<p>Drag and drop segments to re-order</p>")
+      $("#seg-editor-list").prepend("<span id='segs-check-all-label'><label>Check / Uncheck All <input type='checkbox' id='seg-join-check-all'/></label></span>")
       segList.sortable({
         //scroll: true,
         handle: ".item-drag",
@@ -1502,16 +1502,14 @@ $(function(){
       })
       $("#seg-editor-list").append("<button id='join-segs'>Join Checked Segments</button> <span class='material-icons symbol'>arrow_upward</span>")
       $("#join-segs").click(joinCheckedSegments)
+      $("#seg-join-check-all").change(()=>{
+        let checked = isChecked($("#seg-join-check-all"))
+        setChecked($("#seg-editor-list .seg-join-check"), checked)
+      })
     } else {
       $("#seg-editor-list .seg-join-check").hide()
     }
-    $("#seg-editor-box").show();
   }
-
-  function closeSegEditBox() {
-    $("#seg-editor-box").hide();
-  }
-  $("#seg-editor-box-close").click(closeSegEditBox);
 
   //---------------------------------------------------
   // Share
@@ -2817,10 +2815,6 @@ $(function(){
         '<span class="material-icons wtracks-control-icon segment-icon notranslate">timeline</span>' +
         '<span class="material-icons wtracks-control-icon ' + EDIT_ADDSEGMENT_ICON + ' notranslate">add</span>' +
       '</a>' +
-      '<a href="#" title="Edit segments" id="' + EDIT_EDITSEGMENT_ID + '">' +
-        '<span class="material-icons wtracks-control-icon segment-icon notranslate">timeline</span>' +
-        '<span class="material-icons wtracks-control-icon ' + EDIT_EDITSEGMENT_ICON + ' notranslate">edit</span>' +
-      '</a>' +
       '<a href="#" title="Move track (m)" id="' + EDIT_DRAG_ID + '"><span class="material-icons wtracks-control-icon notranslate">' + EDIT_DRAG_ICON + '</span></a>' +
       '<a href="#" title="Waypoint (w)" id="' + EDIT_MARKER_ID + '"><span class="material-icons wtracks-control-icon notranslate">place</span></a>';
 
@@ -2911,6 +2905,11 @@ $(function(){
         break;
       case 84: // 't' - Tools
         openMenu("tools");
+        $("#tools-trkpts").click()
+        break;
+      case 83: // 's' - Segments
+        openMenu("tools")
+        $("#tools-segsedit").click()
         break;
     }
   });
@@ -2920,7 +2919,6 @@ $(function(){
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_AUTO_ID));
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_MARKER_ID));
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_ADDSEGMENT_ID));
-  L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_EDITSEGMENT_ID));
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_DRAG_ID));
   $("#" + EDIT_MANUAL_ID).click(function(e) {
     e.preventDefault();
@@ -2963,11 +2961,6 @@ $(function(){
     saveState();
   });
 
-  $("#" + EDIT_EDITSEGMENT_ID).click(function(e) {
-    e.preventDefault()
-    setEditMode(EDIT_NONE)
-    showSegmentsEditor()
-  });
   $("#" + EDIT_DRAG_ID).click(function(e) {
     e.preventDefault();
     setEditMode(EDIT_DRAG);
