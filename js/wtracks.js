@@ -1881,7 +1881,7 @@ $(function(){
     try {
       pruneMaxDist = parseFloat($("#prune-max-dist").val().trim())
       pruneMaxTime = parseFloat($("#prune-max-time").val().trim())
-    } catch {
+    } catch (e) {
       pruneMaxDist = undefined
       pruneMaxTime = undefined
     }
