@@ -1939,7 +1939,7 @@ $(function(){
     var seg1;
     let count = 0
     forEachSegment(function(segment) {
-      if (uids && !uids.includes("" + L.Util.stamp(segment))) {
+      if (uids && uids.includes && !uids.includes("" + L.Util.stamp(segment))) {
         // this segment is not listed, skip it
         return
       }
