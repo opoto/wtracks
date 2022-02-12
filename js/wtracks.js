@@ -1123,7 +1123,6 @@ $(function(){
       $("#menu").hide();
       finishTrim();
     }
-    $(".close-on-click").hide()
   }
 
   function openMenu(tab) {
@@ -1696,7 +1695,6 @@ $(function(){
   function closeOverlays() {
     // close all
     map.closePopup();
-    $(".close-on-click").hide()
     hideElevation();
   }
 
@@ -2797,7 +2795,6 @@ $(function(){
       L.DomEvent.disableClickPropagation(link);
       L.DomEvent.on(link, this.options.event, L.DomEvent.stop)
         .on(link, this.options.event, function(e) {
-          $(".close-on-click").hide();
           map.closePopup();
           var et = $("#edit-tools");
           et.toggle();
@@ -2883,7 +2880,7 @@ $(function(){
           $("#" + EDIT_AUTO_ID).click();
         }
         break;
-      case 61: // '+' - new segment
+      case 110: // '.' - new segment
         $("#" + EDIT_ADDSEGMENT_ID).click();
         break;
       case 87: // 'w' - waypoint

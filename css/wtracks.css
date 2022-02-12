@@ -7,6 +7,7 @@ body {
   margin:0;
   padding:0;
   font-family: sans-serif;
+  overflow-x: hidden;
 }
 
 #tdisplay {
@@ -70,7 +71,8 @@ body {
 #menu {
   max-width: 90%;
   max-height: 90%;
-  overflow: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
   width: 500px;
   background: #eee;
   border: 1px solid black;
@@ -693,7 +695,6 @@ div.trumbowyg-editor {
   white-space: nowrap;
   text-overflow: ellipsis;
   display: inline-block;
-  user-select: text;
 }
 .overlay-name {
   width: 172px;
