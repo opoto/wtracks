@@ -2864,7 +2864,7 @@ $(function(){
     }
     // ignore if an overlay is open
     if ((nOverlays > 0) || isUserInputOngoing()) return;
-    console.log("key: ", event.which)
+    //console.log("key: ", event.which)
     switch (event.which) {
       case 27: // escape - exit edit tool
         if (editMode == EDIT_NONE) {
