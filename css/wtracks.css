@@ -401,6 +401,13 @@ a.button {
 .control-selected {
   background-color: #ffff99 !important;
 }
+
+.loc-ready-to-record {
+  background-color: green;
+}
+.loc-recording {
+  background-color: red;
+}
 .wtracks-control-icon {
   width: 26px;
   height: 26px;
