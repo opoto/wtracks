@@ -86,10 +86,11 @@ $(function(){
   $(".fold").click(function(e) { openFolder(e.currentTarget.id); });
 
   // defaults
-  openFolder("file-newtrk");
-  openFolder("tools-trkpts");
-  openFolder("settings-savstg");
-
+  openFolder("file-newtrk")
+  openFolder("tools-trkpts")
+  openFolder("settings-savstg")
+  openFolder("about-donate")
+  
   function updateMapStyle() {
     if (!map.editTools) {
       // editor not yet initialized
@@ -1962,8 +1963,6 @@ $(function(){
     }
   }
 
-  $("#join").click(joinSegments);
-
   var joinOnLoad = false; // deactivate while we restore saved GPX
 
   // geolocation
@@ -2865,7 +2864,7 @@ $(function(){
     }
     // ignore if an overlay is open
     if ((nOverlays > 0) || isUserInputOngoing()) return;
-    //console.log("key: ", event.which)
+    console.log("key: ", event.which)
     switch (event.which) {
       case 27: // escape - exit edit tool
         if (editMode == EDIT_NONE) {
@@ -2879,10 +2878,13 @@ $(function(){
           $("#" + EDIT_MANUAL_ID).click();
         }
         break;
-      case 65: // 'a' - auto
+        case 65: // 'a' - auto
         if (editMode != EDIT_AUTO_TRACK) {
           $("#" + EDIT_AUTO_ID).click();
         }
+        break;
+      case 61: // '+' - new segment
+        $("#" + EDIT_ADDSEGMENT_ID).click();
         break;
       case 87: // 'w' - waypoint
         $("#" + EDIT_MARKER_ID).click();
@@ -2905,11 +2907,15 @@ $(function(){
         break;
       case 84: // 't' - Tools
         openMenu("tools");
-        $("#tools-trkpts").click()
+        openFolder("tools-trkpts")
         break;
       case 83: // 's' - Segments
         openMenu("tools")
-        $("#tools-segsedit").click()
+        openFolder("tools-segsedit")
+        break;
+      case 188: // '?' - Help
+        openMenu("about")
+        openFolder("about-docs")
         break;
     }
   });
@@ -2956,6 +2962,7 @@ $(function(){
     }
     ga('send', 'event', 'edit', 'new-segment');
     setEditMode(EDIT_NONE);
+    setStatus("New segement", {timeout: 2})
     newSegment();
     setEditMode(EDIT_MANUAL_TRACK);
     saveState();

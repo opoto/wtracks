@@ -132,9 +132,21 @@ body {
 #about-logo {
   margin: 15px 5px;
 }
+#menuabout tr:first-child td:first-child {
+  text-align: center;
+}
 #github-logo {
-  float: left;
-  margin: -3px 10px 0 0;
+  /*float: left;*/
+  margin-left: 5px;
+  padding-top: 5px;
+  display: inline-block;
+}
+.donate img {
+  display: block;
+  margin: 0 auto;
+}
+.key {
+  text-align: center;
 }
 #menuabout a:link, #menuabout a:visited,
 #wtshare-ask a:link, #wtshare-ask a:visited,
