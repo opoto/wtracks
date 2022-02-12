@@ -70,6 +70,7 @@ body {
 #menu {
   max-width: 90%;
   max-height: 90%;
+  overflow: scroll;
   width: 500px;
   background: #eee;
   border: 1px solid black;
@@ -658,11 +659,11 @@ div.trumbowyg-editor {
 #mymaps-list, #segments-list {
   list-style-type: none;
   padding-left: 0;
-  width: fit-content;
+  width: 100%;
 }
 
 #mymaps-list li, #segments-list li {
-  width: fit-content;
+  width: 100%;
   padding: 3px 0;
   text-align: left;
   /*border-top: 2px solid white;*/
@@ -686,6 +687,7 @@ div.trumbowyg-editor {
 }
 .item-name {
   width: 200px;
+  max-width: 40%;
   vertical-align: middle;
   overflow: hidden;
   white-space: nowrap;
@@ -695,6 +697,7 @@ div.trumbowyg-editor {
 }
 .overlay-name {
   width: 172px;
+  max-width: 32.8%;
 }
 .item-edit, .item-delete, .item-share, .item-visibility {
   cursor: pointer;
@@ -1010,23 +1013,15 @@ button:active,
   #join, #segment-new {
     font-size: 60%;
   }
-  .item-name {
-    width: 135px;
-  }
-  .overlay-name {
-    width: 107px;
-  }
   #mymap-layerslist {
     width: 80%;
   }
-
   #join-segs {
     margin-left: 5px;
   }
   #segs-check-all-label {
     margin-left: 26px;
   }
-
 }
 
 /** hide routing and file controls **/
