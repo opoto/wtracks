@@ -2021,8 +2021,7 @@ $(function(){
     if (showIcon || (showLocation == LOC_CONTINUOUS) || (showLocation == LOC_RECORDING)) {
       myLocTimer = setTimeout(removeMyLocMarker, 5000);
       if (showLocation == LOC_RECORDING) {
-        track.getLatLngs().push(new L.LatLng(pos.lat, pos.lng))
-        track.redraw()
+        track.editor.push(new L.LatLng(pos.lat, pos.lng))
       }
     } else {
       showLocation = LOC_NONE;
@@ -2783,13 +2782,13 @@ $(function(){
             $("#myloc").addClass("control-selected");
           } else if (showLocation == LOC_READY_TO_RECORD) {
             showLocation = LOC_RECORDING
-            setEditMode(EDIT_MANUAL_TRACK)
+            // create new segment and start edit
+            $("#" + EDIT_ADDSEGMENT_ID).click()
             $("#myloc").removeClass("loc-ready-to-record")
             $("#myloc").addClass("loc-recording")
           } else if (showLocation == LOC_RECORDING) {
             showLocation = LOC_NONE
             setEditMode(EDIT_NONE)
-            updateExtremities()
             $("#myloc").removeClass("loc-recording")
             $("#myloc").removeClass("control-selected")
           } else if (showLocation == LOC_ONCE) {
