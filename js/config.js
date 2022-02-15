@@ -65,8 +65,8 @@ var config = {
       // Create an IGN API key, and return it here
       // Simple obfscuation below to avoid reuse by ommision
       return strdecode(
-        "UM%06E%5C%1E%03%1A%0EP%06P%1B%07A%06%1CM%06%0E%1C%0EU%5D",
-        "O%2F%03XuD%12j%02H%05%5C%20AL%2B%19E3-U%25%0Eg");
+        "DH%05%11%0E%04%1EZ%16%0C%1D%01%16%0DA%1A%01%17%18%17%14%17%17X",
+        "%5E*%00%0C'%5E%0F*%1A%14%1E%0D-KL7%04%1F-4%5D%3CLb");
     }
   },
   corsproxy: {
