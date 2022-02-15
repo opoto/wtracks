@@ -7,6 +7,7 @@ body {
   margin:0;
   padding:0;
   font-family: sans-serif;
+  overflow-x: hidden;
 }
 
 #tdisplay {
@@ -69,6 +70,9 @@ body {
 
 #menu {
   max-width: 90%;
+  max-height: 90%;
+  overflow-y: auto;
+  overflow-x: hidden;
   width: 500px;
   background: #eee;
   border: 1px solid black;
@@ -132,9 +136,21 @@ body {
 #about-logo {
   margin: 15px 5px;
 }
+#menuabout tr:first-child td:first-child {
+  text-align: center;
+}
 #github-logo {
-  float: left;
-  margin: -3px 10px 0 0;
+  /*float: left;*/
+  margin-left: 5px;
+  padding-top: 5px;
+  display: inline-block;
+}
+.donate img {
+  display: block;
+  margin: 0 auto;
+}
+.key {
+  text-align: center;
 }
 #menuabout a:link, #menuabout a:visited,
 #wtshare-ask a:link, #wtshare-ask a:visited,
@@ -384,6 +400,13 @@ a.button {
 }
 .control-selected {
   background-color: #ffff99 !important;
+}
+
+.loc-ready-to-record {
+  background-color: green;
+}
+.loc-recording {
+  background-color: red;
 }
 .wtracks-control-icon {
   width: 26px;
@@ -645,11 +668,11 @@ div.trumbowyg-editor {
 #mymaps-list, #segments-list {
   list-style-type: none;
   padding-left: 0;
-  width: fit-content;
+  width: 100%;
 }
 
 #mymaps-list li, #segments-list li {
-  width: fit-content;
+  width: 100%;
   padding: 3px 0;
   text-align: left;
   /*border-top: 2px solid white;*/
@@ -673,15 +696,16 @@ div.trumbowyg-editor {
 }
 .item-name {
   width: 200px;
+  max-width: 40%;
   vertical-align: middle;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   display: inline-block;
-  user-select: text;
 }
 .overlay-name {
   width: 172px;
+  max-width: 32.8%;
 }
 .item-edit, .item-delete, .item-share, .item-visibility {
   cursor: pointer;
@@ -997,23 +1021,15 @@ button:active,
   #join, #segment-new {
     font-size: 60%;
   }
-  .item-name {
-    width: 135px;
-  }
-  .overlay-name {
-    width: 107px;
-  }
   #mymap-layerslist {
     width: 80%;
   }
-
   #join-segs {
     margin-left: 5px;
   }
   #segs-check-all-label {
     margin-left: 26px;
   }
-
 }
 
 /** hide routing and file controls **/

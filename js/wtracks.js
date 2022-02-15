@@ -86,10 +86,11 @@ $(function(){
   $(".fold").click(function(e) { openFolder(e.currentTarget.id); });
 
   // defaults
-  openFolder("file-newtrk");
-  openFolder("tools-trkpts");
-  openFolder("settings-savstg");
-
+  openFolder("file-newtrk")
+  openFolder("tools-trkpts")
+  openFolder("settings-savstg")
+  openFolder("about-donate")
+  
   function updateMapStyle() {
     if (!map.editTools) {
       // editor not yet initialized
@@ -1122,7 +1123,6 @@ $(function(){
       $("#menu").hide();
       finishTrim();
     }
-    $(".close-on-click").hide()
   }
 
   function openMenu(tab) {
@@ -1695,7 +1695,6 @@ $(function(){
   function closeOverlays() {
     // close all
     map.closePopup();
-    $(".close-on-click").hide()
     hideElevation();
   }
 
@@ -1962,8 +1961,6 @@ $(function(){
     }
   }
 
-  $("#join").click(joinSegments);
-
   var joinOnLoad = false; // deactivate while we restore saved GPX
 
   // geolocation
@@ -1993,10 +1990,12 @@ $(function(){
     LOC_NONE = 0,
     LOC_ONCE = 1,
     LOC_CONTINUOUS = 2,
+    LOC_READY_TO_RECORD = 3,
+    LOC_RECORDING = 4;
     showLocation = LOC_ONCE;
 
   function removeMyLocMarker() {
-    if (showLocation == LOC_CONTINUOUS) {
+    if ((showLocation == LOC_CONTINUOUS) || (showLocation == LOC_RECORDING)) {
       gotoMyLocation();
     } else {
       showLocation = LOC_NONE;
@@ -2019,8 +2018,11 @@ $(function(){
       myLocMarker = new L.marker([pos.lat, pos.lng], { icon: myLocIcon, clickable: false });
       myLocMarker.addTo(map);
     }
-    if (showIcon || (showLocation == LOC_CONTINUOUS)) {
+    if (showIcon || (showLocation == LOC_CONTINUOUS) || (showLocation == LOC_RECORDING)) {
       myLocTimer = setTimeout(removeMyLocMarker, 5000);
+      if (showLocation == LOC_RECORDING) {
+        track.editor.push(new L.LatLng(pos.lat, pos.lng))
+      }
     } else {
       showLocation = LOC_NONE;
     }
@@ -2028,8 +2030,18 @@ $(function(){
 
   function gotoMyLocation() {
 
+    let isHighAccuracy = false
+    if (navigator.permissions && navigator.permissions.query) {
+      navigator.permissions.query({name:'geolocation'}).then(function(result) {
+        log("Got geolocation persmission")
+      })
+    }
     function gotLocation(position) {
       log("Got location");
+      if ((showLocation == LOC_ONCE) && isHighAccuracy) {
+        $("#myloc").addClass("loc-ready-to-record");
+        showLocation = LOC_READY_TO_RECORD
+      }
       setLocation({
         lat: position.coords.latitude,
         lng: position.coords.longitude
@@ -2037,6 +2049,7 @@ $(function(){
     }
 
     function highAccuracyFailed(posError) {
+      isHighAccuracy = false
       log("GPS location failed, trying low accuracy");
       navigator.geolocation.getCurrentPosition(
         gotLocation, lowAccuracyFailed, { maximumAge: 60000, timeout: 5000, enableHighAccuracy: false });
@@ -2049,6 +2062,7 @@ $(function(){
 
 
     if (navigator.geolocation) {
+      isHighAccuracy = true
       navigator.geolocation.getCurrentPosition(
         gotLocation, highAccuracyFailed, { maximumAge: 0, timeout: 5000, enableHighAccuracy: true });
     } else {
@@ -2766,6 +2780,20 @@ $(function(){
           } else if (showLocation == LOC_ONCE) {
             showLocation = LOC_CONTINUOUS;
             $("#myloc").addClass("control-selected");
+          } else if (showLocation == LOC_READY_TO_RECORD) {
+            showLocation = LOC_RECORDING
+            // create new segment and start edit
+            $("#" + EDIT_ADDSEGMENT_ID).click()
+            $("#myloc").removeClass("loc-ready-to-record")
+            $("#myloc").addClass("loc-recording")
+          } else if (showLocation == LOC_RECORDING) {
+            showLocation = LOC_NONE
+            setEditMode(EDIT_NONE)
+            $("#myloc").removeClass("loc-recording")
+            $("#myloc").removeClass("control-selected")
+          } else if (showLocation == LOC_ONCE) {
+            showLocation = LOC_CONTINUOUS;
+            $("#myloc").addClass("control-selected");
           } else {
             showLocation = LOC_ONCE;
             gotoMyLocation();
@@ -2798,7 +2826,6 @@ $(function(){
       L.DomEvent.disableClickPropagation(link);
       L.DomEvent.on(link, this.options.event, L.DomEvent.stop)
         .on(link, this.options.event, function(e) {
-          $(".close-on-click").hide();
           map.closePopup();
           var et = $("#edit-tools");
           et.toggle();
@@ -2879,10 +2906,13 @@ $(function(){
           $("#" + EDIT_MANUAL_ID).click();
         }
         break;
-      case 65: // 'a' - auto
+        case 65: // 'a' - auto
         if (editMode != EDIT_AUTO_TRACK) {
           $("#" + EDIT_AUTO_ID).click();
         }
+        break;
+      case 110: // '.' - new segment
+        $("#" + EDIT_ADDSEGMENT_ID).click();
         break;
       case 87: // 'w' - waypoint
         $("#" + EDIT_MARKER_ID).click();
@@ -2905,11 +2935,15 @@ $(function(){
         break;
       case 84: // 't' - Tools
         openMenu("tools");
-        $("#tools-trkpts").click()
+        openFolder("tools-trkpts")
         break;
       case 83: // 's' - Segments
         openMenu("tools")
-        $("#tools-segsedit").click()
+        openFolder("tools-segsedit")
+        break;
+      case 188: // '?' - Help
+        openMenu("about")
+        openFolder("about-docs")
         break;
     }
   });
@@ -2956,6 +2990,7 @@ $(function(){
     }
     ga('send', 'event', 'edit', 'new-segment');
     setEditMode(EDIT_NONE);
+    setStatus("New segment", {timeout: 2})
     newSegment();
     setEditMode(EDIT_MANUAL_TRACK);
     saveState();
