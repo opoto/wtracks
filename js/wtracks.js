@@ -90,7 +90,7 @@ $(function(){
   openFolder("tools-trkpts")
   openFolder("settings-savstg")
   openFolder("about-donate")
-  
+
   function updateMapStyle() {
     if (!map.editTools) {
       // editor not yet initialized
@@ -1464,6 +1464,7 @@ $(function(){
     if ((tojoin.length > 1) && confirm("Join following segments?\n\n" + names)) {
       setEditMode(EDIT_NONE)
       joinSegments(tojoin)
+      openSegmentsEditor()
     }
   }
 
