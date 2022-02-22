@@ -404,11 +404,12 @@ a.button {
 }
 
 .loc-ready-to-record {
-  background-color: green;
+  color: red;
 }
 .loc-recording {
   background-color: red;
 }
+
 .wtracks-control-icon {
   width: 26px;
   height: 26px;

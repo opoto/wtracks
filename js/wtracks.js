@@ -1995,11 +1995,41 @@ $(function(){
     LOC_RECORDING = 4;
     showLocation = LOC_ONCE;
 
+  function setLocationMode(mode) {
+    switch (mode) {
+      case LOC_NONE:
+        $("#myloc").text("my_location")
+        $("#myloc").removeClass("loc-ready-to-record")
+        $("#myloc").removeClass("loc-recording")
+        $("#myloc").removeClass("control-selected");
+        if ((showLocation == LOC_RECORDING) && (track.getLatLngs().length > 0)) {
+            let pts = L.PolyPrune.prune(track.getLatLngs(), { tolerance: config.pruneDist, useAlt: true });
+            track.setLatLngs(pts)
+            track.redraw()
+        }
+        break;
+      case LOC_CONTINUOUS:
+        $("#myloc").addClass("control-selected");
+        break;
+      case LOC_READY_TO_RECORD:
+        $("#myloc").text("fiber_manual_record")
+        $("#myloc").addClass("loc-ready-to-record")
+        break;
+      case LOC_RECORDING:
+        $("#myloc").text("stop")
+        $("#myloc").removeClass("loc-ready-to-record")
+        $("#myloc").addClass("loc-recording")
+        break;
+      default:
+    }
+    showLocation = mode
+  }
+
   function removeMyLocMarker() {
     if ((showLocation == LOC_CONTINUOUS) || (showLocation == LOC_RECORDING)) {
       gotoMyLocation();
     } else {
-      showLocation = LOC_NONE;
+      setLocationMode(LOC_NONE)
       if (myLocMarker) {
         myLocMarker.remove();
         myLocMarker = undefined;
@@ -2022,26 +2052,25 @@ $(function(){
     if (showIcon || (showLocation == LOC_CONTINUOUS) || (showLocation == LOC_RECORDING)) {
       myLocTimer = setTimeout(removeMyLocMarker, 5000);
       if (showLocation == LOC_RECORDING) {
-        track.editor.push(new L.LatLng(pos.lat, pos.lng))
+        if (track.editor) {
+          track.editor.push(new L.LatLng(pos.lat, pos.lng))
+        } else {
+          setLocationMode(LOC_NONE)
+        }
       }
     } else {
-      showLocation = LOC_NONE;
+      setLocationMode(LOC_NONE)
     }
   }
 
   function gotoMyLocation() {
 
     let isHighAccuracy = false
-    if (navigator.permissions && navigator.permissions.query) {
-      navigator.permissions.query({name:'geolocation'}).then(function(result) {
-        log("Got geolocation persmission")
-      })
-    }
+
     function gotLocation(position) {
-      log("Got location");
+      debug(`(${position.coords.latitude}, ${position.coords.longitude})`);
       if ((showLocation == LOC_ONCE) && isHighAccuracy) {
-        $("#myloc").addClass("loc-ready-to-record");
-        showLocation = LOC_READY_TO_RECORD
+        setLocationMode(LOC_READY_TO_RECORD)
       }
       setLocation({
         lat: position.coords.latitude,
@@ -2082,7 +2111,7 @@ $(function(){
     // ask for position on first use
     if (vlat == _lat && vlng == _lng) {
       setTimeout(function() {
-        showLocation = LOC_ONCE;
+        setLocationMode(LOC_ONCE)
         gotoMyLocation();
       }, 1000);
     }
@@ -2214,7 +2243,7 @@ $(function(){
 
   function restorePosition() {
     var defpos = getSavedPosition(config.display.pos.lat, config.display.pos.lng);
-    showLocation = LOC_ONCE;
+    setLocationMode(LOC_ONCE)
     setLocation(defpos);
   }
 
@@ -2775,28 +2804,21 @@ $(function(){
         .on(link, 'click', function(e) {
           map.closePopup();
           if (showLocation == LOC_CONTINUOUS) {
-            showLocation = LOC_NONE;
-            $("#myloc").removeClass("control-selected");
+            setLocationMode(LOC_NONE)
             removeMyLocMarker();
           } else if (showLocation == LOC_ONCE) {
-            showLocation = LOC_CONTINUOUS;
-            $("#myloc").addClass("control-selected");
+            setLocationMode(LOC_CONTINUOUS)
           } else if (showLocation == LOC_READY_TO_RECORD) {
-            showLocation = LOC_RECORDING
+            setLocationMode(LOC_RECORDING)
             // create new segment and start edit
             $("#" + EDIT_ADDSEGMENT_ID).click()
-            $("#myloc").removeClass("loc-ready-to-record")
-            $("#myloc").addClass("loc-recording")
           } else if (showLocation == LOC_RECORDING) {
-            showLocation = LOC_NONE
             setEditMode(EDIT_NONE)
-            $("#myloc").removeClass("loc-recording")
-            $("#myloc").removeClass("control-selected")
+            setLocationMode(LOC_NONE)
           } else if (showLocation == LOC_ONCE) {
-            showLocation = LOC_CONTINUOUS;
-            $("#myloc").addClass("control-selected");
+            setLocationMode(LOC_CONTINUOUS)
           } else {
-            showLocation = LOC_ONCE;
+            setLocationMode(LOC_ONCE)
             gotoMyLocation();
           }
         }, this);
