@@ -2052,8 +2052,9 @@ $(function(){
     if (showIcon || (showLocation == LOC_CONTINUOUS) || (showLocation == LOC_RECORDING)) {
       myLocTimer = setTimeout(removeMyLocMarker, 5000);
       if (showLocation == LOC_RECORDING) {
-        if (track.editor) {
-          track.editor.push(new L.LatLng(pos.lat, pos.lng))
+        if (editMode == EDIT_NONE) {
+          track.addLatLng(new L.LatLng(pos.lat, pos.lng))
+          updateExtremities()
         } else {
           setLocationMode(LOC_NONE)
         }
@@ -2810,8 +2811,9 @@ $(function(){
             setLocationMode(LOC_CONTINUOUS)
           } else if (showLocation == LOC_READY_TO_RECORD) {
             setLocationMode(LOC_RECORDING)
-            // create new segment and start edit
-            $("#" + EDIT_ADDSEGMENT_ID).trigger("click")
+            setEditMode(EDIT_NONE)
+            // create new segment
+            newSegment()
           } else if (showLocation == LOC_RECORDING) {
             setEditMode(EDIT_NONE)
             setLocationMode(LOC_NONE)
@@ -2896,7 +2898,7 @@ $(function(){
   }
 
   $("body").on("keydown", function(event) {
-    console.debug(`key: which=${event.which}, key=${event.key}, code=${event.code},`)
+    //console.debug(`key: which=${event.which}, key=${event.key}, code=${event.code},`)
     // number of currently opened overlays
     nOverlays = openedOverlays();
     // ignore control keys
