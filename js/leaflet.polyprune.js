@@ -163,9 +163,9 @@
                         for (var j = i; j > ptlast; j--) {
                             var pt = latlngs[j];
                             var keepIt = false
-                            keepIt ||= (maxDist && distance3D(prev, next) > maxDist)
-                            keepIt ||= (maxTimeSec && areOlderThan(prev, next, maxTimeSec))
-                            keepIt ||= distanceFromLine(pt, prev, next) > tolerance
+                            keepIt = keepIt || (maxDist && distance3D(prev, next) > maxDist)
+                            keepIt = keepIt || (maxTimeSec && areOlderThan(prev, next, maxTimeSec))
+                            keepIt = keepIt || distanceFromLine(pt, prev, next) > tolerance
                             if (keepIt) {
                                 // removing i loses this pt, keep this trkpt[i]
                                 latlngs[i].i = pruned.length;

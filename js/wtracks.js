@@ -67,7 +67,7 @@ $(function(){
   function toggleElement(e) {
     $("." + this.id.slice(0, -1) + "-toggle").toggle();
   }
-  $(".toggle").click(toggleElement);
+  $(".toggle").on("click", toggleElement);
 
   /* folding settings */
   function openFolder(id) {
@@ -83,7 +83,7 @@ $(function(){
     $("#" + eltInfo[0] + "-" + eltInfo[1]).addClass("fold-selected");
     $("#" + eltInfo[0] + "-" + eltInfo[1]).parent("div").addClass("fold-selected-title");
   }
-  $(".fold").click(function(e) { openFolder(e.currentTarget.id); });
+  $(".fold").on("click", function(e) { openFolder(e.currentTarget.id); });
 
   // defaults
   openFolder("file-newtrk")
@@ -239,7 +239,7 @@ $(function(){
     $("#warning-box").append(warnElt)
     warns++
     let closeButton = warnElt.find(".close-button")
-    closeButton.click(function() {
+    closeButton.on("click", function() {
       warnElt.remove()
       if (--warns <= 0) {
         $("#warning-box").hide();
@@ -248,17 +248,17 @@ $(function(){
     $("#warning-box").show();
     /* */
     setTimeout(function() {
-      closeButton.click()
+      closeButton.trigger("click")
     }, timeout ? timeout: 7000);
     /* */
   }
 
-  $("#prompt-name").keyup(promptKeyEvent);
-  $("#prompt-desc").keyup(promptKeyEvent);
+  $("#prompt-name").on("keyup", promptKeyEvent);
+  $("#prompt-desc").on("keyup", promptKeyEvent);
 
-  $("#prompt-ok").click(validatePrompt);
-  $("#prompt-cancel").click(closeTrackNamePrompt);
-  $("#track-name-edit").click(promptTrackName);
+  $("#prompt-ok").on("click", validatePrompt);
+  $("#prompt-cancel").on("click", closeTrackNamePrompt);
+  $("#track-name-edit").on("click", promptTrackName);
 
   /* ----------------------------------------------------- */
 
@@ -273,9 +273,9 @@ $(function(){
       let apiKeyInfo = $("<a href='doc/#api-keys'>Set your API keys</a> to enable elevation and routing services."
       + "<span class='apikeys-dont'><br />To ignore this warning click <a class='apikeys-nomore' href='#'>stop</a></span>")
       apiKeyInfo.find(".apikeys-dont").toggle(!force);
-      apiKeyInfo.find(".apikeys-nomore").click(function(evt) {
+      apiKeyInfo.find(".apikeys-nomore").on("click", function(evt) {
         changeApikeyNomore(true)
-        $(evt.target).parents(".warning").find(".close-button").click()
+        $(evt.target).parents(".warning").find(".close-button").trigger("click")
         return false
       });
       showWarning("No API key defined", apiKeyInfo, 10000);
@@ -354,8 +354,8 @@ $(function(){
     saveValOpt("wt.activity", aname);
     return cura;
   }
-  $("#activity").click(loadActivities);
-  $("#activity").change(function() {
+  $("#activity").on("click", loadActivities);
+  $("#activity").on("change", function() {
     ga('send', 'event', 'activity', 'change', getCurrentActivityName());
     polystats.setSpeedProfile(getCurrentActivity().speedprofile);
   });
@@ -480,10 +480,10 @@ $(function(){
     editLayer.addLayer(extremities);
     createExtremity("Start", START_MARKER_ICON);
     createExtremity("End", END_MARKER_ICON);
-    setExtrimityVisibility(extMarkers);
+    setExtremityVisibility(extMarkers);
   }
 
-  function setExtrimityVisibility(visible) {
+  function setExtremityVisibility(visible) {
     if (extremities) {
       if (visible && extMarkers && (getTrackLength() > 0)) {
         extremities.addTo(map);
@@ -515,10 +515,10 @@ $(function(){
     }
   }
 
-  $("#extMarkers").change(function(evt){
+  $("#extMarkers").on("change", function(evt){
     extMarkers = !extMarkers;
     storeVal("wt.extMarkers", extMarkers);
-    setExtrimityVisibility(extMarkers);
+    setExtremityVisibility(extMarkers);
   });
 
   function newTrack() {
@@ -781,7 +781,7 @@ $(function(){
           });
         };
 
-        $(richtxtcb).change(function(){
+        $(richtxtcb).on("change", function(){
           if (isChecked(richtxtcb)) {
             setRichDesc();
           } else {
@@ -854,7 +854,7 @@ $(function(){
     return marker;
   }
 
-  $("#wptLabel").change(function(evt){
+  $("#wptLabel").on("change", function(evt){
     wptLabel = !wptLabel;
     storeVal("wt.wptLabel", wptLabel);
     arrayForEach(waypoints.getLayers(), function (idx, wpt) {
@@ -864,7 +864,7 @@ $(function(){
     })
   });
 
-  $("#fwdGuide").change(function(evt){
+  $("#fwdGuide").on("change", function(evt){
     fwdGuide = !fwdGuide;
     storeVal("wt.fwdGuide", fwdGuide);
     updateMapStyle();
@@ -912,7 +912,7 @@ $(function(){
   }
 
   $("#trim-range").on("change", trimTrack);
-  $("#trim-type").change(prepareTrim);
+  $("#trim-type").on("change", prepareTrim);
 
   /* --------------------------------------*/
   // Track display settings
@@ -1097,7 +1097,7 @@ $(function(){
   function resetApiKey(name) {
     setChecked("#" + name + "-chk", false);
     $("#" + name + "-value").val("");
-    $("#" + name + "-chk").change();
+    $("#" + name + "-chk").trigger("change");
   }
 
   $("#keys-reset").on("click", function() {
@@ -1112,7 +1112,7 @@ $(function(){
   });
   updateApiServices();
 
-  $("#apikeys-warn").change(function() {
+  $("#apikeys-warn").on("change", function() {
     changeApikeyNomore(!isChecked("#apikeys-warn"));
   });
 
@@ -1150,21 +1150,21 @@ $(function(){
     return $("#menu").is(":visible");
   }
 
-  $("#menu-close").click(function() {
+  $("#menu-close").on("click", function() {
     closeMenu();
     return false;
   });
-  $("#track-new").click(function() {
+  $("#track-new").on("click", function() {
     ga('send', 'event', 'file', 'new');
     newTrack();
     setEditMode(EDIT_MANUAL_TRACK);
     saveState();
     closeMenu();
   });
-  $("#menu-track").click(function() {
+  $("#menu-track").on("click", function() {
     $(".collapsable-track").toggle();
   });
-  $("#menu-tools").click(function() {
+  $("#menu-tools").on("click", function() {
     $(".collapsable-tools").toggle();
   });
 
@@ -1357,8 +1357,8 @@ $(function(){
   function savetimingChanged() {
     $("#savetimingdate").toggle(isChecked("#savetiming"));
   }
-  $("#savetiming").change(savetimingChanged);
-  $("#savetimingdate input").keyup(function(event) {
+  $("#savetiming").on("change", savetimingChanged);
+  $("#savetimingdate input").on("keyup", function(event) {
     var startStr = $("#savetimingdate input").val();
     if (startStr && !/^([0-2][0-9]{3}-[0-1][0-9]-[0-3][0-9][ T][0-2][0-9]:[0-5][0-9])$/.test(startStr)) {
       $("#savetimingdate input").addClass("invalid");
@@ -1368,7 +1368,7 @@ $(function(){
   });
   savetimingChanged();
 
-  $("#track-download").click(function() {
+  $("#track-download").on("click", function() {
     setEditMode(EDIT_NONE);
     setStatus("Formatting..", { spinner: true });
     var gpx = getTrackGPX(true);
@@ -1429,7 +1429,7 @@ $(function(){
     let segName = getSegmentName()
     let itemName = newitem.find(".item-name")
     itemName.text(segName);
-    itemName.click(editSegmentName);
+    itemName.on("click", editSegmentName);
 
     // color
     let segColorValue = getSegmentColor(segment)
@@ -1438,9 +1438,9 @@ $(function(){
     let segColor = newitem.find(`#segment-color-${i}`)
     colorPicker.fromString(segColorValue)
     segColor.val(segColorValue)
-    segColor.change(updateSgmentColor)
+    segColor.on("change", updateSgmentColor)
 
-    newitem.find(".item-delete").click(() => {
+    newitem.find(".item-delete").on("click",() => {
       if (confirm("Delete " + getSegmentName() + "?")) {
         ga('send', 'event', 'edit', 'delete-segment')
         deleteSegment(segment)
@@ -1502,8 +1502,8 @@ $(function(){
         }
       })
       $("#seg-editor-list").append("<button id='join-segs'>Join Checked Segments</button> <span class='material-icons symbol'>arrow_upward</span>")
-      $("#join-segs").click(joinCheckedSegments)
-      $("#seg-join-check-all").change(()=>{
+      $("#join-segs").on("click", joinCheckedSegments)
+      $("#seg-join-check-all").on("change", ()=>{
         let checked = isChecked($("#seg-join-check-all"))
         setChecked($("#seg-editor-list .seg-join-check"), checked)
       })
@@ -1515,7 +1515,7 @@ $(function(){
   //---------------------------------------------------
   // Share
 
-  $("#track-share").click(function() {
+  $("#track-share").on("click", function() {
     closeMenu();
     $("#wtshare-map-name").text(baseLayer);
     $("#wtshare-ask").show();
@@ -1531,9 +1531,9 @@ $(function(){
   function closeShareBox(){
     $("#wtshare-box").hide();
   }
-  $("#wtshare-box-close").click(closeShareBox);
-  $("#wtshare-cancel").click(closeShareBox);
-  $("#wtshare-ok").click(closeShareBox);
+  $("#wtshare-box-close").on("click", closeShareBox);
+  $("#wtshare-cancel").on("click", closeShareBox);
+  $("#wtshare-ok").on("click", closeShareBox);
 
   function uploadClicked(){
     $("#wtshare-ask").hide();
@@ -1622,9 +1622,9 @@ $(function(){
     return false;
   }
 
-  $("#wtshare-start").click(uploadClicked);
-  $("#wtshare-viewqr").click(showQRCode);
-  $("#wtshare-back").click(hideQRCode);
+  $("#wtshare-start").on("click", uploadClicked);
+  $("#wtshare-viewqr").on("click", showQRCode);
+  $("#wtshare-back").on("click", hideQRCode);
 
   function closeShareBoxOnEscape(event) {
     if (event.which == 27) {
@@ -1632,10 +1632,10 @@ $(function(){
       event.stopPropagation();
     }
   }
-  $("#wtshare-start").keyup(closeShareBoxOnEscape);
-  $("#wtshare-cancel").keyup(closeShareBoxOnEscape);
-  $("#wtshare-val").keyup(closeShareBoxOnEscape);
-  $("#wtshare-ok").keyup(closeShareBoxOnEscape);
+  $("#wtshare-start").on("keyup", closeShareBoxOnEscape);
+  $("#wtshare-cancel").on("keyup", closeShareBoxOnEscape);
+  $("#wtshare-val").on("keyup", closeShareBoxOnEscape);
+  $("#wtshare-ok").on("keyup", closeShareBoxOnEscape);
 
   var sharename = getVal("wt.share", undefined);
   var share = (sharename && pastesLib[sharename]) || pastesLib[Object.keys(pastesLib)[0]];
@@ -1728,7 +1728,7 @@ $(function(){
   }
 
   function enterDragMode() {
-    setExtrimityVisibility(true);
+    setExtremityVisibility(true);
     track.setInteractive(true);
     track.on("dragend", function(e) {
       wasDragged = true;
@@ -1806,10 +1806,10 @@ $(function(){
       // reset mouse pointer
       $("#map").css("cursor", "");
     }
-    setExtrimityVisibility(false);
+    setExtremityVisibility(false);
     switch (mode) {
       case EDIT_NONE:
-        setExtrimityVisibility(true);
+        setExtremityVisibility(true);
         setInactiveSegmentClickable(true);
         break;
       case EDIT_MANUAL_TRACK:
@@ -1844,7 +1844,7 @@ $(function(){
         enterDragMode();
         break;
       case EDIT_MARKER:
-        setExtrimityVisibility(true);
+        setExtremityVisibility(true);
         $("#" + EDIT_MARKER_ID).addClass("control-selected");
         $("#map").css("cursor", "url(img/marker-icon.cur),text");
         $("#map").css("cursor", "url(img/marker-icon.png) 7 25,text");
@@ -1860,7 +1860,7 @@ $(function(){
     $("#edit-tools").toggle(editMode > 0);
   }
 
-  $("#compress").click(function() {
+  $("#compress").on("click", function() {
 
     // get & check input value
     var pruneDistElt = $("#prune-dist");
@@ -2385,7 +2385,7 @@ $(function(){
     var found = false;
     $(".leaflet-control-layers-base .leaflet-control-layers-selector").each(function(idx,elt) {
       if (mapname === elt.nextSibling.innerText.substring(1)) {
-        $(elt).click();
+        $(elt).trigger("click");
         found = true;
         return false; // stop each loop
       }
@@ -2467,7 +2467,7 @@ $(function(){
     removeOpacityControl(e.name);
   });
 
-  $("#autoGrayBaseLayer").change(function(evt){
+  $("#autoGrayBaseLayer").on("change", function(evt){
     autoGrayBaseLayer = !autoGrayBaseLayer;
     storeVal("wt.autoGrayBaseLayer", autoGrayBaseLayer);
     setAutoGrayBaseLayer(null);
@@ -2811,7 +2811,7 @@ $(function(){
           } else if (showLocation == LOC_READY_TO_RECORD) {
             setLocationMode(LOC_RECORDING)
             // create new segment and start edit
-            $("#" + EDIT_ADDSEGMENT_ID).click()
+            $("#" + EDIT_ADDSEGMENT_ID).trigger("click")
           } else if (showLocation == LOC_RECORDING) {
             setEditMode(EDIT_NONE)
             setLocationMode(LOC_NONE)
@@ -2895,13 +2895,14 @@ $(function(){
     return $(".overlay:visible").length;
   }
 
-  $("body").keydown(function(event) {
+  $("body").on("keydown", function(event) {
+    console.debug(`key: which=${event.which}, key=${event.key}, code=${event.code},`)
     // number of currently opened overlays
     nOverlays = openedOverlays();
     // ignore control keys
-    if (event.which == 17) return;
+    if (event.ctrlKey || event.metaKey) return;
     // on escape
-    if ((event.which == 27) && (nOverlays == 1)) {
+    if ((event.key == "Escape") && (nOverlays == 1)) {
       if (isMenuVisible()) {
         // close menu
         closeMenu();
@@ -2915,59 +2916,59 @@ $(function(){
     }
     // ignore if an overlay is open
     if ((nOverlays > 0) || isUserInputOngoing()) return;
-    //console.log("key: ", event.which)
-    switch (event.which) {
-      case 27: // escape - exit edit tool
+    switch (event.key) {
+      case "Escape": // escape - exit edit tool
         if (editMode == EDIT_NONE) {
           openMenu();
         } else {
           setEditMode(EDIT_NONE);
         }
         break;
-      case 69: // 'e' - edit
+      case "e": // 'e' - edit
         if (editMode != EDIT_MANUAL_TRACK) {
-          $("#" + EDIT_MANUAL_ID).click();
+          $("#" + EDIT_MANUAL_ID).trigger("click");
         }
         break;
-        case 65: // 'a' - auto
+      case "a": // 'a' - auto
         if (editMode != EDIT_AUTO_TRACK) {
-          $("#" + EDIT_AUTO_ID).click();
+          $("#" + EDIT_AUTO_ID).trigger("click");
         }
         break;
-      case 110: // '.' - new segment
-        $("#" + EDIT_ADDSEGMENT_ID).click();
+      case ".": // '.' - new segment
+        $("#" + EDIT_ADDSEGMENT_ID).trigger("click");
         break;
-      case 87: // 'w' - waypoint
-        $("#" + EDIT_MARKER_ID).click();
+      case "w": // 'w' - waypoint
+        $("#" + EDIT_MARKER_ID).trigger("click");
         break;
-      case 70: // 'f' - find address
+      case "f": // 'f' - find address
         $(".glass")[0].click();
         return false;
-      case 76: // 'l' - my location
+      case "l": // 'l' - my location
         showLocation = LOC_ONCE;
         gotoMyLocation();
         break;
-      case 77: // 'm' - move/drag
-        $("#" + EDIT_DRAG_ID).click();
+      case "m": // 'm' - move/drag
+        $("#" + EDIT_DRAG_ID).trigger("click");
         break;
-      case 113: // 'F2' - rename
+      case "F2": // 'F2' - rename
         promptTrackName();
         break;
-      case 90: // 'z' - undo
+      case "z": // 'z' - undo
         undo();
         break;
-      case 84: // 't' - Tools
+      case "t": // 't' - Tools
         openMenu("tools");
         openFolder("tools-trkpts")
         break;
-      case 83: // 's' - Segments
+      case "s": // 's' - Segments
         openMenu("tools")
         openFolder("tools-segsedit")
         break;
-      case 188: // '?' - Help
+      case "?": // '?' - Help
         openMenu("about")
         openFolder("about-docs")
         break;
+      default:
     }
   });
 
@@ -2977,7 +2978,7 @@ $(function(){
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_MARKER_ID));
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_ADDSEGMENT_ID));
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_DRAG_ID));
-  $("#" + EDIT_MANUAL_ID).click(function(e) {
+  $("#" + EDIT_MANUAL_ID).on("click", function(e) {
     e.preventDefault();
     if (editMode == EDIT_MANUAL_TRACK) {
       undo();
@@ -2986,7 +2987,7 @@ $(function(){
       setEditMode(EDIT_MANUAL_TRACK);
     }
   });
-  $("#" + EDIT_AUTO_ID).click(function(e) {
+  $("#" + EDIT_AUTO_ID).on("click", function(e) {
     e.preventDefault();
     if (!routerFactory) {
       openApiKeyInfo(true);
@@ -2999,12 +3000,12 @@ $(function(){
       setEditMode(EDIT_AUTO_TRACK);
     }
   });
-  $("#" + EDIT_MARKER_ID).click(function(e) {
+  $("#" + EDIT_MARKER_ID).on("click", function(e) {
     e.preventDefault();
     ga('send', 'event', 'edit', 'marker');
     setEditMode(EDIT_MARKER);
   });
-  $("#" + EDIT_ADDSEGMENT_ID).click(function(e) {
+  $("#" + EDIT_ADDSEGMENT_ID).on("click", function(e) {
     e.preventDefault();
     // shortcut
     if ((editMode == EDIT_MANUAL_TRACK) && getTrackLength() == 0) {
@@ -3019,7 +3020,7 @@ $(function(){
     saveState();
   });
 
-  $("#" + EDIT_DRAG_ID).click(function(e) {
+  $("#" + EDIT_DRAG_ID).on("click", function(e) {
     e.preventDefault();
     setEditMode(EDIT_DRAG);
   });
@@ -3075,7 +3076,7 @@ $(function(){
     return false;
   }
 
-  $("#elevate").click(toolElevate);
+  $("#elevate").on("click", toolElevate);
 
   function toolCleanup(toclean) {
     var count = 0;
@@ -3096,7 +3097,7 @@ $(function(){
     return count;
   }
 
-  $("#cleanup").click(function(e) {
+  $("#cleanup").on("click", function(e) {
     var toclean = [];
     if (isChecked("#cleanupalt")) {
       toclean.push("alt");
@@ -3116,7 +3117,7 @@ $(function(){
     return false;
   });
 
-  $("#revert").click(function(e) {
+  $("#revert").on("click", function(e) {
     var count = 0;
     applySegmentTool(function (segment) {
       var points = segment ? segment.getLatLngs() : undefined;
@@ -3142,7 +3143,7 @@ $(function(){
     return false;
   });
 
-  $(".statistics").click(function(e) {
+  $(".statistics").on("click", function(e) {
     var tag = e.target.tagName.toUpperCase();
     if ((tag !== "SELECT") && (tag !== "OPTION")) {
       toggleElevation(e);
@@ -3303,7 +3304,7 @@ $(function(){
     saveState();
     closeMenu();
     updateExtremities();
-    setExtrimityVisibility(extMarkers);
+    setExtremityVisibility(extMarkers);
     var addedLayers = editLayer.getLayers().length - initLayers;
     if (addedLayers) {
       ga('send', 'event', 'file', 'load-segment', undefined, addedLayers);
@@ -3398,7 +3399,7 @@ $(function(){
     }
     return ext;
   }
-  $("#track-get").click(function() {
+  $("#track-get").on("click", function() {
     var url = $("#track-get-url").val().trim();
     if (!url) {
       $("#track-get-url").focus();
@@ -3415,14 +3416,14 @@ $(function(){
   });
   $("#track-get-url").keypress(function(e) {
     if (e.which == 13) {
-      $("#track-get").click();
+      $("#track-get").trigger("click");
     }
   });
 
-  $("#track-upload").click(function() {
+  $("#track-upload").on("click", function() {
     $("#track-upload").val("");
   });
-  $("#track-upload").change(function() {
+  $("#track-upload").on("change", function() {
     var files = $("#track-upload")[0].files;
     if (files[0]) {
       ga('send', 'event', 'file', 'load-file');
@@ -3471,7 +3472,7 @@ $(function(){
     // see File types below. By default, all extensions are allowed.
     //extensions: ['.gpx', '.json', '.kml', '.geojson'],
   };
-  $("#dropbox-chooser").click(function(e) {
+  $("#dropbox-chooser").on("click", function(e) {
     // Check Dropbox is supported
     if (!Dropbox.isBrowserSupported()){
     alert("Sorry, your browser does not support Dropbox loading");
@@ -3539,13 +3540,13 @@ $(function(){
         ga('send', 'event', 'error', 'Dropbox.save error', error);
     }
   }
-  $("#dbs-ok").click(dropboxSaver);
-  $("#dbs-cancel").click(function(){
+  $("#dbs-ok").on("click", dropboxSaver);
+  $("#dbs-cancel").on("click", function(){
     dropboxSaveOptions.deleteTemp();
     $("#confirm-dropbox").hide();
   });
 
-  $("#dropbox-saver").click(function(e) {
+  $("#dropbox-saver").on("click", function(e) {
     // Check Dropbox is supported
     if (!Dropbox.isBrowserSupported()){
       alert("Sorry, your browser does not support Dropbox saving");
@@ -3728,7 +3729,7 @@ $(function(){
     scaleCtrl.addTo(map);
   }
   updateUnitSystem();
-  $("input:radio[name=unitopt]").change(updateUnitSystem);
+  $("input:radio[name=unitopt]").on("change", updateUnitSystem);
 
   // --------------- Time
 
@@ -4121,7 +4122,7 @@ $(function(){
       .setLatLng(latlng)
       .setContent(getLatLngPopupContent(latlng, deleteTrackPoint, splitfn, gotopt, div))
       .openOn(map);
-    $(".leaflet-popup-close-button").click(function(e) {
+    $(".leaflet-popup-close-button").on("click", function(e) {
       track.editor && track.editor.continueForward();
       return false;
     });
@@ -4200,15 +4201,15 @@ $(function(){
     }
     ga('send', 'event', 'menu', item);
   }
-  $(".tablinks").click(function(event) {
+  $(".tablinks").on("click", function(event) {
     menu(event.currentTarget.id.replace("tab", ""), event);
   });
-  $(".donatebtn").click(function(event) {
+  $(".donatebtn").on("click", function(event) {
     ga('send', 'event', 'menu', 'donate', event.target.id);
   });
 
   if (getValStorage()) {
-    $("#cfgsave").change(function(e) {
+    $("#cfgsave").on("change", function(e) {
       var saveCfg = isChecked("#cfgsave");
       setSaveState(saveCfg);
       setStateSaved(saveCfg);
@@ -4359,7 +4360,7 @@ $(function(){
     "<label for='close-on-click'><div><input type='checkbox' id='close-on-click'> Auto close</div></label>"
   );
   setChecked("#close-on-click", mapsCloseOnClick);
-  $("#close-on-click").change(function (event) {
+  $("#close-on-click").on("change", function (event) {
     mapsCloseOnClick = isChecked("#close-on-click");
     saveValOpt("wt.mapsCloseOnClick", mapsCloseOnClick);
   });
@@ -4367,13 +4368,13 @@ $(function(){
   // Persist joinOnLoad option
   joinOnLoad = getBoolVal("wt.joinOnLoad", false);
   setChecked("#joinonload", joinOnLoad);
-  $("#joinonload").change(function(e) {
+  $("#joinonload").on("change", function(e) {
     joinOnLoad = isChecked("#joinonload");
     saveValOpt("wt.joinOnLoad", joinOnLoad);
   });
 
   // ready
-  $("#menu-button").click(function() {
+  $("#menu-button").on("click", function() {
     if (isMenuVisible()) {
       closeMenu();
     } else {
