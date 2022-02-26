@@ -3775,8 +3775,13 @@ $(function(){
     var trackStart = track.getLatLngs()[0];
     if (latlng.time && trackStart.time) {
       data = L.DomUtil.create('div', "popupdiv", div);
-      data.innerHTML = "<span class='popupfield'>Rec. time:</span> " +
-      time2txt((new Date(latlng.time) - new Date(trackStart.time))/1000);
+      data.innerHTML = "<span class='popupfield'>Rec. time:</span> <span class='rec-time-rel rec-time'>"
+      + time2txt((new Date(latlng.time) - new Date(trackStart.time))/1000)
+      + "</span><span class='rec-time-abs rec-time'>" + new Date(latlng.time).toLocaleString()
+      + "</span>";
+      $(data).find(".rec-time").on("click", (event) => {
+        $(event.currentTarget.parentElement).find(".rec-time").toggle()
+      })
     }
     return div;
 
