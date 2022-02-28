@@ -2338,13 +2338,16 @@ $(function(){
 
   // ----------------------
 
-  var initialLayer = baseLayers[baseLayer] || baseLayers[config.display.map];
+  // set baseLayer to default if previous is missing
+  baseLayers[baseLayer] || (baseLayer = config.display.map)
+  var initialLayer = baseLayers[baseLayer]
   if (!initialLayer) {
     //var availableLayerNames = "";
     objectForEach(baseLayers, function(name) {
       //availableLayerNames += name + "; ";
       if (!initialLayer) {
         initialLayer = baseLayers[name]; // use first one
+        baseLayer = name
         return true;
       }
     });
