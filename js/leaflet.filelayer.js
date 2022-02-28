@@ -215,12 +215,10 @@
             // Format is either 'gpx' or 'kml'
             if (typeof content === 'string') {
                 var domparser = new DOMParser();
-                // get error NS for current browser
-                var parsererrorNS = domparser.parseFromString('INVALID', 'text/xml').getElementsByTagName("parsererror")[0].namespaceURI;
                 // parse input
                 content = domparser.parseFromString(content, 'text/xml');
-                // check if result is error NS
-                if(content.getElementsByTagNameNS(parsererrorNS, 'parsererror').length > 0) {
+                // check if result has error element
+                if (content.querySelector('parsererror')) {
                     throw new Error('Error parsing XML');
                 }
             }
