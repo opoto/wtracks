@@ -23,12 +23,13 @@ function setMapItemVisibility(elt, props) {
 
 function addMymapsItem(name, props, addHandlers) {
   var mymapbtns = "",
-    mymapclass = "";
+    mymapclass = "",
+    inList = config.maps;
   if (props.in == MAP_MY) {
     mymapbtns = MYMAPS_BTNS;
     mymapclass = " mymap-name";
+    inList = mymaps
   }
-  var inList = props.in == MAP_MY ? mymaps : config.maps;
   var mapv = inList[name];
 
   var mapitem = "<li><span class='list-item'>";
@@ -500,7 +501,7 @@ function readImportMymaps(event) {
       objectForEach(importedMymaps, function(name, value) {
         var id = "import-i" + i++;
         var limap = "<tr><td><input id='" + id  + "' type='checkbox' checked='checked'/></td>";
-        limap += "<td><label for='" + id + "'><span>" ;
+        limap += "<td><label for='" + id + "'><span translate='no' class='notranslate'>";
         var count = 0;
         var ext = "";
         while (true) {
