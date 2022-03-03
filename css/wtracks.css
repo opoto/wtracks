@@ -724,7 +724,7 @@ div.trumbowyg-editor {
 #segs-check-all-label {
   margin-left: 92px;
 }
-#segments-list button.jscolor {
+#segments-list button {
   height: 18px;
   margin: 0;
   padding-top: 0;

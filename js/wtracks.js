@@ -1400,9 +1400,10 @@ $(function(){
 
     function editSegmentName() {
       let newName = prompt("Enter track name:", getSegmentName())
+      newName = newName ? newName.trim() : false
       if (newName) {
-        segment.name = newName.trim()
-        itemName.text(segment.name)
+        segment.name = newName
+        itemName.text(newName)
       }
     }
 
@@ -1419,7 +1420,7 @@ $(function(){
     segItem += "<i class='material-icons item-drag notranslate' title='Drag to reorder'>drag_indicator</i> ";
     segItem += "<span class='item-name notranslate' 'translate'='no'></span> ";
     segItem += "<input type='checkbox' class='seg-join-check'/>"
-    segItem += `<button class='material-icons symbol setting-value item-color-picker-${i} jscolor' data-jscolor='{"valueElement":"segment-color-${i}", "hash":true, "zIndex":10001, "closable":true}'>colorize</button> <input id='segment-color-${i}' class='hidden'/>`
+    segItem += `<button class='material-icons symbol setting-value item-color-picker-${i}' data-jscolor='{"valueElement":"segment-color-${i}", "hash":true, "zIndex":10001, "closable":true}'>colorize</button> <input id='segment-color-${i}' class='hidden'/>`
     segItem += "<i class='material-icons item-delete notranslate' 'translate'='no' title='Delete'>delete</i> ";
     segItem += "</span></li>";
     $("#segments-list").append(segItem)
