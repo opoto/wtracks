@@ -1436,6 +1436,8 @@ $(function(){
     let segColorValue = getSegmentColor(segment)
     jscolor.installByClassName(`item-color-picker-${i}`)
     let colorPickerButton = newitem.find(`.item-color-picker-${i}`)[0]
+    let colorPicker
+    let segColor
     if (!colorPickerButton) {
       onerror("ColorPickerButton missing", {
         "i" : i,
@@ -1444,8 +1446,8 @@ $(function(){
         "jscolor.lookupClass" : jscolor.lookupClass
       })
     } else {
-      let colorPicker = newitem.find(`.item-color-picker-${i}`)[0].jscolor
-      let segColor = newitem.find(`#segment-color-${i}`)
+      colorPicker = newitem.find(`.item-color-picker-${i}`)[0].jscolor
+      segColor = newitem.find(`#segment-color-${i}`)
       colorPicker.fromString(segColorValue)
       segColor.val(segColorValue)
       segColor.on("change", updateSgmentColor)
