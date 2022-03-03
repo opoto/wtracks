@@ -1435,11 +1435,21 @@ $(function(){
     // color
     let segColorValue = getSegmentColor(segment)
     jscolor.installByClassName(`item-color-picker-${i}`)
-    let colorPicker = newitem.find(`.item-color-picker-${i}`)[0].jscolor
-    let segColor = newitem.find(`#segment-color-${i}`)
-    colorPicker.fromString(segColorValue)
-    segColor.val(segColorValue)
-    segColor.on("change", updateSgmentColor)
+    let colorPickerButton = newitem.find(`.item-color-picker-${i}`)[0]
+    if (!colorPickerButton) {
+      onerror("ColorPickerButton missing", {
+        "i" : i,
+        "segItem" : segItem,
+        "newItem" : newitem.html(),
+        "jscolor.lookupClass" : jscolor.lookupClass
+      })
+    } else {
+      let colorPicker = newitem.find(`.item-color-picker-${i}`)[0].jscolor
+      let segColor = newitem.find(`#segment-color-${i}`)
+      colorPicker.fromString(segColorValue)
+      segColor.val(segColorValue)
+      segColor.on("change", updateSgmentColor)
+    }
 
     newitem.find(".item-delete").on("click",() => {
       if (confirm("Delete " + getSegmentName() + "?")) {
