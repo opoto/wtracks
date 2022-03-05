@@ -404,7 +404,7 @@ $(function(){
     }
   }
   function checkToolsAllSegments() {
-    enableInput(isChecked("#allsegments"), "#trim-type, #trim-range")
+    enableInput(!isChecked("#allsegments"), "#trim-type, #trim-range")
   }
   $("#allsegments").on("change", checkToolsAllSegments)
 
