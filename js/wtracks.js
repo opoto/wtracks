@@ -402,6 +402,16 @@ $(function(){
       toolFunc(track);
     }
   }
+  function checkToolsAllSegments() {
+    if (isChecked("#allsegments")) {
+      $("#trim-type").attr("disabled", "disabled");
+      $("#trim-range").attr("disabled", "disabled");
+    } else {
+      $("#trim-type").removeAttr("disabled");
+      $("#trim-range").removeAttr("disabled");
+    }
+  }
+  $("#allsegments").on("change", checkToolsAllSegments)
 
   /* ------------------------------------------------------------*/
 
@@ -1144,6 +1154,7 @@ $(function(){
       && track.getLatLngs()[0].time) {
         $("#savetimingdate input").val(track.getLatLngs()[0].time.substring(0,16));
     }
+    checkToolsAllSegments()
     openSegmentsEditor()
   }
   function isMenuVisible() {
