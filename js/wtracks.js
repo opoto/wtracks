@@ -1155,6 +1155,7 @@ $(function(){
         $("#savetimingdate input").val(track.getLatLngs()[0].time.substring(0,16));
     }
     checkToolsAllSegments()
+    checkPruneKeepOpts()
     openSegmentsEditor()
   }
   function isMenuVisible() {
@@ -1886,6 +1887,18 @@ $(function(){
 
   $("#compress").on("click", function() {
 
+    function getKeepOpt(selOpt, valOpt) {
+      let value = undefined
+      if (isChecked(selOpt)) {
+        try {
+          value = parseFloat($(valOpt).val().trim())
+        } catch (e) {
+        }
+        $(valOpt).val(value)
+      }
+      return value
+    }
+
     // get & check input value
     var pruneDistElt = $("#prune-dist");
     var input = pruneDistElt.val().trim();
@@ -1900,15 +1913,8 @@ $(function(){
       return;
     }
 
-    try {
-      pruneMaxDist = parseFloat($("#prune-max-dist").val().trim())
-      pruneMaxTime = parseFloat($("#prune-max-time").val().trim())
-    } catch (e) {
-      pruneMaxDist = undefined
-      pruneMaxTime = undefined
-    }
-    $("#prune-max-dist").val(pruneMaxDist)
-    $("#prune-max-time").val(pruneMaxTime)
+    let pruneMaxDist = getKeepOpt("#prune-dist-opt", "#prune-max-dist")
+    let pruneMaxTime = getKeepOpt("#prune-time-opt", "#prune-max-time")
 
     if (isImperial()) {
       pruneDist *= 0.9144
@@ -1954,7 +1960,20 @@ $(function(){
       }
 
     }
-  });
+  })
+  function checkPruneKeepOpts() {
+    if (isChecked("#prune-time-opt")) {
+      $("#prune-max-time").removeAttr("disabled")
+    } else {
+      $("#prune-max-time").attr("disabled", "disabled")
+    }
+    if (isChecked("#prune-dist-opt")) {
+      $("#prune-max-dist").removeAttr("disabled")
+    } else {
+      $("#prune-max-dist").attr("disabled", "disabled")
+    }
+  }
+  $("#prune-time-opt, #prune-dist-opt").on("change", checkPruneKeepOpts)
 
   // if uids is present, it contains the list of segment uids to join
   function joinSegments(uids) {

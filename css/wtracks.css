@@ -112,9 +112,9 @@ body {
   padding: 5px;
   max-width: 550px;
 }
-/*#menu td label {
-  font-size: 10pt;
-}*/
+#menu td label {
+  display: inline-block;
+}
 #menu tx:first-child {
   border-top: 0;
 }
