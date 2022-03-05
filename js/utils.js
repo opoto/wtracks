@@ -96,7 +96,7 @@ function noTranslate(selector) {
     $(selector).attr("translate", "no");
 }
 
-/* ------------------ Drop down menu utils -------------------- */
+/* ------------------ Html utils -------------------- */
 
 // add a drop down menu item
 function addSelectOption(select, optval, optdisplay) {
@@ -126,6 +126,15 @@ function isChecked(selector) {
 function setChecked(selector, val) {
   $(selector).prop('checked', val === true);
 }
+
+function enableInput(condition, inputSelector) {
+  if (condition) {
+    $(inputSelector).removeAttr("disabled")
+  } else {
+    $(inputSelector).attr("disabled", "disabled")
+  }
+}
+
 /* ----------------------- Local storage -------------------------- */
 
 var valStorage = undefined
@@ -475,6 +484,10 @@ function arrayForEach(array, func) {
       }
     }
   }
+}
+
+function arrayLast(array) {
+  return array.slice(-1)[0]
 }
 
 /* ---------------------- Start service worker ------------------------ */

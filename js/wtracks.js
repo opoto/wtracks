@@ -357,7 +357,8 @@ $(function(){
   $("#activity").on("click", loadActivities);
   $("#activity").on("change", function() {
     ga('send', 'event', 'activity', 'change', getCurrentActivityName());
-    polystats.setSpeedProfile(getCurrentActivity().speedprofile);
+    polystats.setSpeedProfile(getCurrentActivity().speedprofile)
+    initSaveTimeProfiles()
   });
 
   /* ------------------------------------------------------------*/
@@ -403,13 +404,7 @@ $(function(){
     }
   }
   function checkToolsAllSegments() {
-    if (isChecked("#allsegments")) {
-      $("#trim-type").attr("disabled", "disabled");
-      $("#trim-range").attr("disabled", "disabled");
-    } else {
-      $("#trim-type").removeAttr("disabled");
-      $("#trim-range").removeAttr("disabled");
-    }
+    enableInput(isChecked("#allsegments"), "#trim-type, #trim-range")
   }
   $("#allsegments").on("change", checkToolsAllSegments)
 
@@ -1149,11 +1144,12 @@ $(function(){
     $("#prune-max-dist").val(pruneMaxDist);
     $("#prune-max-time").val(pruneMaxTime);
     menu(tab ? tab : "file");
-    if (($("#savetimingdate input").val() == "")
+    if (($("#save-time-from").val() == "")
       && (getTrackLength() > 0)
       && track.getLatLngs()[0].time) {
-        $("#savetimingdate input").val(track.getLatLngs()[0].time.substring(0,16));
+        $("#save-time-from").val(track.getLatLngs()[0].time.substring(0,16));
     }
+    initSaveTimeProfiles()
     checkToolsAllSegments()
     checkPruneKeepOpts()
     openSegmentsEditor()
@@ -1210,7 +1206,7 @@ $(function(){
     return gpx;
   }
 
-  function getSegmentGPX(segment, ptindent, pttag, startdate) {
+  function getSegmentGPX(segment, ptindent, pttag) {
     var gpx = "";
     var latlngs = segment ? segment.getLatLngs() : undefined;
     if (latlngs && latlngs.length > 0) {
@@ -1218,16 +1214,6 @@ $(function(){
       while (j < latlngs.length) {
         var pt = latlngs[j];
         var time = pt.time;
-        try {
-          if (startdate && Date.prototype.toISOString && !isUndefined(pt.chrono)) {
-            time = new Date(startdate + (pt.chrono * 1000)).toISOString();
-          }
-        } catch (error) {
-          onerror('Failed to build ISO time', {
-            "Error": error,
-            "Chrono": pt.chrono
-          });
-        }
         gpx += LatLngToGPX(ptindent, pt, pttag, { 'time': time, 'ext' : pt.ext });
         j++;
       }
@@ -1235,23 +1221,9 @@ $(function(){
     return gpx;
   }
 
-  function getGPX(trackname, savealt, savetime, asroute, nometadata) {
+  function getGPX(trackname, savealt, asroute, nometadata) {
 
     var startdate = new Date();
-    if (savetime) {
-      // get track's start date from user input
-      var startStr = $("#savetimingdate input").val().trim().replace(" ", "T");
-      if (startStr) try {
-        // browser uses text input, parse it
-        var b = startStr.split(/\D/);
-        startdate = new Date(b[0], b[1]-1, b[2], b[3], b[4]);
-        startdate.toISOString(); // make sure it works
-      } catch(err) {
-        // use current date in case of error
-        error("Invalid start date: " + startStr + ". Using current date");
-        startdate = new Date();
-      }
-    }
     var xmlname = "<name>" + htmlEncode(trackname) + "</name>";
     var gpx = '<\?xml version="1.0" encoding="UTF-8" standalone="no" \?>\n';
     gpx += '<gpx creator="' + config.appname + '"\n';
@@ -1330,18 +1302,11 @@ $(function(){
       if (segtag) {
         gpx += "  <" + segtag + ">\n"
       }
-      gpx += getSegmentGPX(segment, ptindent, pttag, savetime ? startdate : undefined);
+      gpx += getSegmentGPX(segment, ptindent, pttag);
       if (segtag) {
         gpx += "  </" + segtag + ">\n";
       }
       gpx += "</" + wraptag + ">"
-      if (savetime) {
-        var lastPt = segment.getLatLngs().slice(-1)[0];
-        if (lastPt && !isUndefined(lastPt.chrono)) {
-          // start date of next segment (if any) is the end of current segment
-          startdate = new Date(startdate + (lastPt.chrono * 1000)).getTime();
-        }
-      }
     });
     segmentClickListener({ target: selectedSegment }, true);
 
@@ -1361,24 +1326,94 @@ $(function(){
   function getTrackGPX(doConfirmName) {
     var asroute = isChecked("#as-route");
     var nometadata = isChecked("#nometadata");
-    var savetime = isChecked("#savetiming");
     var trackname = doConfirmName ? getConfirmedTrackName() : getTrackName();
-    return getGPX(trackname, /*savealt*/ false, savetime, asroute, nometadata);
+    return getGPX(trackname, /*savealt*/ false, asroute, nometadata);
   }
 
-  function savetimingChanged() {
-    $("#savetimingdate").toggle(isChecked("#savetiming"));
-  }
-  $("#savetiming").on("change", savetimingChanged);
-  $("#savetimingdate input").on("keyup", function(event) {
-    var startStr = $("#savetimingdate input").val();
-    if (startStr && !/^([0-2][0-9]{3}-[0-1][0-9]-[0-3][0-9][ T][0-2][0-9]:[0-5][0-9])$/.test(startStr)) {
-      $("#savetimingdate input").addClass("invalid");
-    } else {
-      $("#savetimingdate input").removeClass("invalid");
+  function getDate(jqDate, mandatory) {
+
+    function invalidDate(msg) {
+      jqDate.addClass("invalid")
+      jqDate.focus()
+      throw msg
     }
-  });
-  savetimingChanged();
+
+    let dateStr = jqDate.val().trim().replace(" ", "T")
+    if (mandatory && !dateStr) {
+      invalidDate("Missing date")
+    }
+
+    let date
+    if (dateStr) try {
+        var b = dateStr.split(/\D/);
+        date = new Date(b[0], b[1]-1, b[2], b[3], b[4]);
+        date.toISOString() // make sure it works
+        jqDate.removeClass("invalid")
+      } catch(err) {
+      invalidDate("Invalid date: " + dateStr)
+    }
+
+    return date
+  }
+
+  const SAVE_TIME_TO = "_to_"
+  function initSaveTimeProfiles() {
+
+    function checkSaveTimeProfile() {
+      let selected = getSelectedOption("#save-time-profile")
+      enableInput(selected == SAVE_TIME_TO, "#save-time-to")
+    }
+
+    $("#save-time-profile").empty()
+    $("#save-time-profile").off("change")
+    let profiles = $("#save-time-profile")[0]
+    addSelectOption(profiles, getCurrentActivityName())
+    addSelectOption(profiles, SAVE_TIME_TO, "To date:")
+    checkSaveTimeProfile()
+
+    $("#save-time-profile").on("change", checkSaveTimeProfile)
+  }
+
+  $("#save-time").on("click", () => {
+
+    if (track) {
+
+      let profile = getSelectedOption("#save-time-profile")
+      let from = getDate($("#save-time-from"), true)
+      let to, duration
+      let distance = 0
+      if (profile == SAVE_TIME_TO) {
+        to = getDate($("#save-time-to"), true)
+        duration = to.getTime() - from.getTime()
+        applySegmentTool(function (segment) {
+          distance += arrayLast(segment.getLatLngs()).dist
+        })
+      }
+
+      let lastSegTime
+      let lastSegDist = 0
+      applySegmentTool(function (segment) {
+        const pts = segment.getLatLngs()
+        arrayForEach(pts, (idx, pt) => {
+          if (profile == SAVE_TIME_TO) {
+            const relDist = (lastSegDist + pt.dist) / distance
+            lastSegTime = new Date(from.getTime() + (duration * relDist))
+            pt.time = lastSegTime.toISOString()
+          } else {
+            if (!isUndefined(pt.chrono)) {
+              lastSegTime = new Date(from.getTime() + (pt.chrono * 1000))
+              pt.time = lastSegTime.toISOString()
+            }
+          }
+        })
+        lastSegDist += arrayLast(segment.getLatLngs()).dist
+        // last segment time is the start of the next segment
+        from = lastSegTime
+      })
+    }
+
+    closeMenu()
+  })
 
   $("#track-download").on("click", function() {
     setEditMode(EDIT_NONE);
@@ -1962,16 +1997,8 @@ $(function(){
     }
   })
   function checkPruneKeepOpts() {
-    if (isChecked("#prune-time-opt")) {
-      $("#prune-max-time").removeAttr("disabled")
-    } else {
-      $("#prune-max-time").attr("disabled", "disabled")
-    }
-    if (isChecked("#prune-dist-opt")) {
-      $("#prune-max-dist").removeAttr("disabled")
-    } else {
-      $("#prune-max-dist").attr("disabled", "disabled")
-    }
+    enableInput(isChecked("#prune-time-opt"), "#prune-max-time")
+    enableInput(isChecked("#prune-dist-opt"), "#prune-max-dist")
   }
   $("#prune-time-opt, #prune-dist-opt").on("change", checkPruneKeepOpts)
 
@@ -2183,7 +2210,7 @@ $(function(){
     });
     // Don't save if more than 1500 points
     if (numPts < 1500) {
-      var gpx = getGPX(trackname, /*savealt*/ false, /*savetime*/ false, /*asroute*/ false, /*nometadata*/ false);
+      var gpx = getGPX(trackname, /*savealt*/ false, /*asroute*/ false, /*nometadata*/ false);
       saveValOpt("wt.gpx", gpx);
     }
   }
