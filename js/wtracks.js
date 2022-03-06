@@ -1153,6 +1153,7 @@ $(function(){
     checkToolsAllSegments()
     checkPruneKeepOpts()
     openSegmentsEditor()
+    initServiceWorkerSetting()
   }
   function isMenuVisible() {
     return $("#menu").is(":visible");
@@ -2237,6 +2238,7 @@ $(function(){
     saveValOpt("wt.ovlTrackColor", ovlTrackColor);
     saveValOpt("wt.ovlTrackWeight", ovlTrackWeight);
     saveValOpt("wt.lengthUnit", lengthUnit);
+    saveValOpt("wt.useServiceWorker", useServiceWorker);
     saveValOpt("wt.trackColor", trackColor);
     saveValOpt("wt.trackWeight", trackWeight);
     saveValOpt("wt.pruneDist", pruneDist);
@@ -3786,6 +3788,17 @@ $(function(){
     dist = Math.round(dist * roundFactor) / roundFactor;
     return noUnits ? dist : dist + unitSpan(true, unit, false);
   }
+
+  // ------------ Manage Service Worker
+
+  function initServiceWorkerSetting() {
+    setChecked("#use-service-worker", useServiceWorker)
+  }
+  $("#use-service-worker").on("change", ()=>{
+    useServiceWorker = isChecked("#use-service-worker")
+    saveValOpt("wt.useServiceWorker", useServiceWorker)
+    initServiceWorker(true)
+  })
 
   // ------------ Scale control and unit toggling
 

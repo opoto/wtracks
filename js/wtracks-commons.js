@@ -2,6 +2,34 @@ if (config.google && config.google.analyticsid) {
   initGoogleAnalytics(config.google.analyticsid());
 }
 
+/* ---------------------- Start service worker ------------------------ */
+
+let useServiceWorker = getVal("wt.useServiceWorker", config.useServiceWorker)
+function initServiceWorker(isLoaded) {
+  function registerSW() {
+    navigator.serviceWorker.register('./service-worker.js')
+  }
+  if ('serviceWorker' in navigator) {
+    if (useServiceWorker) {
+      if (isLoaded) {
+        registerSW()
+      } else {
+        // Use the window load event to keep the page load performant
+        window.addEventListener('load', function() {
+          registerSW()
+        })
+      }
+    } else {
+      navigator.serviceWorker.getRegistrations().then((regs)=>{
+        regs.forEach(reg => {
+          reg.unregister()
+        })
+      })
+    }
+  }
+}
+initServiceWorker()
+
 function saveValOpt(name, val) {
   if (config.saveprefs() && isStateSaved()) {
     storeVal(name, val);

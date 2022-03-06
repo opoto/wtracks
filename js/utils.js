@@ -490,15 +490,6 @@ function arrayLast(array) {
   return array.slice(-1)[0]
 }
 
-/* ---------------------- Start service worker ------------------------ */
-
-if ('serviceWorker' in navigator) {
-  // Use the window load event to keep the page load performant
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('./service-worker.js');
-  });
-}
-
 /* ---------------------- track errors ------------------------ */
 var errors = [];
 

@@ -598,7 +598,24 @@
           <div>
             <span class="fold fold-settings-closed material-icons" id="settings-unitstg-closed">keyboard_arrow_right</span>
             <span class="fold-settings unitstg material-icons" id="unitstg2">keyboard_arrow_down</span>
-            <span  class="fold fold-link fold-settings" id="settings-unitstg">Unit of length</span>
+            <span  class="fold fold-link fold-settings" id="settings-unitstg">Other</span>
+          </div>
+        </td>
+      </tr>
+      <tr class="notopborder fold-settings unitstg">
+        <td>
+        </td>
+        <td>
+          <div>
+            <span class="setting-names">Unit of length:</span>
+            <label>
+              <input type="radio" value="0" name="unitopt"/>
+              Metric
+            </label>
+            <label>
+              <input type="radio" value="1" name="unitopt"/>
+              Imperial
+            </label>
             <span id="unittxt" class="help-b material-icons" title="Help">help_outline</span>
             <p id="unittxt-help" class="help-p">
               Choose between imperial and metric unit of length.
@@ -611,14 +628,15 @@
         </td>
         <td>
           <div>
+            <span class="setting-names">Offline cache:</span>
             <label>
-              <input type="radio" value="0" name="unitopt"/>
-              Metric
+              <input type="checkbox" id="use-service-worker"/>
+              (experimental)
             </label>
-            <label>
-              <input type="radio" value="1" name="unitopt"/>
-              Imperial
-            </label>
+            <span id="swtxt" class="help-b material-icons" title="Help">help_outline</span>
+            <p id="swtxt-help" class="help-p">
+              Activate service worker to use offline cache.
+            </p>
           </div>
         </td>
       </tr>
