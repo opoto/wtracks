@@ -4,7 +4,7 @@ if (config.google && config.google.analyticsid) {
 
 /* ---------------------- Start service worker ------------------------ */
 
-let useServiceWorker = getVal("wt.useServiceWorker", config.useServiceWorker)
+let useServiceWorker = getBoolVal("wt.useServiceWorker", config.useServiceWorker)
 function initServiceWorker(isLoaded) {
   function registerSW() {
     navigator.serviceWorker.register('./service-worker.js')
