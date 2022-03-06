@@ -1425,6 +1425,59 @@ $(function(){
     closeMenu()
   })
 
+  $("#shift-time").on("click", () => {
+
+    if (track && (track.getLatLngs().length > 0)) {
+
+      let profile = getSelectedOption("#shift-time-unit")
+      let byUnit
+      let byMs
+      try {
+        byUnit = parseFloat($("#shift-time-by").val().trim())
+        switch (profile) {
+          case "day":
+            byMs = byUnit * 24 * 3600000
+            break;
+          case "hour":
+            byMs = byUnit * 3600000
+            break;
+          case "minute":
+            byMs = byUnit * 60000
+            break;
+          case "second":
+            byMs = byUnit * 1000
+            break;
+        }
+        $("#shift-time-by").removeClass("invalid")
+      } catch (error) {
+        showWarning("Error", error)
+        $("#shift-time-by").addClass("invalid")
+        return
+      }
+
+      let nbErr = 0
+      applySegmentTool(function (segment) {
+        const pts = segment.getLatLngs()
+        arrayForEach(pts, (idx, pt) => {
+          if (pt.time) {
+            try {
+              let oldTime = new Date(pt.time)
+              let newTime = new Date(oldTime.getTime() + byMs)
+              pt.time = newTime.toISOString()
+            } catch (error) {
+              nbErr++
+            }
+          }
+        })
+      })
+      if (nbErr) {
+        console.error(nbErr, "points could not be moved because of invalid date format")
+      }
+    }
+
+    closeMenu()
+  })
+
   $("#track-download").on("click", function() {
     setEditMode(EDIT_NONE);
     setStatus("Formatting..", { spinner: true });

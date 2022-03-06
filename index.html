@@ -339,6 +339,25 @@
       </tr>
       <tr class="fold-tools trkpts">
         <td>
+          <button id="shift-time" class="no-trim">Shift Time*</button>
+        </td>
+        <td>
+          By
+          <input id="shift-time-by" type="number" size="4" />
+          <select id="shift-time-unit">
+            <option value="day">Day(s)</option>
+            <option value="hour">Hour(s)</option>
+            <option value="minute">Minute(s)</option>
+            <option value="second">Second(s)</option>
+          </select>
+          <span id="shifttimingtxt" class="help-b material-icons" title="Help">help_outline</span>
+          <p id="shifttimingtxt-help" class="help-p">
+            Shifts each point's recorded time in selected segment(s)
+          </p>
+        </td>
+      </tr>
+      <tr class="fold-tools trkpts">
+        <td>
           <button id="cleanup" class="no-trim">Clean-up*</button>
         </td>
         <td>
