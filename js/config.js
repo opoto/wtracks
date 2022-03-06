@@ -20,7 +20,8 @@ var config = {
     ovlTrackWeight: 3,
     fwdGuide: true,
     wptLabel: true,
-    extMarkers: true
+    extMarkers: true,
+    recTimeAbs: false
   },
   maxfilesize: 1024 * 1024, // 1GB
   elevationTimeout: 5000,

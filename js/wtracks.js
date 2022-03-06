@@ -2240,6 +2240,7 @@ $(function(){
     saveValOpt("wt.wptLabel", wptLabel);
     saveValOpt("wt.extMarkers", extMarkers);
     saveValOpt("wt.autoGrayBaseLayer", autoGrayBaseLayer);
+    saveValOpt("wt.recTimeAbs", recTimeAbs);
   }
 
   function saveStateFile() {
@@ -3832,6 +3833,8 @@ $(function(){
 
   // ---------------- Popups
 
+  let recTimeAbs = getVal("wt.recTimeAbs", config.display.recTimeAbs);
+
   function getTrackPointPopupContent(latlng) {
     var div = L.DomUtil.create('div', "popupdiv"),
       data;
@@ -3850,11 +3853,17 @@ $(function(){
       data = L.DomUtil.create('div', "popupdiv", div);
       data.innerHTML = "<span class='popupfield'>Rec. time:</span> <span class='rec-time-rel rec-time'>"
       + time2txt((new Date(latlng.time) - new Date(trackStart.time))/1000)
-      + "</span><span class='rec-time-abs rec-time'>" + new Date(latlng.time).toLocaleString()
+      + "</span><span class='rec-time-abs rec-time' style='display:none;'>" + new Date(latlng.time).toLocaleString()
       + "</span>";
-      $(data).find(".rec-time").on("click", (event) => {
-        $(event.currentTarget.parentElement).find(".rec-time").toggle()
+      const recTime = $(data).find(".rec-time")
+      recTime.on("click", (event) => {
+        recTime.toggle()
+        recTimeAbs = !recTimeAbs
+        saveValOpt("wt.recTimeAbs", recTimeAbs)
       })
+      if (recTimeAbs) {
+        recTime.toggle()
+      }
     }
     return div;
 
