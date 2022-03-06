@@ -1345,11 +1345,11 @@ $(function(){
 
     let date
     if (dateStr) try {
-        var b = dateStr.split(/\D/);
-        date = new Date(b[0], b[1]-1, b[2], b[3], b[4]);
-        date.toISOString() // make sure it works
-        jqDate.removeClass("invalid")
-      } catch(err) {
+      var b = dateStr.split(/\D/);
+      date = new Date(b[0], b[1]-1, b[2], b[3], b[4]);
+      date.toISOString() // make sure it works
+      jqDate.removeClass("invalid")
+    } catch(err) {
       invalidDate("Invalid date: " + dateStr)
     }
 
@@ -1362,6 +1362,9 @@ $(function(){
     function checkSaveTimeProfile() {
       let selected = getSelectedOption("#save-time-profile")
       enableInput(selected == SAVE_TIME_TO, "#save-time-to")
+      if (selected != SAVE_TIME_TO) {
+        $("#save-time-to").removeClass("invalid")
+      }
     }
 
     $("#save-time-profile").empty()
@@ -1376,18 +1379,24 @@ $(function(){
 
   $("#save-time").on("click", () => {
 
-    if (track) {
+    if (track && (track.getLatLngs().length > 0)) {
 
       let profile = getSelectedOption("#save-time-profile")
-      let from = getDate($("#save-time-from"), true)
+      let from
       let to, duration
       let distance = 0
-      if (profile == SAVE_TIME_TO) {
-        to = getDate($("#save-time-to"), true)
-        duration = to.getTime() - from.getTime()
-        applySegmentTool(function (segment) {
-          distance += arrayLast(segment.getLatLngs()).dist
-        })
+      try {
+        from = getDate($("#save-time-from"), true)
+        if (profile == SAVE_TIME_TO) {
+          to = getDate($("#save-time-to"), true)
+          duration = to.getTime() - from.getTime()
+          applySegmentTool(function (segment) {
+            distance += arrayLast(segment.getLatLngs()).dist
+          })
+        }
+      } catch (error) {
+        showWarning("Error", error)
+        return
       }
 
       let lastSegTime
