@@ -1147,7 +1147,12 @@ $(function(){
     if (($("#save-time-from").val() == "")
       && (getTrackLength() > 0)
       && track.getLatLngs()[0].time) {
-        $("#save-time-from").val(track.getLatLngs()[0].time.substring(0,16));
+        // get point's recorded time
+        const d = new Date(track.getLatLngs()[0].time)
+        // get its local value in "normalized" format
+        v=d.getFullYear() + "-" + ("0" + (d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2) + "T" + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2)
+        // set input value
+        $("#save-time-from").val(v)
     }
     initSaveTimeProfiles()
     checkToolsAllSegments()
