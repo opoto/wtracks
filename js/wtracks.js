@@ -1149,8 +1149,8 @@ $(function(){
       && track.getLatLngs()[0].time) {
         // get point's recorded time
         const d = new Date(track.getLatLngs()[0].time)
-        // get its local value in "normalized" format
-        v=d.getFullYear() + "-" + ("0" + (d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2) + "T" + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2)
+        // get this time in local value in "normalized" format
+        const v=d.getFullYear() + "-" + ("0" + (d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2) + "T" + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2)
         // set input value
         $("#save-time-from").val(v)
     }
