@@ -1425,6 +1425,9 @@ $(function(){
         // last segment time is the start of the next segment
         from = lastSegTime
       })
+      ga('send', 'event', 'tool', 'save-time');
+      saveState();
+
     }
 
     closeMenu()
@@ -1478,6 +1481,8 @@ $(function(){
       if (nbErr) {
         console.error(nbErr, "points could not be moved because of invalid date format")
       }
+      ga('send', 'event', 'tool', 'shift-time');
+      saveState();
     }
 
     closeMenu()
