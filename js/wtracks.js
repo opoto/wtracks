@@ -1376,9 +1376,18 @@ $(function(){
     $("#save-time-profile").empty()
     $("#save-time-profile").off("change")
     let profiles = $("#save-time-profile")[0]
-    addSelectOption(profiles, getCurrentActivityName())
-    addSelectOption(profiles, SAVE_TIME_TO, "To date:")
-    checkSaveTimeProfile()
+    try {
+      addSelectOption(profiles, getCurrentActivityName())
+      addSelectOption(profiles, SAVE_TIME_TO, "To date:")
+      checkSaveTimeProfile()
+      } catch (error) {
+      onerror("no save-time-profile selector", {
+        html: $("#save-time-profile").html(),
+        count: $("#save-time-profile").length,
+        parent: $("#save-time-profile").parent().html(),
+        currentActivity: getCurrentActivityName()
+      })
+    }
 
     $("#save-time-profile").on("change", checkSaveTimeProfile)
   }
