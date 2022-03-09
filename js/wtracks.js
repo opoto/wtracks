@@ -1385,14 +1385,26 @@ $(function(){
 
       $("#save-time-profile").on("change", checkSaveTimeProfile)
     } catch (error) {
-      onerror("no save-time-profile selector", {
+      let details = {
         cells: $("#menutools tr").length,
         html: $("#menutools tr td")[7].innerHTML,
         currentActivity: getCurrentActivityName(),
         editMode: editMode,
         showLoc: showLocation,
-        trackPts: track.getLatLngs().length
-      })
+        trackPts: track.getLatLngs().length,
+        allSegs: isChecked("#allsegments"),
+        useSceWorker: isChecked("#use-service-worker")
+      }
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then((regs)=>{
+          details.workers = regs.length
+          onerror("no save-time-profile selector", details)
+        })
+      } else {
+        details.workers = "not available"
+        onerror("no save-time-profile selector", details)
+      }
+
     }
 
   }
