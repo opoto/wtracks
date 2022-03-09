@@ -1376,20 +1376,25 @@ $(function(){
     $("#save-time-profile").empty()
     $("#save-time-profile").off("change")
     let profiles = $("#save-time-profile")[0]
+
     try {
+
       addSelectOption(profiles, getCurrentActivityName())
       addSelectOption(profiles, SAVE_TIME_TO, "To date:")
       checkSaveTimeProfile()
-      } catch (error) {
+
+      $("#save-time-profile").on("change", checkSaveTimeProfile)
+    } catch (error) {
       onerror("no save-time-profile selector", {
-        html: $("#save-time-profile").html(),
-        count: $("#save-time-profile").length,
-        parent: $("#save-time-profile").parent().html(),
-        currentActivity: getCurrentActivityName()
+        cells: $("#menutools tr").length,
+        html: $("#menutools tr td")[7].innerHTML,
+        currentActivity: getCurrentActivityName(),
+        editMode: editMode,
+        showLoc: showLocation,
+        trackPts: track.getLatLngs().length
       })
     }
 
-    $("#save-time-profile").on("change", checkSaveTimeProfile)
   }
 
   $("#save-time").on("click", () => {
