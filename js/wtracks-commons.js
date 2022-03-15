@@ -30,6 +30,22 @@ function initServiceWorker(isLoaded) {
 }
 initServiceWorker()
 
+function forceReload() {
+  $.ajax(
+    { url: window.location.toString(),
+      headers:{ 'Cache-Control': 'no-cache, no-store, must-revalidate' }
+    }
+  ).then((resp)=>{
+    if (confirm("Latest WTracks version is needed to proceed, reload now?")) {
+      window.location.reload()
+    } else {
+      console.error("Using old WTracks version will cause errors")
+    }
+  }).fail((err) => {
+    console.error("Cannot get latest WTracks version")
+  })
+}
+
 function saveValOpt(name, val) {
   if (config.saveprefs() && isStateSaved()) {
     storeVal(name, val);
