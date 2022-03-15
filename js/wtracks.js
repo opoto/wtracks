@@ -3255,14 +3255,19 @@ $(function(){
     return count;
   }
 
-  $("#cleanup").on("click", function(e) {
-    var toclean = [];
+  function getCleanFillOpts() {
+    var opts = [];
     if (isChecked("#cleanupalt")) {
-      toclean.push("alt");
+      opts.push("alt");
     }
     if (isChecked("#cleanuptime")) {
-      toclean.push("time");
+      opts.push("time");
     }
+    return opts
+  }
+
+  $("#cleanup").on("click", function(e) {
+    var toclean = getCleanFillOpts()
     if (toclean.length == 0) {
       // nothing to clean
       return;
@@ -3273,6 +3278,99 @@ $(function(){
       saveState();
     }
     return false;
+  });
+
+  function toolFillup(toFill) {
+
+    let filler = {
+      "time": {
+        interpolate(prev, next, pt) {
+          let timePrev = new Date(prev.time).getTime(),
+          timeNext = new Date(next.time).getTime(),
+          distPrevNext = next.dist - prev.dist,
+          distPrevPt = pt.dist - prev.dist
+          timePt = timePrev + ((timeNext - timePrev) * (distPrevPt / distPrevNext))
+
+          pt.time = new Date(timePt).toISOString()
+        }
+      },
+      "alt": {
+        interpolate(prev, next, pt) {
+          let distPrevNext = next.dist - prev.dist,
+          distPrevPt = pt.dist - prev.dist
+          pt.alt = prev.alt + ((next.alt - prev.alt) * (distPrevPt / distPrevNext))
+        }
+      }
+    }
+
+    let allCounts = 0
+    applySegmentTool(function(segment) {
+      let points = segment ? segment.getLatLngs() : undefined,
+        prev, // previous point with data
+        next, // next point with data,
+        iNxt = -1,
+        count = 0
+
+      if (points && (points.length > 0)) {
+        for (var j = 0; j < toFill.length; j++) {
+          let opt = toFill[j]
+          for (var i = 0; i < points.length; i++) {
+            let pt = points[i]
+            if (isUndefined(pt[opt])) {
+              if ((!next || (next.i <= i)) && (iNxt < points.length)) {
+                // search next
+                next = undefined
+                for (iNxt = i + 1; iNxt < points.length; iNxt++) {
+                  if (!isUndefined(points[iNxt][opt])) {
+                    next = points[iNxt]
+                    break // exit for loop
+                  }
+                }
+              }
+              if (prev) {
+                if (next) {
+                  filler[opt].interpolate(prev, next, pt)
+                  count++
+                } else {
+                  // no next, just copy previous
+                  pt[opt] = prev[opt]
+                }
+              } else {
+                if (next) {
+                  // no prev, just copy next
+                  pt[opt] = next[opt]
+                } else {
+                  // no next and no prev!
+                  alert("Segment has no data, can't interpolate!")
+                  break
+                }
+              }
+            } else {
+              prev = pt
+            }
+          }
+        }
+        if ((segment == track) && (count > 0)) {
+          polystats.updateStatsFrom(0)
+        }
+        allCounts += count
+      }
+    })
+    return allCounts
+  }
+
+  $("#fillup").on("click", function(e) {
+    var toFill = getCleanFillOpts()
+    if (toFill.length == 0) {
+      // nothing to fill
+      return;
+    }
+    var count = toolFillup(toFill)
+    if (count) {
+      ga('send', 'event', 'tool', 'fillup')
+      saveState()
+    }
+    return false
   });
 
   $("#revert").on("click", function(e) {

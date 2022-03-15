@@ -352,22 +352,24 @@
           </select>
           <span id="shifttimingtxt" class="help-b material-icons" title="Help">help_outline</span>
           <p id="shifttimingtxt-help" class="help-p">
-            Shifts each point's recorded time in selected segment(s)
+            Shifts all track points' recorded time.
           </p>
         </td>
       </tr>
       <tr class="fold-tools trkpts">
         <td>
           <button id="cleanup" class="no-trim">Clean-up*</button>
+          <button id="fillup" class="no-trim">Fill-up*</button>
         </td>
         <td>
-          Delete track data:
+          Delete or interpolate track data:
           <span id="cleanuptxt" class="help-b material-icons" title="Help">help_outline</span>
           <br/>
           <label><input id="cleanupalt" type="checkbox"/> Altitude</label>
           <label><input id="cleanuptime" type="checkbox"/> Time</label>
           <p id="cleanuptxt-help" class="help-p">
-            Delete elevation and/or GPS-recorded time data on each track point.
+            Clean-up deletes elevation and/or GPS-recorded time data on each track point.<br>
+            Fill-up adds interpolated elevation and/or time on track points where this data is missing.
           </p>
         </td>
       </tr>
