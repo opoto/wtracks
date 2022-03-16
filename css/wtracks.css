@@ -463,6 +463,9 @@ a.button {
 .atlInput {
   width: 3em;
 }
+.rec-time-abs {
+  font-size: 90%;
+}
 .popupdiv a {
   padding: 5px;
 }

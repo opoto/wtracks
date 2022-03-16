@@ -1147,12 +1147,7 @@ $(function(){
     if (($("#save-time-from").val() == "")
       && (getTrackLength() > 0)
       && track.getLatLngs()[0].time) {
-        // get point's recorded time
-        const d = new Date(track.getLatLngs()[0].time)
-        // get this time in local value in "normalized" format
-        const v=d.getFullYear() + "-" + ("0" + (d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2) + "T" + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2)
-        // set input value
-        $("#save-time-from").val(v)
+        setDateTimeInput($("#save-time-from"), track.getLatLngs()[0].time)
     }
     initSaveTimeProfiles()
     checkToolsAllSegments()
@@ -1351,8 +1346,12 @@ $(function(){
 
     let date
     if (dateStr) try {
-      var b = dateStr.split(/\D/);
-      date = new Date(b[0], b[1]-1, b[2], b[3], b[4]);
+      var b = dateStr.split(/\D/)
+      if (b.length == 5) {
+        // Workaround for potential missing seconds
+        b.push("00")
+      }
+      date = new Date(b[0], b[1]-1, b[2], b[3], b[4], b[5])
       date.toISOString() // make sure it works
       jqDate.removeClass("invalid")
     } catch(err) {
@@ -4048,22 +4047,25 @@ $(function(){
     data.innerHTML = "<span class='popupfield'>Est. time:</span> " +
       time2txt(latlng.chrono) + " / " + time2txt(latlng.chrono_rt);
     var trackStart = track.getLatLngs()[0];
-    if (latlng.time && trackStart.time) {
-      data = L.DomUtil.create('div', "popupdiv", div);
-      data.innerHTML = "<span class='popupfield'>Rec. time:</span> <span class='rec-time-rel rec-time'>"
-      + time2txt((new Date(latlng.time) - new Date(trackStart.time))/1000)
-      + "</span><span class='rec-time-abs rec-time' style='display:none;'>" + new Date(latlng.time).toLocaleString()
-      + "</span>";
-      const recTime = $(data).find(".rec-time")
-      recTime.on("click", (event) => {
-        recTime.toggle()
-        recTimeAbs = !recTimeAbs
-        saveValOpt("wt.recTimeAbs", recTimeAbs)
-      })
-      if (recTimeAbs) {
-        recTime.toggle()
-      }
+    const recTimeRel = (latlng.time && trackStart.time) ? time2txt((new Date(latlng.time) - new Date(trackStart.time))/1000) : "none"
+    data = L.DomUtil.create('div', "popupdiv", div);
+    data.innerHTML = "<span class='popupfield rec-time-toggle'>Rec. time:</span> <span class='rec-time-rel rec-time'>"
+    + recTimeRel
+    + '</span><input type="datetime-local" size="16" placeholder="yyyy-mm-dd HH:MM:SS" step="1" class="rec-time-abs rec-time" style="display:none"/>'
+    setDateTimeInput($(data).find("input"), latlng.time)
+    const recTime = $(data).find(".rec-time")
+    $(data).find(".rec-time-toggle").on("click", (event) => {
+      recTime.toggle()
+      recTimeAbs = !recTimeAbs
+      saveValOpt("wt.recTimeAbs", recTimeAbs)
+    })
+    if (recTimeAbs) {
+      recTime.toggle()
     }
+    $(data).find(".rec-time-abs").on("change", (event) => {
+      const newDate = getDate($(event.target))
+      latlng.time = newDate ? newDate.toISOString() : undefined
+    })
     return div;
 
   }
@@ -4110,7 +4112,10 @@ $(function(){
         btn.href = "#";
         btn.title = "Previous point";
         btn.innerHTML = "<span class='popupfield'><i class='material-icons notranslate'>navigate_before</i></span>";
-        btn.onclick = function() { gotopt(-1); };
+        btn.onclick = function() {
+          gotopt(-1)
+          return false
+        }
       }
       // Delete button
       p = L.DomUtil.create("div", "popupdiv ptbtn", div);
@@ -4138,7 +4143,10 @@ $(function(){
         btn.href = "#";
         btn.title = "Next point";
         btn.innerHTML = "<span class='popupfield'><i class='material-icons notranslate'>navigate_next</i></span>";
-        btn.onclick = function() { gotopt(+1); };
+        btn.onclick = function() {
+          gotopt(+1)
+          return false
+        }
       }
 
     }
