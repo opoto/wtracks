@@ -3311,14 +3311,14 @@ $(function(){
     let allCounts = 0
     applySegmentTool(function(segment) {
       let points = segment ? segment.getLatLngs() : undefined,
-        prev, // previous point with data
-        next, // next point with data,
-        iNxt = -1,
         count = 0
 
       if (points && (points.length > 0)) {
         for (var j = 0; j < toFill.length; j++) {
-          let opt = toFill[j]
+          let opt = toFill[j],
+            prev = undefined, // previous point with data
+            next = undefined, // next point with data,
+            iNxt = -1
           for (var i = 0; i < points.length; i++) {
             let pt = points[i]
             if (isUndefined(pt[opt])) {
@@ -3335,7 +3335,6 @@ $(function(){
               if (prev) {
                 if (next) {
                   filler[opt].interpolate(prev, next, pt)
-                  count++
                 } else {
                   // no next, just copy previous
                   pt[opt] = prev[opt]
@@ -3350,6 +3349,7 @@ $(function(){
                   break
                 }
               }
+              count++
             } else {
               prev = pt
             }
