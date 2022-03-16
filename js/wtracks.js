@@ -522,7 +522,7 @@ $(function(){
 
   $("#extMarkers").on("change", function(evt){
     extMarkers = !extMarkers;
-    storeVal("wt.extMarkers", extMarkers);
+    saveValOpt("wt.extMarkers", extMarkers);
     setExtremityVisibility(extMarkers);
   });
 
@@ -861,7 +861,7 @@ $(function(){
 
   $("#wptLabel").on("change", function(evt){
     wptLabel = !wptLabel;
-    storeVal("wt.wptLabel", wptLabel);
+    saveValOpt("wt.wptLabel", wptLabel);
     arrayForEach(waypoints.getLayers(), function (idx, wpt) {
       // create new tooltip (they're not mutable!)
       wpt.unbindTooltip();
@@ -871,7 +871,7 @@ $(function(){
 
   $("#fwdGuide").on("change", function(evt){
     fwdGuide = !fwdGuide;
-    storeVal("wt.fwdGuide", fwdGuide);
+    saveValOpt("wt.fwdGuide", fwdGuide);
     updateMapStyle();
     fwdGuideGa = true;
   });
@@ -2623,7 +2623,7 @@ $(function(){
 
   $("#autoGrayBaseLayer").on("change", function(evt){
     autoGrayBaseLayer = !autoGrayBaseLayer;
-    storeVal("wt.autoGrayBaseLayer", autoGrayBaseLayer);
+    saveValOpt("wt.autoGrayBaseLayer", autoGrayBaseLayer);
     setAutoGrayBaseLayer(null);
   });
 
@@ -4031,7 +4031,7 @@ $(function(){
 
   // ---------------- Popups
 
-  let recTimeAbs = getVal("wt.recTimeAbs", config.display.recTimeAbs);
+  let recTimeAbs = getBoolVal("wt.recTimeAbs", config.display.recTimeAbs);
 
   function getTrackPointPopupContent(latlng) {
     var div = L.DomUtil.create('div', "popupdiv"),

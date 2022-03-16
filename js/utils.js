@@ -167,6 +167,9 @@ function storeVal(name, val) {
     if (isUnset(val)) {
       store.removeItem(name);
     } else {
+      if (typeof val != "string") {
+        val = val.toString()
+      }
       try {
         store.setItem(name, val);
       } catch (err) {
