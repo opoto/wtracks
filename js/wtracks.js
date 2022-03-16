@@ -1433,7 +1433,7 @@ $(function(){
         // last segment time is the start of the next segment
         from = lastSegTime
       })
-      setStatus("Time saved", {timemout:3})
+      setStatus("Time saved", {timeout:3})
       ga('send', 'event', 'tool', 'save-time');
       saveState();
 
