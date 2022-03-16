@@ -1433,12 +1433,11 @@ $(function(){
         // last segment time is the start of the next segment
         from = lastSegTime
       })
+      setStatus("Time saved", {timemout:3})
       ga('send', 'event', 'tool', 'save-time');
       saveState();
 
     }
-
-    closeMenu()
   })
 
   $("#shift-time").on("click", () => {
@@ -1489,11 +1488,10 @@ $(function(){
       if (nbErr) {
         console.error(nbErr, "points could not be moved because of invalid date format")
       }
+      setStatus("Shift completed", {timeout:3})
       ga('send', 'event', 'tool', 'shift-time');
       saveState();
     }
-
-    closeMenu()
   })
 
   $("#track-download").on("click", function() {
@@ -3210,26 +3208,30 @@ $(function(){
 
   function toolElevate(e) {
     if (e) {
-      ga('send', 'event', 'tool', 'elevate', undefined, getTrackLength());
-      $("#menu").hide();
+      ga('send', 'event', 'tool', 'elevate', undefined, getTrackLength())
     }
 
-    setStatus("Elevating...", { spinner: true });
-    var count = 0;
+    setStatus("Elevating...", { spinner: true })
+    var count = 0,
+      ok = true
     applySegmentTool(function (segment) {
-      count++;
       elevate(segment.getLatLngs(), function(success) {
         if (segment == track) {
-          polystats.updateStatsFrom(0);
+          polystats.updateStatsFrom(0)
         }
-        if (--count == 0) {
-          saveState();
-          if (success) {
-            clearStatus();
-          }
+        if (success) {
+          count++
+        } else {
+          ok = false
         }
-      });
-    });
+      })
+    })
+    if (count > 0) {
+      saveState()
+    }
+    if (ok) {
+      clearStatus()
+    }
 
     return false;
   }
@@ -3274,8 +3276,11 @@ $(function(){
     }
     var count = toolCleanup(toclean);
     if (count) {
+      alert("Cleaned-up " + count + " points")
       ga('send', 'event', 'tool', 'cleanup', toclean.toString(), count);
       saveState();
+    } else {
+      setStatus("No data updated", {timeout:3})
     }
     return false;
   });
@@ -3341,7 +3346,7 @@ $(function(){
                   pt[opt] = next[opt]
                 } else {
                   // no next and no prev!
-                  alert("Segment has no data, can't interpolate!")
+                  alert("Segment has no " + opt + " data, can't interpolate!")
                   break
                 }
               }
@@ -3367,8 +3372,11 @@ $(function(){
     }
     var count = toolFillup(toFill)
     if (count) {
-      ga('send', 'event', 'tool', 'fillup')
+      alert("Updated " + count + " points data")
+      ga('send', 'event', 'tool', 'fillup', toFill.toString(), count)
       saveState()
+    } else {
+      setStatus("No data updated", {timeout:3})
     }
     return false
   });
