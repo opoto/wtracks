@@ -568,6 +568,8 @@ $(function(){
   var EDIT_MARKER_ID = "edit-marker";
   var EDIT_ADDSEGMENT_ID = "add-segment";
   var EDIT_ADDSEGMENT_ICON = "add-segment-icon";
+  var EDIT_DELSEGMENT_ID = "delete-segment";
+  var EDIT_DELSEGMENT_ICON = "delete-segment-icon";
 
   var UndoRoute = {
     getType: function() {
@@ -2994,6 +2996,10 @@ $(function(){
         '<span class="material-icons wtracks-control-icon segment-icon notranslate">timeline</span>' +
         '<span class="material-icons wtracks-control-icon ' + EDIT_ADDSEGMENT_ICON + ' notranslate">add</span>' +
       '</a>' +
+      '<a href="#" title="Delete segment" id="' + EDIT_DELSEGMENT_ID + '">' +
+        '<span class="material-icons wtracks-control-icon segment-icon notranslate">timeline</span>' +
+        '<span class="material-icons wtracks-control-icon ' + EDIT_DELSEGMENT_ICON + ' notranslate">clear</span>' +
+      '</a>' +
       '<a href="#" title="Move track (m)" id="' + EDIT_DRAG_ID + '"><span class="material-icons wtracks-control-icon notranslate">' + EDIT_DRAG_ICON + '</span></a>' +
       '<a href="#" title="Waypoint (w)" id="' + EDIT_MARKER_ID + '"><span class="material-icons wtracks-control-icon notranslate">place</span></a>';
 
@@ -3106,6 +3112,7 @@ $(function(){
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_AUTO_ID));
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_MARKER_ID));
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_ADDSEGMENT_ID));
+  L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_DELSEGMENT_ID));
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_DRAG_ID));
   $("#" + EDIT_MANUAL_ID).on("click", function(e) {
     e.preventDefault();
@@ -3146,6 +3153,16 @@ $(function(){
     setStatus("New segment", {timeout: 2})
     newSegment();
     setEditMode(EDIT_MANUAL_TRACK);
+    saveState();
+  });
+  $("#" + EDIT_DELSEGMENT_ID).click(function(e) {
+    e.preventDefault();
+    if ((getTrackLength() == 0) ||
+      !confirm("Delete current segment?")) {
+      return;
+    }
+    ga('send', 'event', 'edit', 'delete-segment');
+    deleteSegment(track);
     saveState();
   });
 

@@ -423,9 +423,16 @@ a.button {
   font-size: 18px;
 }
 
-.edit-segment-icon, .add-segment-icon {
+.add-segment-icon {
   font-size: 18px;
   margin-left: -26px;
+  color: green;
+  margin-top: 10px;
+}
+.delete-segment-icon {
+  font-size: 18px;
+  margin-left: -26px;
+  color: red;
   margin-top: 10px;
   padding-left: 4px;
 }
