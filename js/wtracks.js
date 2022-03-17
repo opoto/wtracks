@@ -32,6 +32,7 @@ L.Layer.prototype.setInteractive = function (interactive) {
   }
 };
 
+let statusTimeout
 function setStatus(msg, options) {
   $("#status-msg").text(msg);
   var statusclass = options && options.class ? options.class : "status-info";
@@ -40,12 +41,16 @@ function setStatus(msg, options) {
   $("#spinner").toggle(showspinner);
   $("#status").fadeIn();
   if (options && options.timeout) {
-    setTimeout(clearStatus, 1000 * options.timeout);
+    if (statusTimeout) {
+      clearTimeout(statusTimeout)
+    }
+    statusTimeout = setTimeout(clearStatus, 1000 * options.timeout);
   }
 }
 
 function clearStatus() {
-  $("#status").fadeOut(800);
+  $("#status").fadeOut(800)
+  statusTimeout = undefined
 }
 
 setStatus("Loading...", { spinner: true });
