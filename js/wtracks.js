@@ -2324,7 +2324,6 @@ $(function(){
     saveValOpt("wt.wptLabel", wptLabel);
     saveValOpt("wt.extMarkers", extMarkers);
     saveValOpt("wt.autoGrayBaseLayer", autoGrayBaseLayer);
-    saveValOpt("wt.recTimeAbs", recTimeAbs);
   }
 
   function saveStateFile() {
@@ -4036,8 +4035,6 @@ $(function(){
 
   // ---------------- Popups
 
-  let recTimeAbs = getBoolVal("wt.recTimeAbs", config.display.recTimeAbs);
-
   function getTrackPointPopupContent(latlng) {
     var div = L.DomUtil.create('div', "popupdiv"),
       data;
@@ -4047,30 +4044,29 @@ $(function(){
 
     data = L.DomUtil.create('div', "popupdiv", div);
     data.innerHTML = "<span class='popupfield'>Distance:</span> " +
-      dist2txt(latlng.dist) + " / " + dist2txt(last.dist * 2 - latlng.dist);
+      '<span class="material-icons symbol notranslate" translate="no">trending_flat</span> ' +
+      dist2txt(latlng.dist) + " / " +
+      '<span class="material-icons symbol notranslate" translate="no">sync_alt</span> ' +
+      dist2txt(last.dist * 2 - latlng.dist)
     data = L.DomUtil.create('div', "popupdiv", div);
     data.innerHTML = "<span class='popupfield'>Est. time:</span> " +
-      time2txt(latlng.chrono) + " / " + time2txt(latlng.chrono_rt);
+      '<span class="material-icons symbol notranslate" translate="no">trending_flat</span> ' +
+      time2txt(latlng.chrono) + " / " +
+      '<span class="material-icons symbol notranslate" translate="no">sync_alt</span> ' +
+      time2txt(latlng.chrono_rt)
     var trackStart = track.getLatLngs()[0];
-    const recTimeRel = (latlng.time && trackStart.time) ? time2txt((new Date(latlng.time) - new Date(trackStart.time))/1000) : "none"
     data = L.DomUtil.create('div', "popupdiv", div);
-    data.innerHTML = "<span class='popupfield rec-time-toggle'>Rec. time:</span> <span class='rec-time-rel rec-time'>"
-    + recTimeRel
-    + '</span><input type="datetime-local" size="16" placeholder="yyyy-mm-dd HH:MM:SS" step="1" class="rec-time-abs rec-time" style="display:none"/>'
+    data.innerHTML = "<span class='popupfield'>Rec. time:</span> <input type='datetime-local' placeholder='yyyy-mm-dd HH:MM:SS' step='1' class='rec-time-abs'/>"
     setDateTimeInput($(data).find("input"), latlng.time)
-    const recTime = $(data).find(".rec-time")
-    $(data).find(".rec-time-toggle").on("click", (event) => {
-      recTime.toggle()
-      recTimeAbs = !recTimeAbs
-      saveValOpt("wt.recTimeAbs", recTimeAbs)
-    })
-    if (recTimeAbs) {
-      recTime.toggle()
-    }
     $(data).find(".rec-time-abs").on("change", (event) => {
       const newDate = getDate($(event.target))
       latlng.time = newDate ? newDate.toISOString() : undefined
     })
+    if (latlng.time && trackStart.time) {
+      data = L.DomUtil.create('div', "popupdiv", div);
+      data.innerHTML = "<span class='popupfield'>Duration:</span> "
+      + time2txt((new Date(latlng.time) - new Date(trackStart.time))/1000)
+    }
     return div;
 
   }

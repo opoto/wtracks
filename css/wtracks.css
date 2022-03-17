@@ -458,7 +458,6 @@ a.button {
 .popupfield {
   width: 55px;
   display: inline-table;
-  vertical-align: middle;
 }
 .atlInput {
   width: 3em;
@@ -468,6 +467,9 @@ a.button {
 }
 .popupdiv a {
   padding: 5px;
+}
+.popupdiv a:hover {
+  color: #1992ca;
 }
 .ptbtn {
   display: inline-table;
