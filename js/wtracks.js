@@ -1336,36 +1336,6 @@ $(function(){
     return getGPX(trackname, /*savealt*/ false, asroute, nometadata);
   }
 
-  function getDate(jqDate, mandatory) {
-
-    function invalidDate(msg) {
-      jqDate.addClass("invalid")
-      jqDate.focus()
-      throw msg
-    }
-
-    let dateStr = jqDate.val().trim().replace(" ", "T")
-    if (mandatory && !dateStr) {
-      invalidDate("Missing date")
-    }
-
-    let date
-    if (dateStr) try {
-      var b = dateStr.split(/\D/)
-      if (b.length == 5) {
-        // Workaround for potential missing seconds
-        b.push("00")
-      }
-      date = new Date(b[0], b[1]-1, b[2], b[3], b[4], b[5])
-      date.toISOString() // make sure it works
-      jqDate.removeClass("invalid")
-    } catch(err) {
-      invalidDate("Invalid date: " + dateStr)
-    }
-
-    return date
-  }
-
   const SAVE_TIME_TO = "_to_"
   function initSaveTimeProfiles() {
 
@@ -1404,9 +1374,9 @@ $(function(){
       let to, duration
       let distance = 0
       try {
-        from = getDate($("#save-time-from"), true)
+        from = getDateTimeInput($("#save-time-from"), true)
         if (profile == SAVE_TIME_TO) {
-          to = getDate($("#save-time-to"), true)
+          to = getDateTimeInput($("#save-time-to"), true)
           duration = to.getTime() - from.getTime()
           applySegmentTool(function (segment) {
             distance += arrayLast(segment.getLatLngs()).dist
@@ -4059,7 +4029,7 @@ $(function(){
     data.innerHTML = "<span class='popupfield'>Rec. time:</span> <input type='datetime-local' placeholder='yyyy-mm-dd HH:MM:SS' step='1' class='rec-time-abs'/>"
     setDateTimeInput($(data).find("input"), latlng.time)
     $(data).find(".rec-time-abs").on("change", (event) => {
-      const newDate = getDate($(event.target))
+      const newDate = getDateTimeInput($(event.target))
       latlng.time = newDate ? newDate.toISOString() : undefined
     })
     if (latlng.time && trackStart.time) {

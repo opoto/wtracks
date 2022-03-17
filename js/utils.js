@@ -109,7 +109,7 @@ function addSelectOption(select, optval, optdisplay) {
 
 // select a drop down menu item
 function selectOption(select, optval) {
-  jqselect = $(select);
+  let jqselect = $(select);
   jqselect.children(":selected").prop("selected", false);
   jqselect.children("option[value='" + optval + "']").prop("selected", true);
 }
@@ -135,13 +135,43 @@ function enableInput(condition, inputSelector) {
   }
 }
 
-function setDateTimeInput(input, ptTime) {
+function getDateTimeInput(jqInput, mandatory) {
+
+  function invalidDate(msg) {
+    jqInput.addClass("invalid")
+    jqInput.focus()
+    throw msg
+  }
+
+  let dateStr = jqInput.val().trim().replace(" ", "T")
+  if (mandatory && !dateStr) {
+    invalidDate("Missing date")
+  }
+
+  let date
+  if (dateStr) try {
+    var b = dateStr.split(/\D/)
+    if (b.length == 5) {
+      // Workaround for potential missing seconds
+      b.push("00")
+    }
+    date = new Date(b[0], b[1]-1, b[2], b[3], b[4], b[5])
+    date.toISOString() // make sure it works
+    jqInput.removeClass("invalid")
+  } catch(err) {
+    invalidDate("Invalid date: " + dateStr)
+  }
+
+  return date
+}
+
+function setDateTimeInput(jqInput, ptTime) {
   // get point's recorded date
   const d = new Date(ptTime)
   // get this time in local value in "normalized" format
   const v=d.getFullYear() + "-" + ("0" + (d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2) + "T" + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2)+ ":" + ("0" + d.getSeconds()).slice(-2)
   // set input value
-  input.val(v)
+  jqInput.val(v)
 }
 
 /* ----------------------- Local storage -------------------------- */
