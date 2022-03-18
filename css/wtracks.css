@@ -9,6 +9,9 @@ body {
   font-family: sans-serif;
   overflow-x: hidden;
 }
+button, select, option {
+  color: black;
+}
 
 #tdisplay {
   width: 100%;
