@@ -1420,12 +1420,15 @@ $(function(){
 
     if (track && (track.getLatLngs().length > 0)) {
 
-      let profile = getSelectedOption("#shift-time-unit")
+      let unit = getSelectedOption("#shift-time-unit")
       let byUnit
       let byMs
       try {
         byUnit = parseFloat($("#shift-time-by").val().trim())
-        switch (profile) {
+        if (isNaN(byUnit)) {
+          throw "Invalid value"
+        }
+        switch (unit) {
           case "day":
             byMs = byUnit * 24 * 3600000
             break;
