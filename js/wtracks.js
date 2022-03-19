@@ -3295,7 +3295,10 @@ $(function(){
           try {
             pt.time = new Date(timePt).toISOString()
           } catch (error) {
-            onerror("Invalid interpolated time", { time: timePt, prev: prev.time, next: next.time })
+            onerror("Invalid interpolated time", {
+              time: timePt, prev: prev.time, next: next.time,
+              distPt:  distPrevPt, distNext: distPrevNext
+            })
           }
         }
       },
