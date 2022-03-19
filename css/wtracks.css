@@ -9,7 +9,7 @@ body {
   font-family: sans-serif;
   overflow-x: hidden;
 }
-button, select, option {
+button, select, option, input[type=datetime-local] {
   color: black;
 }
 
