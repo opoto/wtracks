@@ -1150,6 +1150,7 @@ $(function(){
     $("#prune-dist").val(pruneDist);
     $("#prune-max-dist").val(pruneMaxDist);
     $("#prune-max-time").val(pruneMaxTime);
+    $(".invalid").removeClass("invalid")
     menu(tab ? tab : "file");
     if (($("#save-time-from").val() == "")
       && (getTrackLength() > 0)
@@ -1375,18 +1376,15 @@ $(function(){
       let from
       let to, duration
       let distance = 0
-      try {
-        from = getDateTimeInput($("#save-time-from"), true)
-        if (profile == SAVE_TIME_TO) {
-          to = getDateTimeInput($("#save-time-to"), true)
-          duration = to.getTime() - from.getTime()
-          applySegmentTool(function (segment) {
-            distance += arrayLast(segment.getLatLngs()).dist
-          })
-        }
-      } catch (error) {
-        showWarning("Error", error)
-        return
+      from = getDateTimeInput($("#save-time-from"), true)
+      if (!from) return
+      if (profile == SAVE_TIME_TO) {
+        to = getDateTimeInput($("#save-time-to"), true)
+        if (!to) return
+        duration = to.getTime() - from.getTime()
+        applySegmentTool(function (segment) {
+          distance += arrayLast(segment.getLatLngs()).dist
+        })
       }
 
       let lastSegTime
@@ -1423,30 +1421,21 @@ $(function(){
       let unit = getSelectedOption("#shift-time-unit")
       let byUnit
       let byMs
-      try {
-        byUnit = parseFloat($("#shift-time-by").val().trim())
-        if (isNaN(byUnit)) {
-          throw "Invalid value"
-        }
-        switch (unit) {
-          case "day":
-            byMs = byUnit * 24 * 3600000
-            break;
-          case "hour":
-            byMs = byUnit * 3600000
-            break;
-          case "minute":
-            byMs = byUnit * 60000
-            break;
-          case "second":
-            byMs = byUnit * 1000
-            break;
-        }
-        $("#shift-time-by").removeClass("invalid")
-      } catch (error) {
-        showWarning("Error", error)
-        $("#shift-time-by").addClass("invalid")
-        return
+      byUnit = getRealInput($("#shift-time-by"), true)
+      if (!byUnit) return
+      switch (unit) {
+        case "day":
+          byMs = byUnit * 24 * 3600000
+          break;
+        case "hour":
+          byMs = byUnit * 3600000
+          break;
+        case "minute":
+          byMs = byUnit * 60000
+          break;
+        case "second":
+          byMs = byUnit * 1000
+          break;
       }
 
       let nbErr = 0
@@ -1978,36 +1967,35 @@ $(function(){
     $("#edit-tools").toggle(editMode > 0);
   }
 
+  $("#prune-dist-opt, #prune-time-opt").on("change", (event) => {
+    if (!isChecked($(event.target))) {
+      $(event.target.nextSibling).removeClass("invalid")
+    }
+  })
   $("#compress").on("click", function() {
 
     function getKeepOpt(selOpt, valOpt) {
       let value = undefined
       if (isChecked(selOpt)) {
-        try {
-          value = parseFloat($(valOpt).val().trim())
-        } catch (e) {
-        }
-        $(valOpt).val(value)
+        value = getRealInput($(valOpt), true)
+        if (!value) throw "missing value"
       }
       return value
     }
 
     // get & check input value
-    var pruneDistElt = $("#prune-dist");
-    var input = pruneDistElt.val().trim();
-    if (input && input.match(/^\d+\.?\d*$/)) {
-      pruneDist = parseFloat(input);
-    } else {
-      input = undefined;
-    }
-    if (!input || (pruneDist === undefined) || isNaN(pruneDist)) {
-      alert("Enter a valid distance");
-      pruneDistElt.focus();
-      return;
-    }
+    let pruneDist = getRealInput($("#prune-dist"), true)
+    if (!pruneDist) return
 
-    let pruneMaxDist = getKeepOpt("#prune-dist-opt", "#prune-max-dist")
-    let pruneMaxTime = getKeepOpt("#prune-time-opt", "#prune-max-time")
+
+    let pruneMaxDist
+    let pruneMaxTime
+    try {
+      pruneMaxDist = getKeepOpt("#prune-dist-opt", "#prune-max-dist")
+      pruneMaxTime = getKeepOpt("#prune-time-opt", "#prune-max-time")
+    } catch (error) {
+      return
+    }
 
     if (isImperial()) {
       pruneDist *= 0.9144

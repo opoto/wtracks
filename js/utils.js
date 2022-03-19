@@ -135,17 +135,39 @@ function enableInput(condition, inputSelector) {
   }
 }
 
-function getDateTimeInput(jqInput, mandatory) {
-
-  function invalidDate(msg) {
-    jqInput.addClass("invalid")
-    jqInput.focus()
-    throw msg
+function setInvalidInput(jqInput, isInvalid, invalidClass) {
+  if (!invalidClass) {
+    invalidClass = "invalid"
   }
+  if (isInvalid) {
+    jqInput.addClass(invalidClass)
+    jqInput.focus()
+  } else {
+    jqInput.removeClass(invalidClass)
+  }
+}
+
+function getRealInput(jqInput, mandatory, invalidClass) {
+  let val
+  let valStr = jqInput.val().trim()
+  if (valStr) {
+    try {
+      val = parseFloat(valStr)
+      setInvalidInput(jqInput, isNaN(val), invalidClass)
+    } catch (error) {
+      setInvalidInput(jqInput, true, invalidClass)
+    }
+  } else if (mandatory) {
+    setInvalidInput(jqInput, true, invalidClass)
+  }
+  return val
+}
+
+function getDateTimeInput(jqInput, mandatory, invalidClass) {
 
   let dateStr = jqInput.val().trim().replace(" ", "T")
   if (mandatory && !dateStr) {
-    invalidDate("Missing date")
+    setInvalidInput(jqInput, true, invalidClass)
   }
 
   let date
@@ -157,9 +179,9 @@ function getDateTimeInput(jqInput, mandatory) {
     }
     date = new Date(b[0], b[1]-1, b[2], b[3], b[4], b[5])
     date.toISOString() // make sure it works
-    jqInput.removeClass("invalid")
+    setInvalidInput(jqInput, false, invalidClass)
   } catch(err) {
-    invalidDate("Invalid date: " + dateStr)
+    setInvalidInput(jqInput, true, invalidClass)
   }
 
   return date
