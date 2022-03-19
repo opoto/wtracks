@@ -3287,9 +3287,16 @@ $(function(){
           timeNext = new Date(next.time).getTime(),
           distPrevNext = next.dist - prev.dist,
           distPrevPt = pt.dist - prev.dist
-          timePt = timePrev + ((timeNext - timePrev) * (distPrevPt / distPrevNext))
-
-          pt.time = new Date(timePt).toISOString()
+          if (timePrev < timeNext) {
+            timePt = timePrev + ((timeNext - timePrev) * (distPrevPt / distPrevNext))
+          } else {
+            timePt = timeNext + ((timePrev - timeNext) * (distPrevPt / distPrevNext))
+          }
+          try {
+            pt.time = new Date(timePt).toISOString()
+          } catch (error) {
+            onerror("Invalid interpolated time", { time: timePt, prev: prev.time, next: next.time })
+          }
         }
       },
       "alt": {
