@@ -3528,7 +3528,9 @@ $(function(){
       }
       track.setLatLngs(v);
       bounds.extend(track.getBounds());
-
+      if (track.getLatLngs().length > 0) {
+        updateSegmentStats(track)
+      }
       // add segment xml namespaces to track
       if (xmlnsArr && xmlnsArr.length) {
         track.xmlnsArr = xmlnsArr;
@@ -3585,7 +3587,7 @@ $(function(){
     clearStatus();
     if (!segmentClickListener({ target: activeTrack }, true)) {
       // no segment added, but existing one was (possibly) extended, update it
-      polystats.updateStatsFrom(0);
+      //polystats.updateStatsFrom(0);
     }
     saveState();
     closeMenu();
