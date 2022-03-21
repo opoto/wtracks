@@ -3060,6 +3060,17 @@ $(function(){
           setEditMode(EDIT_NONE);
         }
         break;
+        case "O": // 'O' - open file
+        setEditMode(EDIT_NONE)
+        openMenu("file")
+        $("#file-load").click()
+        $("#track-upload").click()
+        break;
+      case "S": // 'S' - save
+        setEditMode(EDIT_NONE)
+        openMenu("file")
+        $("#file-save").click()
+        break;
       case "e": // 'e' - edit
         if (editMode != EDIT_MANUAL_TRACK) {
           $("#" + EDIT_MANUAL_ID).trigger("click");
