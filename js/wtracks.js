@@ -3273,8 +3273,8 @@ $(function(){
         interpolate(prev, next, pt) {
           let timePrev = new Date(prev.time).getTime(),
           timeNext = new Date(next.time).getTime(),
-          distPrevNext = next.dist - prev.dist,
-          distPrevPt = pt.dist - prev.dist
+          distPrevPt = pt.distanceTo(prev),
+          distPrevNext = pt.distanceTo(next) + distPrevPt
           if (timePrev < timeNext) {
             timePt = timePrev + ((timeNext - timePrev) * (distPrevPt / distPrevNext))
           } else {
@@ -3292,8 +3292,8 @@ $(function(){
       },
       "alt": {
         interpolate(prev, next, pt) {
-          let distPrevNext = next.dist - prev.dist,
-          distPrevPt = pt.dist - prev.dist
+          let distPrevPt = pt.distanceTo(prev),
+          distPrevNext = pt.distanceTo(next) + distPrevPt
           pt.alt = prev.alt + ((next.alt - prev.alt) * (distPrevPt / distPrevNext))
         }
       }
