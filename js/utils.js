@@ -188,11 +188,14 @@ function getDateTimeInput(jqInput, mandatory, invalidClass) {
 }
 
 function setDateTimeInput(jqInput, ptTime) {
-  // get point's recorded date
-  const d = new Date(ptTime)
-  // get this time in local value in "normalized" format
-  const v=d.getFullYear() + "-" + ("0" + (d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2) + "T" + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2)+ ":" + ("0" + d.getSeconds()).slice(-2)
-  // set input value
+  let v = ""
+  if (ptTime) {
+    // get point's recorded date
+    const d = new Date(ptTime)
+    // get this time in local value in "normalized" format
+    v=d.getFullYear() + "-" + ("0" + (d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2) + "T" + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2)+ ":" + ("0" + d.getSeconds()).slice(-2)
+    // set input value
+  }
   jqInput.val(v)
 }
 
