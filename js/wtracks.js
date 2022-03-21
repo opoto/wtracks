@@ -452,6 +452,14 @@ $(function(){
     showStats();
   }
 
+  function updateSegmentStats(segment) {
+    let segStats = L.polyStats(segment, {
+      chrono: true,
+      speedProfile: getCurrentActivity().speedprofile
+    })
+    segStats.updateStatsFrom(0)
+  }
+
   function newSegment(noStats) {
     if (track) {
       if (getTrackLength() == 0) {
@@ -2028,6 +2036,8 @@ $(function(){
           segment.setLatLngs(pruned);
           if (segment == track) {
             polystats.updateStatsFrom(0);
+          } else {
+            updateSegmentStats(segment)
           }
         }
       });
@@ -3199,6 +3209,8 @@ $(function(){
       elevate(segment.getLatLngs(), function(success) {
         if (segment == track) {
           polystats.updateStatsFrom(0)
+        } else {
+          updateSegmentStats(segment)
         }
         if (success) {
           count++
@@ -3232,6 +3244,8 @@ $(function(){
         }
         if (segment == track) {
           polystats.updateStatsFrom(0);
+        } else {
+          updateSegmentStats(segment)
         }
       }
     });
@@ -3346,8 +3360,12 @@ $(function(){
             }
           }
         }
-        if ((segment == track) && (count > 0)) {
-          polystats.updateStatsFrom(0)
+        if (count > 0) {
+          if (segment == track) {
+            polystats.updateStatsFrom(0)
+          } else {
+            updateSegmentStats(segment)
+          }
         }
         allCounts += count
       }
@@ -3385,6 +3403,8 @@ $(function(){
         segment.setLatLngs(newpoints);
         if (segment == track) {
           polystats.updateStatsFrom(0);
+        } else {
+          updateSegmentStats(segment)
         }
         updateExtremities();
       }
