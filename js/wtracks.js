@@ -446,7 +446,7 @@ $(function(){
       speedProfile: getCurrentActivity().speedprofile,
       onUpdate: showStats,
     });
-    if (!track.stats) {
+    if (!L.PolyStats.getStats(track)) {
       polystats.updateStatsFrom(0);
     }
     showStats();
@@ -1383,7 +1383,7 @@ $(function(){
         if (!to) return
         duration = to.getTime() - from.getTime()
         applySegmentTool(function (segment) {
-          distance += arrayLast(segment.getLatLngs()).dist
+          distance += L.PolyStats.getPointDistance(arrayLast(segment.getLatLngs()))
         })
       }
 
@@ -1393,17 +1393,17 @@ $(function(){
         const pts = segment.getLatLngs()
         arrayForEach(pts, (idx, pt) => {
           if (profile == SAVE_TIME_TO) {
-            const relDist = (lastSegDist + pt.dist) / distance
+            const relDist = (lastSegDist + L.PolyStats.getPointDistance(pt)) / distance
             lastSegTime = new Date(from.getTime() + (duration * relDist))
             pt.time = lastSegTime.toISOString()
           } else {
-            if (!isUndefined(pt.chrono)) {
-              lastSegTime = new Date(from.getTime() + (pt.chrono * 1000))
+            if (!isUndefined(L.PolyStats.getPointTime(pt))) {
+              lastSegTime = new Date(from.getTime() + (L.PolyStats.getPointTime(pt) * 1000))
               pt.time = lastSegTime.toISOString()
             }
           }
         })
-        lastSegDist += arrayLast(segment.getLatLngs()).dist
+        lastSegDist += L.PolyStats.getPointDistance(arrayLast(segment.getLatLngs()))
         // last segment time is the start of the next segment
         from = lastSegTime
       })
@@ -3477,7 +3477,7 @@ $(function(){
 
       if (joinOnLoad || getTrackLength() == 0) {
         // extend current 'track'
-        track.stats = undefined;
+        L.PolyStats.clearStats(track)
       } else {
         newSegment(true);
       }
@@ -4033,15 +4033,15 @@ $(function(){
     data = L.DomUtil.create('div', "popupdiv", div);
     data.innerHTML = "<span class='popupfield'>Distance:</span> " +
       '<span class="material-icons symbol notranslate" translate="no">trending_flat</span> ' +
-      dist2txt(latlng.dist) + " / " +
+      dist2txt(L.PolyStats.getPointDistance(latlng)) + " / " +
       '<span class="material-icons symbol notranslate" translate="no">sync_alt</span> ' +
-      dist2txt(last.dist * 2 - latlng.dist)
+      dist2txt(L.PolyStats.getPointDistance(last) * 2 - L.PolyStats.getPointDistance(latlng))
     data = L.DomUtil.create('div', "popupdiv", div);
     data.innerHTML = "<span class='popupfield'>Est. time:</span> " +
       '<span class="material-icons symbol notranslate" translate="no">trending_flat</span> ' +
-      time2txt(latlng.chrono) + " / " +
+      time2txt(L.PolyStats.getPointTime(latlng)) + " / " +
       '<span class="material-icons symbol notranslate" translate="no">sync_alt</span> ' +
-      time2txt(latlng.chrono_rt)
+      time2txt(L.PolyStats.getPointTimeRoundTrip(latlng))
     var trackStart = track.getLatLngs()[0];
     data = L.DomUtil.create('div', "popupdiv", div);
     data.innerHTML = "<span class='popupfield'>Rec. time:</span> <input type='datetime-local' placeholder='yyyy-mm-dd HH:MM:SS' step='1' class='rec-time-abs'/>"
@@ -4148,11 +4148,11 @@ $(function(){
     if (pts && pts.length > 0) {
       var last = pts[pts.length - 1];
       var first = pts[0];
-      var stats = track.stats;
-      $("#distow").html(dist2txt(last.dist));
-      $("#distrt").html(dist2txt(2 * last.dist));
-      $("#timeow").html(time2txt(last.chrono));
-      $("#timert").html(time2txt(first.chrono_rt));
+      $("#distow").html(dist2txt(L.PolyStats.getPointDistance(last)));
+      $("#distrt").html(dist2txt(2 * L.PolyStats.getPointDistance(last)));
+      $("#timeow").html(time2txt(L.PolyStats.getPointTime(last)));
+      $("#timert").html(time2txt(L.PolyStats.getPointTimeRoundTrip(first)));
+      var stats = L.PolyStats.getStats(track);
       $("#altmin").html(alt2txt(stats.minalt));
       $("#altmax").html(alt2txt(stats.maxalt));
       $("#climbing").html("+" + alt2txt(stats.climbing));

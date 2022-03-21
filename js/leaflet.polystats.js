@@ -119,6 +119,27 @@
             POWER: POWER,
             LINEAR: LINEAR,
             POLYNOMIAL: POLYNOMIAL,
+            
+            /**
+             * @returns { minalt, maxalt, climbing, descent }
+             */
+             getStats: function(polyline) {
+              return polyline.wtStats
+            },
+            clearStats: function(polyline) {
+              return polyline.wtStats = undefined
+            },
+
+            getPointTime: function(pt) {
+              return pt.chrono
+            },
+            getPointTimeRoundTrip: function(pt) {
+              return pt.chrono_rt
+            },
+            getPointDistance: function(pt) {
+              return pt.dist
+            }
+
         },
 
         options: {
@@ -316,14 +337,14 @@
             }
 
             var pts = this._polyline.getLatLngs();
-            this._polyline.stats = {
+            this._polyline.wtStats = {
                 minalt: undefined,
                 maxalt: undefined,
                 climbing: 0,
                 descent: 0,
             };
 
-            var stats = this._polyline.stats,
+            var stats = this._polyline.wtStats,
                 j, pt, slope, relchrono, reldist, altdiff;
             for (j = 0; j < pts.length; j++) {
                 pt = pts[j];
