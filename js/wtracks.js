@@ -391,7 +391,7 @@ $(function(){
       // iterate on ordered segments
       arrayForEach(layers, function(idx, segment) {
         // check if it is a polyline
-        if (segment.getLatLngs) {
+        if (segment.getLatLngs && segment.getLatLngs().length > 0) {
           count++;
           return func(segment);
         }
@@ -1597,10 +1597,8 @@ $(function(){
     segList = $("#segments-list")
     let i = 0
     forEachSegment(function(segment) {
-      if (segment.getLatLngs().length > 0) {
-        addEditorSegmentItem(segment, i++);
-      }
-    });
+        addEditorSegmentItem(segment, i++)
+    })
     if (i == 0) {
       segList.text("You did not create any segment yet")
     } else if (i > 1) {
