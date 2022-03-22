@@ -1004,14 +1004,14 @@ button:active,
     font-size: 80%;
   }
   .item-name {
-    width: 160px;
+    width: 148px;
   }
   .seg-name {
     width: 300px;
     max-width: 55%;
   }
   .overlay-name {
-    width: 132px;
+    width: 120px;
   }
 }
 
