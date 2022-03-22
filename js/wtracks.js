@@ -1520,7 +1520,7 @@ $(function(){
 
     let segItem = `<li uid='${L.Util.stamp(segment)}'><span class='list-item'>`;
     segItem += "<i class='material-icons item-drag notranslate' title='Drag to reorder'>drag_indicator</i> ";
-    segItem += "<span class='item-name notranslate' 'translate'='no'></span> ";
+    segItem += "<span class='item-name seg-name notranslate' 'translate'='no'><span class='name'></span><span class='stats'></span></span> ";
     segItem += "<input type='checkbox' class='seg-join-check'/>"
     segItem += `<button class='material-icons symbol setting-value item-color-picker-${i}' data-jscolor='{"valueElement":"segment-color-${i}", "hash":true, "zIndex":10001, "closable":true}'>colorize</button> <input id='segment-color-${i}' class='hidden'/>`
     segItem += "<i class='material-icons item-delete notranslate' 'translate'='no' title='Delete'>delete</i> ";
@@ -1531,7 +1531,11 @@ $(function(){
     // name
     let segName = getSegmentName()
     let itemName = newitem.find(".item-name")
-    itemName.text(segName);
+    let lastPt = arrayLast(segment.getLatLngs())
+    itemName.find(".name").text(segName)
+    itemName.find(".stats").html(" <i class='material-icons'>straighten</i> " + dist2txt(L.PolyStats.getPointDistance(lastPt)) + " <i class='material-icons'>trending_up</i> " + alt2txt(L.PolyStats.getStats(track).climbing) + " <i class='material-icons'>av_timer</i> " + time2txt(L.PolyStats.getPointTime(lastPt)))
+    itemName.attr("title", itemName.text())
+    itemName.attr("segName", segName)
     itemName.on("click", editSegmentName);
 
     // color
@@ -1573,7 +1577,7 @@ $(function(){
       if (isChecked($(this).find(".seg-join-check"))) {
         let uid = $(this).attr("uid")
         tojoin.push(uid)
-        names += $(this).find(".item-name").text() + "\n"
+        names += $(this).find(".item-name").attr("segName") + "\n"
       }
     })
     if ((tojoin.length > 1) && confirm("Join following segments?\n\n" + names)) {
@@ -2265,7 +2269,7 @@ $(function(){
         numPts += segment.getLatLngs().length;
     });
     // Don't save if more than 1500 points
-    if (numPts < 1500) {
+    if (numPts < 2500) {
       var gpx = getGPX(trackname, /*savealt*/ false, /*asroute*/ false, /*nometadata*/ false);
       saveValOpt("wt.gpx", gpx);
     }

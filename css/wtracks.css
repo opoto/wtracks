@@ -690,17 +690,18 @@ div.trumbowyg-editor {
 
 #mymaps-list li, #segments-list li {
   width: 100%;
-  padding: 3px 0;
+  padding: 2px 0;
   text-align: left;
-  /*border-top: 2px solid white;*/
   user-select: none;
 }
 .list-item {
-  padding: 5px;
+  padding: 3px;
   border-bottom: 1px solid #ddd;
   border-radius: 10px;
   border: 2px solid #666666;
   background: #c8ffc1;
+  display: list-item;
+  width: fit-content;
 }
 #segments-list .list-item {
   background: #d8ecf0;
@@ -712,17 +713,20 @@ div.trumbowyg-editor {
   cursor: move;
 }
 .item-name {
-  width: 200px;
-  max-width: 40%;
+  width: 300px;
   vertical-align: middle;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  display: inline-grid;
+}
+.item-name > .stats {
   display: inline-block;
+  font-size: 80%;
+  color: #666;
 }
 .overlay-name {
-  width: 172px;
-  max-width: 32.8%;
+  width: 272px;
 }
 .item-edit, .item-delete, .item-share, .item-visibility {
   cursor: pointer;
@@ -999,7 +1003,16 @@ button:active,
     padding: 0;
     font-size: 80%;
   }
-
+  .item-name {
+    width: 160px;
+  }
+  .seg-name {
+    width: 300px;
+    max-width: 55%;
+  }
+  .overlay-name {
+    width: 132px;
+  }
 }
 
 /* for 480px or less */
@@ -1047,6 +1060,13 @@ button:active,
   #segs-check-all-label {
     margin-left: 26px;
   }
+  .item-name > .stats {
+    display: none;
+  }
+  .seg-name {
+    max-width: 40%;
+  }
+
 }
 
 /** hide routing and file controls **/
