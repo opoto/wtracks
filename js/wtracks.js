@@ -1597,7 +1597,9 @@ $(function(){
     segList = $("#segments-list")
     let i = 0
     forEachSegment(function(segment) {
-      addEditorSegmentItem(segment, i++);
+      if (segment.getLatLngs().length > 0) {
+        addEditorSegmentItem(segment, i++);
+      }
     });
     if (i == 0) {
       segList.text("You did not create any segment yet")
