@@ -701,7 +701,7 @@ div.trumbowyg-editor {
   border: 2px solid #666666;
   background: #c8ffc1;
   display: list-item;
-  width: fit-content;
+  width: max-content;
 }
 #segments-list .list-item {
   background: #d8ecf0;
