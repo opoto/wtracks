@@ -624,7 +624,8 @@ $(function(){
           moved = true;
         }
         // TODO: Workaround for Android Chrome display bug
-        moved && doAndroidChromiumTweak(item);
+        // not needed with current tweak
+        //moved && doAndroidChromiumTweak(item);
       });
     }
   });
