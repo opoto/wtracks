@@ -50,7 +50,7 @@ function addMymapsItem(name, props, addHandlers) {
   mapitem += mymapbtns;
   mapitem += "</span></li>";
   $("#mymaps-list").append(mapitem);
-  var newitem = $("#mymaps-list li:last");
+  let newitem = $("#mymaps-list li:last");
   newitem.find(".item-name").text(name);
   setMapItemVisibility(newitem.find(".item-visibility"), props);
   if (addHandlers) {

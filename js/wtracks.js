@@ -1566,9 +1566,7 @@ $(function(){
         newitem.remove()
         saveState()
       }
-    });
-    // TODO: Workaround for Android Chrome display bug
-    doAndroidChromiumTweak(newitem);
+    })
   }
 
   function joinCheckedSegments() {
@@ -1616,8 +1614,6 @@ $(function(){
             let uid = $(this).attr("uid")
             lyUids[uid]._wtOrder = idx
           })
-          // TODO: Workaround for Android Chrome display bug
-          //doAndroidChromiumTweak(item)
         }
       })
       $("#seg-editor-list").append("<button id='join-segs'>Join Checked Segments</button> <span class='material-icons symbol'>arrow_upward</span>")

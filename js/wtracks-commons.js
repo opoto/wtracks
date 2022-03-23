@@ -244,8 +244,9 @@ if (navigator.userAgentData && navigator.userAgentData.platform == 'Android') {
     }
   });
 }
+
 function doAndroidChromiumTweak(item) {
   if (isAndroidChromium) {
-    item.hide().show(0);
+    item.css("display", "inline-block")
   }
 }
