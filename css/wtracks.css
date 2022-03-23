@@ -686,6 +686,7 @@ div.trumbowyg-editor {
   list-style-type: none;
   padding-left: 0;
   width: 100%;
+  overflow-x: auto;
 }
 
 #mymaps-list li, #segments-list li {
@@ -738,7 +739,7 @@ div.trumbowyg-editor {
   margin-top: 3px;
 }
 #segs-check-all-label {
-  margin-left: 92px;
+  margin-left: 190px;
 }
 #segments-list button {
   height: 18px;
@@ -749,7 +750,7 @@ div.trumbowyg-editor {
 
 #join-segs {
   padding: 5px 10px;
-  margin: 0 0 20px 70px;
+  margin: 0 0 20px 170px;
   width: auto !important;
 }
 .seg-join-check {
@@ -1008,7 +1009,6 @@ button:active,
   }
   .seg-name {
     width: 300px;
-    max-width: 55%;
   }
   .overlay-name {
     width: 120px;
@@ -1055,18 +1055,21 @@ button:active,
     width: 80%;
   }
   #join-segs {
-    margin-left: 5px;
+    margin-left: 18px;
   }
   #segs-check-all-label {
-    margin-left: 26px;
+    margin-left: 40px;
   }
   .item-name > .stats {
     display: none;
   }
   .seg-name {
-    max-width: 40%;
+    width: 150px;
+    font-size: 90%;
   }
-
+  #segments-list button {
+    width: 40px !important;
+  }
 }
 
 /** hide routing and file controls **/
