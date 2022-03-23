@@ -1532,9 +1532,16 @@ $(function(){
     let segName = getSegmentName()
     let itemName = newitem.find(".item-name")
     let lastPt = arrayLast(segment.getLatLngs())
+    let firstPt = segment.getLatLngs()[0]
+    let segDuration
+    if (lastPt.time && firstPt.time) {
+      segDuration = " <i class='material-icons' title='Recorded time'>schedule</i> " + time2txt(Math.abs((new Date(lastPt.time).getTime() - new Date(firstPt.time).getTime()) / 1000))
+    } else {
+      segDuration = " <i class='material-icons' title='Estimated time'>av_timer</i> " + time2txt(L.PolyStats.getPointTime(lastPt))
+    }
     itemName.find(".name").text(segName)
-    itemName.find(".stats").html(" <i class='material-icons'>straighten</i> " + dist2txt(L.PolyStats.getPointDistance(lastPt)) + " <i class='material-icons'>trending_up</i> " + alt2txt(L.PolyStats.getStats(track).climbing) + " <i class='material-icons'>av_timer</i> " + time2txt(L.PolyStats.getPointTime(lastPt)))
-    itemName.attr("title", itemName.text())
+    itemName.find(".name").attr("title", segName)
+    itemName.find(".stats").html(" <i class='material-icons' title='One way distance'>straighten</i> " + dist2txt(L.PolyStats.getPointDistance(lastPt)) + " <i class='material-icons' title='Climbing'>trending_up</i> " + alt2txt(L.PolyStats.getStats(segment).climbing) + segDuration)
     itemName.attr("segName", segName)
     itemName.on("click", editSegmentName);
 
