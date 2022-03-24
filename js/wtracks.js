@@ -448,8 +448,9 @@ $(function(){
     });
     if (!L.PolyStats.getStats(track)) {
       polystats.updateStatsFrom(0);
+    } else {
+      showStats();
     }
-    showStats();
   }
 
   function updateSegmentStats(segment) {
@@ -3593,8 +3594,8 @@ $(function(){
     }
     clearStatus();
     if (!segmentClickListener({ target: activeTrack }, true)) {
-      // no segment added, but existing one was (possibly) extended, update it
-      //polystats.updateStatsFrom(0);
+      // no segment added, but existing one was (possibly) extended, update stats display
+      showStats()
     }
     saveState();
     closeMenu();
