@@ -321,7 +321,7 @@ $(function(){
 
   }
   loadActivities();
-  selectOption(selectActivity, getVal("wt.activity", Object.keys(activities)[0]));
+  selectOption(selectActivity, getVal("wt.activity", ACTIVITY_RECORDED))
 
   function getCurrentActivityName() {
     return getSelectedOption("#activity");
