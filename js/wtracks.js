@@ -292,7 +292,7 @@ $(function(){
   var selectActivity = $("#activity")[0];
   var activities = getJsonVal("wt.activities");
   var loadedActivities = ""; // bug tracking
-
+  const ACTIVITY_RECORDED = "Recorded"
   function loadActivities() {
     loadedActivities = "Loaded ";
     if (jQuery.isEmptyObject(activities)) {
@@ -301,19 +301,24 @@ $(function(){
     }
     loadedActivities += " " + Object.keys(activities).length + " activities";
     // append activities
-    objectForEach(activities, function(aname, aobj) {
-      if (!selectActivity.options[aname]) {
-        addSelectOption(selectActivity, aname);
+    objectForEach(activities, function(activityName) {
+      if (!selectActivity.options[activityName]) {
+        addSelectOption(selectActivity, activityName);
       }
     });
     loadedActivities += " in " + $("#activity option").length + " options";
     // remove deleted activities
     $("#activity option").each(function(i, v) {
-      if (!activities[v.value]) {
+      if (!activities[v.value] && (v.value != ACTIVITY_RECORDED)) {
         v.remove();
       }
     });
     loadedActivities += ", kept " + $("#activity option").length;
+    // this is to show the timing recorded in GPX
+    if (!selectActivity.options[ACTIVITY_RECORDED]) {
+      addSelectOption(selectActivity, ACTIVITY_RECORDED);
+    }
+
   }
   loadActivities();
   selectOption(selectActivity, getVal("wt.activity", Object.keys(activities)[0]));
@@ -323,48 +328,57 @@ $(function(){
   }
 
   function getCurrentActivity() {
-    var aname = getCurrentActivityName();
-    if (!aname) {
-      aname = Object.keys(activities)[0];
-      var dbgactivities = "";
+    let activityName = getCurrentActivityName();
+    if (!activityName) {
+      activityName = Object.keys(activities)[0];
+      let dbgActivities = "";
       $("#activity option").each(function(i, a) {
-        i > 0 && (dbgactivities += "; ");
-        dbgactivities += (a.innerText + ($(a).is(":selected") ? "*" : ""))
-      });
-      $("#activity option").each(function(a) {console.log(a)});
+        i > 0 && (dbgActivities += "; ")
+        dbgActivities += (a.innerText + ($(a).is(":selected") ? "*" : ""))
+      })
+      $("#activity option").each(function(a) {console.log(a)})
       onerror( "No current activity", {
         "Saved": getVal("wt.activity"),
-        "First": aname,
+        "First": activityName,
         "Nb activities": Object.keys(activities).length,
-        "Menu": dbgactivities,
+        "Menu": dbgActivities,
         "Loaded": loadedActivities,
         "Stack":  new Error().stack
       });
-      selectOption(selectActivity, aname);
+      selectOption(selectActivity, activityName)
     }
-    var cura = activities[aname];
-    if (!cura) {
-      onerror( "Activity not found", {
-        "Activity": aname,
-        "Nb activities": Object.keys(activities).length
-      });
+    let requestedActivity = activityName
+    if (!activities[requestedActivity]) {
       if (jQuery.isEmptyObject(activities)) {
         onerror( "No activity");
         loadActivities();
-        aname = Object.keys(activities)[0];
-        selectOption(selectActivity, aname);
-        cura = activities[aname];
+      }
+      activityName = Object.keys(activities)[0];
+      if (requestedActivity != ACTIVITY_RECORDED) {
+        onerror( "Activity was not found", {
+          "Activity": requestedActivity,
+          "Nb activities": Object.keys(activities).length
+        })
+        selectOption(selectActivity, activityName)
       }
     }
-    saveValOpt("wt.activity", aname);
-    return cura;
+    let currentActivity = activities[activityName]
+    saveValOpt("wt.activity", requestedActivity)
+    currentActivity.name = activityName
+    return currentActivity
   }
-  $("#activity").on("click", loadActivities);
+  // in case activities were updated in other tab/window
+  $("#activity").on("click", loadActivities)
+  // on user selection
   $("#activity").on("change", function() {
-    ga('send', 'event', 'activity', 'change', getCurrentActivityName());
-    polystats.setSpeedProfile(getCurrentActivity().speedprofile)
-    initSaveTimeProfiles()
-  });
+    ga('send', 'event', 'activity', 'change', getCurrentActivityName())
+    if (getCurrentActivityName() != ACTIVITY_RECORDED) {
+      polystats.setSpeedProfile(getCurrentActivity().speedprofile) // will show stats
+      initSaveTimeProfiles()
+    } else {
+      showStats()
+    }
+  })
 
   /* ------------------------------------------------------------*/
 
@@ -1365,7 +1379,7 @@ $(function(){
 
     try {
 
-      addSelectOption(profiles, getCurrentActivityName())
+      addSelectOption(profiles, getCurrentActivity().name)
       addSelectOption(profiles, SAVE_TIME_TO, "To date:")
       checkSaveTimeProfile()
 
@@ -1534,11 +1548,11 @@ $(function(){
     let itemName = newitem.find(".item-name")
     let lastPt = arrayLast(segment.getLatLngs())
     let firstPt = segment.getLatLngs()[0]
-    let segDuration
-    if (lastPt.time && firstPt.time) {
-      segDuration = " <i class='material-icons' title='Recorded time'>schedule</i> " + time2txt(Math.abs((new Date(lastPt.time).getTime() - new Date(firstPt.time).getTime()) / 1000))
-    } else {
+    let segDuration = getRecordedTime(segment.getLatLngs())
+    if (isUndefined(segDuration)) {
       segDuration = " <i class='material-icons' title='Estimated time'>av_timer</i> " + time2txt(L.PolyStats.getPointTime(lastPt))
+    } else {
+      segDuration = " <i class='material-icons' title='Recorded time'>schedule</i> " + time2txt(segDuration)
     }
     itemName.find(".name").text(segName)
     itemName.find(".name").attr("title", segName)
@@ -2043,7 +2057,8 @@ $(function(){
           removedpts += reduced;
           segment.setLatLngs(pruned);
           if (segment == track) {
-            polystats.updateStatsFrom(0);
+            polystats.updateStatsFrom(0)
+            prepareTrim()
           } else {
             updateSegmentStats(segment)
           }
@@ -4184,6 +4199,16 @@ $(function(){
     return div;
   }
 
+  function getRecordedTime(segmentPts) {
+    var lastPt = segmentPts[segmentPts.length - 1]
+    var firstPt = segmentPts[0]
+    let segDuration
+    if (lastPt.time && firstPt.time) {
+      segDuration = Math.abs((new Date(lastPt.time).getTime() - new Date(firstPt.time).getTime()) / 1000)
+    }
+    return segDuration
+  }
+
   function showStats() {
     var pts = track ? track.getLatLngs() : undefined;
     if (pts && pts.length > 0) {
@@ -4191,8 +4216,15 @@ $(function(){
       var first = pts[0];
       $("#distow").html(dist2txt(L.PolyStats.getPointDistance(last)));
       $("#distrt").html(dist2txt(2 * L.PolyStats.getPointDistance(last)));
-      $("#timeow").html(time2txt(L.PolyStats.getPointTime(last)));
-      $("#timert").html(time2txt(L.PolyStats.getPointTimeRoundTrip(first)));
+      let timeow, timert = 0
+      if (getCurrentActivityName() != ACTIVITY_RECORDED) {
+        timeow = L.PolyStats.getPointTime(last)
+        timert = L.PolyStats.getPointTimeRoundTrip(first)
+      } else {
+        timeow = getRecordedTime(pts)
+      }
+      $("#timeow").html(time2txt(timeow ? timeow : 0));
+      $("#timert").html(time2txt(timert));
       var stats = L.PolyStats.getStats(track);
       $("#altmin").html(alt2txt(stats.minalt));
       $("#altmax").html(alt2txt(stats.maxalt));
