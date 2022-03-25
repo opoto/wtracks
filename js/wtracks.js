@@ -292,6 +292,7 @@ $(function(){
   var selectActivity = $("#activity")[0];
   var activities = getJsonVal("wt.activities");
   var loadedActivities = ""; // bug tracking
+  var currentActivity
   const ACTIVITY_RECORDED = "Recorded"
   function loadActivities() {
     loadedActivities = "Loaded ";
@@ -327,7 +328,7 @@ $(function(){
     return getSelectedOption("#activity");
   }
 
-  function getCurrentActivity() {
+  function updateCurrentActivity() {
     let activityName = getCurrentActivityName();
     if (!activityName) {
       activityName = Object.keys(activities)[0];
@@ -362,21 +363,29 @@ $(function(){
         selectOption(selectActivity, activityName)
       }
     }
-    let currentActivity = activities[activityName]
+    currentActivity = activities[activityName]
     saveValOpt("wt.activity", requestedActivity)
     currentActivity.name = activityName
     return currentActivity
   }
+  updateCurrentActivity()
+
   // in case activities were updated in other tab/window
   $("#activity").on("click", loadActivities)
   // on user selection
   $("#activity").on("change", function() {
-    ga('send', 'event', 'activity', 'change', getCurrentActivityName())
-    if (getCurrentActivityName() != ACTIVITY_RECORDED) {
-      polystats.setSpeedProfile(getCurrentActivity().speedprofile) // will show stats
-      initSaveTimeProfiles()
+    let selectedActivity = getCurrentActivityName()
+    let currentActivityName = currentActivity.name
+    ga('send', 'event', 'activity', 'change', selectedActivity)
+    if (selectedActivity != ACTIVITY_RECORDED) {
+      if (selectedActivity != currentActivityName) {
+        polystats.setSpeedProfile(updateCurrentActivity().speedprofile) // will show stats
+        initSaveTimeProfiles()
+      } else {
+        showStats() // from recorded to estimated stats
+      }
     } else {
-      showStats()
+      showStats() // show recorded stats
     }
   })
 
@@ -457,7 +466,7 @@ $(function(){
   function setPolyStats() {
     polystats = L.polyStats(track, {
       chrono: true,
-      speedProfile: getCurrentActivity().speedprofile,
+      speedProfile: currentActivity.speedprofile,
       onUpdate: showStats,
     });
     if (!L.PolyStats.getStats(track)) {
@@ -470,7 +479,7 @@ $(function(){
   function updateSegmentStats(segment) {
     let segStats = L.polyStats(segment, {
       chrono: true,
-      speedProfile: getCurrentActivity().speedprofile
+      speedProfile: currentActivity.speedprofile
     })
     segStats.updateStatsFrom(0)
   }
@@ -1379,7 +1388,7 @@ $(function(){
 
     try {
 
-      addSelectOption(profiles, getCurrentActivity().name)
+      addSelectOption(profiles, currentActivity.name)
       addSelectOption(profiles, SAVE_TIME_TO, "To date:")
       checkSaveTimeProfile()
 
