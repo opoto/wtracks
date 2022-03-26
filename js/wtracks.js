@@ -2915,7 +2915,7 @@ $(function(){
 
   function createOrsRouter() {
     var router = L.Routing.openrouteservice(getApiKey(apikeys.orskey), {
-      profile: getCurrentActivity().vehicle == "foot" ? "foot-hiking" : "cycling-regular",
+      profile: currentActivity.vehicle == "foot" ? "foot-hiking" : "cycling-regular",
       parameters: {
         instructions: false,
         elevation: false,
@@ -2928,7 +2928,7 @@ $(function(){
   function createGraphHopperRouter() {
     var router = L.Routing.graphHopper(
       getApiKey(apikeys.ghkey, config.graphhopper.key()),
-      { urlParameters: { vehicle: getCurrentActivity().vehicle } }
+      { urlParameters: { vehicle: currentActivity.vehicle } }
     );
     router.on("response", checkGraphHopperRes);
     return router;
