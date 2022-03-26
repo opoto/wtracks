@@ -364,7 +364,6 @@ $(function(){
       }
     }
     currentActivity = activities[activityName]
-    saveValOpt("wt.activity", requestedActivity)
     currentActivity.name = activityName
     return currentActivity
   }
@@ -377,6 +376,7 @@ $(function(){
     let selectedActivity = getCurrentActivityName()
     let currentActivityName = currentActivity.name
     ga('send', 'event', 'activity', 'change', selectedActivity)
+    saveValOpt("wt.activity", selectedActivity)
     if (selectedActivity != ACTIVITY_RECORDED) {
       if (selectedActivity != currentActivityName) {
         polystats.setSpeedProfile(updateCurrentActivity().speedprofile) // will show stats
