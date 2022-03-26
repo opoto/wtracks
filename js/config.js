@@ -210,14 +210,14 @@ var config = {
       },
       visible: false
     },
-    /*
-    "MTB": {
-      url: 'http://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png',
+    "MTB map": {
+      url: 'https://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png',
       options: {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &amp; USGS'
       },
       visible: false
     },
+    /*
     "Map1.eu": {
       url: 'http://beta.map1.eu/tiles/{z}/{x}/{y}.jpg',
       options: {
