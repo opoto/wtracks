@@ -217,6 +217,15 @@ var config = {
       },
       visible: false
     },
+    "4UMaps": {
+      url: 'https://tileserver.4umaps.com/{z}/{x}/{y}.png',
+      options: {
+        minZoom: 4,
+        maxZoom: 15,
+        attribution: '&copy; <a href="https://4umaps.com">4UMaps</a> & <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      },
+      visible: false
+    },
     /*
     "Map1.eu": {
       url: 'http://beta.map1.eu/tiles/{z}/{x}/{y}.jpg',
