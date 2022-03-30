@@ -1628,10 +1628,10 @@ $(function(){
     forEachSegment(function(segment) {
         addEditorSegmentItem(segment, i++)
     })
-    if (i == 0) {
-      segList.text("You did not create any segment yet")
-    } else if (i > 1) {
-      $("#seg-editor-list").prepend("<span id='segs-check-all-label'><label>Check / Uncheck All <input type='checkbox' id='seg-join-check-all'/></label></span>")
+    let hasSegments = (i > 0)
+    $(".if-segments").toggle(hasSegments)
+    $(".no-segments").toggle(!hasSegments)
+    if (i > 1) {
       segList.sortable({
         //scroll: true,
         handle: ".item-drag",
@@ -1647,7 +1647,7 @@ $(function(){
           })
         }
       })
-      $("#seg-editor-list").append("<button id='join-segs'>Join Checked Segments</button> <span class='material-icons symbol'>arrow_upward</span>")
+      $("#seg-editor-list").append("<button id='join-segs'>Join Checked Segments</button> <label id='segs-check-all-label'><input type='checkbox' id='seg-join-check-all'/> All / None</label>")
       $("#join-segs").on("click", joinCheckedSegments)
       $("#seg-join-check-all").on("change", ()=>{
         let checked = isChecked($("#seg-join-check-all"))
@@ -3140,8 +3140,7 @@ $(function(){
         openFolder("tools-trkpts")
         break;
       case "s": // 's' - Segments
-        openMenu("tools")
-        openFolder("tools-segsedit")
+        openMenu("segments")
         break;
       case "?": // '?' - Help
         openMenu("about")

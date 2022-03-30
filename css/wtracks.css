@@ -272,6 +272,7 @@ ul.menutab li {
   float: left;
   border: 1px solid #ccc;
   border-radius: 10px 10px 0 0;
+  height: 31px;
 }
 
 /* Style the links inside the list items */
@@ -682,6 +683,10 @@ div.trumbowyg-editor {
   -webkit-user-drag: element;
 }
 
+.if-segments, .no-segments {
+  margin: 10px 0 0 10px;
+  display: inline-block;
+}
 #mymaps-list, #segments-list {
   list-style-type: none;
   padding-left: 0;
@@ -739,7 +744,7 @@ div.trumbowyg-editor {
   margin-top: 3px;
 }
 #segs-check-all-label {
-  margin-left: 190px;
+  margin-left: 156px;
 }
 #segments-list button {
   height: 18px;
@@ -750,7 +755,7 @@ div.trumbowyg-editor {
 
 #join-segs {
   padding: 5px 10px;
-  margin: 0 0 20px 170px;
+  margin: 0 0 20px 10px;
   width: auto !important;
 }
 .seg-join-check {
@@ -973,6 +978,10 @@ button:active,
   color: #1992ca;
 }
 
+.show-on-small-screen {
+  display: none;
+}
+
 /* for 680px or less */
 @media screen and (max-width: 680px) {
   .title {
@@ -1033,6 +1042,21 @@ button:active,
   .hide-on-small-screen {
     display: none;
   }
+  .show-on-small-screen {
+    display: initial;
+  }
+  .small-menu-link {
+    padding: 6px 16px !important;
+  }
+  .small-menu-link .show-on-small-screen {
+    font-size: 19px;
+  }
+  .tab {
+    font-size: 14px;
+  }
+  ul.menutab li a {
+    padding: 8px 14px;
+  }
   /*
   .statistics th, .statistics td {
     font-size: 90%;
@@ -1054,11 +1078,8 @@ button:active,
   #mymap-layerslist {
     width: 80%;
   }
-  #join-segs {
-    margin-left: 18px;
-  }
   #segs-check-all-label {
-    margin-left: 40px;
+    margin-left: 5px;
   }
   .item-name > .stats {
     display: none;

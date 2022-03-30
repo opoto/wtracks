@@ -83,9 +83,16 @@
     <div class="box-header"><a id="menu-close" href="#" class="close-button">×</a></div>
     <ul class="menutab">
       <li><a href="#" class="tablinks" id="tabfile">File</a></li>
+      <li><a href="#" class="tablinks" id="tabsegments">Segments</a></li>
       <li><a href="#" class="tablinks" id="tabtools">Tools</a></li>
-      <li><a href="#" class="tablinks" id="tabsettings">Settings</a></li>
-      <li><a href="#" class="tablinks" id="tababout">About</a></li>
+      <li><a href="#" class="tablinks small-menu-link" id="tabsettings">
+        <span class="hide-on-small-screen">Settings</span>
+        <i class="material-icons show-on-small-screen">settings</i>
+      </a></li>
+      <li><a href="#" class="tablinks small-menu-link" id="tababout">
+        <span class="hide-on-small-screen">About</span>
+        <i class="material-icons show-on-small-screen">question_mark</i>
+      </a></li>
     </ul>
 
     <!-- FILE -->
@@ -267,20 +274,28 @@
       </tr>
     </table>
 
+    <!-- SEGMENTS -->
+    <table id="menusegments">
+      <tr class="nobottomborder">
+        <td colspan="2" >
+          <span class="if-segments">Edit your track's segments</span>
+          <span class="no-segments">You did not create any segment yet</span>
+          <span id="segsedittxt" class="help-b material-icons" title="Help">help_outline</span>
+          <p id="segsedittxt-help" class="help-p">
+            Drag and drop to reorder segments. Click on name to rename. Click on color to set color. Click on trash to delete.
+          </p>
+        </td>
+      </tr>
+      <tr class="notopborder">
+        <td colspan="2" id="seg-editor-list">
+        </td>
+      </tr>
+    </table>
+
     <!-- TOOLS -->
     <table id="menutools">
 
-      <tr class="nobottomborder">
-        <td colspan="2">
-          <div>
-            <span class="fold fold-tools-closed material-icons" id="tools-trkpts-closed">keyboard_arrow_right</span>
-            <span class="fold-tools trkpts material-icons">keyboard_arrow_down</span>
-            <span  class="fold fold-link fold-tools" id="tools-trkpts">Track Points</span>
-          </div>
-        </td>
-      </tr>
-
-      <tr class="fold-tools trkpts">
+      <tr class="notopborder">
         <td colspan="2">
           <input type="checkbox" id="allsegments" class="no-trim"/>
           <label for="allsegments">Apply (*) to all track segments</label>
@@ -290,7 +305,7 @@
           </p>
         </td>
       </tr>
-      <tr class="fold-tools trkpts">
+      <tr>
         <td>
           <button id="compress" class="no-trim">Compress*</button>
         </td>
@@ -308,7 +323,7 @@
           </p>
         </td>
       </tr>
-      <tr class="fold-tools trkpts">
+      <tr>
         <td>
           <button id="elevate" class="no-trim isdisabled">Elevate*</button>
         </td>
@@ -321,7 +336,7 @@
           </p>
         </td>
       </tr>
-      <tr class="fold-tools trkpts">
+      <tr>
         <td>
           <button id="save-time" class="no-trim">Save Time*</button>
         </td>
@@ -337,7 +352,7 @@
           </p>
         </td>
       </tr>
-      <tr class="fold-tools trkpts">
+      <tr>
         <td>
           <button id="shift-time" class="no-trim">Shift Time*</button>
         </td>
@@ -356,7 +371,7 @@
           </p>
         </td>
       </tr>
-      <tr class="fold-tools trkpts">
+      <tr>
         <td>
           <button id="cleanup" class="no-trim">Clean up*</button>
           <button id="fillup" class="no-trim">Fill up*</button>
@@ -373,7 +388,7 @@
           </p>
         </td>
       </tr>
-      <tr class="fold-tools trkpts">
+      <tr>
         <td>
           <button id="revert" class="no-trim">Revert*</button>
         </td>
@@ -385,7 +400,7 @@
           </p>
         </td>
       </tr>
-      <tr class="fold-tools trkpts">
+      <tr>
         <td>
           <select id="trim-type">
             <option>Trim start</option>
@@ -400,32 +415,6 @@
           </p>
         </td>
       </tr>
-
-      <tr class="nobottomborder">
-        <td colspan="2">
-          <div>
-            <span class="fold fold-tools-closed material-icons" id="tools-segsedit-closed">keyboard_arrow_right</span>
-            <span class="fold-tools segsedit material-icons">keyboard_arrow_down</span>
-            <span  class="fold fold-link fold-tools" id="tools-segsedit">
-              Segments
-              <span id="segsedittxt" class="help-b material-icons" title="Help">help_outline</span>
-            </span>
-          </div>
-        </td>
-      </tr>
-
-      <tr class="fold-tools segsedit notopborder nobottomborder">
-        <td colspan="2" >
-          <p id="segsedittxt-help" class="help-p">
-            Drag and drop to reorder segments. Click on name to rename. Click on color to set color. Click on trash to delete.
-          </p>
-        </td>
-      </tr>
-      <tr class="fold-tools segsedit notopborder">
-        <td colspan="2" id="seg-editor-list">
-        </td>
-      </tr>
-
     </table>
 
     <!-- SETTINGS -->
