@@ -3137,7 +3137,6 @@ $(function(){
         break;
       case "t": // 't' - Tools
         openMenu("tools");
-        openFolder("tools-trkpts")
         break;
       case "s": // 's' - Segments
         openMenu("segments")
