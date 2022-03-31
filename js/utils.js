@@ -1,6 +1,9 @@
+'use strict';
+/* globals $, ga, config */
+
 if (window.document.documentMode) {
-  alert("Internet Explorer is not supported anymore. Please use a modern browser, such as Edge, Firefox or Chrome")
-  window.location = "https://www.mozilla.org/firefox/new/"
+  alert("Internet Explorer is not supported anymore. Please use a modern browser, such as Edge, Firefox or Chrome");
+  window.location = "https://www.mozilla.org/firefox/new/";
 }
 
 /* ----------------------- LOGGING SHORTCUTS -------------------------- */
@@ -52,14 +55,14 @@ if (!String.prototype.startsWith) {
 }
 
 function rounddec(number, decimals) {
-  var coef = Math.pow(10, decimals);
+  const coef = Math.pow(10, decimals);
   return Math.round(number * coef) / coef;
 }
 
 /* ----------------------- Html encode/decode ---------------------- */
 
 function htmlEncode(txt) {
-    return $('<div/>').text(txt).html();
+  return $('<div/>').text(txt).html();
 }
 function htmlDecode(html) {
     return $('<div/>').html(html).text();
@@ -74,8 +77,8 @@ function isSafari() {
 
 // Extract URL parameters from current location, or optLocation if set
 function getParameterByName(name, defaultValue, optLocation) {
-  let val = new URLSearchParams(optLocation ? optLocation : window.location.search).get(name)
-  return val ? val : defaultValue
+  let val = new URLSearchParams(optLocation ? optLocation : window.location.search).get(name);
+  return val ? val : defaultValue;
 }
 
 // Remove query parameters from URL if it has some
@@ -100,7 +103,7 @@ function noTranslate(selector) {
 
 // add a drop down menu item
 function addSelectOption(select, optval, optdisplay) {
-  var opt = document.createElement("option");
+  const opt = document.createElement("option");
   opt.innerHTML = optdisplay || optval;
   opt.value = optval;
   opt.setAttribute("name", optval);
@@ -129,106 +132,106 @@ function setChecked(selector, val) {
 
 function enableInput(condition, inputSelector) {
   if (condition) {
-    $(inputSelector).removeAttr("disabled")
+    $(inputSelector).removeAttr("disabled");
   } else {
-    $(inputSelector).attr("disabled", "disabled")
+    $(inputSelector).attr("disabled", "disabled");
   }
 }
 
 function setInvalidInput(jqInput, isInvalid, invalidClass) {
   if (!invalidClass) {
-    invalidClass = "invalid"
+    invalidClass = "invalid";
   }
   if (isInvalid) {
-    jqInput.addClass(invalidClass)
-    jqInput.focus()
+    jqInput.addClass(invalidClass);
+    jqInput.focus();
   } else {
-    jqInput.removeClass(invalidClass)
+    jqInput.removeClass(invalidClass);
   }
 }
 
 function getRealInput(jqInput, mandatory, invalidClass) {
-  let val
-  let valStr = jqInput.val().trim()
+  let val;
+  let valStr = jqInput.val().trim();
   if (valStr) {
     try {
-      val = parseFloat(valStr)
-      setInvalidInput(jqInput, isNaN(val), invalidClass)
+      val = parseFloat(valStr);
+      setInvalidInput(jqInput, isNaN(val), invalidClass);
     } catch (error) {
-      setInvalidInput(jqInput, true, invalidClass)
+      setInvalidInput(jqInput, true, invalidClass);
     }
   } else if (mandatory) {
-    setInvalidInput(jqInput, true, invalidClass)
+    setInvalidInput(jqInput, true, invalidClass);
   }
-  return val
+  return val;
 }
 
 function getDateTimeInput(jqInput, mandatory, invalidClass) {
 
-  let dateStr = jqInput.val().trim().replace(" ", "T")
+  let dateStr = jqInput.val().trim().replace(" ", "T");
   if (mandatory && !dateStr) {
-    setInvalidInput(jqInput, true, invalidClass)
+    setInvalidInput(jqInput, true, invalidClass);
   }
 
-  let date
+  let date;
   if (dateStr) try {
-    var b = dateStr.split(/\D/)
+    let b = dateStr.split(/\D/);
     if (b.length == 5) {
       // Workaround for potential missing seconds
-      b.push("00")
+      b.push("00");
     }
-    date = new Date(b[0], b[1]-1, b[2], b[3], b[4], b[5])
-    date.toISOString() // make sure it works
-    setInvalidInput(jqInput, false, invalidClass)
+    date = new Date(b[0], b[1]-1, b[2], b[3], b[4], b[5]);
+    date.toISOString(); // make sure it works
+    setInvalidInput(jqInput, false, invalidClass);
   } catch(err) {
-    setInvalidInput(jqInput, true, invalidClass)
+    setInvalidInput(jqInput, true, invalidClass);
   }
 
-  return date
+  return date;
 }
 
 function setDateTimeInput(jqInput, ptTime) {
-  let v = ""
+  let v = "";
   if (ptTime) {
     // get point's recorded date
-    const d = new Date(ptTime)
+    const d = new Date(ptTime);
     // get this time in local value in "normalized" format
-    v=d.getFullYear() + "-" + ("0" + (d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2) + "T" + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2)+ ":" + ("0" + d.getSeconds()).slice(-2)
+    v=d.getFullYear() + "-" + ("0" + (d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2) + "T" + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2)+ ":" + ("0" + d.getSeconds()).slice(-2);
     // set input value
   }
-  jqInput.val(v)
+  jqInput.val(v);
 }
 
 /* ----------------------- Local storage -------------------------- */
 
-var valStorage = undefined
+let valStorage;
 function getValStorage() {
   if (valStorage === undefined) {
     try {
       window.localStorage.setItem("wt_test_storage", "1");
       window.localStorage.removeItem("wt_test_storage");
-      valStorage = localStorage
+      valStorage = localStorage;
     } catch (err) {
-      valStorage = window.sessionStorage
+      valStorage = window.sessionStorage;
     }
   }
-  return valStorage
+  return valStorage;
 }
 
 function storeVal(name, val) {
   //log("store " + name + "=" + val);
-  var store = getValStorage();
+  const store = getValStorage();
   if (store) {
     if (isUnset(val)) {
       store.removeItem(name);
     } else {
       if (typeof val != "string") {
-        val = val.toString()
+        val = val.toString();
       }
       try {
         store.setItem(name, val);
       } catch (err) {
-        var kbsz = val.length ? Math.round(val.length/1024) : 0;
+        const kbsz = val.length ? Math.round(val.length/1024) : 0;
         error("Cannot store value " + name + ": " + kbsz + "KB");
         ga('send', 'event', 'error', 'storeVal failed: ' + err.toString(), name, kbsz);
         // switch to sessionStorage?
@@ -239,30 +242,30 @@ function storeVal(name, val) {
 
 function storeJsonVal(name, val) {
   if (JSON && JSON.stringify) {
-    v = JSON.stringify(val);
+    const v = JSON.stringify(val);
     storeVal(name, v);
   }
 }
 
 function getVal(name, defval) {
-  var store = getValStorage();
-  var v = store ? store.getItem(name) : undefined;
+  const store = getValStorage();
+  const v = store ? store.getItem(name) : undefined;
   return isUnset(v) ? defval : v;
 }
 
 function getNumVal(name, defval) {
-  var v = getVal(name, defval);
+  const v = getVal(name, defval);
   return v && parseFloat(v);
 }
 
 function getBoolVal(name, defval) {
-  var v = getVal(name, defval);
+  const v = getVal(name, defval);
   return v && (v == "true" || v === true);
 }
 
 function getJsonVal(name, defval) {
-  var v = getVal(name);
-  var val;
+  let v = getVal(name);
+  let val;
   try {
     val = v && JSON && JSON.parse ? JSON.parse(v) : undefined;
   } catch (ex) {
@@ -277,8 +280,8 @@ function getJsonVal(name, defval) {
 // ga('send', 'event', category, action, label, value)
 
 function initGoogleAnalytics(trackingid) {
-  var gaScriptUrl = 'https://www.google-analytics.com/analytics.js';
-  var gadbg = getVal("wt.ga.dbg", "0");
+  let gaScriptUrl = 'https://www.google-analytics.com/analytics.js';
+  const gadbg = getVal("wt.ga.dbg", "0");
   if (gadbg != '0') {
     gaScriptUrl = 'https://www.google-analytics.com/analytics_debug.js';
   }
@@ -344,7 +347,7 @@ if (config.email && config.email.selector) {
 
 /* ------------------------------ CORS URL  --------------------------------- */
 // /!\ Some set a cookie, which fails with Safari when 'prevent cross site tracking' is activated
-var corsProxy =
+const corsProxy =
 "https://wtracks-cors-proxy.herokuapp.com/"
 ;
 /*
@@ -364,7 +367,7 @@ function corsUrl(url) {
 
 /* ------------------------------ Encoding --------------------------------- */
 function n10dLocation() {
-  var res = window.location.toString();
+  let res = window.location.toString();
   res = res.replace(/\?.*$/, "").replace(/\#.*$/, "");
   res = res.replace(/^.*:\/\//, "//");
   res = res.replace(/index.html$/, "");
@@ -373,28 +376,28 @@ function n10dLocation() {
 }
 
 function getLocalCode() {
-  var res = getVal("wtracks.code");
+  const res = getVal("wtracks.code");
   return res;
 }
 
 function strxor(s, k) {
-  var enc = "";
+  let enc = "";
   // make sure that input is string
   s = s.toString();
-  for (var i = 0; i < s.length; i++) {
+  for (let i = 0; i < s.length; i++) {
     // create block
-    var a = s.charCodeAt(i);
+    const a = s.charCodeAt(i);
     // bitwise XOR
-    var b = a ^ k.charCodeAt(i % k.length);
+    const b = a ^ k.charCodeAt(i % k.length);
     enc = enc + String.fromCharCode(b);
   }
   return enc;
 }
 
 function getEncodeParams(s1, s2) {
-  var islocal = (window.location.toString().indexOf("file:") === 0) ||
+  const islocal = (window.location.toString().indexOf("file:") === 0) ||
     (window.location.toString().indexOf(".dev.local:") > 0);
-  var res = {
+  const res = {
     k: islocal ? getLocalCode() : n10dLocation()
   };
   if (s1 || s2) {
@@ -404,12 +407,12 @@ function getEncodeParams(s1, s2) {
 }
 
 function strencode(s) {
-  var param = getEncodeParams();
+  const param = getEncodeParams();
   return encodeURIComponent(strxor(s, param.k));
 }
 
 function strdecode(s1, s2) {
-  var param = getEncodeParams(s1, s2);
+  const param = getEncodeParams(s1, s2);
   return param.s ? strxor(decodeURIComponent(param.s), param.k ? param.k : "") : param.s;
 }
 
@@ -424,12 +427,12 @@ function b64EncodeUnicode(str) {
     return String.fromCharCode('0x' + p1);
   }))
   // Convert to URL safe base 64: replace  + and / by - and _
-  .replaceAll("+", "-").replaceAll("/", "_")
+  .replaceAll("+", "-").replaceAll("/", "_");
 }
 
 function b64DecodeUnicode(str) {
   // Assume URL safe base 64, with - and _ instead of + and /
-  str = str.replaceAll("-", "+").replaceAll("_", "/")
+  str = str.replaceAll("-", "+").replaceAll("_", "/");
   return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
     return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
   }).join(''));
@@ -455,72 +458,72 @@ function copyToClipboard(msg, text) {
  */
  function copyOnClick(selector, options) {
 
-  let copyOk = (options && options.copyOk) || "Copied to clipboard"
-  let copyKO = (options && options.copyKO) || "! Cannot copy !"
-  let statusDelay = (options && options.statusDelay) || 1000
+  let copyOk = (options && options.copyOk) || "Copied to clipboard";
+  let copyKO = (options && options.copyKO) || "! Cannot copy !";
+  let statusDelay = (options && options.statusDelay) || 1000;
 
   function showCopyStatus(clicked, input, statusText) {
-    let temp = input.val()
-    let type = input.attr("type")
+    let temp = input.val();
+    let type = input.attr("type");
     if (type == "password") {
-      input.attr("type", "text")
+      input.attr("type", "text");
     } else {
       type = undefined;
     }
-    input.val(statusText)
+    input.val(statusText);
 
-    clicked.prop("disabled", true)
-    input.prop("disabled", true)
+    clicked.prop("disabled", true);
+    input.prop("disabled", true);
     setTimeout(function() {
       if (type) {
-        input.attr("type", type)
+        input.attr("type", type);
       }
-      input.val(temp)
-      clicked.prop("disabled", false)
-      input.prop("disabled", false)
+      input.val(temp);
+      clicked.prop("disabled", false);
+      input.prop("disabled", false);
       if (options && options.postCopy) {
-        options.postCopy(input)
+        options.postCopy(input);
       }
     }, statusDelay);
   }
 
   $(selector).click(function (event) {
     if (event.target.disabled) {
-      return
+      return;
     }
-    let clicked = $(event.target)
-    let input
+    let clicked = $(event.target);
+    let input;
     if (event.target.attributes["data-copyonclick-from"]) {
-      let inputId = event.target.attributes["data-copyonclick-from"].value
-      input = $("#"+inputId)
+      let inputId = event.target.attributes["data-copyonclick-from"].value;
+      input = $("#"+inputId);
     }
     if(!input || input.length == 0) {
-      console.error("copyOnClick: invalid or missing 'data-copyonclick-from' attribute")
+      console.error("copyOnClick: invalid or missing 'data-copyonclick-from' attribute");
     }
     if (options && options.preCopy) {
-      options.preCopy(input)
+      options.preCopy(input);
     }
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(input.val())
-      .then(function() { showCopyStatus(clicked, input, copyOk) })
-      .catch(function() { showCopyStatus(clicked, input, copyKO) })
+      .then(function() { showCopyStatus(clicked, input, copyOk); })
+      .catch(function() { showCopyStatus(clicked, input, copyKO); });
     } else {
       input[0].select();
       try {
-        document.execCommand("copy")
-        showCopyStatus(clicked, input, copyOk)
+        document.execCommand("copy");
+        showCopyStatus(clicked, input, copyOk);
       } catch(err) {
-        showCopyStatus(clicked, input, copyKO)
+        showCopyStatus(clicked, input, copyKO);
       }
     }
-  })
+  });
 }
 
 /* ------------------ Iteration helpers ----------------- */
 
 function arrayMove(arr, old_index, new_index) {
     if (new_index >= arr.length) {
-        var k = new_index - arr.length + 1;
+        let k = new_index - arr.length + 1;
         while (k--) {
             arr.push(undefined);
         }
@@ -531,7 +534,7 @@ function arrayMove(arr, old_index, new_index) {
 
 function objectForEach(object, func) {
   if (object) {
-    for (var o in object) {
+    for (let o in object) {
       if (hasOwnProperty.call(object, o)) {
         if (func(o, object[o])) break;
       }
@@ -540,8 +543,8 @@ function objectForEach(object, func) {
 }
 function arrayForEach(array, func) {
   if (array) {
-    var i = 0;
-    var len = array.length;
+    let i = 0;
+    let len = array.length;
     while (i < len) {
       if (func(i, array[i])) break;
       if (len > array.length) {
@@ -554,14 +557,14 @@ function arrayForEach(array, func) {
 }
 
 function arrayLast(array) {
-  return array.slice(-1)[0]
+  return array.slice(-1)[0];
 }
 
 /* ---------------------- track errors ------------------------ */
-var errors = [];
+let errors = [];
 
 window.onerror = function(messageOrEvent, source, line, row, err) {
-  var label, errmsg, notWTracks;
+  let label, errmsg, notWTracks;
   try {
     label = {
       path: window.location.pathname,
@@ -569,15 +572,13 @@ window.onerror = function(messageOrEvent, source, line, row, err) {
     };
     errmsg = messageOrEvent.toString();
     notWTracks =
-      (errmsg.match(/'getReadMode(Render|Extract|Config)'/g)
-      && (navigator.userAgent.indexOf("HeyTapBrowser") > 0))
-      ||
-      errmsg.startsWith("Script error.")
-      ||
-      errmsg.indexOf("Refused to evaluate a string as JavaScript because 'unsafe-eval'") >= 0
-      ||
-      errmsg.indexOf("chrome-extension://") >= 0
-      ;
+      (
+        errmsg.match(/'getReadMode(Render|Extract|Config)'/g) &&
+        (navigator.userAgent.indexOf("HeyTapBrowser") > 0)
+      ) ||
+      errmsg.startsWith("Script error.") ||
+      errmsg.indexOf("Refused to evaluate a string as JavaScript because 'unsafe-eval'") >= 0 ||
+      errmsg.indexOf("chrome-extension://") >= 0;
     if (typeof source == "string") {
       label.location =  source + ": " + line + ", " + row;
     } else if (source) {
@@ -605,4 +606,4 @@ window.onerror = function(messageOrEvent, source, line, row, err) {
     ga('send', 'event', 'error', errmsg, JSON.stringify(label));
   }
   errors.push(errmsg);
-}
+};

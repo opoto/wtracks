@@ -1,34 +1,48 @@
+'use strict';
+/* globals
+      $, ga, L, config, initGoogleAnalytics,
+      getBoolVal, getJsonVal, getVal, storeVal, storeJsonVal, getValStorage,
+      objectForEach, arrayForEach, arrayMove,
+      copyOnClick
+*/
+
 if (config.google && config.google.analyticsid) {
   initGoogleAnalytics(config.google.analyticsid());
 }
 
 /* ---------------------- Start service worker ------------------------ */
 
-let useServiceWorker = getBoolVal("wt.useServiceWorker", config.useServiceWorker)
+let useServiceWorker = getBoolVal("wt.useServiceWorker", config.useServiceWorker);
+function getUseServiceWorker() {
+  return useServiceWorker;
+}
+function setUseServiceWorker(v) {
+  useServiceWorker = v;
+}
 function initServiceWorker(isLoaded) {
   function registerSW() {
-    navigator.serviceWorker.register('./service-worker.js')
+    navigator.serviceWorker.register('./service-worker.js');
   }
   if ('serviceWorker' in navigator) {
     if (useServiceWorker) {
       if (isLoaded) {
-        registerSW()
+        registerSW();
       } else {
         // Use the window load event to keep the page load performant
         window.addEventListener('load', function() {
-          registerSW()
-        })
+          registerSW();
+        });
       }
     } else {
       navigator.serviceWorker.getRegistrations().then((regs)=>{
         regs.forEach(reg => {
-          reg.unregister()
-        })
-      })
+          reg.unregister();
+        });
+      });
     }
   }
 }
-initServiceWorker()
+initServiceWorker();
 
 function forceReload() {
   $.ajax(
@@ -37,13 +51,13 @@ function forceReload() {
     }
   ).then((resp)=>{
     if (confirm("Latest WTracks version is needed to proceed, reload now?")) {
-      window.location.reload()
+      window.location.reload();
     } else {
-      console.error("Using old WTracks version will cause errors")
+      console.error("Using old WTracks version will cause errors");
     }
   }).fail((err) => {
-    console.error("Cannot get latest WTracks version")
-  })
+    console.error("Cannot get latest WTracks version");
+  });
 }
 
 function saveValOpt(name, val) {
@@ -77,12 +91,12 @@ function consentCookies() {
   var EXPIRATION = Math.round(1000*60*60*24*30.5*18); // 18 months in ms
   var cookies = getVal("wt.cookies");
   if ((!cookies) || (now.getTime() > new Date(cookies).getTime() + EXPIRATION)) {
-    $('body').prepend("\
-    <div id='cookies-banner' style='display: none;'>\
-      <button id='cookies-accept'>Got it!</button>\
-      <div>This website uses cookies and browser's local storage to restore your status and settings on your next visits. \
-      <a href='doc/#privacy' id='cookies-more'>Read more</a></div>\
-    </div>");
+    $('body').prepend(`
+    <div id='cookies-banner' style='display: none;'>
+      <button id='cookies-accept'>Got it!</button>
+      <div>This website uses cookies and browser's local storage to restore your status and settings on your next visits.
+      <a href='doc/#privacy' id='cookies-more'>Read more</a></div>
+    </div>`);
     $("#cookies-banner").show();
     $("#cookies-accept").click(function() {
       $("#cookies-banner").hide();
@@ -93,8 +107,8 @@ function consentCookies() {
 
 /* help buttons */
 function toggleHelp(e) {
-  $("#" + this.id + "-help").toggle();
-  $("." + this.id + "-help").toggle();
+  $("#" + e.target.id + "-help").toggle();
+  $("." + e.target.id + "-help").toggle();
   e.stopPropagation();
   return false;
 }
@@ -247,6 +261,6 @@ if (navigator.userAgentData && navigator.userAgentData.platform == 'Android') {
 
 function doAndroidChromiumTweak(item) {
   if (isAndroidChromium) {
-    item.css("display", "inline-block")
+    item.css("display", "inline-block");
   }
 }

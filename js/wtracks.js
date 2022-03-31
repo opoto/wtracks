@@ -1,3 +1,20 @@
+'use strict';
+/* globals
+      $, ga, L, initGoogleAnalytics, google, Dropbox, jscolor, config, pastesLib,
+      isCryptoSupported, aesGcmEncrypt, aesGcmDecrypt,
+      isUnset, isUndefined, jsonClone, getParameterByName, clearUrlQuery, corsUrl,
+      debug, log, warn, error,
+      consentCookies, htmlEncode, strencode, strdecode, saveAs, forceReload, isSafari,
+      getBoolVal, getJsonVal, getBoolVal, getVal,
+      saveValOpt, saveJsonValOpt, storeVal, storeJsonVal, getValStorage,
+      objectForEach, arrayForEach, arrayMove, arrayLast, mapsForEach,
+      copyOnClick, rounddec, isNumeric, noTranslate,
+      addSelectOption, getSelectedOption, selectOption, addsSelectOption, isChecked, setChecked,
+      enableInput, setDateTimeInput, getDateTimeInput, getRealInput,
+      mymaps, mapsList, MAP_MY, getMapListEntryProps, PMTiles, getCrsFromName,
+      isStateSaved, setSaveState, getSaveState, getUseServiceWorker, setUseServiceWorker, initServiceWorker
+*/
+
 var map;
 var track;
 var waypoints;
@@ -14,7 +31,7 @@ var polystats;
 */
 L.Layer.prototype.setInteractive = function (interactive) {
   if (this.getLayers) {
-    arrayForEach(getLayers(), function (idx, layer) {
+    arrayForEach(this.getLayers(), function (idx, layer) {
       layer.setInteractive(interactive);
     });
     return;
@@ -32,7 +49,7 @@ L.Layer.prototype.setInteractive = function (interactive) {
   }
 };
 
-let statusTimeout
+let statusTimeout;
 function setStatus(msg, options) {
   $("#status-msg").text(msg);
   var statusclass = options && options.class ? options.class : "status-info";
@@ -42,15 +59,15 @@ function setStatus(msg, options) {
   $("#status").fadeIn();
   if (options && options.timeout) {
     if (statusTimeout) {
-      clearTimeout(statusTimeout)
+      clearTimeout(statusTimeout);
     }
     statusTimeout = setTimeout(clearStatus, 1000 * options.timeout);
   }
 }
 
 function clearStatus() {
-  $("#status").fadeOut(800)
-  statusTimeout = undefined
+  $("#status").fadeOut(800);
+  statusTimeout = undefined;
 }
 
 setStatus("Loading...", { spinner: true });
@@ -70,13 +87,13 @@ $(function(){
 
   /* folding settings */
   function toggleElement(e) {
-    $("." + this.id.slice(0, -1) + "-toggle").toggle();
+    $("." + e.target.id.slice(0, -1) + "-toggle").toggle();
   }
   $(".toggle").on("click", toggleElement);
 
   /* folding settings */
   function openFolder(id) {
-    eltInfo = id.split("-");
+    let eltInfo = id.split("-");
     // hide all group
     $(".fold-" + eltInfo[0] + ":not(.fold-link)").hide();
     $(".fold-" + eltInfo[0] + "-closed").show();
@@ -91,10 +108,10 @@ $(function(){
   $(".fold").on("click", function(e) { openFolder(e.currentTarget.id); });
 
   // defaults
-  openFolder("file-newtrk")
-  openFolder("tools-trkpts")
-  openFolder("settings-savstg")
-  openFolder("about-donate")
+  openFolder("file-newtrk");
+  openFolder("tools-trkpts");
+  openFolder("settings-savstg");
+  openFolder("about-donate");
 
   function updateMapStyle() {
     if (!map.editTools) {
@@ -235,25 +252,25 @@ $(function(){
 
   let warns = 0;
   function showWarning(title, msg, timeout) {
-    let warnElt = $("<div class='warning'>")
-    warnElt.append($("<div class='box-header'><span class='warning-title'>"
-      + title + "</span><a href='#' class='close-button'>×</a></div>"))
-    let warnMsg = $("<div class='warning-msg'>")
-    warnMsg.html(msg)
-    warnElt.append(warnMsg)
-    $("#warning-box").append(warnElt)
-    warns++
-    let closeButton = warnElt.find(".close-button")
+    let warnElt = $("<div class='warning'>");
+    warnElt.append($("<div class='box-header'><span class='warning-title'>" +
+      title + "</span><a href='#' class='close-button'>×</a></div>"));
+    let warnMsg = $("<div class='warning-msg'>");
+    warnMsg.html(msg);
+    warnElt.append(warnMsg);
+    $("#warning-box").append(warnElt);
+    warns++;
+    let closeButton = warnElt.find(".close-button");
     closeButton.on("click", function() {
-      warnElt.remove()
+      warnElt.remove();
       if (--warns <= 0) {
         $("#warning-box").hide();
       }
-    })
+    });
     $("#warning-box").show();
     /* */
     setTimeout(function() {
-      closeButton.trigger("click")
+      closeButton.trigger("click");
     }, timeout ? timeout: 7000);
     /* */
   }
@@ -275,13 +292,13 @@ $(function(){
 
   function openApiKeyInfo(force) {
     if ((force || !apikeyNoMore) && $(".apikeys-dont").length == 0) {
-      let apiKeyInfo = $("<a href='doc/#api-keys'>Set your API keys</a> to enable elevation and routing services."
-      + "<span class='apikeys-dont'><br />To ignore this warning click <a class='apikeys-nomore' href='#'>stop</a></span>")
+      let apiKeyInfo = $("<a href='doc/#api-keys'>Set your API keys</a> to enable elevation and routing services." +
+      "<span class='apikeys-dont'><br />To ignore this warning click <a class='apikeys-nomore' href='#'>stop</a></span>");
       apiKeyInfo.find(".apikeys-dont").toggle(!force);
       apiKeyInfo.find(".apikeys-nomore").on("click", function(evt) {
-        changeApikeyNomore(true)
-        $(evt.target).parents(".warning").find(".close-button").trigger("click")
-        return false
+        changeApikeyNomore(true);
+        $(evt.target).parents(".warning").find(".close-button").trigger("click");
+        return false;
       });
       showWarning("No API key defined", apiKeyInfo, 10000);
     }
@@ -292,11 +309,11 @@ $(function(){
   var selectActivity = $("#activity")[0];
   var activities = getJsonVal("wt.activities");
   var loadedActivities = ""; // bug tracking
-  var currentActivity
-  const ACTIVITY_RECORDED = "Recorded"
+  var currentActivity;
+  const ACTIVITY_RECORDED = "Recorded";
   function loadActivities() {
     loadedActivities = "Loaded ";
-    if (jQuery.isEmptyObject(activities)) {
+    if ($.isEmptyObject(activities)) {
       activities = config.activities.defaults;
       saveJsonValOpt("wt.activities", activities);
     }
@@ -322,7 +339,7 @@ $(function(){
 
   }
   loadActivities();
-  selectOption(selectActivity, getVal("wt.activity", ACTIVITY_RECORDED))
+  selectOption(selectActivity, getVal("wt.activity", ACTIVITY_RECORDED));
 
   function getCurrentActivityName() {
     return getSelectedOption("#activity");
@@ -334,10 +351,12 @@ $(function(){
       activityName = Object.keys(activities)[0];
       let dbgActivities = "";
       $("#activity option").each(function(i, a) {
-        i > 0 && (dbgActivities += "; ")
-        dbgActivities += (a.innerText + ($(a).is(":selected") ? "*" : ""))
-      })
-      $("#activity option").each(function(a) {console.log(a)})
+        if (i > 0) {
+          dbgActivities += "; ";
+        }
+        dbgActivities += (a.innerText + ($(a).is(":selected") ? "*" : ""));
+      });
+      $("#activity option").each(function(a) { console.log(a); });
       onerror( "No current activity", {
         "Saved": getVal("wt.activity"),
         "First": activityName,
@@ -346,11 +365,11 @@ $(function(){
         "Loaded": loadedActivities,
         "Stack":  new Error().stack
       });
-      selectOption(selectActivity, activityName)
+      selectOption(selectActivity, activityName);
     }
-    let requestedActivity = activityName
+    let requestedActivity = activityName;
     if (!activities[requestedActivity]) {
-      if (jQuery.isEmptyObject(activities)) {
+      if ($.isEmptyObject(activities)) {
         onerror( "No activity");
         loadActivities();
       }
@@ -359,35 +378,35 @@ $(function(){
         onerror( "Activity was not found", {
           "Activity": requestedActivity,
           "Nb activities": Object.keys(activities).length
-        })
-        selectOption(selectActivity, activityName)
+        });
+        selectOption(selectActivity, activityName);
       }
     }
-    currentActivity = activities[activityName]
-    currentActivity.name = activityName
-    return currentActivity
+    currentActivity = activities[activityName];
+    currentActivity.name = activityName;
+    return currentActivity;
   }
-  updateCurrentActivity()
+  updateCurrentActivity();
 
   // in case activities were updated in other tab/window
-  $("#activity").on("click", loadActivities)
+  $("#activity").on("click", loadActivities);
   // on user selection
   $("#activity").on("change", function() {
-    let selectedActivity = getCurrentActivityName()
-    let currentActivityName = currentActivity.name
-    ga('send', 'event', 'activity', 'change', selectedActivity)
-    saveValOpt("wt.activity", selectedActivity)
+    let selectedActivity = getCurrentActivityName();
+    let currentActivityName = currentActivity.name;
+    ga('send', 'event', 'activity', 'change', selectedActivity);
+    saveValOpt("wt.activity", selectedActivity);
     if (selectedActivity != ACTIVITY_RECORDED) {
       if (selectedActivity != currentActivityName) {
-        polystats.setSpeedProfile(updateCurrentActivity().speedprofile) // will show stats
-        initSaveTimeProfiles()
+        polystats.setSpeedProfile(updateCurrentActivity().speedprofile); // will show stats
+        initSaveTimeProfiles();
       } else {
-        showStats() // from recorded to estimated stats
+        showStats(); // from recorded to estimated stats
       }
     } else {
-      showStats() // show recorded stats
+      showStats(); // show recorded stats
     }
-  })
+  });
 
   /* ------------------------------------------------------------*/
 
@@ -397,18 +416,18 @@ $(function(){
     if (editLayer) {
 
       // sort segments on manual ordering if ordered
-      let layers = editLayer.getLayers()
-      function compare( a, b ) {
+      let layers = editLayer.getLayers();
+      let compare = function ( a, b ) {
         if (a._wtOrder == b._wtOrder) {
-          return 0
+          return 0;
         } else if (!a._wtOrder) {
-            return -1
+            return -1;
         } else if (!b._wtOrder) {
-          return 1
+          return 1;
         }
         // else
-        return (a._wtOrder < b._wtOrder) ? -1 : 1
-      }
+        return (a._wtOrder < b._wtOrder) ? -1 : 1;
+      };
       layers = layers.sort( compare );
 
       // iterate on ordered segments
@@ -432,9 +451,9 @@ $(function(){
     }
   }
   function checkToolsAllSegments() {
-    enableInput(!isChecked("#allsegments"), "#trim-type, #trim-range")
+    enableInput(!isChecked("#allsegments"), "#trim-type, #trim-range");
   }
-  $("#allsegments").on("change", checkToolsAllSegments)
+  $("#allsegments").on("change", checkToolsAllSegments);
 
   /* ------------------------------------------------------------*/
 
@@ -480,8 +499,8 @@ $(function(){
     let segStats = L.polyStats(segment, {
       chrono: true,
       speedProfile: currentActivity.speedprofile
-    })
-    segStats.updateStatsFrom(0)
+    });
+    segStats.updateStatsFrom(0);
   }
 
   function newSegment(noStats) {
@@ -629,7 +648,7 @@ $(function(){
     getIconId: function() {
       return EDIT_AUTO_ID;
     }
-  }
+  };
 
   var UndoNewPt = {
     getType: function() {
@@ -655,7 +674,7 @@ $(function(){
     getIconId: function() {
       return EDIT_MANUAL_ID;
     }
-  }
+  };
 
   var UndoMovePt = {
     getType: function() {
@@ -681,7 +700,7 @@ $(function(){
     getIconId: function() {
       return EDIT_MANUAL_ID;
     }
-  }
+  };
 
   var UndoDeletePt = {
     getType: function() {
@@ -704,7 +723,7 @@ $(function(){
     getIconId: function() {
       return EDIT_MANUAL_ID;
     }
-  }
+  };
 
   var undos = [];
   function undo() {
@@ -743,14 +762,14 @@ $(function(){
   // ==============================================
 
   function setWaypointTooltip(wpt) {
-    var ttip = wpt.getTooltip();
+    let ttip = wpt.getTooltip();
     if (wpt.options.title) {
       if (ttip) {
         // already exists, just update text
         ttip.setContent(wpt.options.title);
-      } else{
+      } else {
         // new tooltip
-        var ttip = wpt.bindTooltip(wpt.options.title, {permanent: wptLabel});
+        ttip = wpt.bindTooltip(wpt.options.title, {permanent: wptLabel});
         if (wptLabel) {
           ttip.openTooltip();
         }
@@ -888,7 +907,7 @@ $(function(){
       setWaypointTooltip(marker);
       marker.on("click", function() {
         if (editMode == EDIT_DRAG) return;
-        pop = L.popup({ "className" : "overlay" })
+        L.popup({ "className" : "overlay" })
           .setLatLng(marker.getLatLng())
           .setContent(getMarkerPopupContent(marker))
           .openOn(map);
@@ -905,7 +924,7 @@ $(function(){
       // create new tooltip (they're not mutable!)
       wpt.unbindTooltip();
       setWaypointTooltip(wpt);
-    })
+    });
   });
 
   $("#fwdGuide").on("change", function(evt){
@@ -1182,18 +1201,18 @@ $(function(){
     $("#prune-dist").val(pruneDist);
     $("#prune-max-dist").val(pruneMaxDist);
     $("#prune-max-time").val(pruneMaxTime);
-    $(".invalid").removeClass("invalid")
+    $(".invalid").removeClass("invalid");
     menu(tab ? tab : "file");
-    if (($("#save-time-from").val() == "")
-      && (getTrackLength() > 0)
-      && track.getLatLngs()[0].time) {
-        setDateTimeInput($("#save-time-from"), track.getLatLngs()[0].time)
+    if (($("#save-time-from").val() == "") &&
+      (getTrackLength() > 0) &&
+      track.getLatLngs()[0].time) {
+        setDateTimeInput($("#save-time-from"), track.getLatLngs()[0].time);
     }
-    initSaveTimeProfiles()
-    checkToolsAllSegments()
-    checkPruneKeepOpts()
-    openSegmentsEditor()
-    initServiceWorkerSetting()
+    initSaveTimeProfiles();
+    checkToolsAllSegments();
+    checkPruneKeepOpts();
+    openSegmentsEditor();
+    initServiceWorkerSetting();
   }
   function isMenuVisible() {
     return $("#menu").is(":visible");
@@ -1333,21 +1352,21 @@ $(function(){
       // check if it is a polyline
       gpx += "<" + wraptag + ">\n";
       if (segment.name) {
-        gpx += `  <name>${segment.name}</name>\n`
+        gpx += `  <name>${segment.name}</name>\n`;
       }
       if (segment.color) {
-        gpx += "  <extensions>\n"
-        gpx += `    <line><color>${segment.color}</color></line>\n`
-        gpx += "  </extensions>\n"
+        gpx += "  <extensions>\n";
+        gpx += `    <line><color>${segment.color}</color></line>\n`;
+        gpx += "  </extensions>\n";
       }
       if (segtag) {
-        gpx += "  <" + segtag + ">\n"
+        gpx += "  <" + segtag + ">\n";
       }
       gpx += getSegmentGPX(segment, ptindent, pttag);
       if (segtag) {
         gpx += "  </" + segtag + ">\n";
       }
-      gpx += "</" + wraptag + ">"
+      gpx += "</" + wraptag + ">";
     });
     segmentClickListener({ target: selectedSegment }, true);
 
@@ -1371,31 +1390,31 @@ $(function(){
     return getGPX(trackname, /*savealt*/ false, asroute, nometadata);
   }
 
-  const SAVE_TIME_TO = "_to_"
+  const SAVE_TIME_TO = "_to_";
   function initSaveTimeProfiles() {
 
     function checkSaveTimeProfile() {
-      let selected = getSelectedOption("#save-time-profile")
-      enableInput(selected == SAVE_TIME_TO, "#save-time-to")
+      let selected = getSelectedOption("#save-time-profile");
+      enableInput(selected == SAVE_TIME_TO, "#save-time-to");
       if (selected != SAVE_TIME_TO) {
-        $("#save-time-to").removeClass("invalid")
+        $("#save-time-to").removeClass("invalid");
       }
     }
 
-    $("#save-time-profile").empty()
-    $("#save-time-profile").off("change")
-    let profiles = $("#save-time-profile")[0]
+    $("#save-time-profile").empty();
+    $("#save-time-profile").off("change");
+    let profiles = $("#save-time-profile")[0];
 
     try {
 
-      addSelectOption(profiles, currentActivity.name)
-      addSelectOption(profiles, SAVE_TIME_TO, "To date:")
-      checkSaveTimeProfile()
+      addSelectOption(profiles, currentActivity.name);
+      addSelectOption(profiles, SAVE_TIME_TO, "To date:");
+      checkSaveTimeProfile();
 
-      $("#save-time-profile").on("change", checkSaveTimeProfile)
+      $("#save-time-profile").on("change", checkSaveTimeProfile);
     } catch (error) {
-      onerror("no save-time-profile selector", {cells: $("#menutools tr").length})
-      forceReload()
+      onerror("no save-time-profile selector", {cells: $("#menutools tr").length});
+      forceReload();
     }
 
   }
@@ -1404,95 +1423,95 @@ $(function(){
 
     if (track && (track.getLatLngs().length > 0)) {
 
-      let profile = getSelectedOption("#save-time-profile")
-      let from
-      let to, duration
-      let distance = 0
-      from = getDateTimeInput($("#save-time-from"), true)
-      if (!from) return
+      let profile = getSelectedOption("#save-time-profile");
+      let from;
+      let to, duration;
+      let distance = 0;
+      from = getDateTimeInput($("#save-time-from"), true);
+      if (!from) return;
       if (profile == SAVE_TIME_TO) {
-        to = getDateTimeInput($("#save-time-to"), true)
-        if (!to) return
-        duration = to.getTime() - from.getTime()
+        to = getDateTimeInput($("#save-time-to"), true);
+        if (!to) return;
+        duration = to.getTime() - from.getTime();
         applySegmentTool(function (segment) {
-          distance += L.PolyStats.getPointDistance(arrayLast(segment.getLatLngs()))
-        })
+          distance += L.PolyStats.getPointDistance(arrayLast(segment.getLatLngs()));
+        });
       }
 
-      let lastSegTime
-      let lastSegDist = 0
+      let lastSegTime;
+      let lastSegDist = 0;
       applySegmentTool(function (segment) {
-        const pts = segment.getLatLngs()
+        const pts = segment.getLatLngs();
         arrayForEach(pts, (idx, pt) => {
           if (profile == SAVE_TIME_TO) {
-            const relDist = (lastSegDist + L.PolyStats.getPointDistance(pt)) / distance
-            lastSegTime = new Date(from.getTime() + (duration * relDist))
-            pt.time = lastSegTime.toISOString()
+            const relDist = (lastSegDist + L.PolyStats.getPointDistance(pt)) / distance;
+            lastSegTime = new Date(from.getTime() + (duration * relDist));
+            pt.time = lastSegTime.toISOString();
           } else {
             if (!isUndefined(L.PolyStats.getPointTime(pt))) {
-              lastSegTime = new Date(from.getTime() + (L.PolyStats.getPointTime(pt) * 1000))
-              pt.time = lastSegTime.toISOString()
+              lastSegTime = new Date(from.getTime() + (L.PolyStats.getPointTime(pt) * 1000));
+              pt.time = lastSegTime.toISOString();
             }
           }
-        })
-        lastSegDist += L.PolyStats.getPointDistance(arrayLast(segment.getLatLngs()))
+        });
+        lastSegDist += L.PolyStats.getPointDistance(arrayLast(segment.getLatLngs()));
         // last segment time is the start of the next segment
-        from = lastSegTime
-      })
-      setStatus("Time saved", {timeout:3})
+        from = lastSegTime;
+      });
+      setStatus("Time saved", {timeout:3});
       ga('send', 'event', 'tool', 'save-time');
       saveState();
 
     }
-  })
+  });
 
   $("#shift-time").on("click", () => {
 
     if (track && (track.getLatLngs().length > 0)) {
 
-      let unit = getSelectedOption("#shift-time-unit")
-      let byUnit
-      let byMs
-      byUnit = getRealInput($("#shift-time-by"), true)
-      if (!byUnit) return
+      let unit = getSelectedOption("#shift-time-unit");
+      let byUnit;
+      let byMs;
+      byUnit = getRealInput($("#shift-time-by"), true);
+      if (!byUnit) return;
       switch (unit) {
         case "day":
-          byMs = byUnit * 24 * 3600000
+          byMs = byUnit * 24 * 3600000;
           break;
         case "hour":
-          byMs = byUnit * 3600000
+          byMs = byUnit * 3600000;
           break;
         case "minute":
-          byMs = byUnit * 60000
+          byMs = byUnit * 60000;
           break;
         case "second":
-          byMs = byUnit * 1000
+          byMs = byUnit * 1000;
           break;
       }
 
-      let nbErr = 0
+      let nbErr = 0;
       applySegmentTool(function (segment) {
-        const pts = segment.getLatLngs()
+        const pts = segment.getLatLngs();
         arrayForEach(pts, (idx, pt) => {
           if (pt.time) {
             try {
-              let oldTime = new Date(pt.time)
-              let newTime = new Date(oldTime.getTime() + byMs)
-              pt.time = newTime.toISOString()
+              let oldTime = new Date(pt.time);
+              let newTime = new Date(oldTime.getTime() + byMs);
+              pt.time = newTime.toISOString();
             } catch (error) {
-              nbErr++
+              nbErr++;
             }
           }
-        })
-      })
+        });
+      });
       if (nbErr) {
-        console.error(nbErr, "points could not be moved because of invalid date format")
+        console.error(nbErr, "points could not be moved because of invalid date format");
       }
-      setStatus("Shift completed", {timeout:3})
+      setStatus("Shift completed", {timeout:3});
       ga('send', 'event', 'tool', 'shift-time');
       saveState();
     }
-  })
+  });
 
   $("#track-download").on("click", function() {
     setEditMode(EDIT_NONE);
@@ -1515,146 +1534,146 @@ $(function(){
   // Segments editor
 
   function getSegmentColor(segment) {
-    return segment && segment.color ? segment.color : trackUI.trk.getColor()
+    return segment && segment.color ? segment.color : trackUI.trk.getColor();
   }
 
   function addEditorSegmentItem(segment, i) {
 
     function getSegmentName() {
-      return segment.name ? segment.name : "Segment #" + (i+1)
+      return segment.name ? segment.name : "Segment #" + (i+1);
     }
 
     function editSegmentName() {
-      let newName = prompt("Enter track name:", getSegmentName())
-      newName = newName ? newName.trim() : false
+      let newName = prompt("Enter track name:", getSegmentName());
+      newName = newName ? newName.trim() : false;
       if (newName) {
-        segment.name = newName
-        itemName.text(newName)
+        segment.name = newName;
+        itemName.text(newName);
       }
     }
 
     function updateSgmentColor() {
-      segment.color = segColor.val()
+      segment.color = segColor.val();
       if (segment == track) {
-        updateTrackStyle()
+        updateTrackStyle();
       } else {
-        updateOverlayTrackStyle(segment)
+        updateOverlayTrackStyle(segment);
       }
     }
 
     let segItem = `<li uid='${L.Util.stamp(segment)}'><span class='list-item'>`;
     segItem += "<i class='material-icons item-drag notranslate' title='Drag to reorder'>drag_indicator</i> ";
     segItem += "<span class='item-name seg-name notranslate' 'translate'='no'><span class='name'></span><span class='stats'></span></span> ";
-    segItem += "<input type='checkbox' class='seg-join-check'/>"
-    segItem += `<button class='material-icons symbol setting-value item-color-picker-${i}' data-jscolor='{"valueElement":"segment-color-${i}", "hash":true, "zIndex":10001, "closable":true}'>colorize</button> <input id='segment-color-${i}' class='hidden'/>`
+    segItem += "<input type='checkbox' class='seg-join-check'/>";
+    segItem += `<button class='material-icons symbol setting-value item-color-picker-${i}' data-jscolor='{"valueElement":"segment-color-${i}", "hash":true, "zIndex":10001, "closable":true}'>colorize</button> <input id='segment-color-${i}' class='hidden'/>`;
     segItem += "<i class='material-icons item-delete notranslate' 'translate'='no' title='Delete'>delete</i> ";
     segItem += "</span></li>";
-    $("#segments-list").append(segItem)
-    let newitem = $("#segments-list li:last")
+    $("#segments-list").append(segItem);
+    let newitem = $("#segments-list li:last");
 
     // name
-    let segName = getSegmentName()
-    let itemName = newitem.find(".item-name")
-    let lastPt = arrayLast(segment.getLatLngs())
-    let firstPt = segment.getLatLngs()[0]
-    let segDuration = getRecordedTime(segment.getLatLngs())
+    let segName = getSegmentName();
+    let itemName = newitem.find(".item-name");
+    let lastPt = arrayLast(segment.getLatLngs());
+    let firstPt = segment.getLatLngs()[0];
+    let segDuration = getRecordedTime(segment.getLatLngs());
     if (isUndefined(segDuration)) {
-      segDuration = " <i class='material-icons' title='Estimated time'>av_timer</i> " + time2txt(L.PolyStats.getPointTime(lastPt))
+      segDuration = " <i class='material-icons' title='Estimated time'>av_timer</i> " + time2txt(L.PolyStats.getPointTime(lastPt));
     } else {
-      segDuration = " <i class='material-icons' title='Recorded time'>schedule</i> " + time2txt(segDuration)
+      segDuration = " <i class='material-icons' title='Recorded time'>schedule</i> " + time2txt(segDuration);
     }
-    itemName.find(".name").text(segName)
-    itemName.find(".name").attr("title", segName)
-    itemName.find(".stats").html(" <i class='material-icons' title='One way distance'>straighten</i> " + dist2txt(L.PolyStats.getPointDistance(lastPt)) + " <i class='material-icons' title='Climbing'>trending_up</i> " + alt2txt(L.PolyStats.getStats(segment).climbing) + segDuration)
-    itemName.attr("segName", segName)
+    itemName.find(".name").text(segName);
+    itemName.find(".name").attr("title", segName);
+    itemName.find(".stats").html(" <i class='material-icons' title='One way distance'>straighten</i> " + dist2txt(L.PolyStats.getPointDistance(lastPt)) + " <i class='material-icons' title='Climbing'>trending_up</i> " + alt2txt(L.PolyStats.getStats(segment).climbing) + segDuration);
+    itemName.attr("segName", segName);
     itemName.on("click", editSegmentName);
 
     // color
-    let segColorValue = getSegmentColor(segment)
-    jscolor.installByClassName(`item-color-picker-${i}`)
-    let colorPickerButton = newitem.find(`.item-color-picker-${i}`)[0]
-    let colorPicker
-    let segColor
+    let segColorValue = getSegmentColor(segment);
+    jscolor.installByClassName(`item-color-picker-${i}`);
+    let colorPickerButton = newitem.find(`.item-color-picker-${i}`)[0];
+    let colorPicker;
+    let segColor;
     if (!colorPickerButton) {
       onerror("ColorPickerButton missing", {
         "i" : i,
         "segItem" : segItem,
         "newItem" : newitem.html(),
         "jscolor.lookupClass" : jscolor.lookupClass
-      })
+      });
     } else {
-      colorPicker = newitem.find(`.item-color-picker-${i}`)[0].jscolor
-      segColor = newitem.find(`#segment-color-${i}`)
-      colorPicker.fromString(segColorValue)
-      segColor.val(segColorValue)
-      segColor.on("change", updateSgmentColor)
+      colorPicker = newitem.find(`.item-color-picker-${i}`)[0].jscolor;
+      segColor = newitem.find(`#segment-color-${i}`);
+      colorPicker.fromString(segColorValue);
+      segColor.val(segColorValue);
+      segColor.on("change", updateSgmentColor);
     }
 
     newitem.find(".item-delete").on("click",() => {
       if (confirm("Delete " + getSegmentName() + "?")) {
-        ga('send', 'event', 'edit', 'delete-segment')
-        deleteSegment(segment)
-        newitem.remove()
-        saveState()
+        ga('send', 'event', 'edit', 'delete-segment');
+        deleteSegment(segment);
+        newitem.remove();
+        saveState();
       }
-    })
+    });
   }
 
   function joinCheckedSegments() {
-    let tojoin = [], names = ""
+    let tojoin = [], names = "";
     $("#segments-list li").each(function(idx) {
       if (isChecked($(this).find(".seg-join-check"))) {
-        let uid = $(this).attr("uid")
-        tojoin.push(uid)
-        names += $(this).find(".item-name").attr("segName") + "\n"
+        let uid = $(this).attr("uid");
+        tojoin.push(uid);
+        names += $(this).find(".item-name").attr("segName") + "\n";
       }
-    })
+    });
     if ((tojoin.length > 1) && confirm("Join following segments?\n\n" + names)) {
-      setEditMode(EDIT_NONE)
-      joinSegments(tojoin)
-      openSegmentsEditor()
+      setEditMode(EDIT_NONE);
+      joinSegments(tojoin);
+      openSegmentsEditor();
     }
   }
 
   function openSegmentsEditor() {
-    let segList = $("#segments-list")
+    let segList = $("#segments-list");
     if (segList && segList.sortable) {
       segList.sortable('destroy');
     }
     $("#seg-editor-list").empty();
     $("#seg-editor-list").append("<ul id='segments-list'></ul>");
-    segList = $("#segments-list")
-    let i = 0
+    segList = $("#segments-list");
+    let i = 0;
     forEachSegment(function(segment) {
-        addEditorSegmentItem(segment, i++)
-    })
-    let hasSegments = (i > 0)
-    $(".if-segments").toggle(hasSegments)
-    $(".no-segments").toggle(!hasSegments)
+        addEditorSegmentItem(segment, i++);
+    });
+    let hasSegments = (i > 0);
+    $(".if-segments").toggle(hasSegments);
+    $(".no-segments").toggle(!hasSegments);
     if (i > 1) {
       segList.sortable({
         //scroll: true,
         handle: ".item-drag",
         update: function(evt) {
           // collect segment uids
-          let lyUids = {}
+          let lyUids = {};
           forEachSegment(function(segment) {
-            lyUids[L.Util.stamp(segment)] = segment
+            lyUids[L.Util.stamp(segment)] = segment;
           });
           $("#segments-list li").each(function(idx) {
-            let uid = $(this).attr("uid")
-            lyUids[uid]._wtOrder = idx
-          })
+            let uid = $(this).attr("uid");
+            lyUids[uid]._wtOrder = idx;
+          });
         }
-      })
-      $("#seg-editor-list").append("<button id='join-segs'>Join Checked Segments</button> <label id='segs-check-all-label'><input type='checkbox' id='seg-join-check-all'/> All / None</label>")
-      $("#join-segs").on("click", joinCheckedSegments)
+      });
+      $("#seg-editor-list").append("<button id='join-segs'>Join Checked Segments</button> <label id='segs-check-all-label'><input type='checkbox' id='seg-join-check-all'/> All / None</label>");
+      $("#join-segs").on("click", joinCheckedSegments);
       $("#seg-join-check-all").on("change", ()=>{
-        let checked = isChecked($("#seg-join-check-all"))
-        setChecked($("#seg-editor-list .seg-join-check"), checked)
-      })
+        let checked = isChecked($("#seg-join-check-all"));
+        setChecked($("#seg-editor-list .seg-join-check"), checked);
+      });
     } else {
-      $("#seg-editor-list .seg-join-check").hide()
+      $("#seg-editor-list .seg-join-check").hide();
     }
   }
 
@@ -1688,7 +1707,7 @@ $(function(){
     var params = "";
     if (isChecked("#wtshare-map")) {
       params += "&map=" + encodeURIComponent(baseLayer);
-      overlays = []
+      overlays = [];
       objectForEach(overlaysOn, function(oname, oon) {
         if (oon) overlays.push(oname);
       });
@@ -1724,9 +1743,9 @@ $(function(){
       "Error": errmsg,
       "GPX KB": gpxkb
     });
-    alert("Upload failed, is file too big? Your file is "
-     + gpxkb + "KB while " + share.name + " accepts " + share.maxSize
-     + ". Try to reduce it using Tools/Compress");
+    alert("Upload failed, is file too big? Your file is " +
+      gpxkb + "KB while " + share.name + " accepts " + share.maxSize +
+      ". Try to reduce it using Tools/Compress");
     setStatus("Failed: " + errmsg, { timeout: 5, class: "status-error" });
   }
 
@@ -1823,7 +1842,7 @@ $(function(){
         track.addLatLng(pts[j]);
       }
       updateExtremities();
-      elevate(pts, function(success) {
+      elevate("mergeRouteToTrack", pts, function(success) {
         polystats.updateStatsFrom(initlen);
         saveState();
       });
@@ -1910,7 +1929,7 @@ $(function(){
     closeOverlays();
     if (mode === editMode) {
       if (mode == EDIT_NONE) {
-        $("#edit-tools").hide()
+        $("#edit-tools").hide();
       }
       return;
     }
@@ -1961,7 +1980,7 @@ $(function(){
       case EDIT_MANUAL_TRACK:
         $("#" + EDIT_MANUAL_ID).addClass("control-selected");
         try {
-          updateMapStyle()
+          updateMapStyle();
           track.enableEdit();
           track.editor.continueForward();
           setInactiveSegmentClickable(false);
@@ -2008,37 +2027,39 @@ $(function(){
 
   $("#prune-dist-opt, #prune-time-opt").on("change", (event) => {
     if (!isChecked($(event.target))) {
-      $(event.target.nextSibling).removeClass("invalid")
+      $(event.target.nextSibling).removeClass("invalid");
     }
-  })
+  });
   $("#compress").on("click", function() {
 
     function getKeepOpt(selOpt, valOpt) {
-      let value = undefined
+      let value;
       if (isChecked(selOpt)) {
-        value = getRealInput($(valOpt), true)
-        if (!value) throw "missing value"
+        value = getRealInput($(valOpt), true);
+        if (!value) throw "missing value";
       }
-      return value
+      return value;
     }
 
     // get & check input value
-    let pruneDist = getRealInput($("#prune-dist"), true)
-    if (!pruneDist) return
+    let pruneDist = getRealInput($("#prune-dist"), true);
+    if (!pruneDist) return;
 
 
-    let pruneMaxDist
-    let pruneMaxTime
+    let pruneMaxDist;
+    let pruneMaxTime;
     try {
-      pruneMaxDist = getKeepOpt("#prune-dist-opt", "#prune-max-dist")
-      pruneMaxTime = getKeepOpt("#prune-time-opt", "#prune-max-time")
+      pruneMaxDist = getKeepOpt("#prune-dist-opt", "#prune-max-dist");
+      pruneMaxTime = getKeepOpt("#prune-time-opt", "#prune-max-time");
     } catch (error) {
-      return
+      return;
     }
 
     if (isImperial()) {
-      pruneDist *= 0.9144
-      pruneMaxDist && (pruneMaxDist *= 0.9144)
+      pruneDist *= 0.9144;
+      if (pruneMaxDist) {
+        pruneMaxDist *= 0.9144;
+      }
     }
 
     saveValOpt("wt.pruneDist", pruneDist);
@@ -2057,7 +2078,7 @@ $(function(){
           useAlt: true,
           maxDist: pruneMaxDist,
           maxTimeSec: pruneMaxTime,
-        }
+        };
         var pruned = L.PolyPrune.prune(pts, compressOptions);
         totalpts += pts.length;
         var reduced = pts.length - pruned.length;
@@ -2066,10 +2087,10 @@ $(function(){
           removedpts += reduced;
           segment.setLatLngs(pruned);
           if (segment == track) {
-            polystats.updateStatsFrom(0)
-            prepareTrim()
+            polystats.updateStatsFrom(0);
+            prepareTrim();
           } else {
-            updateSegmentStats(segment)
+            updateSegmentStats(segment);
           }
         }
       });
@@ -2083,23 +2104,23 @@ $(function(){
       }
 
     }
-  })
+  });
   function checkPruneKeepOpts() {
-    enableInput(isChecked("#prune-time-opt"), "#prune-max-time")
-    enableInput(isChecked("#prune-dist-opt"), "#prune-max-dist")
+    enableInput(isChecked("#prune-time-opt"), "#prune-max-time");
+    enableInput(isChecked("#prune-dist-opt"), "#prune-max-dist");
   }
-  $("#prune-time-opt, #prune-dist-opt").on("change", checkPruneKeepOpts)
+  $("#prune-time-opt, #prune-dist-opt").on("change", checkPruneKeepOpts);
 
   // if uids is present, it contains the list of segment uids to join
   function joinSegments(uids) {
     var seg1;
-    let count = 0
+    let count = 0;
     forEachSegment(function(segment) {
       if (uids && uids.includes && !uids.includes("" + L.Util.stamp(segment))) {
         // this segment is not listed, skip it
-        return
+        return;
       }
-      count++
+      count++;
       if (!seg1) {
         seg1 = segment;
       } else {
@@ -2134,7 +2155,7 @@ $(function(){
       }, false);
     })
     .fail(function(jqxhr, settings, exception) {
-      showWarning("IP Geolocation failed", "Do you you have an ad blocker?<br>Try deactivating it on this page to get geolocation working.")
+      showWarning("IP Geolocation failed", "Do you you have an ad blocker?<br>Try deactivating it on this page to get geolocation working.");
     });
   }
 
@@ -2150,44 +2171,44 @@ $(function(){
     LOC_ONCE = 1,
     LOC_CONTINUOUS = 2,
     LOC_READY_TO_RECORD = 3,
-    LOC_RECORDING = 4;
+    LOC_RECORDING = 4,
     showLocation = LOC_ONCE;
 
   function setLocationMode(mode) {
     switch (mode) {
       case LOC_NONE:
-        $("#myloc").text("my_location")
-        $("#myloc").removeClass("loc-ready-to-record")
-        $("#myloc").removeClass("loc-recording")
+        $("#myloc").text("my_location");
+        $("#myloc").removeClass("loc-ready-to-record");
+        $("#myloc").removeClass("loc-recording");
         $("#myloc").removeClass("control-selected");
         if ((showLocation == LOC_RECORDING) && (track.getLatLngs().length > 0)) {
             let pts = L.PolyPrune.prune(track.getLatLngs(), { tolerance: config.pruneDist, useAlt: true });
-            track.setLatLngs(pts)
-            track.redraw()
+            track.setLatLngs(pts);
+            track.redraw();
         }
         break;
       case LOC_CONTINUOUS:
         $("#myloc").addClass("control-selected");
         break;
       case LOC_READY_TO_RECORD:
-        $("#myloc").text("fiber_manual_record")
-        $("#myloc").addClass("loc-ready-to-record")
+        $("#myloc").text("fiber_manual_record");
+        $("#myloc").addClass("loc-ready-to-record");
         break;
       case LOC_RECORDING:
-        $("#myloc").text("stop")
-        $("#myloc").removeClass("loc-ready-to-record")
-        $("#myloc").addClass("loc-recording")
+        $("#myloc").text("stop");
+        $("#myloc").removeClass("loc-ready-to-record");
+        $("#myloc").addClass("loc-recording");
         break;
       default:
     }
-    showLocation = mode
+    showLocation = mode;
   }
 
   function removeMyLocMarker() {
     if ((showLocation == LOC_CONTINUOUS) || (showLocation == LOC_RECORDING)) {
       gotoMyLocation();
     } else {
-      setLocationMode(LOC_NONE)
+      setLocationMode(LOC_NONE);
       if (myLocMarker) {
         myLocMarker.remove();
         myLocMarker = undefined;
@@ -2211,25 +2232,25 @@ $(function(){
       myLocTimer = setTimeout(removeMyLocMarker, 5000);
       if (showLocation == LOC_RECORDING) {
         if (editMode == EDIT_NONE) {
-          track.addLatLng(new L.LatLng(pos.lat, pos.lng))
-          updateExtremities()
+          track.addLatLng(new L.LatLng(pos.lat, pos.lng));
+          updateExtremities();
         } else {
-          setLocationMode(LOC_NONE)
+          setLocationMode(LOC_NONE);
         }
       }
     } else {
-      setLocationMode(LOC_NONE)
+      setLocationMode(LOC_NONE);
     }
   }
 
   function gotoMyLocation() {
 
-    let isHighAccuracy = false
+    let isHighAccuracy = false;
 
     function gotLocation(position) {
       debug(`(${position.coords.latitude}, ${position.coords.longitude})`);
       if ((showLocation == LOC_ONCE) && isHighAccuracy) {
-        setLocationMode(LOC_READY_TO_RECORD)
+        setLocationMode(LOC_READY_TO_RECORD);
       }
       setLocation({
         lat: position.coords.latitude,
@@ -2238,7 +2259,7 @@ $(function(){
     }
 
     function highAccuracyFailed(posError) {
-      isHighAccuracy = false
+      isHighAccuracy = false;
       log("GPS location failed, trying low accuracy");
       navigator.geolocation.getCurrentPosition(
         gotLocation, lowAccuracyFailed, { maximumAge: 60000, timeout: 5000, enableHighAccuracy: false });
@@ -2251,7 +2272,7 @@ $(function(){
 
 
     if (navigator.geolocation) {
-      isHighAccuracy = true
+      isHighAccuracy = true;
       navigator.geolocation.getCurrentPosition(
         gotLocation, highAccuracyFailed, { maximumAge: 0, timeout: 5000, enableHighAccuracy: true });
     } else {
@@ -2270,7 +2291,7 @@ $(function(){
     // ask for position on first use
     if (vlat == _lat && vlng == _lng) {
       setTimeout(function() {
-        setLocationMode(LOC_ONCE)
+        setLocationMode(LOC_ONCE);
         gotoMyLocation();
       }, 1000);
     }
@@ -2316,7 +2337,7 @@ $(function(){
     saveValOpt("wt.ovlTrackColor", ovlTrackColor);
     saveValOpt("wt.ovlTrackWeight", ovlTrackWeight);
     saveValOpt("wt.lengthUnit", lengthUnit);
-    saveValOpt("wt.useServiceWorker", useServiceWorker);
+    saveValOpt("wt.useServiceWorker", getUseServiceWorker());
     saveValOpt("wt.trackColor", trackColor);
     saveValOpt("wt.trackWeight", trackWeight);
     saveValOpt("wt.pruneDist", pruneDist);
@@ -2334,7 +2355,7 @@ $(function(){
   function saveStateFile() {
     var fullState = {};
     var n = localStorage.length;
-    for (i = 0; i < n; i++) {
+    for (let i = 0; i < n; i++) {
       var key = localStorage.key(i);
       // include all "wt." storage items
       // but exclude current edited track
@@ -2403,7 +2424,7 @@ $(function(){
 
   function restorePosition() {
     var defpos = getSavedPosition(config.display.pos.lat, config.display.pos.lng);
-    setLocationMode(LOC_ONCE)
+    setLocationMode(LOC_ONCE);
     setLocation(defpos);
   }
 
@@ -2442,18 +2463,18 @@ $(function(){
       var mapopts = mapobj.options;
       // By default, extend zoom range with down- & up-sampling
       if (mapopts.minZoom && !mapopts.minNativeZoom) {
-        mapopts.minNativeZoom = mapopts.minZoom
-        mapopts.minZoom = mapopts.minZoom - 1
+        mapopts.minNativeZoom = mapopts.minZoom;
+        mapopts.minZoom = mapopts.minZoom - 1;
       }
       if (mapopts.maxZoom && !mapopts.maxNativeZoom) {
-        mapopts.maxNativeZoom = mapopts.maxZoom
-        mapopts.maxZoom = mapopts.maxZoom + 2
+        mapopts.maxNativeZoom = mapopts.maxZoom;
+        mapopts.maxZoom = mapopts.maxZoom + 2;
       }
       if (isUnset(mapobj.type) || (mapobj.type === "base") || (mapobj.type === "overlay")) {
         tileCtor = L.tileLayer;
       } else if (mapobj.type === "pmtiles") {
-        const pmTileCtor = new PMTiles(url,{allow_200:true})
-        p = pmTileCtor.leafletLayer(mapopts)
+        const pmTileCtor = new PMTiles(url,{allow_200:true});
+        p = pmTileCtor.leafletLayer(mapopts);
       } else {
         tileCtor = L.tileLayer[mapobj.type];
         if (mapobj.type === "wms" && mapopts.crs) {
@@ -2474,7 +2495,7 @@ $(function(){
   var overlays = {};
   var baseLayer = getVal("wt.baseLayer", config.display.map);
   var requestedMap = getParameterByName("map");
-  var requestedOverlays = getParameterByName("overlays")
+  var requestedOverlays = getParameterByName("overlays");
   requestedOverlays = requestedOverlays ? requestedOverlays.split(',') : undefined;
   mapsForEach(function(name, props) {
     if (props.on ||  name == baseLayer || name === requestedMap || (requestedOverlays && requestedOverlays.includes(name))) {
@@ -2498,15 +2519,17 @@ $(function(){
   // ----------------------
 
   // set baseLayer to default if previous is missing
-  baseLayers[baseLayer] || (baseLayer = config.display.map)
-  var initialLayer = baseLayers[baseLayer]
+  if (!baseLayers[baseLayer]) {
+    (baseLayer = config.display.map);
+  }
+  var initialLayer = baseLayers[baseLayer];
   if (!initialLayer) {
     //var availableLayerNames = "";
     objectForEach(baseLayers, function(name) {
       //availableLayerNames += name + "; ";
       if (!initialLayer) {
         initialLayer = baseLayers[name]; // use first one
-        baseLayer = name
+        baseLayer = name;
         return true;
       }
     });
@@ -2542,7 +2565,7 @@ $(function(){
   });
   map.on('zoomstart zoom zoomend', function(ev){
     debug('Zoom level: ' + map.getZoom());
-  })
+  });
 
   function changeBaseLayer(mapname) {
     var found = false;
@@ -2566,17 +2589,17 @@ $(function(){
   function setOverlay(name, yesno) {
     overlaysOn[name] = yesno;
     saveJsonValOpt("wt.overlaysOn", overlaysOn);
-    setAutoGrayBaseLayer(null)
+    setAutoGrayBaseLayer(null);
   }
 
   /********* Overlay opacity control *************/
   function addOpacityControl(ovlname, ovl) {
     var layerId = L.Util.stamp(ovl);
-    var initialOpacity = isUndefined(ovl.options.opacity) ? 1 : ovl.options.opacity*1
+    var initialOpacity = isUndefined(ovl.options.opacity) ? 1 : ovl.options.opacity*1;
     // add slider
-    var slider = $('<input class="overlay-opacity-slider" type="range" min="0" max="100" value="'
-       + initialOpacity*100 + '"></input>')
-    .insertAfter($(".leaflet-control-layers-overlays span:contains('" + ovlname + "')"))
+    var slider = $('<input class="overlay-opacity-slider" type="range" min="0" max="100" value="' +
+       initialOpacity*100 + '"></input>')
+    .insertAfter($(".leaflet-control-layers-overlays span:contains('" + ovlname + "')"));
     slider.on("change", function(evt) {
       // search layer
       objectForEach(map._layers, function(lId, layer) {
@@ -2593,7 +2616,7 @@ $(function(){
     $(".leaflet-control-layers-overlays span:contains('" + ovlname + "')")
     .parent()
     .find(".overlay-opacity-slider")
-    .remove()
+    .remove();
   }
 
   if (requestedOverlays) {
@@ -2637,14 +2660,14 @@ $(function(){
   });
 
   function hasOverlaysOn() {
-    return Object.values(overlaysOn).some(function(oon){return oon});
+    return Object.values(overlaysOn).some(function(oon) { return oon; });
   }
   function setAutoGrayBaseLayer(layer) {
     if (!layer) {
       const layerId = L.Util.stamp(baseLayers[baseLayer]);
       layer = map._layers[layerId];
     }
-    const container = layer.getContainer()
+    const container = layer.getContainer();
     if (container) {
       if (autoGrayBaseLayer && hasOverlaysOn()) {
         container.classList.add('filter-grayscale');
@@ -2799,7 +2822,7 @@ $(function(){
           } else {
             errmsg = "Request failed. ";
           }
-          errmsg += "Check API key"
+          errmsg += "Check API key";
         }
         fail('ors.elevate1.ko', errmsg);
       });
@@ -2846,14 +2869,14 @@ $(function(){
       if (err.responseJSON && err.responseJSON.message) {
         errmsg = err.responseJSON.message;
       } else {
-        errmsg = "Request failed. Check API key"
+        errmsg = "Request failed. Check API key";
       }
       fail('ors.elevate.ko', errmsg);
     });
   }
 
   // multi-point elevation API
-  function elevatePoints(points, cb) {
+  function elevatePoints(callerName, points, cb) {
     if (!elevationService) {
       // no elevation service configured, go directly to callback
       if (cb) cb(true);
@@ -2882,7 +2905,6 @@ $(function(){
         }
       }
     }
-    var callerName = arguments.callee && arguments.callee.caller ? arguments.callee.caller.name : elevatePoints.caller.name;
     callElevationService(callerName, locations, points, inc, cb);
   }
 
@@ -2967,22 +2989,22 @@ $(function(){
         .on(link, 'click', function(e) {
           map.closePopup();
           if (showLocation == LOC_CONTINUOUS) {
-            setLocationMode(LOC_NONE)
+            setLocationMode(LOC_NONE);
             removeMyLocMarker();
           } else if (showLocation == LOC_ONCE) {
-            setLocationMode(LOC_CONTINUOUS)
+            setLocationMode(LOC_CONTINUOUS);
           } else if (showLocation == LOC_READY_TO_RECORD) {
-            setLocationMode(LOC_RECORDING)
-            setEditMode(EDIT_NONE)
+            setLocationMode(LOC_RECORDING);
+            setEditMode(EDIT_NONE);
             // create new segment
-            newSegment()
+            newSegment();
           } else if (showLocation == LOC_RECORDING) {
-            setEditMode(EDIT_NONE)
-            setLocationMode(LOC_NONE)
+            setEditMode(EDIT_NONE);
+            setLocationMode(LOC_NONE);
           } else if (showLocation == LOC_ONCE) {
-            setLocationMode(LOC_CONTINUOUS)
+            setLocationMode(LOC_CONTINUOUS);
           } else {
-            setLocationMode(LOC_ONCE)
+            setLocationMode(LOC_ONCE);
             gotoMyLocation();
           }
         }, this);
@@ -3066,7 +3088,7 @@ $(function(){
   $("body").on("keydown", function(event) {
     //console.debug(`key: which=${event.which}, key=${event.key}, code=${event.code},`)
     // number of currently opened overlays
-    nOverlays = openedOverlays();
+    let nOverlays = openedOverlays();
     // ignore control keys
     if (event.ctrlKey || event.metaKey) return;
     // on escape
@@ -3093,15 +3115,15 @@ $(function(){
         }
         break;
         case "O": // 'O' - open file
-        setEditMode(EDIT_NONE)
-        openMenu("file")
-        $("#file-load").click()
-        $("#track-upload").click()
+        setEditMode(EDIT_NONE);
+        openMenu("file");
+        $("#file-load").click();
+        $("#track-upload").click();
         break;
       case "S": // 'S' - save
-        setEditMode(EDIT_NONE)
-        openMenu("file")
-        $("#file-save").click()
+        setEditMode(EDIT_NONE);
+        openMenu("file");
+        $("#file-save").click();
         break;
       case "e": // 'e' - edit
         if (editMode != EDIT_MANUAL_TRACK) {
@@ -3139,11 +3161,11 @@ $(function(){
         openMenu("tools");
         break;
       case "s": // 's' - Segments
-        openMenu("segments")
+        openMenu("segments");
         break;
       case "?": // '?' - Help
-        openMenu("about")
-        openFolder("about-docs")
+        openMenu("about");
+        openFolder("about-docs");
         break;
       default:
     }
@@ -3192,7 +3214,7 @@ $(function(){
     }
     ga('send', 'event', 'edit', 'new-segment');
     setEditMode(EDIT_NONE);
-    setStatus("New segment", {timeout: 2})
+    setStatus("New segment", {timeout: 2});
     newSegment();
     setEditMode(EDIT_MANUAL_TRACK);
     saveState();
@@ -3240,31 +3262,31 @@ $(function(){
 
   function toolElevate(e) {
     if (e) {
-      ga('send', 'event', 'tool', 'elevate', undefined, getTrackLength())
+      ga('send', 'event', 'tool', 'elevate', undefined, getTrackLength());
     }
 
-    setStatus("Elevating...", { spinner: true })
+    setStatus("Elevating...", { spinner: true });
     var count = 0,
-      ok = true
+      ok = true;
     applySegmentTool(function (segment) {
-      elevate(segment.getLatLngs(), function(success) {
+      elevate("toolElevate", segment.getLatLngs(), function(success) {
         if (segment == track) {
-          polystats.updateStatsFrom(0)
+          polystats.updateStatsFrom(0);
         } else {
-          updateSegmentStats(segment)
+          updateSegmentStats(segment);
         }
         if (success) {
-          count++
+          count++;
         } else {
-          ok = false
+          ok = false;
         }
-      })
-    })
+      });
+    });
     if (count > 0) {
-      saveState()
+      saveState();
     }
     if (ok) {
-      clearStatus()
+      clearStatus();
     }
 
     return false;
@@ -3286,7 +3308,7 @@ $(function(){
         if (segment == track) {
           polystats.updateStatsFrom(0);
         } else {
-          updateSegmentStats(segment)
+          updateSegmentStats(segment);
         }
       }
     });
@@ -3301,22 +3323,22 @@ $(function(){
     if (isChecked("#cleanuptime")) {
       opts.push("time");
     }
-    return opts
+    return opts;
   }
 
   $("#cleanup").on("click", function(e) {
-    var toclean = getCleanFillOpts()
+    var toclean = getCleanFillOpts();
     if (toclean.length == 0) {
       // nothing to clean
       return;
     }
     var count = toolCleanup(toclean);
     if (count) {
-      alert("Cleaned-up " + count + " points")
+      alert("Cleaned-up " + count + " points");
       ga('send', 'event', 'tool', 'cleanup', toclean.toString(), count);
       saveState();
     } else {
-      setStatus("No data updated", {timeout:3})
+      setStatus("No data updated", {timeout:3});
     }
     return false;
   });
@@ -3329,106 +3351,107 @@ $(function(){
           let timePrev = new Date(prev.time).getTime(),
           timeNext = new Date(next.time).getTime(),
           distPrevPt = pt.distanceTo(prev),
-          distPrevNext = pt.distanceTo(next) + distPrevPt
+          distPrevNext = pt.distanceTo(next) + distPrevPt;
+          let timePt;
           if (timePrev < timeNext) {
-            timePt = timePrev + ((timeNext - timePrev) * (distPrevPt / distPrevNext))
+            timePt = timePrev + ((timeNext - timePrev) * (distPrevPt / distPrevNext));
           } else {
-            timePt = timeNext + ((timePrev - timeNext) * (distPrevPt / distPrevNext))
+            timePt = timeNext + ((timePrev - timeNext) * (distPrevPt / distPrevNext));
           }
           try {
-            pt.time = new Date(timePt).toISOString()
+            pt.time = new Date(timePt).toISOString();
           } catch (error) {
             onerror("Invalid interpolated time", {
               time: timePt, prev: prev.time, next: next.time,
               distPt:  distPrevPt, distNext: distPrevNext
-            })
+            });
           }
         }
       },
       "alt": {
         interpolate(prev, next, pt) {
           let distPrevPt = pt.distanceTo(prev),
-          distPrevNext = pt.distanceTo(next) + distPrevPt
-          pt.alt = prev.alt + ((next.alt - prev.alt) * (distPrevPt / distPrevNext))
+            distPrevNext = pt.distanceTo(next) + distPrevPt;
+          pt.alt = prev.alt + ((next.alt - prev.alt) * (distPrevPt / distPrevNext));
         }
       }
-    }
+    };
 
-    let allCounts = 0
+    let allCounts = 0;
     applySegmentTool(function(segment) {
       let points = segment ? segment.getLatLngs() : undefined,
-        count = 0
+        count = 0;
 
       if (points && (points.length > 0)) {
         for (var j = 0; j < toFill.length; j++) {
           let opt = toFill[j],
-            prev = undefined, // previous point with data
-            next = undefined, // next point with data,
-            iNxt = -1
+            prev, // previous point with data
+            next, // next point with data,
+            iNxt = -1;
           for (var i = 0; i < points.length; i++) {
-            let pt = points[i]
+            let pt = points[i];
             if (isUndefined(pt[opt])) {
               if ((!next || (next.i <= i)) && (iNxt < points.length)) {
                 // search next
-                next = undefined
+                next = undefined;
                 for (iNxt = i + 1; iNxt < points.length; iNxt++) {
                   if (!isUndefined(points[iNxt][opt])) {
-                    next = points[iNxt]
-                    break // exit for loop
+                    next = points[iNxt];
+                    break; // exit for loop
                   }
                 }
               }
               if (prev) {
                 if (next) {
-                  filler[opt].interpolate(prev, next, pt)
+                  filler[opt].interpolate(prev, next, pt);
                 } else {
                   // no next, just copy previous
-                  pt[opt] = prev[opt]
+                  pt[opt] = prev[opt];
                 }
               } else {
                 if (next) {
                   // no prev, just copy next
-                  pt[opt] = next[opt]
+                  pt[opt] = next[opt];
                 } else {
                   // no next and no prev!
-                  alert("Segment has no " + opt + " data, can't interpolate!")
-                  break
+                  alert("Segment has no " + opt + " data, can't interpolate!");
+                  break;
                 }
               }
-              count++
+              count++;
             } else {
-              prev = pt
+              prev = pt;
             }
           }
         }
         if (count > 0) {
           if (segment == track) {
-            polystats.updateStatsFrom(0)
+            polystats.updateStatsFrom(0);
           } else {
-            updateSegmentStats(segment)
+            updateSegmentStats(segment);
           }
         }
-        allCounts += count
+        allCounts += count;
       }
-    })
-    return allCounts
+    });
+    return allCounts;
   }
 
   $("#fillup").on("click", function(e) {
-    var toFill = getCleanFillOpts()
+    var toFill = getCleanFillOpts();
     if (toFill.length == 0) {
       // nothing to fill
       return;
     }
-    var count = toolFillup(toFill)
+    var count = toolFillup(toFill);
     if (count) {
-      alert("Updated " + count + " points data")
-      ga('send', 'event', 'tool', 'fillup', toFill.toString(), count)
-      saveState()
+      alert("Updated " + count + " points data");
+      ga('send', 'event', 'tool', 'fillup', toFill.toString(), count);
+      saveState();
     } else {
-      setStatus("No data updated", {timeout:3})
+      setStatus("No data updated", {timeout:3});
     }
-    return false
+    return false;
   });
 
   $("#revert").on("click", function(e) {
@@ -3445,7 +3468,7 @@ $(function(){
         if (segment == track) {
           polystats.updateStatsFrom(0);
         } else {
-          updateSegmentStats(segment)
+          updateSegmentStats(segment);
         }
         updateExtremities();
       }
@@ -3467,8 +3490,8 @@ $(function(){
   });
 
   function segmentClickListener(event, noGaEvent) {
-    if ((event.target != track)
-    && ((editMode <= EDIT_NONE) || (editMode == EDIT_DRAG))) {
+    if ((event.target != track) &&
+       ((editMode <= EDIT_NONE) || (editMode == EDIT_DRAG))) {
       if (editMode == EDIT_DRAG) {
         exitDragMode();
       }
@@ -3538,7 +3561,7 @@ $(function(){
 
       if (joinOnLoad || getTrackLength() == 0) {
         // extend current 'track'
-        L.PolyStats.clearStats(track)
+        L.PolyStats.clearStats(track);
       } else {
         newSegment(true);
       }
@@ -3546,8 +3569,8 @@ $(function(){
       if ((v.length === 0) && (getTrackName() == NEW_TRACK_NAME) && name) {
         setTrackName(name);
       }
-      track.name = name
-      track.color = color
+      track.name = name;
+      track.color = color;
 
       // import polyline vertexes
       for (var i = 0; i < coords.length; i++) {
@@ -3559,7 +3582,7 @@ $(function(){
       track.setLatLngs(v);
       bounds.extend(track.getBounds());
       if (track.getLatLngs().length > 0) {
-        updateSegmentStats(track)
+        updateSegmentStats(track);
       }
       // add segment xml namespaces to track
       if (xmlnsArr && xmlnsArr.length) {
@@ -3583,8 +3606,7 @@ $(function(){
           coords = f.geometry.coordinates;
           times = f.properties.coordTimes && (f.properties.coordTimes.length == coords.length) ?
             f.properties.coordTimes : undefined;
-          ptExts = f.properties.ptExts
-            && (f.properties.ptExts.length == coords.length) ?
+          ptExts = f.properties.ptExts && (f.properties.ptExts.length == coords.length) ?
             f.properties.ptExts : undefined;
           xmlnsArr = f.properties.xmlnsArr;
           importSegment(f.properties.name, f.properties.stroke, coords, times, ptExts, xmlnsArr);
@@ -3617,7 +3639,7 @@ $(function(){
     clearStatus();
     if (!segmentClickListener({ target: activeTrack }, true)) {
       // no segment added, but existing one was (possibly) extended, update stats display
-      showStats()
+      showStats();
     }
     saveState();
     closeMenu();
@@ -3800,7 +3822,7 @@ $(function(){
       Dropbox.choose(dropboxLoadOptions);
     } catch (err) {
       setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
-      alert("Dropbox popup could not open. Make sure you did not forbid popups.")
+      alert("Dropbox popup could not open. Make sure you did not forbid popups.");
       ga('send', 'event', 'error', 'Dropbox.choose error', err);
     }
   });
@@ -3900,7 +3922,7 @@ $(function(){
       }
       var div = document.createElement("div");
 
-      p = L.DomUtil.create("div", "popupdiv ptbtn", div);
+      let p = L.DomUtil.create("div", "popupdiv ptbtn", div);
       var del = L.DomUtil.create('a', "", p);
       del.href = "#";
       del.title = "Delete";
@@ -4023,13 +4045,13 @@ $(function(){
   // ------------ Manage Service Worker
 
   function initServiceWorkerSetting() {
-    setChecked("#use-service-worker", useServiceWorker)
+    setChecked("#use-service-worker", getUseServiceWorker());
   }
-  $("#use-service-worker").on("change", ()=>{
-    useServiceWorker = isChecked("#use-service-worker")
-    saveValOpt("wt.useServiceWorker", useServiceWorker)
-    initServiceWorker(true)
-  })
+  $("#use-service-worker").on("change", () => {
+    setUseServiceWorker(isChecked("#use-service-worker"));
+    saveValOpt("wt.useServiceWorker", getUseServiceWorker());
+    initServiceWorker(true);
+  });
 
   // ------------ Scale control and unit toggling
 
@@ -4098,25 +4120,25 @@ $(function(){
       '<span class="material-icons symbol notranslate" translate="no">trending_flat</span> ' +
       dist2txt(L.PolyStats.getPointDistance(latlng)) + " / " +
       '<span class="material-icons symbol notranslate" translate="no">sync_alt</span> ' +
-      dist2txt(L.PolyStats.getPointDistance(last) * 2 - L.PolyStats.getPointDistance(latlng))
+      dist2txt(L.PolyStats.getPointDistance(last) * 2 - L.PolyStats.getPointDistance(latlng));
     data = L.DomUtil.create('div', "popupdiv", div);
     data.innerHTML = "<span class='popupfield' title='Estimation using " + currentActivity.name + " profile'>Est. time:</span> " +
       '<span class="material-icons symbol notranslate" translate="no">trending_flat</span> ' +
       time2txt(L.PolyStats.getPointTime(latlng)) + " / " +
       '<span class="material-icons symbol notranslate" translate="no">sync_alt</span> ' +
-      time2txt(L.PolyStats.getPointTimeRoundTrip(latlng))
+      time2txt(L.PolyStats.getPointTimeRoundTrip(latlng));
     var trackStart = track.getLatLngs()[0];
     data = L.DomUtil.create('div', "popupdiv", div);
-    data.innerHTML = "<span class='popupfield' title='Recorded time'>Rec. time:</span> <input type='datetime-local' placeholder='yyyy-mm-dd HH:MM:SS' step='1' class='rec-time-abs'/>"
-    setDateTimeInput($(data).find("input"), latlng.time)
+    data.innerHTML = "<span class='popupfield' title='Recorded time'>Rec. time:</span> <input type='datetime-local' placeholder='yyyy-mm-dd HH:MM:SS' step='1' class='rec-time-abs'/>";
+    setDateTimeInput($(data).find("input"), latlng.time);
     $(data).find(".rec-time-abs").on("change", (event) => {
-      const newDate = getDateTimeInput($(event.target))
-      latlng.time = newDate ? newDate.toISOString() : undefined
-    })
+      const newDate = getDateTimeInput($(event.target));
+      latlng.time = newDate ? newDate.toISOString() : undefined;
+    });
     if (latlng.time && trackStart.time) {
       data = L.DomUtil.create('div', "popupdiv", div);
-      data.innerHTML = "<span class='popupfield' title='Recorded duration'>Duration:</span> "
-      + time2txt((new Date(latlng.time) - new Date(trackStart.time))/1000)
+      data.innerHTML = "<span class='popupfield' title='Recorded duration'>Duration:</span> " +
+        time2txt((new Date(latlng.time) - new Date(trackStart.time))/1000);
     }
     return div;
 
@@ -4157,21 +4179,22 @@ $(function(){
     }
 
     if (editMode != EDIT_NONE) {
+      let btn;
       // Previous point
       if (gotopt && latlng.i > 0) {
         p = L.DomUtil.create("div", "popupdiv ptbtn", div);
-        var btn = L.DomUtil.create('a', "", p);
+        btn = L.DomUtil.create('a', "", p);
         btn.href = "#";
         btn.title = "Previous point";
         btn.innerHTML = "<span class='popupfield'><i class='material-icons notranslate'>navigate_before</i></span>";
         btn.onclick = function() {
-          gotopt(-1)
-          return false
-        }
+          gotopt(-1);
+          return false;
+        };
       }
       // Delete button
       p = L.DomUtil.create("div", "popupdiv ptbtn", div);
-      var btn = L.DomUtil.create('a', "", p);
+      btn = L.DomUtil.create('a', "", p);
       btn.href = "#";
       btn.title = "Delete";
       btn.innerHTML = "<span class='popupfield'><i class='material-icons notranslate'>delete</i></span>";
@@ -4185,20 +4208,20 @@ $(function(){
         btn.href = "#";
         btn.title = "Split segment from this point";
         btn.innerHTML = "<span class='popupfield'><i class='material-icons notranslate'>content_cut</i></span>";
-        btn.onclick = splitfn
+        btn.onclick = splitfn;
       }
 
       // Next point
       if (gotopt && latlng.i < (track.getLatLngs().length - 1)) {
         p = L.DomUtil.create("div", "popupdiv ptbtn", div);
-        var btn = L.DomUtil.create('a', "", p);
+        btn = L.DomUtil.create('a', "", p);
         btn.href = "#";
         btn.title = "Next point";
         btn.innerHTML = "<span class='popupfield'><i class='material-icons notranslate'>navigate_next</i></span>";
         btn.onclick = function() {
-          gotopt(+1)
-          return false
-        }
+          gotopt(+1);
+          return false;
+        };
       }
 
     }
@@ -4207,13 +4230,13 @@ $(function(){
   }
 
   function getRecordedTime(segmentPts) {
-    var lastPt = segmentPts[segmentPts.length - 1]
-    var firstPt = segmentPts[0]
-    let segDuration
+    var lastPt = segmentPts[segmentPts.length - 1];
+    var firstPt = segmentPts[0];
+    let segDuration;
     if (lastPt.time && firstPt.time) {
-      segDuration = Math.abs((new Date(lastPt.time).getTime() - new Date(firstPt.time).getTime()) / 1000)
+      segDuration = Math.abs((new Date(lastPt.time).getTime() - new Date(firstPt.time).getTime()) / 1000);
     }
-    return segDuration
+    return segDuration;
   }
 
   function showStats() {
@@ -4223,12 +4246,12 @@ $(function(){
       var first = pts[0];
       $("#distow").html(dist2txt(L.PolyStats.getPointDistance(last)));
       $("#distrt").html(dist2txt(2 * L.PolyStats.getPointDistance(last)));
-      let timeow, timert = 0
+      let timeow, timert = 0;
       if (getCurrentActivityName() != ACTIVITY_RECORDED) {
-        timeow = L.PolyStats.getPointTime(last)
-        timert = L.PolyStats.getPointTimeRoundTrip(first)
+        timeow = L.PolyStats.getPointTime(last);
+        timert = L.PolyStats.getPointTimeRoundTrip(first);
       } else {
-        timeow = getRecordedTime(pts)
+        timeow = getRecordedTime(pts);
       }
       $("#timeow").html(time2txt(timeow ? timeow : 0));
       $("#timert").html(time2txt(timert));
@@ -4280,12 +4303,12 @@ $(function(){
   function newVertex(e) {
     var latlng = e.vertex.getLatLng();
     var prev = e.vertex.getPrevious();
-    i = isUndefined(prev) ? 0 : prev.latlng.i + 1;
+    let i = isUndefined(prev) ? 0 : prev.latlng.i + 1;
     latlng.i = i;
     //console.log(e.type + ": " + latlng.i);
     if (i == getTrackLength() - 1) {
       // last vertex
-      elevatePoint(latlng, function(success) {
+      elevatePoint("newVertex", latlng, function(success) {
         polystats.updateStatsFrom(i);
       });
     }
@@ -4297,7 +4320,7 @@ $(function(){
   function dragVertex(e) {
     var latlng = e.vertex.getLatLng();
     var i = latlng.i;
-    elevatePoint(latlng, function(success) {
+    elevatePoint("dragVertex", latlng, function(success) {
       polystats.updateStatsFrom(i);
     });
     //console.log(e.type + ": " + i);
@@ -4317,7 +4340,7 @@ $(function(){
   function draggedMark(e) {
     if (e.layer.getLatLng) {
       // Dragged a waypoint
-      elevatePoint(e.layer.getLatLng());
+      elevatePoint("draggedMark", e.layer.getLatLng());
       //console.log(e.type);
     }
   }
@@ -4376,7 +4399,7 @@ $(function(){
     if (editMode == EDIT_MARKER) {
       ga('send', 'event', 'edit', 'new-marker');
       var marker = newWaypoint(e.latlng, {name: "New waypoint"}, waypoints);
-      elevatePoint(e.latlng);
+      elevatePoint("newMarker", e.latlng);
       marker.enableEdit();
     } else if (editMode == EDIT_AUTO_TRACK) {
       if (!route) {
@@ -4415,8 +4438,8 @@ $(function(){
             restartRoute();
             map.fireEvent("click", { latlng: e.latlng });
           } catch(err) {
-            ga('send', 'event', 'error', 'merge-route-failed', err.toString()
-                + ", " + navigator.userAgent, wpts.length);
+            ga('send', 'event', 'error', 'merge-route-failed', err.toString() +
+                ", " + navigator.userAgent, wpts.length);
           }
         } else {
           wpts.push({ latLng: e.latlng });
@@ -4432,7 +4455,7 @@ $(function(){
 
   function clickVertex(e, vertex) {
     vertex = vertex || e.vertex;
-    latlng = vertex.latlng;
+    let latlng = vertex.latlng;
 
     function deleteTrackPoint(event) {
       vertex.delete();
@@ -4458,7 +4481,7 @@ $(function(){
       event.preventDefault();
     }
     function gotopt(diff) {
-      topt = diff > 0 ? vertex.getNext() : vertex.getPrevious();
+      const topt = diff > 0 ? vertex.getNext() : vertex.getPrevious();
       if (topt) {
         map.closePopup(pop);
         clickVertex(null, topt);
@@ -4475,7 +4498,9 @@ $(function(){
       setEditMode(EDIT_MANUAL_TRACK);
       return;
     }
-    e && e.cancel && e.cancel();
+    if (e && e.cancel) {
+      e.cancel();
+    }
     var div = getTrackPointPopupContent(latlng);
     var splitfn,
         i = latlng.i,
@@ -4488,7 +4513,9 @@ $(function(){
       .setContent(getLatLngPopupContent(latlng, deleteTrackPoint, splitfn, gotopt, div))
       .openOn(map);
     $(".leaflet-popup-close-button").on("click", function(e) {
-      track.editor && track.editor.continueForward();
+      if (track.editor) {
+        track.editor.continueForward();
+      }
       return false;
     });
   }
@@ -4586,7 +4613,7 @@ $(function(){
       }
     });
   } else {
-    $("#cfgsave").attr("title", "Your browser prevents storing data. Did you block cookies?")
+    $("#cfgsave").attr("title", "Your browser prevents storing data. Did you block cookies?");
     $("#cfgsave").prop("disabled", true);
     $("#cfgsave").removeClass("no-trim");
   }
@@ -4749,7 +4776,7 @@ $(function(){
   });
 
   // Remove potential query parameters from URL
-  clearUrlQuery()
+  clearUrlQuery();
 
   $(window).on("unload", function() {
     saveState();
