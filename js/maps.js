@@ -1,9 +1,24 @@
+'use strict';
+/* globals
+      $, ga, L, initGoogleAnalytics, config,
+      isUnset, isUndefined, jsonClone, getParameterByName, clearUrlQuery, corsUrl,
+      debug, log, warn, error,
+      consentCookies, htmlEncode, strencode, strdecode, saveAs, forceReload, isSafari, b64EncodeUnicode, b64DecodeUnicode, supportsBase64,
+      getBoolVal, getJsonVal, getBoolVal, getVal,
+      saveValOpt, saveJsonValOpt, storeVal, storeJsonVal, getValStorage,
+      objectForEach, arrayForEach, arrayMove, arrayLast, mapsForEach,
+      copyOnClick, rounddec, isNumeric, noTranslate,
+      isStateSaved, setSaveState, getSaveState, getUseServiceWorker, setUseServiceWorker, initServiceWorker, doAndroidChromiumTweak,
+      mymaps, mapsList, MAP_MY, setMyMaps, mapsListNames,mapsListProps, CrsValues, renameMapListEntry, saveMapList, getMapListEntryIndex, addMapListEntry, delMapListEntry, getMapList, resetMapList, moveMapListEntry,
+      addSelectOption, getSelectedOption, selectOption, addsSelectOption, isChecked, setChecked,
+*/
+
 /* ----------------- My maps editing ------------------- */
 
 var OVERLAY_ICON = "<i class='material-icons map-overlay notranslate' 'translate'='no' title='Map overlay'>layers</i> ";
-var MYMAPS_BTNS = "<i class='material-icons item-edit notranslate' 'translate'='no' title='Edit'>create</i> "
-                  + "<i class='material-icons item-share notranslate' 'translate'='no' title='Share'>share</i> "
-                  + "<i class='material-icons item-delete notranslate' 'translate'='no' title='Delete'>delete</i> ";
+var MYMAPS_BTNS = "<i class='material-icons item-edit notranslate' 'translate'='no' title='Edit'>create</i> " +
+       "<i class='material-icons item-share notranslate' 'translate'='no' title='Share'>share</i> " +
+       "<i class='material-icons item-delete notranslate' 'translate'='no' title='Delete'>delete</i> ";
 
 
 // --------------------------------------------
@@ -28,7 +43,7 @@ function addMymapsItem(name, props, addHandlers) {
   if (props.in == MAP_MY) {
     mymapbtns = MYMAPS_BTNS;
     mymapclass = " mymap-name";
-    inList = mymaps
+    inList = mymaps;
   }
   var mapv = inList[name];
 
@@ -270,7 +285,7 @@ function validateMymapBox(evt) {
             tmp[name] = value;
           }
         });
-        mymaps = tmp;
+        setMyMaps(tmp);
         renameMapListEntry(oldname, newname);
         saveMapList();
       } else {
@@ -333,7 +348,7 @@ function changeMymapType(evt) {
 function deleteAllMymaps(evt) {
   if (!$.isEmptyObject(mymaps) &&
       confirm("Delete all your personal maps?")) {
-    mymaps = {};
+    setMyMaps({});
     saveJsonValOpt("wt.mymaps", undefined);
     getMapList();
     showMapsList();
@@ -491,7 +506,7 @@ function readImportMymaps(event) {
   $("#input-error-url").hide();
   var data = $("#input-val").val();
   if (data.match(/^https?\:\/\//)) {
-    data = getParameterByName("import", undefined, data.substring(data.indexOf('?') + 1))
+    data = getParameterByName("import", undefined, data.substring(data.indexOf('?') + 1));
   }
   if (data) {
     try {
@@ -533,7 +548,7 @@ function readImportMymaps(event) {
       $("#import-ok").off("click").click(importMymaps);
       $("#import-ok").focus();
     } catch (ex) {
-      console.log("Failed to parse data: " + data)
+      console.log("Failed to parse data: " + data);
       if (event) {
         $("#input-error").show();
       } else {
@@ -631,7 +646,7 @@ $(function(){
   });
 
   // import maps?
-  var toimport = getParameterByName("import")
+  var toimport = getParameterByName("import");
   if (toimport) {
     openImportBox(null, toimport);
   }

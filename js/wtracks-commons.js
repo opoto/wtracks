@@ -152,6 +152,10 @@ var mapsListProps = mapsList[1];
 var MAP_DEF = '0';
 var MAP_MY = '1';
 
+function setMyMaps(newMyMaps) {
+  mymaps = newMyMaps;
+}
+
 function addMapListEntry(name, _in, _on) {
   mapsListNames.push(name);
   var props = {

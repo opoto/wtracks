@@ -1,3 +1,16 @@
+'use strict';
+/* globals
+      $, ga, L, initGoogleAnalytics, config,
+      isUnset, isUndefined, debug, log, warn, error,
+      consentCookies, htmlEncode, b64EncodeUnicode, b64DecodeUnicode, supportsBase64,
+      getBoolVal, getJsonVal, getBoolVal, getVal,
+      saveValOpt, saveJsonValOpt, storeVal, storeJsonVal, getValStorage,
+      objectForEach, arrayForEach, arrayMove, arrayLast, mapsForEach,
+      copyOnClick, noTranslate,
+      isStateSaved, setSaveState, getSaveState, getDataset, forEachDataset,
+      addSelectOption, getSelectedOption, selectOption, addsSelectOption, isChecked, setChecked
+*/
+
 var polystats;
 var activity;
 var activityname;
@@ -497,10 +510,6 @@ function resetComputeParams() {
   selectOption($("#pruning"), "0.3");
 }
 
-function toggleHelp(e) {
-  $("#" + this.id + "-help").toggle();
-}
-
 var wtReady = false;
 // on ready event (HTML + scripts loaded and executed):
 $(function(){
@@ -558,7 +567,6 @@ $(function(){
     fileloader.load(file);
   });
 
-  $(".help-b").click(toggleHelp);
   $("#data").change(changeData);
   $("#compute").click(computeSpeedProfile);
   $("#resetcompute").click(resetComputeParams);
