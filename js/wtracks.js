@@ -3160,8 +3160,11 @@ $(function(){
       case "t": // 't' - Tools
         openMenu("tools");
         break;
-      case "s": // 's' - Segments
+        case "s": // 's' - Segments
         openMenu("segments");
+        break;
+      case "*": // '*' - Settings
+        openMenu("settings");
         break;
       case "?": // '?' - Help
         openMenu("about");
