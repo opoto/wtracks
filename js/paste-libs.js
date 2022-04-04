@@ -43,7 +43,7 @@ class PasteLibs {
 
   static get(name) {
     if (this._libNames.length === 0) {
-      throw "No PasteLib lib registered"
+      throw "No PasteLib lib registered";
     }
     let clazz = name ? this._libs[name] : this._libs[this._libNames[0]];
     if (!clazz) {
