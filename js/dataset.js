@@ -1,3 +1,6 @@
+'use strict';
+/* globals ga, arrayForEach */
+
 // Data
 var datas = [
   {
@@ -49,13 +52,13 @@ var datas = [
 ];
 
 function getDataset(idx) {
-  var data = datas["none"];
+  var data = datas[0].refs;
   if (idx >= 0 && idx < datas.length) {
     data = datas[idx].refs.sort(function(a, b) {
       return a[0] - b[0];
     });
   } else {
-    error("Missing dataset: " + idx);
+    console.error("Missing dataset: " + idx);
     ga('send', 'event', 'error', "Missing dataset", idx);
   }
   return data;

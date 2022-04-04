@@ -16,7 +16,7 @@ function isCryptoSupported() {
       Array && Array.from && Array.prototype.map && Uint8Array && String &&
       String.fromCharCode && Math && Math.random ? true : false;
   } catch (err) {
-    error(err);
+    console.error(err);
   } 
   return supported;
 }

@@ -1,6 +1,6 @@
 'use strict';
 /* globals
-      $, ga, L, initGoogleAnalytics, google, Dropbox, jscolor, config, pastesLib,
+      $, ga, L, initGoogleAnalytics, google, Dropbox, jscolor, config, PasteLibs,
       isCryptoSupported, aesGcmEncrypt, aesGcmDecrypt,
       isUnset, isUndefined, jsonClone, getParameterByName, clearUrlQuery, corsUrl,
       debug, log, warn, error,
@@ -8,7 +8,7 @@
       getBoolVal, getJsonVal, getBoolVal, getVal,
       saveValOpt, saveJsonValOpt, storeVal, storeJsonVal, getValStorage,
       objectForEach, arrayForEach, arrayMove, arrayLast, mapsForEach,
-      copyOnClick, rounddec, isNumeric, noTranslate,
+      copyOnClick, roundDecimal, isNumeric, noTranslate,
       addSelectOption, getSelectedOption, selectOption, addsSelectOption, isChecked, setChecked,
       enableInput, setDateTimeInput, getDateTimeInput, getRealInput,
       mymaps, mapsList, MAP_MY, getMapListEntryProps, PMTiles, getCrsFromName,
@@ -950,7 +950,7 @@ $(function(){
 
   function trimTrack(e) {
     var n = parseInt($("#trim-range").val());
-    log("trimming " + n);
+    console.log("trimming " + n);
     $("#trim-txt").text(n + "/" + polytrim.getPolySize());
     $('.no-trim:not([class*="isdisabled"])').prop('disabled', (n !== 0));
     polytrim.trim(n);
@@ -1085,7 +1085,7 @@ $(function(){
     var value = apikeys[name];
     var useDefault = isUndefined(getApiKey(value));
     var input = $("#" + name + "-value");
-    //debug(name + ": " + value);
+    //console.debug(name + ": " + value);
     setChecked("#" + name + "-chk", !useDefault);
     input.val(isUndefined(value) ? "" : getApiKeyVal(value));
     input.attr("disabled", useDefault);
@@ -1101,7 +1101,7 @@ $(function(){
     }
     var gav = useDefault ? -1 : key ? 1 : 0;
     ga('send', 'event', 'setting', 'keys', name, gav);
-    //debug(name + "= " + key + " (" + gav + ")");
+    //console.debug(name + "= " + key + " (" + gav + ")");
     saveValOpt("wt." + name, key);
     return key;
   }
@@ -1717,8 +1717,8 @@ $(function(){
       var pwd = Math.random().toString(36).substring(2);
       aesGcmEncrypt(gpx, pwd)
       .then(function(cipher) {
-        //log("iv  : " + cipher.iv);
-        //log("pwd : " + pwd);
+        //console.log("iv  : " + cipher.iv);
+        //console.log("pwd : " + pwd);
         var encversion = "01";
         params += "&key=" + encversion + strencode(cipher.iv + pwd);
         gpx = cipher.ciphertext;
@@ -1803,11 +1803,10 @@ $(function(){
   $("#wtshare-ok").on("keyup", closeShareBoxOnEscape);
 
   var sharename = getVal("wt.share", undefined);
-  var share = (sharename && pastesLib[sharename]) || pastesLib[Object.keys(pastesLib)[0]];
+  var share = PasteLibs.get(sharename);
 
   // fileio automatically deletes paste after download, perfect for dropbox use case
-  var dropboxTempShare = pastesLib.fileio;
-  //var dropboxTempShare = sharename ? pastesLib[sharename] : pastesLib.fileio;
+  var dropboxTempShare = PasteLibs.get("fileio");
 
   //---------------------------------------------------
 
@@ -2017,7 +2016,7 @@ $(function(){
         setInactiveSegmentClickable(false);
         break;
       default:
-        error("invalid edit mode: " + mode);
+        console.error("invalid edit mode: " + mode);
         return;
     }
     editMode = mode;
@@ -2146,7 +2145,7 @@ $(function(){
   // geolocation
 
   function getMyIpLocation() {
-    log("Getting location from IP address");
+    console.log("Getting location from IP address");
     $.get(config.ipLookup.url())
     .done(function(res) {
       setLocation({
@@ -2248,7 +2247,7 @@ $(function(){
     let isHighAccuracy = false;
 
     function gotLocation(position) {
-      debug(`(${position.coords.latitude}, ${position.coords.longitude})`);
+      console.debug(`(${position.coords.latitude}, ${position.coords.longitude})`);
       if ((showLocation == LOC_ONCE) && isHighAccuracy) {
         setLocationMode(LOC_READY_TO_RECORD);
       }
@@ -2260,13 +2259,13 @@ $(function(){
 
     function highAccuracyFailed(posError) {
       isHighAccuracy = false;
-      log("GPS location failed, trying low accuracy");
+      console.log("GPS location failed, trying low accuracy");
       navigator.geolocation.getCurrentPosition(
         gotLocation, lowAccuracyFailed, { maximumAge: 60000, timeout: 5000, enableHighAccuracy: false });
     }
 
     function lowAccuracyFailed(posError) {
-      log("low accuracy geolococation failed");
+      console.log("low accuracy geolococation failed");
       getMyIpLocation();
     }
 
@@ -2276,7 +2275,7 @@ $(function(){
       navigator.geolocation.getCurrentPosition(
         gotLocation, highAccuracyFailed, { maximumAge: 0, timeout: 5000, enableHighAccuracy: true });
     } else {
-      log("no runtime geolococation available");
+      console.log("no runtime geolococation available");
       getMyIpLocation();
     }
   }
@@ -2564,7 +2563,7 @@ $(function(){
     setAutoGrayBaseLayer(e.layer);
   });
   map.on('zoomstart zoom zoomend', function(ev){
-    debug('Zoom level: ' + map.getZoom());
+    console.debug('Zoom level: ' + map.getZoom());
   });
 
   function changeBaseLayer(mapname) {
@@ -2919,7 +2918,7 @@ $(function(){
       function(eventName, msg){
         ga('send', 'event', 'api', eventName,
           JSON.stringify({ "op": callerName, "msg": msg}), locations.length);
-        warn("elevation request failed: " + msg);
+        console.warn("elevation request failed: " + msg);
         setStatus("Elevation failed (" + msg + ")" , {
           timeout: 3,
           class: "status-error"
@@ -3704,8 +3703,8 @@ $(function(){
           var deckey = strdecode(key, key);
           var iv = deckey.substring(0,24);
           var pwd = deckey.substring(24);
-          //log("iv  : " + iv);
-          //log("pwd : " + pwd);
+          //console.log("iv  : " + iv);
+          //console.log("pwd : " + pwd);
           ga('send', 'event', 'file', 'decrypt', undefined, Math.round(data.length / 1000));
           aesGcmDecrypt(data, iv, pwd)
           .then(function(gpx) {
@@ -3867,7 +3866,7 @@ $(function(){
         dropboxSaveOptions.files[0].url,
         dropboxSaveOptions.passcode,
         undefined, function(msg) {
-          warn("Failed to delete temp share");
+          console.warn("Failed to delete temp share");
         }
       );
     }
@@ -3950,7 +3949,7 @@ $(function(){
 
     var nwpts = route ? route.getWaypoints().length : 0;
     if (nwpts > MAX_ROUTE_WPTS) {
-      error("route-pts-overlimit");
+      console.error("route-pts-overlimit");
       ga('send', 'event', 'error', 'route-pts-overlimit', location.toString(), nwpts);
     }
 
@@ -4152,7 +4151,7 @@ $(function(){
     var p;
 
     p = L.DomUtil.create("div", "popupdiv", div);
-    p.innerHTML = "<span class='popupfield'>Position:</span> " + rounddec(latlng.lat,5) + "," + rounddec(latlng.lng,5);
+    p.innerHTML = "<span class='popupfield'>Position:</span> " + roundDecimal(latlng.lat,5) + "," + roundDecimal(latlng.lng,5);
 
     if (editMode != EDIT_NONE) {
 
@@ -4391,7 +4390,7 @@ $(function(){
 
   // not triggered by gh, only ors
   function routingError(err, msg) {
-    log("Routing failed " + err.error.message);
+    console.log("Routing failed " + err.error.message);
     ga('send', 'event', 'api', 'ors.routing.ko', err.error.message);
     setEditMode(EDIT_NONE);
     showRoutingError("OpenRouting failed, check API key and account status");
@@ -4563,7 +4562,7 @@ $(function(){
             gjl: gjl
           };
         } catch (err) {
-          log('no elevation');
+          console.log('no elevation');
         }
       }
     } else {
@@ -4705,15 +4704,16 @@ $(function(){
 
   var pasteLibSelect = $("#share-libs")[0];
   function initShareLib() {
-    objectForEach(pastesLib, function(name, pl) {
-      if (pl.enabled) {
-        addSelectOption(pasteLibSelect, name, pl.name);
+    arrayForEach(PasteLibs.libNames, function(i, name) {
+      let lib = PasteLibs.get(name);
+      if (lib.enabled) {
+        addSelectOption(pasteLibSelect, name, lib.name);
       }
     });
   }
   function changeShareLib(evt) {
     var libname = getSelectedOption(pasteLibSelect);
-    share = pastesLib[libname] || share;
+    share = PasteLibs.get(libname) || share;
     $("#share-web").html("<a href='" + share.web + "' title='" + share.web + "' >" + share.web + "</a>");
     $("#share-max-size").html(share.maxSize);
     $("#share-max-time").html(share.maxTime);

@@ -7,7 +7,7 @@
       getBoolVal, getJsonVal, getBoolVal, getVal,
       saveValOpt, saveJsonValOpt, storeVal, storeJsonVal, getValStorage,
       objectForEach, arrayForEach, arrayMove, arrayLast, mapsForEach,
-      copyOnClick, rounddec, isNumeric, noTranslate,
+      copyOnClick, isNumeric, noTranslate,
       isStateSaved, setSaveState, getSaveState, getUseServiceWorker, setUseServiceWorker, initServiceWorker, doAndroidChromiumTweak,
       mymaps, mapsList, MAP_MY, setMyMaps, mapsListNames,mapsListProps, CrsValues, renameMapListEntry, saveMapList, getMapListEntryIndex, addMapListEntry, delMapListEntry, getMapList, resetMapList, moveMapListEntry,
       addSelectOption, getSelectedOption, selectOption, addsSelectOption, isChecked, setChecked,
@@ -248,7 +248,7 @@ function validateMymapBox(evt) {
   var newname = $("#mymap-name").val().trim();
   if ((oldname != newname) && (getMapListEntryIndex(newname) >= 0)) {
     $("#mymap-name").trigger("invalid");
-    warn("Map name already used: " + newname);
+    console.warn("Map name already used: " + newname);
     valid = false;
   }
   if (valid) {

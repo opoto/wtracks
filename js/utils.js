@@ -6,32 +6,6 @@ if (window.document.documentMode) {
   window.location = "https://www.mozilla.org/firefox/new/";
 }
 
-/* ----------------------- LOGGING SHORTCUTS -------------------------- */
-
-function debug(msg) {
-  if (console && console.debug) {
-    console.debug(msg);
-  }
-}
-
-function log(msg) {
-  if (console && console.log) {
-    console.log(msg);
-  }
-}
-
-function error(msg) {
-  if (console && console.error) {
-    console.error(msg);
-  }
-}
-
-function warn(msg) {
-  if (console && console.warn) {
-    console.warn(msg);
-  }
-}
-
 /* ----------------------- Testing values and types ---------------------- */
 
 function isNumeric(obj) {
@@ -46,15 +20,7 @@ function isUnset(v) {
   return (typeof v === "undefined") || (v === null);
 }
 
-// IE polyfill
-if (!String.prototype.startsWith) {
-  String.prototype.startsWith = function(searchString, position) {
-    position = position || 0;
-    return this.indexOf(searchString, position) === position;
-  };
-}
-
-function rounddec(number, decimals) {
+function roundDecimal(number, decimals) {
   const coef = Math.pow(10, decimals);
   return Math.round(number * coef) / coef;
 }
@@ -219,7 +185,7 @@ function getValStorage() {
 }
 
 function storeVal(name, val) {
-  //log("store " + name + "=" + val);
+  //console.log("store " + name + "=" + val);
   const store = getValStorage();
   if (store) {
     if (isUnset(val)) {
@@ -232,7 +198,7 @@ function storeVal(name, val) {
         store.setItem(name, val);
       } catch (err) {
         const kbsz = val.length ? Math.round(val.length/1024) : 0;
-        error("Cannot store value " + name + ": " + kbsz + "KB");
+        console.error("Cannot store value " + name + ": " + kbsz + "KB");
         ga('send', 'event', 'error', 'storeVal failed: ' + err.toString(), name, kbsz);
         // switch to sessionStorage?
       }
@@ -269,7 +235,7 @@ function getJsonVal(name, defval) {
   try {
     val = v && JSON && JSON.parse ? JSON.parse(v) : undefined;
   } catch (ex) {
-    error("Invalid json preference for " + name);
+    console.error("Invalid json preference for " + name);
     v = undefined;
   }
   return isUnset(v) ? defval : val;
@@ -297,12 +263,12 @@ function initGoogleAnalytics(trackingid) {
     a.async = 1;
     a.src = g;
     a.onerror = function(err) {
-      error("Google Analytics blocked. Ad blocker?");
+      console.error("Google Analytics blocked. Ad blocker?");
     };
     try {
       m.parentNode.insertBefore(a, m);
     } catch (err) {
-      error("Google Analytics blocked. Ad blocker?");
+      console.error("Google Analytics blocked. Ad blocker?");
     }
   })(window, document, 'script', gaScriptUrl, 'ga');
   if (gadbg === "2") {
@@ -310,7 +276,7 @@ function initGoogleAnalytics(trackingid) {
   }
   ga('create', trackingid, 'auto');
   if (getBoolVal("wt.ga.off", false)) {
-    log('Turning off GA reporting');
+    console.log('Turning off GA reporting');
     ga('set', 'sendHitTask', null);
   }
   ga('send', 'pageview');
@@ -318,17 +284,17 @@ function initGoogleAnalytics(trackingid) {
 
 /* ---------------------- EMAIL ------------------------- */
 /*
- * Open a new mail in default mail client with recipent and subject.
+ * Open a new mail in default mail client with recipient and subject.
  * It protects the email address from spam robots by splitting the address in several parts,
- * and only assemblying them when needed for the duration of a click.
+ * and only assembling them when needed for the duration of a click.
  *
  * parameters:
  * - selector: the css selector of the link or button which should open the email
- * - name: the name part of the recepient email address
- * - domain: the domain part of the recepient email address
+ * - name: the name part of the recipient email address
+ * - domain: the domain part of the recipient email address
  * - subject: the subject string of the newly created email
  *
- * Attachs a click handler to the html element designated by <selector>
+ * Attaches a click handler to the html element designated by <selector>
  * that opens the following URL:
  * "mailto:<name>@<domain>?subject=<subject>
  */
@@ -585,7 +551,7 @@ window.onerror = function(messageOrEvent, source, line, row, err) {
     } else if (source) {
       label.details = source;
     }
-    error(errmsg);
+    console.error(errmsg);
     if (errors.length > 0) {
       label.prev = errors;
     }
