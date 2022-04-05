@@ -1,7 +1,7 @@
 'use strict';
 /* globals
       $, ga, L, initGoogleAnalytics, config,
-      isUnset, isUndefined, debug, log, warn, error,
+      isUnset, isUndefined,
       consentCookies, htmlEncode, b64EncodeUnicode, b64DecodeUnicode, supportsBase64,
       getBoolVal, getJsonVal, getBoolVal, getVal,
       saveValOpt, saveJsonValOpt, storeVal, storeJsonVal, getValStorage,

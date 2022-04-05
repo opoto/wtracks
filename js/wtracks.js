@@ -3,7 +3,6 @@
       $, ga, L, initGoogleAnalytics, google, Dropbox, jscolor, config, PasteLibs,
       isCryptoSupported, aesGcmEncrypt, aesGcmDecrypt,
       isUnset, isUndefined, jsonClone, getParameterByName, clearUrlQuery, corsUrl,
-      debug, log, warn, error,
       consentCookies, htmlEncode, strencode, strdecode, saveAs, forceReload, isSafari,
       getBoolVal, getJsonVal, getBoolVal, getVal,
       saveValOpt, saveJsonValOpt, storeVal, storeJsonVal, getValStorage,
@@ -728,7 +727,7 @@ $(function(){
   var undos = [];
   function undo() {
     if (undos.length < 1) {
-      debug("nothing to undo");
+      console.debug("nothing to undo");
       return;
     }
     var toUndo = undos.pop();
@@ -3879,7 +3878,7 @@ $(function(){
       Dropbox.save(dropboxSaveOptions);
     } catch (err) {
         setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
-        ga('send', 'event', 'error', 'Dropbox.save error', error);
+        ga('send', 'event', 'error', 'Dropbox.save error', err);
     }
   }
   $("#dbs-ok").on("click", dropboxSaver);

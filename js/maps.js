@@ -2,7 +2,6 @@
 /* globals
       $, ga, L, initGoogleAnalytics, config,
       isUnset, isUndefined, jsonClone, getParameterByName, clearUrlQuery, corsUrl,
-      debug, log, warn, error,
       consentCookies, htmlEncode, strencode, strdecode, saveAs, forceReload, isSafari, b64EncodeUnicode, b64DecodeUnicode, supportsBase64,
       getBoolVal, getJsonVal, getBoolVal, getVal,
       saveValOpt, saveJsonValOpt, storeVal, storeJsonVal, getValStorage,
