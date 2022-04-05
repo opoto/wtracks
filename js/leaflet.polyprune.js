@@ -1,3 +1,5 @@
+'use strict';
+/* globals define, module, require */
 /*
  * Prune points from a polyline
  *
@@ -46,8 +48,7 @@
             prune : function(latlngs, options) {
 
                 var tolerance = 5;
-                var maxDist = undefined;
-                var maxTimeSec = undefined;
+                var maxDist, maxTimeSec;
                 var useAlt = true;
                 if (options) {
                     if (!isNaN(options.tolerance)) {
@@ -68,25 +69,25 @@
                 var pruned = [];
 
                 function areOlderThan(pt1, pt2, ageSec) {
-                    var res = false
+                    var res = false;
                     if (pt1.time && pt2.time) {
                         try {
-                            res = (new Date(pt2.time).getTime() - new Date(pt1.time).getTime()) > (ageSec*1000)
+                            res = (new Date(pt2.time).getTime() - new Date(pt1.time).getTime()) > (ageSec*1000);
                         } catch (error) {
-                            console.error("Failed to parse GPX recorded time: " + error)
+                            console.error("Failed to parse GPX recorded time: " + error);
                         }
                     }
-                    return res
+                    return res;
                 }
                 function distance3D(pt1, pt2) {
-                    var dist2d = pt1.distanceTo(pt2)
-                    var dist3d
+                    var dist2d = pt1.distanceTo(pt2);
+                    var dist3d;
                     if (pt1.alt && pt2.alt) {
-                        let height = Math.abs(pt2.alt - pt1.alt)
+                        let height = Math.abs(pt2.alt - pt1.alt);
                         dist3d = Math.sqrt(Math.pow(dist2d,2) + Math.pow(height,2));
 
                     }
-                    return dist3d ? dist3d : dist2d
+                    return dist3d ? dist3d : dist2d;
                 }
 
                 /**
@@ -162,10 +163,10 @@
 
                         for (var j = i; j > ptlast; j--) {
                             var pt = latlngs[j];
-                            var keepIt = false
-                            keepIt = keepIt || (maxDist && distance3D(prev, next) > maxDist)
-                            keepIt = keepIt || (maxTimeSec && areOlderThan(prev, next, maxTimeSec))
-                            keepIt = keepIt || distanceFromLine(pt, prev, next) > tolerance
+                            var keepIt = false;
+                            keepIt = keepIt || (maxDist && distance3D(prev, next) > maxDist);
+                            keepIt = keepIt || (maxTimeSec && areOlderThan(prev, next, maxTimeSec));
+                            keepIt = keepIt || distanceFromLine(pt, prev, next) > tolerance;
                             if (keepIt) {
                                 // removing i loses this pt, keep this trkpt[i]
                                 latlngs[i].i = pruned.length;

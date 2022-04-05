@@ -1,3 +1,6 @@
+'use strict';
+/* globals crypto */
+
 /*
  * Simple lib to encrypt / decrypt a text with a password. Encrypted form is base64 encoded.
  * Requires WebCrypto API, TextEncoder/TextDecoder and Promise (>= ES6)
@@ -17,7 +20,7 @@ function isCryptoSupported() {
       String.fromCharCode && Math && Math.random ? true : false;
   } catch (err) {
     console.error(err);
-  } 
+  }
   return supported;
 }
 
