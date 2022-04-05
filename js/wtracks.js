@@ -5,7 +5,7 @@
       isUnset, isUndefined, jsonClone, getParameterByName, clearUrlQuery, corsUrl,
       consentCookies, htmlEncode, strencode, strdecode, saveAs, forceReload, isSafari,
       getBoolVal, getJsonVal, getBoolVal, getVal,
-      saveValOpt, saveJsonValOpt, storeVal, storeJsonVal, getValStorage,
+      saveValOpt, saveJsonValOpt, storeVal, storeJsonVal, getValStorage, storedValuesForEach,
       objectForEach, arrayForEach, arrayMove, arrayLast, mapsForEach,
       copyOnClick, roundDecimal, isNumeric, noTranslate,
       addSelectOption, getSelectedOption, selectOption, addsSelectOption, isChecked, setChecked,
@@ -2352,16 +2352,13 @@ $(function(){
 
   function saveStateFile() {
     var fullState = {};
-    var n = localStorage.length;
-    for (let i = 0; i < n; i++) {
-      var key = localStorage.key(i);
+    storedValuesForEach((key) => {
       // include all "wt." storage items
       // but exclude current edited track
       if (key.startsWith("wt.") && (key != "wt.gpx")) {
-        var val = localStorage.getItem(key);
-        fullState[key] = val;
+        fullState[key] = getVal(key);
       }
-    }
+    });
     var blob = new Blob([JSON.stringify(fullState)],
       isSafari() ? {type: "text/plain;charset=utf-8"} : {type: "application/json;charset=utf-8"}
     );
@@ -2443,12 +2440,11 @@ $(function(){
   }
 
   function clearSavedState() {
-    for (var i=localStorage.length - 1; i >= 0; i--) {
-      var key = localStorage.key(i);
+    storedValuesForEach( (key) => {
       if (key.startsWith("wt.") && (key != "wt.saveState")) {
         storeVal(key, undefined);
       }
-    }
+    });
   }
 
   function getProvider(mapobj) {

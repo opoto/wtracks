@@ -241,6 +241,15 @@ function getJsonVal(name, defval) {
   return isUnset(v) ? defval : val;
 }
 
+function storedValuesForEach(fn) {
+  const store = getValStorage();
+  for (var i=store.length - 1; i >= 0; i--) {
+    if (fn(store.key(i))) {
+      break;
+    }
+  }
+}
+
 /* ---------------------- GOOGLE ANALYTICS ------------------------- */
 
 // ga('send', 'event', category, action, label, value)
