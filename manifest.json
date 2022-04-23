@@ -1,6 +1,6 @@
 {
   "short_name": "WTracks",
-  "name": "WTracks - online track editor for outdoor activites",
+  "name": "WTracks - online track editor for outdoor activities",
   "icons": [
     {
       "src": "img/wtracks-icon-1x.png",
@@ -19,6 +19,27 @@
     }
   ],
   "start_url": ".",
-  "display": "standalone"
-
+  "display": "standalone",
+  "lang": "en-US",
+  "shortcuts" : [
+    {
+      "name": "Maps",
+      "url": "/maps.html",
+      "description": "Edit background maps"
+    },
+    {
+      "name": "Activities",
+      "url": "/activities.html",
+      "description": "Edit activities used for time estimations"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/",
+      "name": "GPX file",
+      "accept": {
+        "application/gpx+xml": [ ".gpx" ]
+      }
+    }
+  ]
 }
