@@ -1240,7 +1240,7 @@ $(function(){
   function LatLngToGPX(ptindent, latlng, gpxelt, properties) {
 
     var gpx = ptindent + "<" + gpxelt;
-    gpx += " lat=\"" + latlng.lat + "\" lon=\"" + latlng.lng + "\">";
+    gpx += " lat=\"" + getCoordinate(latlng.lat) + "\" lon=\"" + getCoordinate(latlng.lng) + "\">";
     if (!isNaN(latlng.alt)) {
       gpx += "<ele>" + latlng.alt + "</ele>";
     }
@@ -1315,7 +1315,10 @@ $(function(){
       gpx += "  <time>" + startdate.toISOString() + "</time>\n";
       var sw = map.getBounds().getSouthWest();
       var ne = map.getBounds().getNorthEast();
-      gpx += '  <bounds minlat="' + Math.min(sw.lat, ne.lat) + '" minlon="' + Math.min(sw.lng, ne.lng) + '" maxlat="' + Math.max(sw.lat, ne.lat) + '" maxlon="' + Math.max(sw.lng, ne.lng) + '"/>\n';
+      gpx += '  <bounds minlat="' + getCoordinate(Math.min(sw.lat, ne.lat)) +
+        '" minlon="' + getCoordinate(Math.min(sw.lng, ne.lng)) +
+        '" maxlat="' + getCoordinate(Math.max(sw.lat, ne.lat)) +
+        '" maxlon="' + getCoordinate(Math.max(sw.lng, ne.lng)) + '"/>\n';
       gpx += "</metadata>\n";
     }
 
@@ -2348,6 +2351,8 @@ $(function(){
     saveValOpt("wt.wptLabel", wptLabel);
     saveValOpt("wt.extMarkers", extMarkers);
     saveValOpt("wt.autoGrayBaseLayer", autoGrayBaseLayer);
+    saveValOpt("wt.coordDecimals", coordDecimals);
+    saveValOpt("wt.coordRounding", coordRounding);
   }
 
   function saveStateFile() {
@@ -4103,6 +4108,48 @@ $(function(){
     return strTime;
   }
 
+  // --------------- Coordinates rounding
+
+  const MIN_COORD_DECIMALS = 3;
+  const MAX_COORD_DECIMALS = 8;
+  const DEFAULT_COORD_DECIMALS = 6;
+  const DEFAULT_COORD_ROUNDING = true;
+  var coordDecimals = getVal("wt.coordDecimals", DEFAULT_COORD_DECIMALS);
+  var coordRounding = getBoolVal("wt.coordRounding", DEFAULT_COORD_ROUNDING);
+  function showCoordnateRounding(save) {
+    if (save) {
+      saveValOpt("wt.coordDecimals", coordDecimals);
+      saveValOpt("wt.coordRounding", coordRounding);
+    }
+    setChecked("#rounding-on", coordRounding);
+    $("#rounding-decimals").prop("disabled", !coordRounding);
+    selectOption("#rounding-decimals", coordDecimals);
+  }
+  $("#rounding-on").on("change", () => {
+    coordRounding = isChecked("#rounding-on");
+    showCoordnateRounding(true);
+  });
+  $("#rounding-decimals").on("change", () => {
+    coordDecimals = parseInt(getSelectedOption("#rounding-decimals"));
+    if (isNaN(coordDecimals)) {
+      coordDecimals = DEFAULT_COORD_DECIMALS;
+    } else if (coordDecimals > MAX_COORD_DECIMALS) {
+      coordDecimals = MAX_COORD_DECIMALS;
+    } else if (coordDecimals < MIN_COORD_DECIMALS) {
+      coordDecimals = MIN_COORD_DECIMALS;
+    }
+    showCoordnateRounding(true);
+  });
+  showCoordnateRounding(false);
+
+  function getCoordinate(rawCoord) {
+    if (coordDecimals >= 0) {
+      return roundDecimal(rawCoord, coordDecimals);
+    } else {
+      return rawCoord;
+    }
+  }
+
   // ---------------- Popups
 
   function getTrackPointPopupContent(latlng) {
@@ -4146,7 +4193,11 @@ $(function(){
     var p;
 
     p = L.DomUtil.create("div", "popupdiv", div);
-    p.innerHTML = "<span class='popupfield'>Position:</span> " + roundDecimal(latlng.lat,5) + "," + roundDecimal(latlng.lng,5);
+    p.innerHTML = "<span class='popupfield'>Position:</span> " +
+      `<span title="${latlng.lat},${latlng.lng}">` +
+      roundDecimal(latlng.lat,5) + "," +
+      roundDecimal(latlng.lng,5) +
+      "</span>";
 
     if (editMode != EDIT_NONE) {
 
