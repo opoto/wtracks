@@ -475,7 +475,7 @@ var toGeoJSON = (function() {
                 if (times.length) properties.coordTimes = track.length === 1 ? times[0] : times;
                 if (heartRates.length) properties.heartRates = track.length === 1 ? heartRates[0] : heartRates;
                 if (ptExts.length) properties.ptExts = track.length === 1 ? ptExts[0] : ptExts;
-                if (xmlnsArr.length) properties.xmlnsArr = xmlnsArr;
+                if (xmlnsArr.length) properties.xmlnsArr = track.length === 1 ? xmlnsArr[0] : xmlnsArr;
                 return {
                     type: 'Feature',
                     properties: properties,
