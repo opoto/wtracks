@@ -301,7 +301,7 @@ function initGoogleAnalytics(trackingid, gtagid) {
         window.gtag('config', gtagid);
       })
       .fail(function( jqxhr, settings, exception ) {
-        console.warning( "gtag loading failed" );
+        console.warn( "gtag loading failed" );
     });
   } else {
     console.debug("gtag off");
