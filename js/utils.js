@@ -254,7 +254,7 @@ function storedValuesForEach(fn) {
 
 // ga('send', 'event', category, action, label, value)
 
-function initGoogleAnalytics(trackingid) {
+function initGoogleAnalytics(trackingid, gtagid) {
   let gaScriptUrl = 'https://www.google-analytics.com/analytics.js';
   const gadbg = getVal("wt.ga.dbg", "0");
   if (gadbg != '0') {
@@ -289,6 +289,23 @@ function initGoogleAnalytics(trackingid) {
     ga('set', 'sendHitTask', null);
   }
   ga('send', 'pageview');
+
+  // GA4 - Global site tag (gtag.js) - Google Analytics
+  if (!getBoolVal("wt.ga.off", false) && gtagid) {
+    $.getScript( "https://www.googletagmanager.com/gtag/js?id=" + gtagid )
+      .done(function( script, textStatus ) {
+        console.log( "gtag loaded" );
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function(){window.dataLayer.push(arguments);};
+        window.gtag('js', new Date());
+        window.gtag('config', gtagid);
+      })
+      .fail(function( jqxhr, settings, exception ) {
+        console.warning( "gtag loading failed" );
+    });
+  } else {
+    console.debug("gtag off");
+  }
 }
 
 /* ---------------------- EMAIL ------------------------- */

@@ -7,7 +7,7 @@
 */
 
 if (config.google && config.google.analyticsid) {
-  initGoogleAnalytics(config.google.analyticsid());
+  initGoogleAnalytics(config.google.analyticsid(), config.google.gtagid && config.google.gtagid());
 }
 
 /* ---------------------- Start service worker ------------------------ */

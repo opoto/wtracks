@@ -1,6 +1,6 @@
 'use strict';
 /* globals
-      $, ga, L, initGoogleAnalytics, google, Dropbox, jscolor, config, PasteLibs,
+      $, ga, L, google, Dropbox, jscolor, config, PasteLibs,
       isCryptoSupported, aesGcmEncrypt, aesGcmDecrypt,
       isUnset, isUndefined, jsonClone, getParameterByName, clearUrlQuery, corsUrl,
       consentCookies, htmlEncode, strencode, strdecode, saveAs, forceReload, isSafari,

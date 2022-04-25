@@ -1,6 +1,6 @@
 'use strict';
 /* globals
-      $, ga, L, initGoogleAnalytics, config,
+      $, ga, L, config,
       isUnset, isUndefined, jsonClone, getParameterByName, clearUrlQuery, corsUrl,
       consentCookies, htmlEncode, strencode, strdecode, saveAs, forceReload, isSafari, b64EncodeUnicode, b64DecodeUnicode, supportsBase64,
       getBoolVal, getJsonVal, getBoolVal, getVal,
