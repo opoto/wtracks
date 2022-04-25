@@ -66,7 +66,7 @@ var config = {
     },
     gtagid: function() {
       // Google Tag ID for GA4
-      return strdecode("h%02%3BFXD%3Em%5E'D-", "r%60%3E%5Bq%1E%2F%1DR%3FG!");
+      return strdecode("h%02%3BFXD%3Em%5E'D-", "");
     }
   },
   ign: {
