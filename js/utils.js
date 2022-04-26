@@ -199,7 +199,7 @@ function storeVal(name, val) {
       } catch (err) {
         const kbsz = val.length ? Math.round(val.length/1024) : 0;
         console.error("Cannot store value " + name + ": " + kbsz + "KB");
-        ga('send', 'event', 'error', 'storeVal failed: ' + err.toString(), name, kbsz);
+        wtEvent('error', 'storeVal failed: ' + err.toString(), name, kbsz);
         // switch to sessionStorage?
       }
     }
@@ -298,7 +298,8 @@ function initGoogleAnalytics(trackingid, gtagid) {
         window.dataLayer = window.dataLayer || [];
         window.gtag = function(){window.dataLayer.push(arguments);};
         window.gtag('js', new Date());
-        window.gtag('config', gtagid);
+        let gtagCfg = (gadbg != '0') ? { 'debug_mode': true } : undefined;
+        window.gtag('config', gtagid, gtagCfg);
       })
       .fail(function( jqxhr, settings, exception ) {
         console.warn( "gtag loading failed" );
@@ -306,6 +307,10 @@ function initGoogleAnalytics(trackingid, gtagid) {
   } else {
     console.debug("gtag off");
   }
+}
+
+function wtEvent(name, category, action, label, value) {
+  ga('send', 'event', name, category, action, label, value);
 }
 
 /* ---------------------- EMAIL ------------------------- */
@@ -596,7 +601,7 @@ window.onerror = function(messageOrEvent, source, line, row, err) {
   if (getLocalCode()) {
     alert(errmsg);
   } else if (ga) {
-    ga('send', 'event', 'error', errmsg, JSON.stringify(label));
+    wtEvent('error', errmsg, JSON.stringify(label));
   }
   errors.push(errmsg);
 };
