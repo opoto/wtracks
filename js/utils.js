@@ -291,19 +291,20 @@ function initGoogleAnalytics(trackingid, gtagid) {
   ga('send', 'pageview');
 
   // GA4 - Global site tag (gtag.js) - Google Analytics
-  if (!getBoolVal("wt.ga.off", false) && gtagid) {
-    $.getScript( "https://www.googletagmanager.com/gtag/js?id=" + gtagid )
-      .done(function( script, textStatus ) {
-        console.log( "gtag loaded" );
-        window.dataLayer = window.dataLayer || [];
-        window.gtag = function(){window.dataLayer.push(arguments);};
-        window.gtag('js', new Date());
-        let gtagCfg = (gadbg != '0') ? { 'debug_mode': true } : undefined;
-        window.gtag('config', gtagid, gtagCfg);
-      })
-      .fail(function( jqxhr, settings, exception ) {
-        console.warn( "gtag loading failed" );
-    });
+  if (!getBoolVal("wt.ga.off", false) && gtagid && !window.gtag) {
+    /*
+    const s = document.createElement('script');
+    s.setAttribute('src', 'https://www.googletagmanager.com/gtag/js?id=' + gtagid);
+    s.async = true;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function() {
+      window.dataLayer.push(arguments);
+    };
+    window.gtag('js', new Date());
+    const gtagCfg = (gadbg != '0') ? { 'debug_mode': true } : undefined;
+    window.gtag('config', gtagid, gtagCfg);
+    */
   } else {
     console.debug("gtag off");
   }
