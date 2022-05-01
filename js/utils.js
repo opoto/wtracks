@@ -1,5 +1,5 @@
 'use strict';
-/* globals $, ga, config */
+/* globals $, ga, dataLayer, config */
 
 if (window.document.documentMode) {
   alert("Internet Explorer is not supported anymore. Please use a modern browser, such as Edge, Firefox or Chrome");

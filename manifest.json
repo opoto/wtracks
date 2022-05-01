@@ -24,22 +24,39 @@
   "shortcuts" : [
     {
       "name": "Maps",
-      "url": "/maps.html",
+      "url": "./maps.html",
       "description": "Edit background maps"
     },
     {
       "name": "Activities",
-      "url": "/activities.html",
+      "url": "./activities.html",
       "description": "Edit activities used for time estimations"
     }
   ],
   "file_handlers": [
     {
-      "action": "/",
+      "action": ".",
       "name": "GPX file",
       "accept": {
         "application/gpx+xml": [ ".gpx" ]
-      }
+      },
+      "launch_type": "single-client"
+    },
+    {
+      "action": ".",
+      "name": "KML file",
+      "accept": {
+        "application/gpx+xml": [ ".kml" ]
+      },
+      "launch_type": "single-client"
+    },
+    {
+      "action": ".",
+      "name": "GeoJson file",
+      "accept": {
+        "application/gpx+xml": [ ".geojson" ]
+      },
+      "launch_type": "single-client"
     }
   ]
 }

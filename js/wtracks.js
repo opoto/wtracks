@@ -11,7 +11,8 @@
       addSelectOption, getSelectedOption, selectOption, addsSelectOption, isChecked, setChecked,
       enableInput, setDateTimeInput, getDateTimeInput, getRealInput,
       mymaps, mapsList, MAP_MY, getMapListEntryProps, PMTiles, getCrsFromName,
-      isStateSaved, setSaveState, getSaveState, getUseServiceWorker, setUseServiceWorker, initServiceWorker
+      isStateSaved, setSaveState, getSaveState, getUseServiceWorker, setUseServiceWorker, initServiceWorker,
+      launchQueue, LaunchParams
 */
 
 var map;
@@ -4826,6 +4827,23 @@ $(function(){
 
   // Remove potential query parameters from URL
   clearUrlQuery();
+
+  // handling GPX file handler
+  // https://github.com/WICG/file-handling/blob/main/explainer.md
+  // https://web.dev/file-handling/
+  console.debug("launchQueue: " + window.launchQueue);
+  console.debug("launchParams: " + window.launchParams);
+  if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
+    console.info("We've got a launch file!!!");
+    launchQueue.setConsumer((launchParams) => {
+      // Nothing to do when the queue is empty.
+      if (!launchParams.files.length) {
+        return;
+      }
+      // Handle the files
+      fileloader.loadMultiple(launchParams.files);
+    });
+  }
 
   $(window).on("unload", function() {
     saveState();
