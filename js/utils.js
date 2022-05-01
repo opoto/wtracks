@@ -254,6 +254,7 @@ function storedValuesForEach(fn) {
 
 // ga('send', 'event', category, action, label, value)
 
+function gtag(){dataLayer.push(arguments);}
 function initGoogleAnalytics(trackingid, gtagid) {
   let gaScriptUrl = 'https://www.google-analytics.com/analytics.js';
   const gadbg = getVal("wt.ga.dbg", "0");
@@ -292,19 +293,13 @@ function initGoogleAnalytics(trackingid, gtagid) {
 
   // GA4 - Global site tag (gtag.js) - Google Analytics
   if (!getBoolVal("wt.ga.off", false) && gtagid && !window.gtag) {
-    /*
-    const s = document.createElement('script');
-    s.setAttribute('src', 'https://www.googletagmanager.com/gtag/js?id=' + gtagid);
-    s.async = true;
-    document.head.appendChild(s);
+
     window.dataLayer = window.dataLayer || [];
-    window.gtag = function() {
-      window.dataLayer.push(arguments);
-    };
-    window.gtag('js', new Date());
+    gtag('js', new Date());
     const gtagCfg = (gadbg != '0') ? { 'debug_mode': true } : undefined;
-    window.gtag('config', gtagid, gtagCfg);
-    */
+    gtag('config', gtagid, gtagCfg);
+
+    $.getScript('https://www.googletagmanager.com/gtag/js?id=' + gtagid);
   } else {
     console.debug("gtag off");
   }
