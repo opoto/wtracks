@@ -292,14 +292,13 @@ function initGoogleAnalytics(trackingid, gtagid) {
   ga('send', 'pageview');
 
   // GA4 - Global site tag (gtag.js) - Google Analytics
-  if (!getBoolVal("wt.ga.off", false) && gtagid && !window.gtag) {
-
+  if (!getBoolVal("wt.ga.off", false) && gtagid && gtag) {
     window.dataLayer = window.dataLayer || [];
     gtag('js', new Date());
     const gtagCfg = (gadbg != '0') ? { 'debug_mode': true } : undefined;
     gtag('config', gtagid, gtagCfg);
-
-    $.getScript('https://www.googletagmanager.com/gtag/js?id=' + gtagid);
+    // add gtag script after utils.JS
+    $($("script[src='js/utils.js']")[0]).after(`<script scr='https://www.googletagmanager.com/gtag/js?id=${gtagid}'></script>`);
   } else {
     console.debug("gtag off");
   }
