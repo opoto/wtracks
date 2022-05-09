@@ -151,6 +151,7 @@ function getDateTimeInput(jqInput, mandatory, invalidClass) {
     setInvalidInput(jqInput, false, invalidClass);
   } catch(err) {
     setInvalidInput(jqInput, true, invalidClass);
+    date = undefined;
   }
 
   return date;
