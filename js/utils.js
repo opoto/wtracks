@@ -254,11 +254,10 @@ function storedValuesForEach(fn) {
 
 // ga('send', 'event', category, action, label, value)
 
-function gtag(){dataLayer.push(arguments);}
-function initGoogleAnalytics(trackingid, gtagid) {
+function initGoogleAnalytics(trackingid, gtagId) {
   let gaScriptUrl = 'https://www.google-analytics.com/analytics.js';
-  const gadbg = getVal("wt.ga.dbg", "0");
-  if (gadbg != '0') {
+  const gaDbg = getVal("wt.ga.dbg", "0");
+  if (gaDbg != '0') {
     gaScriptUrl = 'https://www.google-analytics.com/analytics_debug.js';
   }
   /**/
@@ -281,7 +280,7 @@ function initGoogleAnalytics(trackingid, gtagid) {
       console.error("Google Analytics blocked. Ad blocker?");
     }
   })(window, document, 'script', gaScriptUrl, 'ga');
-  if (gadbg === "2") {
+  if (gaDbg === "2") {
     window.ga_debug = {trace: true};
   }
   ga('create', trackingid, 'auto');
@@ -292,13 +291,16 @@ function initGoogleAnalytics(trackingid, gtagid) {
   ga('send', 'pageview');
 
   // GA4 - Global site tag (gtag.js) - Google Analytics
-  if (!getBoolVal("wt.ga.off", false) && gtagid && gtag) {
+  if (!getBoolVal("wt.ga.off", false) && gtagId) {
+    let gtagJs = document.createElement('script');
+    gtagJs.setAttribute('src',`https://www.googletagmanager.com/gtag/js?id=${gtagId}`);
+    document.head.appendChild(gtagJs);
+
     window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){window.dataLayer.push(arguments);};
     gtag('js', new Date());
-    const gtagCfg = (gadbg != '0') ? { 'debug_mode': true } : undefined;
-    gtag('config', gtagid, gtagCfg);
-    // add gtag script after utils.JS
-    $($("script[src='js/utils.js']")[0]).after(`<script scr='https://www.googletagmanager.com/gtag/js?id=${gtagid}'></script>`);
+    const gtagCfg = (gaDbg != '0') ? { 'debug_mode': true } : {};
+    gtag('config', gtagId, gtagCfg);
   } else {
     console.debug("gtag off");
   }
