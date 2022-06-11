@@ -3096,6 +3096,10 @@ $(function(){
       if (isMenuVisible()) {
         // close menu
         closeMenu();
+        // close color pickers
+        arrayForEach($('.jscolor-active'), (idx, elt) => {
+          elt.jscolor.hide();
+        });
         return;
       }
       if ($(".overlay:visible").hasClass("leaflet-popup")) {
