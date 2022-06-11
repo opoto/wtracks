@@ -299,9 +299,9 @@ function initGoogleAnalytics(trackingid, gtagId) {
 
     window.dataLayer = window.dataLayer || [];
     window.gtag = function(){window.dataLayer.push(arguments);};
-    gtag('js', new Date());
+    window.gtag('js', new Date());
     const gtagCfg = (gaDbg != '0') ? { 'debug_mode': true } : {};
-    gtag('config', gtagId, gtagCfg);
+    window.gtag('config', gtagId, gtagCfg);
   } else {
     console.debug("gtag off");
   }
