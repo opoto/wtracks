@@ -1,11 +1,6 @@
 'use strict';
 /* globals $, ga, dataLayer, config */
 
-if (window.document.documentMode) {
-  alert("Internet Explorer is not supported anymore. Please use a modern browser, such as Edge, Firefox or Chrome");
-  window.location = "https://www.mozilla.org/firefox/new/";
-}
-
 /* ----------------------- Testing values and types ---------------------- */
 
 function isNumeric(obj) {
