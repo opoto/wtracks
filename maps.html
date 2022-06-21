@@ -9,7 +9,7 @@
   <META name="keywords" content="Leaflet, OpenStreetMap, GPX, GPS, speed, regression, GIS, outdoor">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self';
     style-src 'self' 'unsafe-inline' https://cdn.rawgit.com https://cdnjs.cloudflare.com https://fonts.googleapis.com;
-    script-src 'self' https://cdn.rawgit.com https://cdnjs.cloudflare.com https://extreme-ip-lookup.com https://www.dropbox.com https://www.google-analytics.com https://maps.googleapis.com;
+    script-src 'self' https://cdn.rawgit.com https://cdnjs.cloudflare.com https://extreme-ip-lookup.com https://www.dropbox.com https://www.google-analytics.com https://www.googletagmanager.com https://maps.googleapis.com;
     font-src data: https://fonts.gstatic.com https://fonts.googleapis.com;
     connect-src *;
     img-src * data:;
@@ -21,13 +21,19 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
 
   <title>Maps editor</title>
-  <script src="js/jquery.min.js"></script>
-  <script src="js/leaflet.js"></script>
-  <script src="js/leaflet.wmts.js"></script>
-  <script src="js/draganddrop.js"></script>
+  <script defer src="js/jquery.min.js"></script>
+  <script defer src="js/leaflet.js"></script>
+  <script defer src="js/leaflet.wmts.js"></script>
+  <script defer src="js/draganddrop.js"></script>
 
   <link rel="stylesheet" href="css/draganddrop.css" />
   <link rel="stylesheet" href="css/wtracks.css" />
+
+  <script defer src="js/config.js"></script>
+  <script defer src="js/utils.js"></script>
+  <script defer src="js/no-ie.js"></script>
+  <script defer src="js/wtracks-commons.js"></script>
+  <script defer src="js/maps.js"></script>
 </head>
 
 <body>
@@ -232,11 +238,5 @@
 
   </div>
 
-  <script defer src="js/config.js"></script>
-  <script defer src="js/utils.js"></script>
-  <script async src="js/no-ie.js"></script>
-  <script defer src="js/wtracks-commons.js"></script>
-  <script defer src="js/maps.js"></script>
 </body>
-
 </html>
