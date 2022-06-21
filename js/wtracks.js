@@ -3822,8 +3822,8 @@ $(function(){
   $("#dropbox-chooser").on("click", function(e) {
     // Check Dropbox is supported
     if (!Dropbox.isBrowserSupported()){
-    alert("Sorry, your browser does not support Dropbox loading");
-    return;
+      alert("Sorry, your browser does not support Dropbox loading");
+      return;
     }
     try {
       Dropbox.choose(dropboxLoadOptions);
