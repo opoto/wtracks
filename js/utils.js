@@ -289,7 +289,7 @@ function initGoogleAnalytics(trackingid, gtagId) {
   // GA4 - Global site tag (gtag.js) - Google Analytics
   if (!getBoolVal("wt.ga.off", false) && gtagId) {
     let gtagJs = document.createElement('script');
-    gtagJs.setAttribute('src',`https://www.googletagmanager.com/gtag/js?id=${gtagId}`);
+    gtagJs.setAttribute('src', 'https://www.googletagmanager.com/gtag/js?id=' + gtagId);
     document.head.appendChild(gtagJs);
 
     window.dataLayer = window.dataLayer || [];
