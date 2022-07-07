@@ -98,7 +98,11 @@
             // but an object with file.testing set to true.
             // This object cannot be read by reader, just skip it.
             if (!file.testing) {
-                reader.readAsText(file);
+                try {
+                  reader.readAsText(file);
+                } catch (err) {
+                    this.fire('data:error', { error: err });
+                }
             }
             // We return this to ease testing
             return reader;
