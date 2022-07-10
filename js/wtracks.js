@@ -3118,59 +3118,68 @@ $(function(){
           setEditMode(EDIT_NONE);
         }
         break;
-        case "O": // 'O' - open file
+      case "N": // New
+        setEditMode(EDIT_NONE);
+        if (confirm("Delete track and start new one?")) {
+          $("#track-new").click();
+        }
+        break;
+      case "O": // open file
         setEditMode(EDIT_NONE);
         openMenu("file");
         $("#file-load").click();
         $("#track-upload").click();
         break;
-      case "S": // 'S' - save
+      case "S": // save
         setEditMode(EDIT_NONE);
         openMenu("file");
         $("#file-save").click();
         break;
-      case "e": // 'e' - edit
+      case "e": // edit
         if (editMode != EDIT_MANUAL_TRACK) {
           $("#" + EDIT_MANUAL_ID).trigger("click");
         }
         break;
-      case "a": // 'a' - auto
+      case "a": // auto
         if (editMode != EDIT_AUTO_TRACK) {
           $("#" + EDIT_AUTO_ID).trigger("click");
         }
         break;
-      case ".": // '.' - new segment
+      case ".": // new segment
         $("#" + EDIT_ADDSEGMENT_ID).trigger("click");
         break;
-      case "w": // 'w' - waypoint
+      case "x": // delete segment
+        $("#" + EDIT_DELSEGMENT_ID).trigger("click");
+        break;
+      case "w": // waypoint
         $("#" + EDIT_MARKER_ID).trigger("click");
         break;
-      case "f": // 'f' - find address
+      case "f": // find address
         $(".glass")[0].click();
         return false;
-      case "l": // 'l' - my location
+      case "l": // my location
         showLocation = LOC_ONCE;
         gotoMyLocation();
         break;
-      case "m": // 'm' - move/drag
+      case "m": // move/drag
         $("#" + EDIT_DRAG_ID).trigger("click");
         break;
-      case "F2": // 'F2' - rename
+      case "F2": // rename
         promptTrackName();
         break;
-      case "z": // 'z' - undo
+      case "z": // undo
         undo();
         break;
-      case "t": // 't' - Tools
+      case "t": // Tools
         openMenu("tools");
         break;
-        case "s": // 's' - Segments
+        case "s": // Segments
         openMenu("segments");
         break;
-      case "*": // '*' - Settings
+      case "*": // Settings
         openMenu("settings");
         break;
-      case "?": // '?' - Help
+      case "?": // Help
         openMenu("about");
         openFolder("about-docs");
         break;
