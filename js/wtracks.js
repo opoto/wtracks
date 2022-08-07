@@ -410,7 +410,14 @@ $(function(){
 
   /* ------------------------------------------------------------*/
 
-  function forEachSegment(func) {
+  /**
+   * Executes a function on each segment
+   *
+   * @param {function} func the Function to call on each segment
+   * @param {array of uids} uids Optional list of segment uids to consider
+   * @returns number of segments found
+   */
+  function forEachSegment(func, uids) {
     var count = 0;
 
     if (editLayer) {
@@ -434,6 +441,10 @@ $(function(){
       arrayForEach(layers, function(idx, segment) {
         // check if it is a polyline
         if (segment.getLatLngs && segment.getLatLngs().length > 0) {
+          if (uids && uids.includes && !uids.includes("" + L.Util.stamp(segment))) {
+            // this segment is not listed, skip it
+            return;
+          }
           count++;
           return func(segment);
         }
@@ -1566,10 +1577,9 @@ $(function(){
 
     let segItem = `<li uid='${L.Util.stamp(segment)}'><span class='list-item'>`;
     segItem += "<i class='material-icons item-drag notranslate' title='Drag to reorder'>drag_indicator</i> ";
+    segItem += "<input type='checkbox' class='seg-check'/>";
     segItem += "<span class='item-name seg-name notranslate' 'translate'='no'><span class='name'></span><span class='stats'></span></span> ";
-    segItem += "<input type='checkbox' class='seg-join-check'/>";
     segItem += `<button class='material-icons symbol setting-value item-color-picker-${i}' data-jscolor='{"valueElement":"segment-color-${i}", "hash":true, "zIndex":10001, "closable":true}'>colorize</button> <input id='segment-color-${i}' class='hidden'/>`;
-    segItem += "<i class='material-icons item-delete notranslate' 'translate'='no' title='Delete'>delete</i> ";
     segItem += "</span></li>";
     $("#segments-list").append(segItem);
     let newitem = $("#segments-list li:last");
@@ -1612,33 +1622,65 @@ $(function(){
       segColor.on("change", updateSgmentColor);
     }
 
-    newitem.find(".item-delete").on("click",() => {
-      if (confirm("Delete " + getSegmentName() + "?")) {
-        ga('send', 'event', 'edit', 'delete-segment');
-        deleteSegment(segment);
-        newitem.remove();
-        saveState();
-      }
-    });
   }
 
-  function joinCheckedSegments() {
-    let tojoin = [], names = "";
+  function onAllCheckedSegment(opName, minCount, func, noConfirm) {
+    let uids = [], names = "";
     $("#segments-list li").each(function(idx) {
-      if (isChecked($(this).find(".seg-join-check"))) {
+      if (isChecked($(this).find(".seg-check"))) {
         let uid = $(this).attr("uid");
-        tojoin.push(uid);
+        uids.push(uid);
         names += $(this).find(".item-name").attr("segName") + "\n";
       }
     });
-    if ((tojoin.length > 1) && confirm("Join following segments?\n\n" + names)) {
-      setEditMode(EDIT_NONE);
-      joinSegments(tojoin);
+    if ((uids.length >= minCount) && (noConfirm || confirm(opName + " following segments?\n\n" + names))) {
+      let count = forEachSegment(func, uids);
+      return count;
+    }
+  }
+
+  function joinCheckedSegments() {
+    setEditMode(EDIT_NONE);
+    var seg1;
+    let count = onAllCheckedSegment("Join", 2, function(segment) {
+      if (!seg1) {
+        seg1 = segment;
+      } else {
+        seg1.setLatLngs(seg1.getLatLngs().concat(segment.getLatLngs()));
+        segment.remove();
+        segment.removeFrom(editLayer);
+      }
+    });
+    if (count > 1) {
+      track = null;
+      segmentClickListener({target: seg1}, true);
+      saveState();
+      polystats.updateStatsFrom(0);
+      setStatus("Joined " + count + " segments", { timeout: 3 });
+      ga('send', 'event', 'tool', 'join', undefined, count);
+    } else {
+      setStatus("No segments to join", { timeout: 3 });
+    }
+    openSegmentsEditor();
+  }
+
+  function deleteCheckedSegments() {
+    let count = onAllCheckedSegment("Delete", 1, function(segment) {
+      deleteSegment(segment);
+    });
+    if (count > 0) {
+      ga('send', 'event', 'edit', 'delete-segments');
       openSegmentsEditor();
+      saveState();
+      setStatus("Deleted " + count + " segment" + (count > 1 ? "s" : ""), { timeout: 3 });
     }
   }
 
   function openSegmentsEditor() {
+    function onCheck() {
+      enableInput($("#segments-list .seg-check:checked").length > 1, "#join-segs");
+      enableInput($("#segments-list .seg-check:checked").length > 0, "#del-segs");
+    }
     let segList = $("#segments-list");
     if (segList && segList.sortable) {
       segList.sortable('destroy');
@@ -1669,15 +1711,19 @@ $(function(){
           });
         }
       });
-      $("#seg-editor-list").append("<button id='join-segs'>Join Checked Segments</button> <label id='segs-check-all-label'><input type='checkbox' id='seg-join-check-all'/> All / None</label>");
-      $("#join-segs").on("click", joinCheckedSegments);
-      $("#seg-join-check-all").on("change", ()=>{
-        let checked = isChecked($("#seg-join-check-all"));
-        setChecked($("#seg-editor-list .seg-join-check"), checked);
-      });
-    } else {
-      $("#seg-editor-list .seg-join-check").hide();
     }
+    $("#seg-editor-list").append("<input type='checkbox' id='seg-check-all'/> <button id='join-segs'>Join</button><button id='del-segs'>Delete</button>");
+    $("#join-segs").on("click", joinCheckedSegments);
+    $("#del-segs").on("click", deleteCheckedSegments);
+    $("#seg-check-all").on("change", ()=>{
+      let checked = isChecked($("#seg-check-all"));
+      setChecked($("#seg-editor-list .seg-check"), checked);
+      onCheck();
+    });
+    $(".seg-check").on("change", ()=>{
+      onCheck();
+    });
+    onCheck();
   }
 
   //---------------------------------------------------
@@ -2112,36 +2158,6 @@ $(function(){
     enableInput(isChecked("#prune-dist-opt"), "#prune-max-dist");
   }
   $("#prune-time-opt, #prune-dist-opt").on("change", checkPruneKeepOpts);
-
-  // if uids is present, it contains the list of segment uids to join
-  function joinSegments(uids) {
-    var seg1;
-    let count = 0;
-    forEachSegment(function(segment) {
-      if (uids && uids.includes && !uids.includes("" + L.Util.stamp(segment))) {
-        // this segment is not listed, skip it
-        return;
-      }
-      count++;
-      if (!seg1) {
-        seg1 = segment;
-      } else {
-        seg1.setLatLngs(seg1.getLatLngs().concat(segment.getLatLngs()));
-        segment.remove();
-        segment.removeFrom(editLayer);
-      }
-    });
-    if (count > 1) {
-      track = null;
-      segmentClickListener({target: seg1}, true);
-      saveState();
-      polystats.updateStatsFrom(0);
-      setStatus("Joined " + count + " segments", { timeout: 3 });
-      ga('send', 'event', 'tool', 'join', undefined, count);
-    } else {
-      setStatus("No segments to join", { timeout: 3 });
-    }
-  }
 
   var joinOnLoad = false; // deactivate while we restore saved GPX
 

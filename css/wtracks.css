@@ -734,7 +734,7 @@ div.trumbowyg-editor {
 .overlay-name {
   width: 272px;
 }
-.item-edit, .item-delete, .item-share, .item-visibility {
+.item-edit, .item-share, .item-visibility {
   cursor: pointer;
   margin-left: 10px;
   padding-bottom: 4px;
@@ -743,25 +743,30 @@ div.trumbowyg-editor {
 #segments-list {
   margin-top: 3px;
 }
-#segs-check-all-label {
-  margin-left: 156px;
-}
 #segments-list button {
   height: 18px;
   margin: 0;
   padding-top: 0;
   width: 60px !important;
+  height: 25px;
 }
-
-#join-segs {
+#segments-list button:last-of-type {
+  margin-right: 10px;
+}
+.seg-name {
+  width: 340px;
+}
+#join-segs, #del-segs {
   padding: 5px 10px;
   margin: 0 0 20px 10px;
   width: auto !important;
 }
-.seg-join-check {
-  margin-right: 20px;
+.seg-check {
+  margin-right: 10px;
 }
-
+#seg-check-all {
+  margin-left: 37px;
+}
 .maps-btns button {
   width: auto;
 }
@@ -862,6 +867,13 @@ textarea:focus,
 #state-load-label:active {
   outline: 1px solid #B0CBDE;
   box-shadow: 0 0 2px 2px #B0CBDE;
+}
+
+button:disabled, button:disabled:active, button:disabled:focus, button:disabled:hover {
+  background-color: #D5D5D5;;
+  color: #777;
+  outline: none;
+  box-shadow: none;
 }
 
 #import-box h3 {
@@ -1017,7 +1029,7 @@ button:active,
     width: 148px;
   }
   .seg-name {
-    width: 300px;
+    width: 340px;
   }
   .overlay-name {
     width: 120px;
@@ -1078,14 +1090,8 @@ button:active,
   #mymap-layerslist {
     width: 80%;
   }
-  #segs-check-all-label {
-    margin-left: 5px;
-  }
-  .item-name > .stats {
-    display: none;
-  }
   .seg-name {
-    width: 150px;
+    width: 190px;
     font-size: 90%;
   }
   #segments-list button {
