@@ -2683,7 +2683,7 @@ $(function(){
       const layerId = L.Util.stamp(baseLayers[baseLayer]);
       layer = map._layers[layerId];
     }
-    const container = layer.getContainer();
+    const container = layer && layer.getContainer && layer.getContainer();
     if (container) {
       if (autoGrayBaseLayer && hasOverlaysOn()) {
         container.classList.add('filter-grayscale');
