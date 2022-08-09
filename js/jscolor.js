@@ -158,8 +158,14 @@ var jsc = {
 			}
 		};
 
-		if (document.readyState === 'complete') {
-			setTimeout(fireOnce, 1); // async
+		/*
+		 * Olivier 2022:
+		 * state is 'interactive' when script is 'defer'
+		 * init() should happen immediately, so that jscolor DOM elements are available
+		 * when next script runs
+		 */
+		if ((document.readyState === 'interactive') || (document.readyState === 'complete')) {
+			fireOnce();
 			return;
 		}
 
@@ -176,7 +182,7 @@ var jsc = {
 					document.detachEvent('onreadystatechange', arguments.callee);
 					fireOnce();
 				}
-			})
+			});
 
 			// Fallback
 			window.attachEvent('onload', fireOnce);
