@@ -2477,14 +2477,17 @@ $(function(){
     if ((protocol.length == 0) || (protocol == "https:") || (location.protocol == "http:")) {
       var tileCtor;
       var mapopts = mapobj.options;
-      // By default, extend zoom range with down- & up-sampling
-      if (mapopts.minZoom && !mapopts.minNativeZoom) {
-        mapopts.minNativeZoom = mapopts.minZoom;
-        mapopts.minZoom = mapopts.minZoom - 1;
-      }
-      if (mapopts.maxZoom && !mapopts.maxNativeZoom) {
-        mapopts.maxNativeZoom = mapopts.maxZoom;
-        mapopts.maxZoom = mapopts.maxZoom + 2;
+      // Auto-scale tiles a bit (-1/+2 beyond min/max) when possible
+      // issue #42: auto-scaling on WMS overlays freezes browers, just skip that case
+      if ((mapobj.type != "wms") || (!mapobj.overlay)) {
+        if (mapopts.minZoom && !mapopts.minNativeZoom) {
+          mapopts.minNativeZoom = mapopts.minZoom;
+          mapopts.minZoom = Math.max(mapopts.minZoom - 1, 0); // no below 0
+        }
+        if (mapopts.maxZoom && !mapopts.maxNativeZoom) {
+          mapopts.maxNativeZoom = mapopts.maxZoom;
+          mapopts.maxZoom = Math.min(mapopts.maxZoom + 2, 28); // not above 28
+        }
       }
       if (isUnset(mapobj.type) || (mapobj.type === "base") || (mapobj.type === "overlay")) {
         tileCtor = L.tileLayer;
