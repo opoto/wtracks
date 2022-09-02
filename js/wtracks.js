@@ -2478,16 +2478,13 @@ $(function(){
       var tileCtor;
       var mapopts = mapobj.options;
       // Auto-scale tiles a bit (-1/+2 beyond min/max) when possible
-      // issue #42: auto-scaling on WMS overlays freezes browers, just skip that case
-      if ((mapobj.type != "wms") || (!mapobj.overlay)) {
-        if (mapopts.minZoom && !mapopts.minNativeZoom) {
-          mapopts.minNativeZoom = mapopts.minZoom;
-          mapopts.minZoom = Math.max(mapopts.minZoom - 1, 0); // no below 0
-        }
-        if (mapopts.maxZoom && !mapopts.maxNativeZoom) {
-          mapopts.maxNativeZoom = mapopts.maxZoom;
-          mapopts.maxZoom = Math.min(mapopts.maxZoom + 2, 28); // not above 28
-        }
+      if (mapopts.minZoom && !mapopts.minNativeZoom) {
+        mapopts.minNativeZoom = mapopts.minZoom;
+        mapopts.minZoom = Math.max(mapopts.minZoom - 1, 0); // no below 0
+      }
+      if (mapopts.maxZoom && !mapopts.maxNativeZoom) {
+        mapopts.maxNativeZoom = mapopts.maxZoom;
+        mapopts.maxZoom = Math.min(mapopts.maxZoom + 2, 28); // not above 28
       }
       if (isUnset(mapobj.type) || (mapobj.type === "base") || (mapobj.type === "overlay")) {
         tileCtor = L.tileLayer;
@@ -2519,6 +2516,9 @@ $(function(){
   mapsForEach(function(name, props) {
     if (props.on ||  name == baseLayer || name === requestedMap || (requestedOverlays && requestedOverlays.includes(name))) {
       var inList = props.in == MAP_MY ? mymaps : config.maps;
+      // WTracks legacy bug: make sure zoom values are numbers
+      inList[name].options.minZoom = Number(inList[name].options.minZoom);
+      inList[name].options.maxZoom = Number(inList[name].options.maxZoom);
       var tile = getProvider(inList[name]);
       if (tile) {
         // TODO: "overlay" type is a deprecated legacy, should be discarded in Dec 2022

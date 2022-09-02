@@ -258,8 +258,8 @@ function validateMymapBox(evt) {
     mymap.type = $('input:radio[name=mymap-type]:checked').val();
     mymap.overlay = isChecked("#mymap-overlay");
     mymap.options = {};
-    mymap.options.minZoom= $("#mymap-minz").val().trim();
-    mymap.options.maxZoom = $("#mymap-maxz").val().trim();
+    mymap.options.minZoom= Number($("#mymap-minz").val().trim());
+    mymap.options.maxZoom = Number($("#mymap-maxz").val().trim());
     if (mymap.type === "wms") {
       mymap.options.layers = $("#mymap-layers").val().trim();
       mymap.options.crs = $("#mymap-crs").val().trim();
