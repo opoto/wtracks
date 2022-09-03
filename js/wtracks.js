@@ -2516,7 +2516,7 @@ $(function(){
   mapsForEach(function(name, props) {
     if (props.on ||  name == baseLayer || name === requestedMap || (requestedOverlays && requestedOverlays.includes(name))) {
       var inList = props.in == MAP_MY ? mymaps : config.maps;
-      // WTracks legacy bug: make sure zoom values are numbers
+      // WTracks legacy bug: make sure zoom values are numbers (fixes #42 & #43)
       inList[name].options.minZoom = Number(inList[name].options.minZoom);
       inList[name].options.maxZoom = Number(inList[name].options.maxZoom);
       var tile = getProvider(inList[name]);
