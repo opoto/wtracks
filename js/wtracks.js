@@ -1562,7 +1562,7 @@ $(function(){
       newName = newName ? newName.trim() : false;
       if (newName) {
         segment.name = newName;
-        itemName.text(newName);
+        itemName.find(".name").text(newName);
       }
     }
 
