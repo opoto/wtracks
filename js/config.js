@@ -82,8 +82,8 @@ var config = {
     url: function() {
       // proxy for fetching remote track files
       return strdecode(
-        "G%5B%1B%00%1CN%40%01%10%0C%16E%05%10A%0D%1AL%03%1D%1D%0FN_GJ%1C%01%1A%00A%06%0EG%0B%1E%15%11%5B%03%5E%19%40",
-        "%5D9%1E%1D5%14Qq%1C%14%15I%3EVL%20%1FD6%3ET%24%15eCO%19%13%07%24%5D%5ET%24%06%1A'WP%3F%1B%01X");
+        "G%5B%1B%00%1CN%40%01%08%19%1B%1C%1AOM%06%1D%5CZ%15%1C%18%14%03%16%5DJ%01%1A%00A%06%0EG%0B%1E%15%11%5B%03%5E%19%40",
+        "%5D9%1E%1D5%14Qq%04%01%18%10!%09%40%2B%18To6U3O9%12XO%13%07%24%5D%5ET%24%06%1A'WP%3F%1B%01X");
     },
     query: "?url="
   },
