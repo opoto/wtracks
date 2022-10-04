@@ -2523,7 +2523,9 @@ $(function(){
       if (tile) {
         // TODO: "overlay" type is a deprecated legacy, should be discarded in Dec 2022
         if ((inList[name].type === "overlay") || (inList[name].overlay)) {
-          tile.options.className = "blend-multiply";
+          if (!getBoolVal("wt.noblend")) {
+            tile.options.className = "blend-multiply";
+          }
           overlays[name] = tile;
         } else {
           baseLayers[name] = tile;
