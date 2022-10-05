@@ -147,6 +147,7 @@ $(function(){
   var fwdGuideGa = true; // collect stats on this user preference
   var extMarkers = getBoolVal("wt.extMarkers", config.display.extMarkers);
   var autoGrayBaseLayer = getBoolVal("wt.autoGrayBaseLayer", config.display.autoGrayBaseLayer);
+  var noMixOverlays = getBoolVal("wt.noMixOverlays", false);
   var wasDragged;
 
   var EDIT_NONE = 0;
@@ -1208,6 +1209,7 @@ $(function(){
     setChecked("#wptLabel", wptLabel);
     setChecked("#extMarkers", extMarkers);
     setChecked("#autoGrayBaseLayer", autoGrayBaseLayer);
+    setChecked("#noMixOverlays", noMixOverlays);
     prepareTrim();
     $("#prune-dist").val(pruneDist);
     $("#prune-max-dist").val(pruneMaxDist);
@@ -2523,7 +2525,8 @@ $(function(){
       if (tile) {
         // TODO: "overlay" type is a deprecated legacy, should be discarded in Dec 2022
         if ((inList[name].type === "overlay") || (inList[name].overlay)) {
-          if (!getBoolVal("wt.noblend")) {
+          tile.options.isOverlay = true; // to easily find overlays in map layers
+          if (!noMixOverlays) {
             tile.options.className = "blend-multiply";
           }
           overlays[name] = tile;
@@ -2618,7 +2621,7 @@ $(function(){
     var layerId = L.Util.stamp(ovl);
     var initialOpacity = isUndefined(ovl.options.opacity) ? 1 : ovl.options.opacity*1;
     // add slider
-    var slider = $('<input class="overlay-opacity-slider" type="range" min="0" max="100" value="' +
+    var slider = $('<input class="overlay-opacity-slider" title="Opacity" type="range" min="0" max="100" value="' +
        initialOpacity*100 + '"></input>')
     .insertAfter($(".leaflet-control-layers-overlays span span:contains('" + ovlname + "')"));
     slider.on("change", function(evt) {
@@ -2678,6 +2681,28 @@ $(function(){
     autoGrayBaseLayer = !autoGrayBaseLayer;
     saveValOpt("wt.autoGrayBaseLayer", autoGrayBaseLayer);
     setAutoGrayBaseLayer(null);
+  });
+  $("#noMixOverlays").on("change", function(evt){
+    console.log("noMixOverlays changed")
+    noMixOverlays = isChecked("#noMixOverlays");
+    saveValOpt("wt.noMixOverlays", noMixOverlays);
+    // update all overlays
+    objectForEach(map._layers, function(id, layer) {
+      if (layer.options.isOverlay) {
+        let op;
+        if (noMixOverlays) {
+          layer.options.className = undefined;
+          op = "remove";
+        } else {
+          layer.options.className = "blend-multiply";
+          op = "add";
+        }
+        const container = layer.getContainer && layer.getContainer();
+        if (container) {
+          container.classList[op]('blend-multiply');
+        }
+      }
+    });
   });
 
   function hasOverlaysOn() {

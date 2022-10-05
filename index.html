@@ -536,7 +536,7 @@
           </p>
         </td>
       </tr>
-      <tr class="notopborder fold-settings trkstg">
+      <tr class="notopborder nobottomborder fold-settings trkstg">
         <td>
         </td>
         <td>
@@ -545,6 +545,18 @@
           <span id="autoGrayBaseLayerhlp" class="help-b material-icons" title="Help">help_outline</span>
           <p id="autoGrayBaseLayerhlp-help" class="help-p">
             When checked and an overlay is enabled, base layer is displayed in gray. This is useful with slope overlays.
+          </p>
+        </td>
+      </tr>
+      <tr class="notopborder fold-settings trkstg">
+        <td>
+        </td>
+        <td>
+          <input id="noMixOverlays" class="no-trim" type="checkbox" />
+          <label for="noMixOverlays">Do not mix overlays</label>
+          <span id="noMixOverlayshlp" class="help-b material-icons" title="Help">help_outline</span>
+          <p id="noMixOverlayshlp-help" class="help-p">
+            By default, when multiple overlays are active, they are mixed to make sure they are all visible. When this option is checked, overlays are drawn independently on top of each other. Bottom overlays may then be hidden by upper overlays, unless you reduce their opacity.
           </p>
         </td>
       </tr>

@@ -97,6 +97,7 @@ button, select, option, input[type=datetime-local] {
   margin: 0 0 10px 0;
   width: 100%;
   border-collapse: collapse;
+  border-bottom: 1px #CCC solid;
 }
 #menu tr {
   border: 1px solid #CCC;
