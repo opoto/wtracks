@@ -398,6 +398,7 @@ function getLayersList(evt) {
   .done(function (resp) {
     $("#mymap-layerslist").empty();
     var ids = resp.querySelectorAll(layerSelector);
+    $("#mymap-layerslist").append("<option id='' value=''>" + (ids.length ? "Click to select" : "No layer found") + "</option>");
     arrayForEach(ids, function (idx, val) {
       var id = val.textContent;
       $("#mymap-layerslist").append("<option value='" + id + "' name='" + id + "'>" + id +
@@ -426,12 +427,14 @@ function getLayersList(evt) {
 function onWmtsLayerChanged(evt) {
   var opt = $($("#mymap-layerslist>option:selected")[0]);
   $("#mymap-layer").val(opt.val());
+  $("#mymap-layer").removeClass("invalid");
   $("#mymap-style").val(opt.attr("style"));
   $("#mymap-format").val(opt.attr("format"));
   $("#mymap-tilematrixSet").val(opt.attr("tilematrixSet"));
 }
 function onWmsLayerChanged(evt) {
   $("#mymap-layers").val(getSelectedOption("#mymap-layerslist"));
+  $("#mymap-layers").removeClass("invalid");
 }
 
 $("#mymap-getlayerslist").click(getLayersList);
