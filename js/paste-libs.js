@@ -131,7 +131,7 @@ PasteLibs.register("dpaste", DPaste);
       } else if (onFail) {
         onFail(resp.error_msg);
       }
-    }).fail(onFail); 
+    }).fail(onFail);
   }
 }
 PasteLibs.register("htput", HTPut);
@@ -149,7 +149,7 @@ PasteLibs.register("htput", HTPut);
   static get maxSize() { return "approx. 80KB"; }
   static get maxTime() { return "Unknown"; }
   static get maxDownloads() { return "Unlimited"; }
-  static get _pingUrl() { return "https://friendpaste.com/4yufAYfTKm8xKMJuXPDRhs/raw"; }
+  static get _pingUrl() { return "https://www.friendpaste.com/2fUXnFRHu53FbNyB0k5Fak/raw"; }
 
   static upload(name, gpx, onDone, onFail) {
     $.ajax({
@@ -241,7 +241,7 @@ class FileIO extends PasteLib {
       var formData = new FormData();
       var blob = new Blob([gpx], { type: "text/xml" });
       formData.append("file", blob, "dummy");
-  
+
       $.ajax({
         url: "//file.io/?expires=1d",
         type: "POST",
@@ -258,7 +258,7 @@ class FileIO extends PasteLib {
     } catch (err) {
       // browser does not support FormData, fallback to alternative method
       this.uploadSmall(name, gpx, onDone, onFail);
-    }  
+    }
   }
 
   // /!\ fileio automatically deletes file after 1st download
@@ -299,7 +299,7 @@ class TransferSH extends PasteLib {
       } else {
         onFail(resp);
       }
-    }).fail(onFail);  
+    }).fail(onFail);
   }
 }
 PasteLibs.register("transfer.sh", TransferSH);
@@ -325,7 +325,7 @@ PasteLibs.register("transfer.sh", TransferSH);
         var formData = new FormData();
         var blob = new Blob([gpx], { type: "text/xml" });
         formData.append("filesUploaded", blob, name + ".gpx");
-  
+
         var gofileUrl = "https://" + server + ".gofile.io/";
         $.ajax({
           method: "POST",
@@ -347,7 +347,7 @@ PasteLibs.register("transfer.sh", TransferSH);
         onFail("gofile upload failed: formData not supported");
       }
     }
-  
+
     $.get("//apiv2.gofile.io/getServer").done(function (resp) {
       if (resp.status == "ok" && resp.data && resp.data.server) {
         _gofileUpload(resp.data.server, name, gpx, onDone, onFail);
