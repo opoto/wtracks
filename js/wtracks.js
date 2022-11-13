@@ -2744,7 +2744,7 @@ $(function(){
       if (status === google.maps.ElevationStatus.OK) {
         if (isUndefined(points.length)) {
           // single point elevation
-          points.alt = results[0].elevation;
+          points.alt = roundDecimal(results[0].elevation, 2);
         } else {
           for (var i = 0; i < results.length; i++) {
             var pos = i * inc;
@@ -2752,7 +2752,7 @@ $(function(){
               // we reached last point from track
               pos = points.length - 1;
             }
-            points[pos].alt = results[i].elevation;
+            points[pos].alt = roundDecimal(results[i].elevation, 2);
           }
         }
         done("gg.elevate.ok");
@@ -2802,7 +2802,7 @@ $(function(){
     .done(function(json) {
       if (isUndefined(points.length)) {
         // single point elevation
-        points.alt = json.results[0].elevation;
+        points.alt = roundDecimal(json.results[0].elevation, 2);
       } else {
         for (var i = 0; i < json.results.length; i++) {
           var pos = i * inc;
@@ -2810,7 +2810,7 @@ $(function(){
             // we reached last point from track
             pos = points.length - 1;
           }
-          points[pos].alt = json.results[i].elevation;
+          points[pos].alt = roundDecimal(json.results[i].elevation, 2);
         }
       }
       done("oe.elevate.ok");
@@ -2852,7 +2852,7 @@ $(function(){
       */
       .done(function (json) {
         if (json.geometry && json.geometry.coordinates && json.geometry.coordinates[0]) {
-          points.alt = json.geometry.coordinates[2];
+          points.alt = roundDecimal(json.geometry.coordinates[2], 2);
           done('ors.elevate1.ok');
         } else {
           // "Server error"
@@ -2903,7 +2903,7 @@ $(function(){
             // we reached last point from track
             pos = points.length - 1;
           }
-          points[pos].alt = results[i][2];
+          points[pos].alt = roundDecimal(results[i][2], 2);
         }
         done("ors.elevate.ok");
       } else {
@@ -3435,7 +3435,7 @@ $(function(){
         interpolate(prev, next, pt) {
           let distPrevPt = pt.distanceTo(prev),
             distPrevNext = pt.distanceTo(next) + distPrevPt;
-          pt.alt = prev.alt + ((next.alt - prev.alt) * (distPrevPt / distPrevNext));
+          pt.alt = roundDecimal(prev.alt + ((next.alt - prev.alt) * (distPrevPt / distPrevNext)), 2);
         }
       }
     };
@@ -4080,7 +4080,7 @@ $(function(){
     if (isImperial()) {
       alt = alt * 0.3048;
     }
-    return alt;
+    return roundDecimal(alt, 2);
   }
 
   function dist2txt(dist, noUnits) {
