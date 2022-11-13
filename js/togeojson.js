@@ -392,18 +392,22 @@ var toGeoJSON = (function() {
             function getPoints(node, pointname) {
                 var pts = get(node, pointname),
                     line = [],
-                    times = [], nbTimes = 0,
-                    heartRates = [], nbHeartRates = 0,
+                    times = [],
+                    heartRates = [],
                     ptExts = [],
                     l = pts.length;
                 if (l < 2) return undefined;  // Invalid line in GeoJSON
                 for (var i = 0; i < l; i++) {
                     var c = coordPair(pts[i]);
                     line.push(c.coordinates);
-                    times.push(c.time);
-                    if (c.time) nbTimes++;
-                    heartRates.push(c.heartRate);
-                    if (c.heartRate) nbHeartRates++;
+                    if (c.time || times.length) {
+                        if (!times.length) initializeArray(times, i);
+                        times.push(c.time || null);
+                    }
+                    if (c.heartRate || heartRates.length) {
+                        if (!heartRates.length) initializeArray(heartRates, i);
+                        heartRates.push(c.heartRate || null);
+                    }
                     // GPX trkpt extensions
                     if (c.ptExt || ptExts.length) {
                         if (!ptExts.length) initializeArray(ptExts, i);
@@ -412,8 +416,8 @@ var toGeoJSON = (function() {
                 }
                 return {
                     line: line,
-                    times: nbTimes > 0 ? times : [],
-                    heartRates: nbHeartRates > 0 ? heartRates : [],
+                    times: times,
+                    heartRates: heartRates,
                     ptExts: ptExts,
                     xmlnsArr: c.xmlnsArr
                 };
