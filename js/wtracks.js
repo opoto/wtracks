@@ -2685,7 +2685,6 @@ $(function(){
     setAutoGrayBaseLayer(null);
   });
   $("#noMixOverlays").on("change", function(evt){
-    console.log("noMixOverlays changed")
     noMixOverlays = isChecked("#noMixOverlays");
     saveValOpt("wt.noMixOverlays", noMixOverlays);
     // update all overlays
