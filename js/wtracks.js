@@ -267,6 +267,7 @@ $(function(){
       if (--warns <= 0) {
         $("#warning-box").hide();
       }
+      return false;
     });
     $("#warning-box").show();
     /* */
@@ -1746,6 +1747,7 @@ $(function(){
   });
   function closeShareBox(){
     $("#wtshare-box").hide();
+    return false;
   }
   $("#wtshare-box-close").on("click", closeShareBox);
   $("#wtshare-cancel").on("click", closeShareBox);
