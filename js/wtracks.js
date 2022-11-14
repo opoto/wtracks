@@ -1968,8 +1968,7 @@ $(function(){
       if (confirm("Track was moved, do you want to recompute elevation?")) {
         reelevate = true;
         // 1. update elevation
-        toolCleanup(["alt"]);
-        toolElevate();
+        toolElevate(undefined, true); // true to do cleanup
         // 2. update stats
         polystats.updateStatsFrom(0);
       }
@@ -2729,23 +2728,30 @@ $(function(){
   // ---------------------------------------------------------------------------
   // Elevation service
 
+  // Delete existing elevation data before applying elevation result
+  function elevationCleanup(points) {
+    if (points && (points.length > 0)) {
+      for (var i = 0; i < points.length; i++) {
+        points[i].alt = undefined;
+      }
+    }
+  }
+
   // Google elevation API
-  function googleElevationService(locations, points, inc, done, fail) {
+  function googleElevationService(locations, points, inc, cleanup, done, fail) {
     var elevator;
     try {
       elevator = new google.maps.ElevationService();
-    } catch (e) {
-      // Google elevation service not available, cancel
-      return;
-    }
-    elevator.getElevationForLocations({
-      'locations': locations
-    }, function(results, status) {
-      if (status === google.maps.ElevationStatus.OK) {
+      elevator.getElevationForLocations({
+        'locations': locations
+      }).then(({results}) => {
         if (isUndefined(points.length)) {
           // single point elevation
           points.alt = roundDecimal(results[0].elevation, 2);
         } else {
+          if (cleanup) {
+            elevationCleanup(points);
+          }
           for (var i = 0; i < results.length; i++) {
             var pos = i * inc;
             if (pos >= points.length) {
@@ -2756,14 +2762,18 @@ $(function(){
           }
         }
         done("gg.elevate.ok");
-      } else {
-        fail('gg.elevate.ko', status);
-      }
-    });
+      }).catch((err) => {
+        fail('gg.elevate.ko', err);
+      });
+    } catch (e) {
+      // Google elevation service not available, cancel
+      fail('gg.elevate.ko', "Invalid Google API key?");
+      return;
+    }
   }
 
   // https://github.com/Jorl17/open-elevation
-  function openElevationService(locations, points, inc, done, fail) {
+  function openElevationService(locations, points, inc, cleanup, done, fail) {
     var ajaxreq, i, len;
     // GET is faster for small number of points (avoid OPTIONS preflight request)
     if (locations.length < 20) {
@@ -2804,6 +2814,9 @@ $(function(){
         // single point elevation
         points.alt = roundDecimal(json.results[0].elevation, 2);
       } else {
+        if (cleanup) {
+          elevationCleanup(points);
+        }
         for (var i = 0; i < json.results.length; i++) {
           var pos = i * inc;
           if (pos >= points.length) {
@@ -2822,7 +2835,7 @@ $(function(){
 
 
   // https://openrouteservice.org/dev/#/api-docs/elevation/line/post
-  function orsElevationService(locations, points, inc, done, fail) {
+  function orsElevationService(locations, points, inc, cleanup, done, fail) {
     var i, len,
       polyline = [];
 
@@ -2896,6 +2909,9 @@ $(function(){
     })
     .done(function(json) {
       if (json.geometry && json.geometry[0]) {
+        if (cleanup) {
+          elevationCleanup(points);
+        }
         var results = json.geometry;
         for (var i = 0; i < results.length; i++) {
           var pos = i * inc;
@@ -2923,7 +2939,7 @@ $(function(){
   }
 
   // multi-point elevation API
-  function elevatePoints(callerName, points, cb) {
+  function elevatePoints(callerName, points, cleanup, cb) {
     if (!elevationService) {
       // no elevation service configured, go directly to callback
       if (cb) cb(true);
@@ -2952,11 +2968,11 @@ $(function(){
         }
       }
     }
-    callElevationService(callerName, locations, points, inc, cb);
+    callElevationService(callerName, locations, points, inc, cleanup, cb);
   }
 
-  function callElevationService(callerName, locations, points, inc, cb) {
-    elevationService(locations, points, inc,
+  function callElevationService(callerName, locations, points, inc, cleanup, cb) {
+    elevationService(locations, points, inc, cleanup,
       function(eventName){
         ga('send', 'event', 'api', eventName, callerName, locations.length);
         clearStatus();
@@ -3323,7 +3339,7 @@ $(function(){
     }
   }
 
-  function toolElevate(e) {
+  function toolElevate(e, cleanup) {
     if (e) {
       ga('send', 'event', 'tool', 'elevate', undefined, getTrackLength());
     }
@@ -3332,7 +3348,7 @@ $(function(){
     var count = 0,
       ok = true;
     applySegmentTool(function (segment) {
-      elevate("toolElevate", segment.getLatLngs(), function(success) {
+      elevate("toolElevate", segment.getLatLngs(), cleanup, function(success) {
         if (segment == track) {
           polystats.updateStatsFrom(0);
         } else {
