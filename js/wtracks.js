@@ -412,6 +412,7 @@ $(function(){
 
   /* ------------------------------------------------------------*/
 
+  const ALL_SEGMENTS = "ALL";
   /**
    * Executes a function on each segment
    *
@@ -443,8 +444,13 @@ $(function(){
       arrayForEach(layers, function(idx, segment) {
         // check if it is a polyline
         if (segment.getLatLngs && segment.getLatLngs().length > 0) {
-          if (uids && uids.includes && !uids.includes("" + L.Util.stamp(segment))) {
-            // this segment is not listed, skip it
+          if (Array.isArray(uids) && uids.includes) {
+            if (!uids.includes("" + L.Util.stamp(segment))) {
+              // this segment is not listed, skip it
+              return;
+            }
+          } else if ((uids != ALL_SEGMENTS) && (segment.isHidden)) {
+            // this segment is hidden, skip it
             return;
           }
           count++;
@@ -481,7 +487,7 @@ $(function(){
   function updateOverlayTrackStyle(segment) {
     segment.setStyle({
       color: segment.color ? segment.color : trackUI.ovl.getColor(),
-      weight: trackUI.ovl.getWeight()
+      weight: segment.isHidden ? 0 : trackUI.ovl.getWeight()
     });
     segment.setInteractive(true);
   }
@@ -1569,7 +1575,7 @@ $(function(){
       }
     }
 
-    function updateSgmentColor() {
+    function updateSegmentColor() {
       segment.color = segColor.val();
       if (segment == track) {
         updateTrackStyle();
@@ -1578,11 +1584,26 @@ $(function(){
       }
     }
 
+    function toggleSegmentItem() {
+      toggleSegment(segment);
+      segmentsToggled(1);
+    }
+
     let segItem = `<li uid='${L.Util.stamp(segment)}'><span class='list-item'>`;
-    segItem += "<i class='material-icons item-drag notranslate' title='Drag to reorder'>drag_indicator</i> ";
+
+    // drag icon
+    segItem += "<i class='material-icons item-drag notranslate' title='Drag to reorder'>swap_vert</i> ";
+    // check box
     segItem += "<input type='checkbox' class='seg-check'/>";
+    // segment name
     segItem += "<span class='item-name seg-name notranslate' 'translate'='no'><span class='name'></span><span class='stats'></span></span> ";
-    segItem += `<button class='material-icons symbol setting-value item-color-picker-${i}' data-jscolor='{"valueElement":"segment-color-${i}", "hash":true, "zIndex":10001, "closable":true}'>colorize</button> <input id='segment-color-${i}' class='hidden'/>`;
+    if (segment.isHidden) {
+      // show hidden icon
+      segItem += "<i class='material-icons seg-toggle notranslate' title='Hidden'>visibility_off</i> ";
+    } else {
+      // color picker
+      segItem += `<button class='material-icons symbol setting-value item-color-picker-${i}' data-jscolor='{"valueElement":"segment-color-${i}", "hash":true, "zIndex":10001, "closable":true}'>colorize</button> <input id='segment-color-${i}' class='hidden'/>`;
+    }
     segItem += "</span></li>";
     $("#segments-list").append(segItem);
     let newitem = $("#segments-list li:last");
@@ -1604,27 +1625,30 @@ $(function(){
     itemName.attr("segName", segName);
     itemName.on("click", editSegmentName);
 
-    // color
-    let segColorValue = getSegmentColor(segment);
-    jscolor.installByClassName(`item-color-picker-${i}`);
-    let colorPickerButton = newitem.find(`.item-color-picker-${i}`)[0];
     let colorPicker;
     let segColor;
-    if (!colorPickerButton) {
-      onerror("ColorPickerButton missing", {
-        "i" : i,
-        "segItem" : segItem,
-        "newItem" : newitem.html(),
-        "jscolor.lookupClass" : jscolor.lookupClass
-      });
+    if (segment.isHidden) {
+      newitem.find(".seg-toggle").on("click", toggleSegmentItem);
     } else {
-      colorPicker = newitem.find(`.item-color-picker-${i}`)[0].jscolor;
-      segColor = newitem.find(`#segment-color-${i}`);
-      colorPicker.fromString(segColorValue);
-      segColor.val(segColorValue);
-      segColor.on("change", updateSgmentColor);
+      // color
+      let segColorValue = getSegmentColor(segment);
+      jscolor.installByClassName(`item-color-picker-${i}`);
+      let colorPickerButton = newitem.find(`.item-color-picker-${i}`)[0];
+      if (!colorPickerButton) {
+        onerror("ColorPickerButton missing", {
+          "i" : i,
+          "segItem" : segItem,
+          "newItem" : newitem.html(),
+          "jscolor.lookupClass" : jscolor.lookupClass
+        });
+      } else {
+        colorPicker = newitem.find(`.item-color-picker-${i}`)[0].jscolor;
+        segColor = newitem.find(`#segment-color-${i}`);
+        colorPicker.fromString(segColorValue);
+        segColor.val(segColorValue);
+        segColor.on("change", updateSegmentColor);
+      }
     }
-
   }
 
   function onAllCheckedSegment(opName, minCount, func, noConfirm) {
@@ -1679,10 +1703,32 @@ $(function(){
     }
   }
 
+  function toggleSegment(segment) {
+    segment.isHidden = (segment.isHidden) ? false : true;
+    if (segment == track) {
+      selectFirstSegment();
+    }
+    updateOverlayTrackStyle(segment);
+  }
+  function segmentsToggled(count) {
+    ga('send', 'event', 'edit', 'toggle-segments');
+    openSegmentsEditor();
+    saveState();
+    setStatus("Toggled " + count + " segment" + (count > 1 ? "s" : ""), { timeout: 3 });
+  }
+
+  function toggleCheckedSegments() {
+    let count = onAllCheckedSegment("Toggle", 1, toggleSegment, true);
+    if (count > 0) {
+      segmentsToggled(count);
+    }
+  }
+
   function openSegmentsEditor() {
     function onCheck() {
       enableInput($("#segments-list .seg-check:checked").length > 1, "#join-segs");
       enableInput($("#segments-list .seg-check:checked").length > 0, "#del-segs");
+      enableInput($("#segments-list .seg-check:checked").length > 0, "#toggle-segs");
     }
     let segList = $("#segments-list");
     if (segList && segList.sortable) {
@@ -1694,7 +1740,7 @@ $(function(){
     let i = 0;
     forEachSegment(function(segment) {
         addEditorSegmentItem(segment, i++);
-    });
+    }, ALL_SEGMENTS);
     let hasSegments = (i > 0);
     $(".if-segments").toggle(hasSegments);
     $(".no-segments").toggle(!hasSegments);
@@ -1707,7 +1753,7 @@ $(function(){
           let lyUids = {};
           forEachSegment(function(segment) {
             lyUids[L.Util.stamp(segment)] = segment;
-          });
+          }, ALL_SEGMENTS);
           $("#segments-list li").each(function(idx) {
             let uid = $(this).attr("uid");
             lyUids[uid]._wtOrder = idx;
@@ -1715,9 +1761,10 @@ $(function(){
         }
       });
     }
-    $("#seg-editor-list").append("<input type='checkbox' id='seg-check-all'/> <button id='join-segs'>Join</button><button id='del-segs'>Delete</button>");
+    $("#seg-editor-list").append("<input type='checkbox' id='seg-check-all'/> <button id='join-segs'>Join</button><button id='del-segs'>Delete</button><button id='toggle-segs'>Toggle</button>");
     $("#join-segs").on("click", joinCheckedSegments);
     $("#del-segs").on("click", deleteCheckedSegments);
+    $("#toggle-segs").on("click", toggleCheckedSegments);
     $("#seg-check-all").on("change", ()=>{
       let checked = isChecked($("#seg-check-all"));
       setChecked($("#seg-editor-list .seg-check"), checked);
@@ -3315,11 +3362,16 @@ $(function(){
   });
 
   function selectFirstSegment() {
+    let found = false;
     forEachSegment(function(segment) {
       segmentClickListener({ target: segment }, true);
+      found = true;
       // stop on first segment
       return true;
     });
+    if (!found) {
+      newSegment();
+    }
   }
 
   function deleteSegment(segment) {

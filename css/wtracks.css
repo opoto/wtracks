@@ -757,10 +757,14 @@ div.trumbowyg-editor {
 .seg-name {
   width: 340px;
 }
-#join-segs, #del-segs {
+#join-segs, #del-segs, #toggle-segs {
   padding: 5px 10px;
   margin: 0 0 20px 10px;
   width: auto !important;
+}
+.seg-toggle {
+  width: 50px;
+  margin-left: 20px;
 }
 .seg-check {
   margin-right: 10px;
@@ -1098,6 +1102,11 @@ button:active,
   #segments-list button {
     width: 40px !important;
   }
+  #segments-list .seg-toggle {
+    width: 40px !important;
+    margin-left: 10px !important;
+  }
+
 }
 
 /** hide routing and file controls **/
