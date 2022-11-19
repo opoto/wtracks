@@ -1606,7 +1606,7 @@ $(function(){
     }
     segItem += "</span></li>";
     $("#segments-list").append(segItem);
-    let newitem = $("#segments-list li:last");
+    let newitem = $("#segments-list .list-item:last");
 
     // name
     let segName = getSegmentName();
@@ -1629,6 +1629,7 @@ $(function(){
     let segColor;
     if (segment.isHidden) {
       newitem.find(".seg-toggle").on("click", toggleSegmentItem);
+      newitem.addClass("item-invisible");
     } else {
       // color
       let segColorValue = getSegmentColor(segment);
