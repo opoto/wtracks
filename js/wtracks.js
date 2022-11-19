@@ -589,6 +589,7 @@ $(function(){
     if (extremities && track) {
       var last = getTrackLength() - 1;
       if (last >= 0) {
+        setExtremityVisibility(extMarkers);
         updateExtremity(track.getLatLngs()[0], 0);
         updateExtremity(track.getLatLngs()[last], last);
       }
@@ -1704,11 +1705,13 @@ $(function(){
   }
 
   function toggleSegment(segment) {
+    let segmentChanged = false;
     segment.isHidden = (segment.isHidden) ? false : true;
-    if (segment == track) {
-      selectFirstSegment();
+    if (((segment.isHidden) && (segment == track)) ||
+      ((!segment.isHidden) && ((!track) || track.getLatLngs().length < 1))) {
+        segmentChanged = selectFirstSegment();
     }
-    updateOverlayTrackStyle(segment);
+    segmentChanged || updateOverlayTrackStyle(segment);
   }
   function segmentsToggled(count) {
     ga('send', 'event', 'edit', 'toggle-segments');
@@ -3369,9 +3372,11 @@ $(function(){
       // stop on first segment
       return true;
     });
-    if (!found) {
-      newSegment();
+    if ((!found)) {
+      track = null;
+      setExtremityVisibility(false);
     }
+    return found;
   }
 
   function deleteSegment(segment) {
@@ -3380,10 +3385,6 @@ $(function(){
       editLayer.removeLayer(segment);
       track = null;
       selectFirstSegment();
-      if (!track) {
-        newSegment();
-        setEditMode(EDIT_MANUAL_TRACK);
-      }
     } else {
       segment.setLatLngs([]);
       polystats.updateStatsFrom(0);
