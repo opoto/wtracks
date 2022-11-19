@@ -4650,6 +4650,7 @@ $(function(){
           seg2 = track.getLatLngs().slice(i);
       var xmlnsArr = track.xmlnsArr;
       track.setLatLngs(seg1);
+      seg1 = track;
       polystats.updateStatsFrom(0);
       newSegment();
       track.setLatLngs(seg2);
@@ -4659,6 +4660,33 @@ $(function(){
       setEditMode(EDIT_MANUAL_TRACK);
       map.closePopup(pop);
       event.preventDefault();
+      // order new segment after split one
+      let seg1Order, segIdx;
+      if (!isUndefined(seg1._wtOrder)) {
+        seg1Order = seg1._wtOrder;
+      } else {
+        segIdx = 0;
+      }
+      forEachSegment((segment) => {
+          // were segments ordered?
+          if (isUndefined(segIdx)) {
+            // yes
+            if (segment == track) {
+              segment._wtOrder = seg1Order + 1; // set it just after seg1
+            } else if (segment._wtOrder > seg1Order) {
+              segment._wtOrder++;
+            }
+          } else {
+            // no, assign order to segment
+            segment._wtOrder = segIdx++;
+            if (seg1 == segment) {
+              seg1Order = segment._wtOrder;
+              segIdx++; // book 1 index for new segment
+            } else if (segment == track) {
+              segment._wtOrder = seg1Order + 1; // set it just after seg1
+            }
+          }
+      }, ALL_SEGMENTS);
     }
     function gotopt(diff) {
       const topt = diff > 0 ? vertex.getNext() : vertex.getPrevious();
