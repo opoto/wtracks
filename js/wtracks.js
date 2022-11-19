@@ -589,7 +589,6 @@ $(function(){
     if (extremities && track) {
       var last = getTrackLength() - 1;
       if (last >= 0) {
-        setExtremityVisibility(extMarkers);
         updateExtremity(track.getLatLngs()[0], 0);
         updateExtremity(track.getLatLngs()[last], last);
       }
@@ -3374,7 +3373,10 @@ $(function(){
     });
     if ((!found)) {
       track = null;
+      newSegment();
       setExtremityVisibility(false);
+    } else {
+      setExtremityVisibility(extMarkers);
     }
     return found;
   }
