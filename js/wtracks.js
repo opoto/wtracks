@@ -1944,7 +1944,7 @@ $(function(){
         track.addLatLng(pts[j]);
       }
       updateExtremities();
-      elevate("mergeRouteToTrack", pts, function(success) {
+      elevate("mergeRouteToTrack", pts, false, function(success) {
         polystats.updateStatsFrom(initlen);
         saveState();
       });
@@ -4489,7 +4489,7 @@ $(function(){
     //console.log(e.type + ": " + latlng.i);
     if (i == getTrackLength() - 1) {
       // last vertex
-      elevatePoint("newVertex", latlng, function(success) {
+      elevatePoint("newVertex", latlng, false, function(success) {
         polystats.updateStatsFrom(i);
       });
     }
@@ -4501,7 +4501,7 @@ $(function(){
   function dragVertex(e) {
     var latlng = e.vertex.getLatLng();
     var i = latlng.i;
-    elevatePoint("dragVertex", latlng, function(success) {
+    elevatePoint("dragVertex", latlng, false, function(success) {
       polystats.updateStatsFrom(i);
     });
     //console.log(e.type + ": " + i);
@@ -4521,7 +4521,7 @@ $(function(){
   function draggedMark(e) {
     if (e.layer.getLatLng) {
       // Dragged a waypoint
-      elevatePoint("draggedMark", e.layer.getLatLng());
+      elevatePoint("draggedMark", e.layer.getLatLng(), false);
       //console.log(e.type);
     }
   }
@@ -4580,7 +4580,7 @@ $(function(){
     if (editMode == EDIT_MARKER) {
       ga('send', 'event', 'edit', 'new-marker');
       var marker = newWaypoint(e.latlng, {name: "New waypoint"}, waypoints);
-      elevatePoint("newMarker", e.latlng);
+      elevatePoint("newMarker", e.latlng, false);
       marker.enableEdit();
     } else if (editMode == EDIT_AUTO_TRACK) {
       if (!route) {
