@@ -1711,7 +1711,9 @@ $(function(){
       ((!segment.isHidden) && ((!track) || track.getLatLngs().length < 1))) {
         segmentChanged = selectFirstSegment();
     }
-    segmentChanged || updateOverlayTrackStyle(segment);
+    if (!segmentChanged) {
+      updateOverlayTrackStyle(segment);
+    }
   }
   function segmentsToggled(count) {
     ga('send', 'event', 'edit', 'toggle-segments');
