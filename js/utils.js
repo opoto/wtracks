@@ -345,7 +345,9 @@ if (config.email && config.email.selector) {
 /* ------------------------------ CORS URL  --------------------------------- */
 // /!\ Some set a cookie, which fails with Safari when 'prevent cross site tracking' is activated
 let CORS_PROXY = "https://api.codetabs.com/v1/proxy?quest="; // https://codetabs.com/cors-proxy/cors-proxy.html
+
 /*
+"https://proxy.cors.sh/"
 "https://api.codetabs.com/v1/proxy/?quest=" // cookie
 "https://api.allorigins.win/raw?url="// cookie
 "https://cors-nowhere.glitch.me/"
