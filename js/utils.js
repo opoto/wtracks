@@ -344,6 +344,7 @@ if (config.email && config.email.selector) {
 
 /* ------------------------------ CORS URL  --------------------------------- */
 // /!\ Some set a cookie, which fails with Safari when 'prevent cross site tracking' is activated
+let CORS_PROXY = "https://api.codetabs.com/v1/proxy?quest="; // https://codetabs.com/cors-proxy/cors-proxy.html
 /*
 "https://api.codetabs.com/v1/proxy/?quest=" // cookie
 "https://api.allorigins.win/raw?url="// cookie
@@ -354,9 +355,10 @@ if (config.email && config.email.selector) {
 "http://www.whateverorigin.org/get?url="
 "https://cors-anywhere.herokuapp.com/"
   // see https://github.com/Rob--W/cors-anywhere/issues/434
+"https://crossorigin.me/"
   */
 function corsUrl(url) {
-  return "https://crossorigin.me/" + url;
+  return CORS_PROXY + url;
   // config.corsproxy.url() + url;
   //  + config.corsproxy.query + encodeURIComponent(url);
 }
