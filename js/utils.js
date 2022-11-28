@@ -356,7 +356,8 @@ if (config.email && config.email.selector) {
   // see https://github.com/Rob--W/cors-anywhere/issues/434
   */
 function corsUrl(url) {
-  return config.corsproxy.url() + url;
+  return "https://crossorigin.me/" + url;
+  // config.corsproxy.url() + url;
   //  + config.corsproxy.query + encodeURIComponent(url);
 }
 
