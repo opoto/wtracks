@@ -1334,12 +1334,24 @@ $(function(){
       gpx += "    <type>text/html</type>\n";
       gpx += "  </link>\n";
       gpx += "  <time>" + startdate.toISOString() + "</time>\n";
-      var sw = map.getBounds().getSouthWest();
-      var ne = map.getBounds().getNorthEast();
-      gpx += '  <bounds minlat="' + getCoordinate(Math.min(sw.lat, ne.lat)) +
-        '" minlon="' + getCoordinate(Math.min(sw.lng, ne.lng)) +
-        '" maxlat="' + getCoordinate(Math.max(sw.lat, ne.lat)) +
-        '" maxlon="' + getCoordinate(Math.max(sw.lng, ne.lng)) + '"/>\n';
+      try {
+        var sw = map.getBounds().getSouthWest();
+        var ne = map.getBounds().getNorthEast();
+        gpx += '  <bounds minlat="' + getCoordinate(Math.min(sw.lat, ne.lat)) +
+          '" minlon="' + getCoordinate(Math.min(sw.lng, ne.lng)) +
+          '" maxlat="' + getCoordinate(Math.max(sw.lat, ne.lat)) +
+          '" maxlon="' + getCoordinate(Math.max(sw.lng, ne.lng)) + '"/>\n';
+      } catch (err) {
+        let sz;
+        try {
+          sz = map.getSize().toString();
+        } catch (err2) {}
+        onerror("getGPX: getBounds failed", {
+          size: sz,
+          hasTrack: track != null,
+          hasPoints: track ? track.getLatLngs().length : 0
+        }, 0, 0, err);
+      }
       gpx += "</metadata>\n";
     }
 
