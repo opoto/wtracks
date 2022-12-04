@@ -1334,23 +1334,39 @@ $(function(){
       gpx += "    <type>text/html</type>\n";
       gpx += "  </link>\n";
       gpx += "  <time>" + startdate.toISOString() + "</time>\n";
+      let crs;
       try {
-        var sw = map.getBounds().getSouthWest();
-        var ne = map.getBounds().getNorthEast();
-        gpx += '  <bounds minlat="' + getCoordinate(Math.min(sw.lat, ne.lat)) +
+        crs = map.options.crs.code;
+      } catch (err) {}
+      if (map.getBounds().isValid()) {
+        try {
+          var sw = map.getBounds().getSouthWest();
+          var ne = map.getBounds().getNorthEast();
+          gpx += '  <bounds minlat="' + getCoordinate(Math.min(sw.lat, ne.lat)) +
           '" minlon="' + getCoordinate(Math.min(sw.lng, ne.lng)) +
           '" maxlat="' + getCoordinate(Math.max(sw.lat, ne.lat)) +
           '" maxlon="' + getCoordinate(Math.max(sw.lng, ne.lng)) + '"/>\n';
-      } catch (err) {
-        let sz;
-        try {
-          sz = map.getSize().toString();
-        } catch (err2) {}
-        onerror("getGPX: getBounds failed", {
-          size: sz,
+        } catch (err) {
+          let sz, zoom;
+          try {
+            sz = map.getSize().toString();
+            zoom = map.getZoom();
+          } catch (err2) {}
+          onerror("getGPX: getBounds failed", {
+            baseLayer: baseLayer,
+            crs: crs,
+            hasTrack: track != null,
+            hasPoints: track ? track.getLatLngs().length : 0,
+            size: sz
+          }, 0, 0, err);
+        }
+      } else {
+        onerror("getGPX: getBounds invalid", {
+          baseLayer: baseLayer,
+          crs: crs,
           hasTrack: track != null,
           hasPoints: track ? track.getLatLngs().length : 0
-        }, 0, 0, err);
+        });
       }
       gpx += "</metadata>\n";
     }
