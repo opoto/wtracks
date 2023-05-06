@@ -3799,7 +3799,7 @@ $(function(){
       }
     });
     if (bounds.isValid()) {
-      map.fitBounds(bounds);
+      map.fitBounds(bounds, { maxZoom: 16} );
     }
     clearStatus();
     if (!segmentClickListener({ target: activeTrack }, true)) {
