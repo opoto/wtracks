@@ -377,8 +377,11 @@ var toGeoJSON = (function() {
                 var item = metadata.firstElementChild;
                 var cnt = 0;
                 while (item) {
-                    md[item.tagName] = item.textContent.trim();
-                    cnt++;
+                    const v = item.textContent.trim();
+                    if (v) {
+                        md[item.tagName] = item.textContent.trim();
+                        cnt++;
+                    }
                     item = item.nextElementSibling;
                 }
                 return cnt ? md : undefined;
