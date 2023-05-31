@@ -2176,12 +2176,12 @@ $(function(){
     }
 
     // get & check input value
-    let pruneDist = getRealInput($("#prune-dist"), true);
+    pruneDist = getRealInput($("#prune-dist"), true);
     if (!pruneDist) return;
 
 
-    let pruneMaxDist;
-    let pruneMaxTime;
+    pruneMaxDist;
+    pruneMaxTime;
     try {
       pruneMaxDist = getKeepOpt("#prune-dist-opt", "#prune-max-dist");
       pruneMaxTime = getKeepOpt("#prune-time-opt", "#prune-max-time");
