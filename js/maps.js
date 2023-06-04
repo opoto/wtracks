@@ -391,8 +391,11 @@ function getLayersList(evt) {
     } catch(e) {}
   }
 
+  let url = new URL($("#mymap-url").val().trim());
+  url.searchParams.append("SERVICE", mapType);
+  url.searchParams.append("REQUEST", "GetCapabilities");
   $.ajax({
-    url: $("#mymap-url").val().trim() + "?SERVICE=" + mapType + "&REQUEST=GetCapabilities",
+    url: url,
     dataType: "xml"
   })
   .done(function (resp) {
