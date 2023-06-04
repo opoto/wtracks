@@ -143,6 +143,8 @@ $(function(){
   var pruneMaxDist = getVal("wt.pruneMaxDist", config.pruneMaxDist);
   var pruneMaxTime = getVal("wt.pruneMaxTime", config.pruneMaxTime);
   var wptLabel = getBoolVal("wt.wptLabel", config.display.wptLabel);
+  var smoothLevel = getVal("wt.smoothLevel", config.smoothLevel);
+
   var fwdGuide = getBoolVal("wt.fwdGuide", config.display.fwdGuide);
   var fwdGuideGa = true; // collect stats on this user preference
   var extMarkers = getBoolVal("wt.extMarkers", config.display.extMarkers);
@@ -1221,6 +1223,7 @@ $(function(){
     $("#prune-dist").val(pruneDist);
     $("#prune-max-dist").val(pruneMaxDist);
     $("#prune-max-time").val(pruneMaxTime);
+    $("#smooth-level").val(smoothLevel);
     $(".invalid").removeClass("invalid");
     menu(tab ? tab : "file");
     if (($("#save-time-from").val() == "") &&
@@ -2173,12 +2176,12 @@ $(function(){
     }
 
     // get & check input value
-    let pruneDist = getRealInput($("#prune-dist"), true);
+    pruneDist = getRealInput($("#prune-dist"), true);
     if (!pruneDist) return;
 
 
-    let pruneMaxDist;
-    let pruneMaxTime;
+    pruneMaxDist;
+    pruneMaxTime;
     try {
       pruneMaxDist = getKeepOpt("#prune-dist-opt", "#prune-max-dist");
       pruneMaxTime = getKeepOpt("#prune-time-opt", "#prune-max-time");
@@ -2242,6 +2245,38 @@ $(function(){
   }
   $("#prune-time-opt, #prune-dist-opt").on("change", checkPruneKeepOpts);
 
+  $("#smooth").on("click", function() {
+
+    smoothLevel = $("#smooth-level").val();
+    saveValOpt("wt.smoothLevel", smoothLevel);
+
+    if (track) {
+      applySegmentTool(function (segment) {
+        let pts = segment.getLatLngs();
+        for (let round = 0; round < smoothLevel; round++) {
+          let i = 1;
+          while (i+1 < pts.length) {
+            const prevPt = pts[i-1];
+            const pt = pts[i];
+            const nextPt = pts[i+1];
+            if (!isUndefined(prevPt.alt) && !isUndefined(pt.alt) && !isUndefined(nextPt.alt)) {
+              const distToPrev = pt.distanceTo(prevPt);
+              const distPrevNext = pt.distanceTo(nextPt) + distToPrev;
+              const linearAlt = prevPt.alt + ((nextPt.alt - prevPt.alt) * (distToPrev / distPrevNext))
+              pt.alt = roundDecimal((pt.alt + linearAlt) / 2, 2);
+            }
+            i++;
+          }
+        }
+        if (segment == track) {
+          polystats.updateStatsFrom(0);
+        } else {
+          updateSegmentStats(segment);
+        }
+      });
+    }
+  });
+  
   var joinOnLoad = false; // deactivate while we restore saved GPX
 
   // geolocation
@@ -2444,6 +2479,7 @@ $(function(){
     saveValOpt("wt.pruneDist", pruneDist);
     saveValOpt("wt.pruneMaxDist", pruneMaxDist);
     saveValOpt("wt.pruneMaxTime", pruneMaxTime);
+    saveValOpt("wt.smoothLevel", smoothLevel);
     saveValOpt("wt.mapslist", mapsList);
     saveValOpt("wt.mapsCloseOnClick", mapsCloseOnClick);
     saveValOpt("wt.apikeyNoMore", apikeyNoMore);
