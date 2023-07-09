@@ -2621,16 +2621,16 @@ $(function(){
           If the URL contains a "version" query parameter,
           set it in mapopts and remove it from the URL
         */
-        url = new URL(url, "https://dummy.example"); // url may be schemeless
-        let urlQuery = new URLSearchParams(url.search);
-        let vers = urlQuery.get("VERSION") || urlQuery.get("version");
-        if (vers) {
-          mapopts.version = vers;
+        const urlObject = new URL(url, location.toString()); // url may be schemeless
+        const urlQuery = new URLSearchParams(urlObject.search);
+        const version = urlQuery.get("VERSION") || urlQuery.get("version");
+        if (version) {
+          mapopts.version = version;
           urlQuery.delete("VERSION");
           urlQuery.delete("version");
-          url.search = urlQuery.toString();
+          urlObject.search = urlQuery.toString();
+          url = urlObject.toString();
         }
-        url = url.toString();
         /* done */
       }
       if (tileCtor) {
