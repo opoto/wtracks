@@ -70,15 +70,6 @@ var config = {
       return strdecode("h%02%3BFXD%3Em%5E'D-", "r%60%3E%5Bq%1E%2F%1DR%3FG!");
     }
   },
-  ign: {
-    key: function() {
-      // Create an IGN API key, and return it here
-      // Simple obfscuation below to avoid reuse by ommision
-      return strdecode(
-        "%5D%1C%5D%40%03%0C%0EO%00Z%1D%11%1AWF%19X%1EEEAR%15%1D",
-        "G~X%5D*V%1F%3F%0CB%1E%1D!%11K4%5D%16pf%08yN'");
-    }
-  },
   corsproxy: {
     url: function() {
       // proxy for fetching remote track files
@@ -279,6 +270,32 @@ var config = {
         attribution: '&copy; Google'
       },
       visible: true
+    },
+    "FR IGN Classic": { // TEMPORARY API KEY
+      type: "wmts",
+      url: "//data.geopf.fr/private/wmts?apikey=ign_scan_ws",
+      options: {
+        maxZoom : 18,
+        layer: 'GEOGRAPHICALGRIDSYSTEMS.MAPS',
+        style: 'normal',
+        tilematrixset: 'PM',
+        format: 'image/jpeg',
+        attribution : "&copy; <a href='http://www.ign.fr'>IGN</a>",
+      },
+      visible: false
+    },
+    "FR IGN 25‰": { // TEMPORARY API KEY
+      type: "wmts",
+      url: "//data.geopf.fr/private/wmts?apikey=ign_scan_ws",
+      options: {
+        maxZoom : 16,
+        layer: 'GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN25TOUR',
+        style: 'normal',
+        tilematrixset: 'PM',
+        format: 'image/jpeg',
+        attribution : "&copy; <a href='http://www.ign.fr'>IGN</a>",
+      },
+      visible: false
     },
     "FR IGN Plan V2": {
       type: "wmts",
