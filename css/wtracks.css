@@ -735,9 +735,9 @@ div.trumbowyg-editor {
 .overlay-name {
   width: 272px;
 }
-.item-edit, .item-share, .item-visibility {
+.item-edit, .item-share, .item-visibility, .item-delete {
   cursor: pointer;
-  margin-left: 10px;
+  margin: 0 5px;
   padding-bottom: 4px;
 }
 

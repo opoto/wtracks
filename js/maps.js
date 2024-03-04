@@ -16,7 +16,6 @@
 
 var OVERLAY_ICON = "<i class='material-icons map-overlay notranslate' 'translate'='no' title='Map overlay'>layers</i> ";
 var MYMAPS_BTNS = "<i class='material-icons item-edit notranslate' 'translate'='no' title='Edit'>create</i> " +
-       "<i class='material-icons item-share notranslate' 'translate'='no' title='Share'>share</i> " +
        "<i class='material-icons item-delete notranslate' 'translate'='no' title='Delete'>delete</i> ";
 
 
@@ -61,6 +60,7 @@ function addMymapsItem(name, props, addHandlers) {
   }
   mapitem += "<span class='item-name notranslate" + mymapclass + "' 'translate'='no'></span> ";
   mapitem += "<i class='material-icons item-visibility notranslate' title='Show/Hide' isVisible=''></i>";
+  mapitem += "<i class='material-icons item-share notranslate' title='Share'>share</i>";
   mapitem += mymapbtns;
   mapitem += "</span></li>";
   $("#mymaps-list").append(mapitem);
@@ -153,7 +153,7 @@ function deleteMapItem(e) {
 }
 function shareMapItem(e) {
   var name = getMapName(e.currentTarget);
-  openExportMymaps(null, name);
+  openExportMaps(null, name);
 }
 
 function addMapItemHandlers(selector) {
@@ -453,10 +453,10 @@ $("input:radio[name=mymap-type]").change(changeMymapType);
 
 // ---------------- Export my maps
 
-function openExportMymaps(evt, mymapname) {
+function openExportMaps(evt, mapname) {
   var toexport = {};
-  if (mymapname) {
-    toexport[mymapname] = mymaps[mymapname];
+  if (mapname) {
+    toexport[mapname] = mymaps[mapname] || config.maps[mapname];
   } else {
     toexport = mymaps;
   }
@@ -467,7 +467,7 @@ function openExportMymaps(evt, mymapname) {
     $("#export-box").show();
     $("#export-val").focus();
     $("#export-val").select();
-    ga('send', 'event', 'map', 'export', undefined, mymapname ? 1 : mymaps.length);
+    ga('send', 'event', 'map', 'export', undefined, mapname ? 1 : mymaps.length);
   }
 }
 
@@ -482,7 +482,7 @@ $("#export-val").keyup(function(event) {
   }
 });
 
-$("#mymaps-export").click(openExportMymaps);
+$("#mymaps-export").click(openExportMaps);
 
 if (!supportsBase64() || !JSON || !JSON.parse || !JSON.stringify) {
   $("#mymaps-export").attr("disabled", "disabled");
@@ -528,7 +528,7 @@ function readImportMymaps(event) {
           if (count > 0) {
             ext = " (" + count + ")";
           }
-          if (!mymaps[name + ext]) {
+          if (getMapListEntryIndex(name + ext) < 0) {
             if (ext) {
               // replace name
               importedMymaps[name] = undefined;
