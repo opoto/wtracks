@@ -280,27 +280,11 @@ var config = {
       },
       visible: true
     },
-    "FR IGN Classic": {
-      type: "wmts",
-      url: function() {
-        return "//wxs.ign.fr/" + config.ign.key() + "/geoportail/wmts";
-      },
-      options: {
-        maxZoom: 18,
-        layer: 'GEOGRAPHICALGRIDSYSTEMS.MAPS',
-        style: 'normal',
-        tilematrixset: 'PM',
-        format: 'image/jpeg',
-        attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>",
-      },
-
-      visible: false
-    },
     "FR IGN Plan V2": {
       type: "wmts",
-      url: "//wxs.ign.fr/essentiels/geoportail/wmts",
+      url: "//data.geopf.fr/wmts",
       options: {
-        maxZoom : 19,
+        maxZoom : 18,
         layer: 'GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2',
         style: 'normal',
         tilematrixset: 'PM',
@@ -311,10 +295,10 @@ var config = {
     },
     "FR IGN Satellite": {
       type: "wmts",
-      url: "//wxs.ign.fr/essentiels/geoportail/wmts",
+      url: "//data.geopf.fr/wmts",
       options: {
         maxZoom: 20,
-        layer: 'ORTHOIMAGERY.ORTHOPHOTOS',
+        layer: 'THR.ORTHOIMAGERY.ORTHOPHOTOS',
         style: 'normal',
         tilematrixset: 'PM',
         format: 'image/jpeg',
@@ -325,9 +309,9 @@ var config = {
     "FR IGN Parcelles": {
       type: "wmts",
       overlay: true,
-      url: "//wxs.ign.fr/essentiels/geoportail/wmts",
+      url: "//data.geopf.fr/wmts",
       options: {
-        maxZoom: 19,
+        maxZoom: 18,
         layer: 'CADASTRALPARCELS.PARCELLAIRE_EXPRESS',
         style: 'PCI vecteur',
         tilematrixset: 'PM',
