@@ -2752,10 +2752,11 @@ $(function(){
   function addOpacityControl(ovlname, ovl) {
     var layerId = L.Util.stamp(ovl);
     var initialOpacity = isUndefined(ovl.options.opacity) ? 1 : ovl.options.opacity*1;
+    var ovlItem = $(".leaflet-control-layers-overlays span span").filter(function() { return $(this).text().trim() == ovlname });
     // add slider
     var slider = $('<input class="overlay-opacity-slider" title="Opacity" type="range" min="0" max="100" value="' +
        initialOpacity*100 + '"></input>')
-    .insertAfter($(".leaflet-control-layers-overlays span span:contains('" + ovlname + "')"));
+    .insertAfter(ovlItem);
     slider.on("change", function(evt) {
       // search layer
       objectForEach(map._layers, function(lId, layer) {
