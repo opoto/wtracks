@@ -328,9 +328,9 @@ var config = {
       overlay: true,
       url: "//data.geopf.fr/wmts",
       options: {
-        maxZoom: 18,
+        maxZoom: 19,
         layer: 'CADASTRALPARCELS.PARCELLAIRE_EXPRESS',
-        style: 'PCI vecteur',
+        style: 'normal',
         tilematrixset: 'PM',
         format: 'image/png',
         attribution: "&copy; <a href='http://www.ign.fr'>IGN</a>",
