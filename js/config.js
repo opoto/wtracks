@@ -314,8 +314,8 @@ var config = {
       type: "wmts",
       url: "//data.geopf.fr/wmts",
       options: {
-        maxZoom: 20,
-        layer: 'THR.ORTHOIMAGERY.ORTHOPHOTOS',
+        maxZoom: 19,
+        layer: 'ORTHOIMAGERY.ORTHOPHOTOS',
         style: 'normal',
         tilematrixset: 'PM',
         format: 'image/jpeg',
