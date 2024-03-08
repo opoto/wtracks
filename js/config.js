@@ -301,7 +301,7 @@ var config = {
       type: "wmts",
       url: "//data.geopf.fr/wmts",
       options: {
-        maxZoom : 18,
+        maxZoom : 19,
         layer: 'GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2',
         style: 'normal',
         tilematrixset: 'PM',
