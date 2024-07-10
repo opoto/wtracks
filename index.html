@@ -2,10 +2,10 @@
 <html lang="en">
 
 <head>
-  <link rel="shortcut icon" href="img/favicon.ico" />
+  <link rel="shortcut icon" href="img/favicon.ico">
   <meta charset='utf-8'>
   <meta http-equiv="x-ua-compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width,height=device-height, user-scalable=no" />
+  <meta name="viewport" content="width=device-width,height=device-height, user-scalable=no">
   <meta name="keywords" content="Online, GPX, GPS, Leaflet, Tracks, Trails, GIS, outdoor">
   <meta name="description" content="Online GPX multi-segment track editor for outdoor activities">
   <meta http-equiv="Content-Security-Policy" content="
@@ -16,19 +16,19 @@
     connect-src *;
     img-src * data: blob:;
     worker-src 'self';
-    child-src 'none';
+    frame-src 'none';
     object-src 'none'">
   <link rel="manifest" href="./manifest.json">
   <title class="appname">WTracks</title>
 
-  <link rel="stylesheet" href="css/leaflet.css" />
+  <link rel="stylesheet" href="css/leaflet.css">
 
   <script defer src="js/jquery.min.js"></script>
   <script defer src="js/leaflet.js"></script>
   <script defer src="js/leaflet.wmts.js"></script>
 
   <!-- Google Material design fonts -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <link rel="stylesheet" href="css/trumbowyg.min.css">
   <script defer src="js/trumbowyg.min.js"></script>
@@ -49,12 +49,12 @@
   <script defer src="js/L.Routing.OpenRouteService.js"></script>
 
   <!-- Elevation -->
-  <script defer src="js/d3.v4.min.js" charset="utf-8"></script>
-  <link rel="stylesheet" href="css/Leaflet.Elevation-0.0.4-d3v4.css" />
+  <script defer src="js/d3.v4.min.js"></script>
+  <link rel="stylesheet" href="css/Leaflet.Elevation-0.0.4-d3v4.css">
   <script defer src="js/Leaflet.Elevation-0.0.4-d3v4.js"></script>
 
   <!-- Geo search -->
-  <link rel="stylesheet" href="css/l.geosearch.css" />
+  <link rel="stylesheet" href="css/l.geosearch.css">
   <script defer src="js/l.control.geosearch.js"></script>
   <script defer src="js/l.geosearch.provider.openstreetmap.js"></script>
 
@@ -64,7 +64,7 @@
 
   <!-- sortable lists  -->
   <script defer src="js/draganddrop.js"></script>
-  <link rel="stylesheet" href="css/draganddrop.css" />
+  <link rel="stylesheet" href="css/draganddrop.css">
 
   <!-- crypto functions -->
   <script defer src="js/encdec.js"></script>
@@ -72,9 +72,9 @@
   <script defer src="js/pmtiles.js"></script>
 
   <script defer  src="js/jscolor.js"></script>
-  <script type="text/javascript" id="dropboxjs" data-app-key=""></script>
+  <script id="dropboxjs" data-app-key=""></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dropbox.js/0.10.2/dropbox.min.js"></script>
-  <link rel="stylesheet" href="css/wtracks.css" />
+  <link rel="stylesheet" href="css/wtracks.css">
 
   <script defer src="js/config.js"></script>
   <script defer src="js/utils.js"></script>
@@ -135,13 +135,13 @@
           <span>Options</span>
         </td>
         <td>
-          <label><input type="checkbox" id="merge"/>Merge</label>
+          <label><input type="checkbox" id="merge">Merge</label>
           <span id="mergetxt" class="help-b material-icons" title="Help">help_outline</span>
           <p id="mergetxt-help" class="help-p">
             Current edited track will not be discarded, it will be extended with the loaded one.
           </p>
-          <br/>
-          <label><input type="checkbox" id="joinonload"/>Join segments</label>
+          <br>
+          <label><input type="checkbox" id="joinonload">Join segments</label>
           <span id="joinonloadtxt" class="help-b material-icons" title="Help">help_outline</span>
           <p id="joinonloadtxt-help" class="help-p">
             If loaded track contains multiple segments, they will automatically be joined.
@@ -168,12 +168,12 @@
       <tr class="nobottomborder notopborder fold-file load">
         <td>
           <label id="track-upload-label">
-            <input type="file" name="track" id="track-upload" multiple="multiple" accept=".gpx,.kml,.geojson"/>
+            <input type="file" name="track" id="track-upload" multiple="multiple" accept=".gpx,.kml,.geojson">
             <span>File</span>
           </label>
         </td>
         <td>
-          Open a file from your device<br/>
+          Open a file from your device<br>
         </td>
       </tr>
       <tr class="nobottomborder notopborder fold-file load">
@@ -183,8 +183,8 @@
           </button>
         </td>
         <td>
-          <input id="track-get-url" placeholder="https://... (track URL)" type="url" /><br/>
-          <label><input id="noproxy" type="checkbox" /> No proxy </label>
+          <input id="track-get-url" placeholder="https://... (track URL)" type="url"><br>
+          <label><input id="noproxy" type="checkbox"> No proxy </label>
           <span id="noproxytxt" class="help-b material-icons" title="Help">help_outline</span>
           <p id="noproxytxt-help" class="help-p">
             Load without going through a CORS proxy. Check if target server accepts cross-origin requests, and if you want to use your browser session to fetch the file.
@@ -216,27 +216,27 @@
           <button id="track-download" title="Download as a GPX file">
             As File
           </button>
-          <br/>
+          <br>
           <button id="dropbox-saver" title="Save track in your Dropbox">
             <span class="dropbox-logo"></span>
               Dropbox
           </button>
         </td>
         <td>
-          Download as a GPX file<br/>
-          <label><input type="checkbox" id="as-route"/>As route</label>
+          Download as a GPX file<br>
+          <label><input type="checkbox" id="as-route">As route</label>
           <span id="routetxt" class="help-b material-icons" title="Help">help_outline</span>
           <p id="routetxt-help" class="help-p">
             Check to save the track as a GPX route, instead of a GPX track segment.
           </p>
-          <br/>
+          <br>
           <!-- Don't know what this is useful for...
-          <label><input type="checkbox" id="nometadata"/>Without metadata</label>
+          <label><input type="checkbox" id="nometadata">Without metadata</label>
           <span id="nometadatatxt" class="help-b material-icons" title="Help">help_outline</span>
           <p id="nometadatatxt-help" class="help-p">
             Check to save without GPX metadata.
           </p>
-          <br/>
+          <br>
           -->
         </td>
       </tr>
@@ -259,7 +259,7 @@
           track using
           <select id="share-libs"></select>
           <span id="sharetxt" class="help-b material-icons" title="Help">help_outline</span>
-          <br/>
+          <br>
           <span>Service is <span id="share-status"></span></span>
         </td>
       </tr>
@@ -284,7 +284,7 @@
     <!-- SEGMENTS -->
     <table id="menusegments">
       <tr class="nobottomborder">
-        <td colspan="2" >
+        <td>
           <span class="if-segments">Edit your track's segments</span>
           <span class="no-segments">You did not create any segment yet</span>
           <span id="segsedittxt" class="help-b material-icons" title="Help">help_outline</span>
@@ -294,7 +294,7 @@
         </td>
       </tr>
       <tr class="notopborder">
-        <td colspan="2" id="seg-editor-list">
+        <td id="seg-editor-list">
         </td>
       </tr>
     </table>
@@ -304,9 +304,9 @@
 
       <tr>
         <td colspan="2">
-          <input type="checkbox" id="allsegments" class="no-trim"/>
+          <input type="checkbox" id="allsegments" class="no-trim">
           <label for="allsegments">Apply (*) to all track segments</label>
-          <span id="allsegmentstxt" class="help-b material-icons" title="Help">help_outline</span><br/>
+          <span id="allsegmentstxt" class="help-b material-icons" title="Help">help_outline</span><br>
           <p id="allsegmentstxt-help" class="help-p">
             Check to apply the tools below to all track segments instead of just the active one. Ignore if your track only has one segment.
           </p>
@@ -317,14 +317,14 @@
           <button id="compress" class="no-trim">Compress*</button>
         </td>
         <td>
-          Discard track points within a <input id="prune-dist" type="number" min="0" required/>
-          <span class="distUnit"></span>s band<br/>
+          Discard track points within a <input id="prune-dist" type="number" min="0" required>
+          <span class="distUnit"></span>s band<br>
           Keep points if separated by more than
           <span id="compresstxt" class="help-b material-icons" title="Help">help_outline</span>
-          <br/>
-          <label><input id="prune-time-opt" type="checkbox"/><input id="prune-max-time" type="number" min="0"/>seconds</label>
-          <label><input id="prune-dist-opt" type="checkbox"/><input id="prune-max-dist" type="number" min="0"/><span class="distUnit"></span>s</label>
-          <br/>
+          <br>
+          <input id="prune-time-opt" type="checkbox"><input id="prune-max-time" type="number" min="0"><label for="prune-time-opt">seconds</label>
+          <input id="prune-dist-opt" type="checkbox"><input id="prune-max-dist" type="number" min="0"><label for="prune-dist-opt"><span class="distUnit"></span>s</label>
+          <br>
           <p id="compresstxt-help" class="help-p">
             Reduces track size by discarding points which do not significantly change the track shape.
           </p>
@@ -335,8 +335,8 @@
           <button id="smooth" class="no-trim isdisabled">Smooth*</button>
         </td>
         <td>
-          Smooth altitude data<br/>
-          <label>Intensity: <input id="smooth-level" type="range" step="5" min="1" max="61"/></label>
+          Smooth altitude data<br>
+          <label>Intensity: <input id="smooth-level" type="range" step="5" min="1" max="61"></label>
           <span id="smoothtxt" class="help-b material-icons" title="Help">help_outline</span>
           <p id="smoothtxt-help" class="help-p">
             Update track's altitude data to remove noise.
@@ -365,9 +365,9 @@
         <td>
           From
           <span id="savetimingtxt" class="help-b material-icons" title="Help">help_outline</span>
-          <input id="save-time-from" type="datetime-local" size="16" placeholder="yyyy-mm-dd HH:MM:SS" step="1"/><br/>
+          <input id="save-time-from" type="datetime-local" size="16" step="1"><br>
           <select id="save-time-profile"></select>
-          <input id="save-time-to" type="datetime-local" size="16" placeholder="yyyy-mm-dd HH:MM:SS" step="1"/>
+          <input id="save-time-to" type="datetime-local" size="16" step="1">
           <p id="savetimingtxt-help" class="help-p">
             Check to save in the GPX the timings computed by WTracks.
             It will override any previous GPX timing.
@@ -380,7 +380,7 @@
         </td>
         <td>
           By
-          <input id="shift-time-by" type="number" size="4" />
+          <input id="shift-time-by" type="number">
           <select id="shift-time-unit">
             <option value="day">Day(s)</option>
             <option value="hour">Hour(s)</option>
@@ -401,9 +401,9 @@
         <td>
           Delete or interpolate track data:
           <span id="cleanuptxt" class="help-b material-icons" title="Help">help_outline</span>
-          <br/>
-          <label><input id="cleanupalt" type="checkbox"/> Altitude</label>
-          <label><input id="cleanuptime" type="checkbox"/> Time</label>
+          <br>
+          <label><input id="cleanupalt" type="checkbox"> Altitude</label>
+          <label><input id="cleanuptime" type="checkbox"> Time</label>
           <p id="cleanuptxt-help" class="help-p">
             Clean up: Deletes elevation and/or GPS-recorded time data on each track point.<br>
             Fill up: Adds interpolated elevation and/or time on track points where this data is missing.
@@ -430,7 +430,7 @@
           </select>
         </td>
         <td>
-          <input type="range" id="trim-range" min="0" step="1" value="0" />&nbsp;<span id="trim-txt"></span>
+          <input type="range" id="trim-range" min="0" step="1" value="0">&nbsp;<span id="trim-txt"></span>
           <span id="trimtxt" class="help-b material-icons" title="Help">help_outline</span>
           <p id="trimtxt-help" class="help-p">
             Move cursor to delete points from the start or the end of the track.
@@ -460,14 +460,14 @@
         </td>
         <td>
           <label>
-            <input id="cfgsave" class="no-trim" type="checkbox" />
+            <input id="cfgsave" class="no-trim" type="checkbox">
             Locally save editor's state between sessions
           </label>
-          <br/>
+          <br>
           Privacy warning: state is shared with all users of this browser profile
-          <br/>
+          <br>
           You can also export/import settings to/from files:
-          <br/>
+          <br>
           <button id="save-state-file" class="state-file">Export</button>
           <label id="state-load-label" class="state-file">
             <input type="file" name="track" id="load-state-file" class="state-file">
@@ -494,19 +494,19 @@
         <td>
           <div>
             <span class="setting-name">Segment Type:</span>
-            <label><input name="track-type" type="radio" value="trk" checked="checked"/> Edited</label>
-            <label><input name="track-type" type="radio" value="ovl"/> Others</label>
+            <label><input name="track-type" type="radio" value="trk" checked="checked"> Edited</label>
+            <label><input name="track-type" type="radio" value="ovl"> Others</label>
           </div>
           <div>
             <span class="setting-name">Default color:</span>
             <button id="track-color-picker" class='material-icons symbol setting-value jscolor {"valueElement":"track-color", "hash":true, "zIndex":10001}'>
               colorize
             </button>
-            <input id="track-color" class="hidden"/>
+            <input id="track-color" class="hidden">
           </div>
           <div>
             <span class="setting-name">Width:</span>
-            <input type="range" min="0" max="10" id="track-weight" class="setting-value"/>
+            <input type="range" min="0" max="10" id="track-weight" class="setting-value">
             <span id="track-weight-v" class="setting-value"></span>
           </div>
           <div>
@@ -518,7 +518,7 @@
         <td>
         </td>
         <td>
-          <input id="fwdGuide" class="no-trim" type="checkbox" />
+          <input id="fwdGuide" class="no-trim" type="checkbox">
           <label for="fwdGuide">Show forward line guide</label>
           <span id="fwdGuidehlp" class="help-b material-icons" title="Help">help_outline</span>
           <p id="fwdGuidehlp-help" class="help-p">
@@ -530,7 +530,7 @@
         <td>
         </td>
         <td>
-          <input id="wptLabel" class="no-trim" type="checkbox" />
+          <input id="wptLabel" class="no-trim" type="checkbox">
           <label for="wptLabel">Always display waypoint labels</label>
           <span id="wptLabelhlp" class="help-b material-icons" title="Help">help_outline</span>
           <p id="wptLabelhlp-help" class="help-p">
@@ -543,7 +543,7 @@
         <td>
         </td>
         <td>
-          <input id="extMarkers" class="no-trim" type="checkbox" />
+          <input id="extMarkers" class="no-trim" type="checkbox">
           <label for="extMarkers">Show start/end markers</label>
           <span id="extMarkershlp" class="help-b material-icons" title="Help">help_outline</span>
           <p id="extMarkershlp-help" class="help-p">
@@ -555,7 +555,7 @@
         <td>
         </td>
         <td>
-          <input id="autoGrayBaseLayer" class="no-trim" type="checkbox" />
+          <input id="autoGrayBaseLayer" class="no-trim" type="checkbox">
           <label for="autoGrayBaseLayer">Grayscale base-layer map</label>
           <span id="autoGrayBaseLayerhlp" class="help-b material-icons" title="Help">help_outline</span>
           <p id="autoGrayBaseLayerhlp-help" class="help-p">
@@ -567,7 +567,7 @@
         <td>
         </td>
         <td>
-          <input id="noMixOverlays" class="no-trim" type="checkbox" />
+          <input id="noMixOverlays" class="no-trim" type="checkbox">
           <label for="noMixOverlays">Do not mix overlays</label>
           <span id="noMixOverlayshlp" class="help-b material-icons" title="Help">help_outline</span>
           <p id="noMixOverlayshlp-help" class="help-p">
@@ -584,8 +584,8 @@
             <span id="keystxt" class="help-b material-icons" title="Help">help_outline</span>
             <p id="keystxt-help" class="help-p">
               To use elevation and routing services, you must set your own API keys.
-              Current config is using:<br/>
-              Elevation: <span id="elevation-srv"></span>.<br/>
+              Current config is using:<br>
+              Elevation: <span id="elevation-srv"></span>.<br>
               Routing: <span id="routing-srv"></span>.
             </p>
           </div>
@@ -597,8 +597,8 @@
         <td>
           <div>
             <span class="setting-name">OpenRoute:</span>
-            <input id="orskey-chk" class="no-trim key-chk" type="checkbox" />
-            <input id="orskey-value" placeholder="Your OpenRouteService key" class="setting-input key-value" />
+            <input id="orskey-chk" class="no-trim key-chk" type="checkbox">
+            <input id="orskey-value" placeholder="Your OpenRouteService key" class="setting-input key-value">
             <span id="orskeytxt" class="help-b material-icons" title="Help">help_outline</span>
             <p id="orskeytxt-help" class="help-p">
               This key is used for the (i) computing point and track elevation, and (ii) routing feature, which draws tracks along map roads.
@@ -607,8 +607,8 @@
           </div>
           <div>
             <span class="setting-name">GraphHopper:</span>
-            <input id="ghkey-chk" class="no-trim key-chk" type="checkbox" />
-            <input id="ghkey-value" placeholder="Your GraphHopper key" class="setting-input key-value" />
+            <input id="ghkey-chk" class="no-trim key-chk" type="checkbox">
+            <input id="ghkey-value" placeholder="Your GraphHopper key" class="setting-input key-value">
             <span id="ghkeytxt" class="help-b material-icons" title="Help">help_outline</span>
             <p id="ghkeytxt-help" class="help-p">
               This key is used for the routing feature, which draws tracks along map roads.
@@ -617,8 +617,8 @@
           </div>
           <div>
             <span class="setting-name">Google:</span>
-            <input id="ggkey-chk" class="no-trim key-chk" type="checkbox" />
-            <input id="ggkey-value" placeholder="Your Google API key" class="setting-input key-value" />
+            <input id="ggkey-chk" class="no-trim key-chk" type="checkbox">
+            <input id="ggkey-value" placeholder="Your Google API key" class="setting-input key-value">
             <span id="ggkeytxt" class="help-b material-icons" title="Help">help_outline</span>
             <p id="ggkeytxt-help" class="help-p">
               This key is used for the Google Elevation service, which gets the elevation of each track point.
@@ -631,7 +631,7 @@
           </div>
           <div>
             <span class="setting-name hide-on-small-screen">&nbsp;</span>
-            <label><input id="apikeys-warn" type="checkbox" /> Warn if no API keys</label>
+            <label><input id="apikeys-warn" type="checkbox"> Warn if no API keys</label>
             <span id="apikeys-warntxt" class="help-b material-icons" title="Help">help_outline</span>
             <p id="apikeys-warntxt-help" class="help-p">
               If checked an info box will pop up when elevation or routing services are not configured.
@@ -655,11 +655,11 @@
           <div>
             <span class="setting-name">Unit of length:</span>
             <label>
-              <input type="radio" value="0" name="unitopt"/>
+              <input type="radio" value="0" name="unitopt">
               Metric
             </label>
             <label>
-              <input type="radio" value="1" name="unitopt"/>
+              <input type="radio" value="1" name="unitopt">
               Imperial
             </label>
             <span id="unittxt" class="help-b material-icons" title="Help">help_outline</span>
@@ -676,7 +676,7 @@
           <div>
             <span class="setting-name">Offline cache:</span>
             <label>
-              <input type="checkbox" id="use-service-worker"/>
+              <input type="checkbox" id="use-service-worker">
               (experimental)
             </label>
             <span id="swtxt" class="help-b material-icons" title="Help">help_outline</span>
@@ -692,7 +692,7 @@
         <td>
           <div>
             <span class="setting-name">Round coords.:</span>
-            <input type="checkbox" id="rounding-on"/>
+            <input type="checkbox" id="rounding-on">
             <label id="rounding-decimals-label">
               <select id="rounding-decimals">
                 <option value="3">3</option>
@@ -717,7 +717,7 @@
     <table id="menuabout">
       <tr>
         <td>
-          <img id="about-logo" src="img/wtracks-icon-1x.png" alt="WTracks logo" />
+          <img id="about-logo" src="img/wtracks-icon-1x.png" alt="WTracks logo">
         </td>
         <td>
           <div><span class="appname">WTracks</span> by <a id="email" href="#">Olivier Potonniée</a></div>
@@ -746,7 +746,7 @@
           <p>You can however donate to help maintaining this service:</p>
           <p>
             <a href="https://paypal.me/wtracks/2" target="_blank" class="donatebtn" title="Donate with PayPal">
-              <img id="donate-paypal" src="img/donate-paypal.png" alt="Donate with PayPal"/>
+              <img id="donate-paypal" src="img/donate-paypal.png" alt="Donate with PayPal">
             </a>
           </p>
           <p><i class="material-icons">warning</i> Do not check any 'goods and services' option in PayPal, you would pay useless fees.</p>
@@ -841,7 +841,7 @@
         </tr>
         <tr>
           <td>Name: </td>
-          <td><input id="prompt-name" type="text" size="50" value="" /></td>
+          <td><input id="prompt-name" type="text" size="50" value=""></td>
         </tr>
         <tr>
           <td>Description: </td>
@@ -876,9 +876,9 @@
       <div id="wtshare-ask">
         <p>
           Sharing will anonymously upload your track to the cloud and provide you a shareable link to reopen it.
-          <span id="sharetxt" class="help-b material-icons" title="Help">help_outline</span>
+          <span id="shareurltxt" class="help-b material-icons" title="Help">help_outline</span>
         </p>
-        <p id="sharetxt-help" class="help-p">
+        <p id="shareurltxt-help" class="help-p">
           Your track will be stored on a third-party server
           (<a id="wtshare-web" href="#" target="_blank"><span id="wtshare-name"></span></a>)
           without any guarantee of availability.
@@ -889,14 +889,14 @@
             <tr>
               <td class="tdfit">
                 <i class="material-icons">map</i>
-                <input id="wtshare-map" type="checkbox"/>
+                <input id="wtshare-map" type="checkbox">
               </td><td>
                 <label for="wtshare-map">
                   Check to include your current background map name (<span id="wtshare-map-name"></span>) in the shared link,
                   so that recipient will get the same visualization of your track as you.
                 </label>
                 <span id="sharemaptxt" class="help-b material-icons" title="Help">help_outline</span>
-                <br/>
+                <br>
                 <span id="sharemaptxt-help" class="help-p">
                   Note that the map has to be configured and not disabled on your recipient side.
                   If your current background map is a result of a personal setting,
@@ -907,11 +907,11 @@
             <tr class="if-encrypt hidden">
               <td class="tdfit">
                 <i class="material-icons">security</i>
-                <input id="wtshare-enc" type="checkbox"/>
+                <input id="wtshare-enc" type="checkbox">
               </td><td>
                 <label for="wtshare-enc">Check to encrypt your track on the cloud for enhanced privacy</label>
                 <span id="shareenctxt" class="help-b material-icons" title="Help">help_outline</span>
-                <br/>
+                <br>
                 <span id="shareenctxt-help" class="help-p">
                   If checked your track will be encrypted in your browser before being sent and saved in the cloud.
                   The decryption key will be included in the shareable link you will be provided.
@@ -937,7 +937,7 @@
           <p>Here is the link to your track, copy and share it.</p>
           <p>
             <i class="material-icons copyonclick" title="Copy link" data-copyonclick-from="wtshare-val">filter_none</i>
-            <input id="wtshare-val" type="text" size="50" value="" readonly="readonly" />
+            <input id="wtshare-val" type="text" size="50" value="" readonly="readonly">
             <a href="#" id="wtshare-viewqr" title="View link as QR Code" class="wtshare-item">
               <i class="material-icons">qr_code_scanner</i>
             </a>
@@ -955,7 +955,7 @@
         <div id="wtshare-qrcode">
           <a id="wtshare-back" href="#"><i class="material-icons">arrow_back</i></a>
           <p>Scan the QR Code below with your mobile to open the track:</p>
-          <img id="wtshare-qrimg" alt="QR Code to be scanned">
+          <img id="wtshare-qrimg" alt="QR Code to be scanned" src="#">
         </div>
         <button id="wtshare-ok" class="ok-btn">Close</button>
       </div>

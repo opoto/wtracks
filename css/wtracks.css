@@ -231,6 +231,7 @@ button, select, option, input[type=datetime-local] {
 }
 .overlay-opacity-slider {
   display: block;
+  appearance: none;
   -webkit-appearance: none;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
   /*width: 110px;*/
