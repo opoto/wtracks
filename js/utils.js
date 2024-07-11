@@ -512,7 +512,7 @@ function copyToClipboard(msg, text) {
       try {
         document.execCommand("copy");
         showCopyStatus(clicked, input, copyOk);
-      } catch(err) {
+      } catch {
         showCopyStatus(clicked, input, copyKO);
       }
     }

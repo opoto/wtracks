@@ -49,13 +49,13 @@ function forceReload() {
     { url: window.location.toString(),
       headers:{ 'Cache-Control': 'no-cache, no-store, must-revalidate' }
     }
-  ).then((resp)=>{
+  ).then(()=>{
     if (confirm("Latest WTracks version is needed to proceed, reload now?")) {
       window.location.reload();
     } else {
       console.error("Using old WTracks version will cause errors");
     }
-  }).fail((err) => {
+  }).fail(() => {
     console.error("Cannot get latest WTracks version");
   });
 }
@@ -205,7 +205,7 @@ function resetMapList() {
 function getMapList() {
   if (mapsListNames.length) {
     // check my maps
-    objectForEach(mymaps, function(name, value) {
+    objectForEach(mymaps, function(name) {
       if (getMapListEntryIndex(name) < 0) {
         addMapListEntry(name, MAP_MY, true);
       }
@@ -217,7 +217,7 @@ function getMapList() {
       }
     });
     // deprecated maps
-    arrayForEach(mapsListNames, function(idx, value) {
+    arrayForEach(mapsListNames, function(idx) {
       var inList = mapsListProps[idx]['in'] == MAP_MY ? mymaps : config.maps;
       var name = mapsListNames[idx];
       if (!inList[name]) {
@@ -231,7 +231,7 @@ function getMapList() {
       addMapListEntry(name, MAP_DEF, value.visible);
     });
     // add my maps
-    objectForEach(mymaps, function(name, value) {
+    objectForEach(mymaps, function(name) {
       addMapListEntry(name, MAP_MY, true);
     });
   }
@@ -243,7 +243,7 @@ function saveMapList() {
 getMapList();
 
 function mapsForEach(func) {
-  arrayForEach(mapsListNames, function(idx, value) {
+  arrayForEach(mapsListNames, function(idx) {
     var name = mapsListNames[idx];
     var prop = mapsListProps[idx];
     func(name, prop);

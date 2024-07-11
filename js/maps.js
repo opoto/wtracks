@@ -1,15 +1,14 @@
 'use strict';
 /* globals
-      $, ga, L, config,
-      isUnset, isUndefined, jsonClone, getParameterByName, clearUrlQuery, corsUrl,
-      consentCookies, htmlEncode, strencode, strdecode, saveAs, forceReload, isSafari, b64EncodeUnicode, b64DecodeUnicode, supportsBase64,
-      getBoolVal, getJsonVal, getBoolVal, getVal,
-      saveValOpt, saveJsonValOpt, storeVal, storeJsonVal, getValStorage,
-      objectForEach, arrayForEach, arrayMove, arrayLast, mapsForEach,
-      copyOnClick, isNumeric, noTranslate,
-      isStateSaved, setSaveState, getSaveState, getUseServiceWorker, setUseServiceWorker, initServiceWorker, doAndroidChromiumTweak,
-      mymaps, mapsList, MAP_MY, setMyMaps, mapsListNames,mapsListProps, CrsValues, renameMapListEntry, saveMapList, getMapListEntryIndex, addMapListEntry, delMapListEntry, getMapList, resetMapList, moveMapListEntry,
-      addSelectOption, getSelectedOption, selectOption, addsSelectOption, isChecked, setChecked,
+      $, ga, config, getParameterByName,
+      consentCookies, b64EncodeUnicode, b64DecodeUnicode, supportsBase64,
+      saveJsonValOpt, objectForEach, arrayForEach, mapsForEach, noTranslate,
+      isStateSaved, setSaveState, doAndroidChromiumTweak,
+      mymaps, MAP_MY, setMyMaps, mapsListNames,mapsListProps,
+      CrsValues, renameMapListEntry, saveMapList, getMapListEntryIndex,
+      addMapListEntry, delMapListEntry, getMapList, resetMapList,
+      moveMapListEntry, addSelectOption, getSelectedOption,
+      selectOption, isChecked, setChecked,
 */
 
 /* ----------------- My maps editing ------------------- */
@@ -196,7 +195,7 @@ function openMymapBox() {
   changeMymapType();
 }
 
-function newMymap(evt) {
+function newMymap() {
   mymap = { options: {} };
   openMymapBox();
 }
@@ -232,7 +231,7 @@ mymapsInputs.keyup(function(event) {
   }
 });
 
-function validateMymapBox(evt) {
+function validateMymapBox() {
   var valid = true;
   // check validity on displayed inputs
   $("#mymap-box input:visible").each(function(i, v) {
@@ -301,7 +300,7 @@ function validateMymapBox(evt) {
   }
 }
 
-function cancelMymapBox(evt) {
+function cancelMymapBox() {
   $("#mymap-box").hide();
   mymapsInputs.removeClass("invalid");
   mymap = undefined;
@@ -334,7 +333,7 @@ function getMapType() {
   return $('input:radio[name=mymap-type]:checked').val();
 }
 
-function changeMymapType(evt) {
+function changeMymapType() {
   var type = getMapType();
   $(".map-wmts").hide();
   $(".map-wms").hide();
@@ -344,7 +343,7 @@ function changeMymapType(evt) {
   clearLayerList();
 }
 
-function deleteAllMymaps(evt) {
+function deleteAllMymaps() {
   if (!$.isEmptyObject(mymaps) &&
       confirm("Delete all your personal maps?")) {
     setMyMaps({});
@@ -354,7 +353,7 @@ function deleteAllMymaps(evt) {
     ga('send', 'event', 'map', 'deleteall');
   }
 }
-function reorderMapList(evt) {
+function reorderMapList() {
   if (confirm("Re-order map list according to defaults, with personal maps at the end?")) {
     resetMapList();
     getMapList();
@@ -363,7 +362,7 @@ function reorderMapList(evt) {
   }
 }
 
-function getLayersList(evt) {
+function getLayersList() {
   $("#mymap-getlayerslist").hide();
   $("#mymap-layerslist").hide();
   $("#mymap-layerslist-error").hide();
@@ -388,7 +387,9 @@ function getLayersList(evt) {
         value = value ? value + "|" + item.textContent : item.textContent;
       });
       option.attr(attrName, value);
-    } catch(e) {}
+    } catch(err) {
+      console.warn(err);
+    }
   }
 
   let url = new URL($("#mymap-url").val().trim());
@@ -418,7 +419,7 @@ function getLayersList(evt) {
     selectOption("#mymap-layerslist", curval);
     $("#mymap-layerslist").show();
   })
-  .fail(function(err) {
+  .fail(function() {
    $("#mymap-layerslist-error").show();
   })
   .always(function() {
@@ -427,7 +428,7 @@ function getLayersList(evt) {
   });
 }
 
-function onWmtsLayerChanged(evt) {
+function onWmtsLayerChanged() {
   var opt = $($("#mymap-layerslist>option:selected")[0]);
   $("#mymap-layer").val(opt.val());
   $("#mymap-layer").removeClass("invalid");
@@ -435,7 +436,7 @@ function onWmtsLayerChanged(evt) {
   $("#mymap-format").val(opt.attr("format"));
   $("#mymap-tilematrixSet").val(opt.attr("tilematrixSet"));
 }
-function onWmsLayerChanged(evt) {
+function onWmsLayerChanged() {
   $("#mymap-layers").val(getSelectedOption("#mymap-layerslist"));
   $("#mymap-layers").removeClass("invalid");
 }
@@ -510,7 +511,7 @@ function readImportMymaps(event) {
   $("#input-error").hide();
   $("#input-error-url").hide();
   var data = $("#input-val").val();
-  if (data.match(/^https?\:\/\//)) {
+  if (data.match(/^https?:\/\//)) {
     data = getParameterByName("import", undefined, data.substring(data.indexOf('?') + 1));
   }
   if (data) {
@@ -552,7 +553,7 @@ function readImportMymaps(event) {
       $("#import-select").show();
       $("#import-ok").off("click").click(importMymaps);
       $("#import-ok").focus();
-    } catch (ex) {
+    } catch {
       console.log("Failed to parse data: " + data);
       if (event) {
         $("#input-error").show();
@@ -626,8 +627,8 @@ $(function(){
   $("#mymaps-list").sortable({
     //scroll: true,
     handle: ".item-drag, .item-name",
-    update: function(evt) {
-      var moved = false;
+    update: function() {
+      //let moved = false;
       // reorder MapListEntry according to MapItems
       $("#mymaps-list .item-name").each(function(i, v) {
         var name = v.innerText;
@@ -641,7 +642,7 @@ $(function(){
           moveMapListEntry(fromIdx, toIdx);
           saveMapList();
           ga('send', 'event', 'map', 'move');
-          moved = true;
+          //moved = true;
         }
         // TODO: Workaround for Android Chrome display bug
         // not needed with current tweak

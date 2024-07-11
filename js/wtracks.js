@@ -5,14 +5,13 @@
       isUnset, isUndefined, jsonClone, getParameterByName, clearUrlQuery, corsUrl,
       consentCookies, htmlEncode, strencode, strdecode, saveAs, forceReload, isSafari,
       getBoolVal, getJsonVal, getBoolVal, getVal,
-      saveValOpt, saveJsonValOpt, storeVal, storeJsonVal, getValStorage, storedValuesForEach,
-      objectForEach, arrayForEach, arrayMove, arrayLast, mapsForEach,
-      copyOnClick, roundDecimal, isNumeric, noTranslate,
-      addSelectOption, getSelectedOption, selectOption, addsSelectOption, isChecked, setChecked,
+      saveValOpt, saveJsonValOpt, storeVal, getValStorage, storedValuesForEach,
+      objectForEach, arrayForEach, arrayLast, mapsForEach,
+      roundDecimal, isNumeric, noTranslate,
+      addSelectOption, getSelectedOption, selectOption, isChecked, setChecked,
       enableInput, setDateTimeInput, getDateTimeInput, getRealInput,
       mymaps, mapsList, MAP_MY, getMapListEntryProps, PMTiles, getCrsFromName,
-      isStateSaved, setSaveState, getSaveState, getUseServiceWorker, setUseServiceWorker, initServiceWorker,
-      launchQueue, LaunchParams
+      isStateSaved, setSaveState, getUseServiceWorker, setUseServiceWorker, initServiceWorker
 */
 
 var map;
@@ -597,7 +596,7 @@ $(function(){
     }
   }
 
-  $("#extMarkers").on("change", function(evt){
+  $("#extMarkers").on("change", function(){
     extMarkers = !extMarkers;
     saveValOpt("wt.extMarkers", extMarkers);
     setExtremityVisibility(extMarkers);
@@ -938,7 +937,7 @@ $(function(){
     return marker;
   }
 
-  $("#wptLabel").on("change", function(evt){
+  $("#wptLabel").on("change", function(){
     wptLabel = !wptLabel;
     saveValOpt("wt.wptLabel", wptLabel);
     arrayForEach(waypoints.getLayers(), function (idx, wpt) {
@@ -948,7 +947,7 @@ $(function(){
     });
   });
 
-  $("#fwdGuide").on("change", function(evt){
+  $("#fwdGuide").on("change", function(){
     fwdGuide = !fwdGuide;
     saveValOpt("wt.fwdGuide", fwdGuide);
     updateMapStyle();
@@ -969,7 +968,7 @@ $(function(){
     polytrim = L.polyTrim(track, trimType);
   }
 
-  function trimTrack(e) {
+  function trimTrack() {
     var n = parseInt($("#trim-range").val());
     console.log("trimming " + n);
     $("#trim-txt").text(n + "/" + polytrim.getPolySize());
@@ -1064,17 +1063,17 @@ $(function(){
   ovlTrackWeight = getVal("wt.ovlTrackWeight", trackUI.ovl.getDefaultWeight());
   updateMapStyle();
 
-  $("input:radio[name=track-type]").on("change", function(event){
+  $("input:radio[name=track-type]").on("change", function(){
     var t = $("input:radio[name=track-type]:checked").val();
     trackUISetting = trackUI[t];
     initTrackDisplaySettings();
   });
-  $("#track-color").on("change", function(event){
+  $("#track-color").on("change", function(){
     var v = $("#track-color").val();
     ga('send', 'event', 'setting', 'trackColor', v);
     trackUISetting.setColor(v);
   });
-  $("#track-weight").on("change", function(event){
+  $("#track-weight").on("change", function(){
     var v = $("#track-weight").val();
     ga('send', 'event', 'setting', 'trackWeight', v);
     $("#track-weight-v").text(v);
@@ -1186,12 +1185,12 @@ $(function(){
 
   $("#keys-reset").on("click", function() {
     ga('send', 'event', 'setting', 'keys', 'reset');
-    objectForEach(apikeys, function name(kname, kval) {
+    objectForEach(apikeys, function name(kname) {
       resetApiKey(kname);
     });
   });
 
-  objectForEach(apikeys, function name(kname, kval) {
+  objectForEach(apikeys, function name(kname) {
     showApiKey(kname);
   });
   updateApiServices();
@@ -1308,7 +1307,7 @@ $(function(){
 
     var startdate = new Date();
     var xmlname = "<name>" + htmlEncode(trackname) + "</name>";
-    var gpx = '<\?xml version="1.0" encoding="UTF-8" standalone="no" \?>\n';
+    var gpx = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n';
     gpx += '<gpx creator="' + config.appname + '"\n';
     gpx += '    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" version="1.1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"';
 
@@ -1340,7 +1339,9 @@ $(function(){
       let crs;
       try {
         crs = map.options.crs.code;
-      } catch (err) {}
+      } catch (err) {
+        console.error(err);
+      }
       if (map.getBounds().isValid()) {
         try {
           var sw = map.getBounds().getSouthWest();
@@ -1350,11 +1351,13 @@ $(function(){
           '" maxlat="' + getCoordinate(Math.max(sw.lat, ne.lat)) +
           '" maxlon="' + getCoordinate(Math.max(sw.lng, ne.lng)) + '"/>\n';
         } catch (err) {
-          let sz, zoom;
+          let sz;//, zoom;
           try {
             sz = map.getSize().toString();
-            zoom = map.getZoom();
-          } catch (err2) {}
+            //zoom = map.getZoom();
+          } catch (err2) {
+            console.log(err2);
+          }
           onerror("getGPX: getBounds failed", {
             baseLayer: baseLayer,
             crs: crs,
@@ -1466,7 +1469,7 @@ $(function(){
       checkSaveTimeProfile();
 
       $("#save-time-profile").on("change", checkSaveTimeProfile);
-    } catch (error) {
+    } catch {
       onerror("no save-time-profile selector", {cells: $("#menutools tr").length});
       forceReload();
     }
@@ -1552,7 +1555,7 @@ $(function(){
               let oldTime = new Date(pt.time);
               let newTime = new Date(oldTime.getTime() + byMs);
               pt.time = newTime.toISOString();
-            } catch (error) {
+            } catch {
               nbErr++;
             }
           }
@@ -1643,7 +1646,7 @@ $(function(){
     let segName = getSegmentName();
     let itemName = newitem.find(".item-name");
     let lastPt = arrayLast(segment.getLatLngs());
-    let firstPt = segment.getLatLngs()[0];
+    //let firstPt = segment.getLatLngs()[0];
     let segDuration = getRecordedTime(segment.getLatLngs());
     if (isUndefined(segDuration)) {
       segDuration = " <i class='material-icons' title='Estimated time'>av_timer</i> " + time2txt(L.PolyStats.getPointTime(lastPt));
@@ -1685,7 +1688,7 @@ $(function(){
 
   function onAllCheckedSegment(opName, minCount, func, noConfirm) {
     let uids = [], names = "";
-    $("#segments-list li").each(function(idx) {
+    $("#segments-list li").each(function() {
       if (isChecked($(this).find(".seg-check"))) {
         let uid = $(this).attr("uid");
         uids.push(uid);
@@ -1784,7 +1787,7 @@ $(function(){
       segList.sortable({
         //scroll: true,
         handle: ".item-drag",
-        update: function(evt) {
+        update: function() {
           // collect segment uids
           let lyUids = {};
           forEachSegment(function(segment) {
@@ -1912,12 +1915,12 @@ $(function(){
       });
   }
 
-  function showQRCode(e){
+  function showQRCode(){
     $("#wtshare-links").hide();
     $("#wtshare-qrcode").show();
     return false;
   }
-  function hideQRCode(e){
+  function hideQRCode(){
     $("#wtshare-links").show();
     $("#wtshare-qrcode").hide();
     return false;
@@ -1977,7 +1980,7 @@ $(function(){
         track.addLatLng(pts[j]);
       }
       updateExtremities();
-      elevate("mergeRouteToTrack", pts, false, function(success) {
+      elevate("mergeRouteToTrack", pts, false, function() {
         polystats.updateStatsFrom(initlen);
         saveState();
       });
@@ -2030,7 +2033,7 @@ $(function(){
   function enterDragMode() {
     setExtremityVisibility(true);
     track.setInteractive(true);
-    track.on("dragend", function(e) {
+    track.on("dragend", function() {
       wasDragged = true;
       updateExtremities();
     });
@@ -2185,7 +2188,7 @@ $(function(){
     try {
       pruneMaxDist = getKeepOpt("#prune-dist-opt", "#prune-max-dist");
       pruneMaxTime = getKeepOpt("#prune-time-opt", "#prune-max-time");
-    } catch (error) {
+    } catch {
       return;
     }
 
@@ -2290,7 +2293,7 @@ $(function(){
         lng: res.lon
       }, false);
     })
-    .fail(function(jqxhr, settings, exception) {
+    .fail(function() {
       showWarning("IP Geolocation failed", "Do you you have an ad blocker?<br>Try deactivating it on this page to get geolocation working.");
     });
   }
@@ -2394,14 +2397,14 @@ $(function(){
       }, true);
     }
 
-    function highAccuracyFailed(posError) {
+    function highAccuracyFailed() {
       isHighAccuracy = false;
       console.log("GPS location failed, trying low accuracy");
       navigator.geolocation.getCurrentPosition(
         gotLocation, lowAccuracyFailed, { maximumAge: 60000, timeout: 5000, enableHighAccuracy: false });
     }
 
-    function lowAccuracyFailed(posError) {
+    function lowAccuracyFailed() {
       console.log("low accuracy geolococation failed");
       getMyIpLocation();
     }
@@ -2719,7 +2722,7 @@ $(function(){
     }
     setAutoGrayBaseLayer(e.layer);
   });
-  map.on('zoomstart zoom zoomend', function(ev){
+  map.on('zoomstart zoom zoomend', function(){
     console.debug('Zoom level: ' + map.getZoom());
   });
 
@@ -2768,7 +2771,7 @@ $(function(){
       });
     });
   }
-  function removeOpacityControl(ovlname,ovl) {
+  function removeOpacityControl(ovlname) {
     // remove slider
     $(".leaflet-control-layers-overlays span:contains('" + ovlname + "')")
     .parent()
@@ -2810,12 +2813,12 @@ $(function(){
     removeOpacityControl(e.name);
   });
 
-  $("#autoGrayBaseLayer").on("change", function(evt){
+  $("#autoGrayBaseLayer").on("change", function(){
     autoGrayBaseLayer = !autoGrayBaseLayer;
     saveValOpt("wt.autoGrayBaseLayer", autoGrayBaseLayer);
     setAutoGrayBaseLayer(null);
   });
-  $("#noMixOverlays").on("change", function(evt){
+  $("#noMixOverlays").on("change", function(){
     noMixOverlays = isChecked("#noMixOverlays");
     saveValOpt("wt.noMixOverlays", noMixOverlays);
     // update all overlays
@@ -2897,7 +2900,7 @@ $(function(){
       }).catch((err) => {
         fail('gg.elevate.ko', err);
       });
-    } catch (e) {
+    } catch {
       // Google elevation service not available, cancel
       fail('gg.elevate.ko', "Invalid Google API key?");
       return;
@@ -2905,6 +2908,7 @@ $(function(){
   }
 
   // https://github.com/Jorl17/open-elevation
+  // eslint-disable-next-line no-unused-vars
   function openElevationService(locations, points, inc, cleanup, done, fail) {
     var ajaxreq, i, len;
     // GET is faster for small number of points (avoid OPTIONS preflight request)
@@ -3181,7 +3185,7 @@ $(function(){
       //link.id = 'myloc';
       L.DomEvent.disableClickPropagation(link);
       L.DomEvent.on(link, 'click', L.DomEvent.stop)
-        .on(link, 'click', function(e) {
+        .on(link, 'click', function() {
           map.closePopup();
           if (showLocation == LOC_CONTINUOUS) {
             setLocationMode(LOC_NONE);
@@ -3229,7 +3233,7 @@ $(function(){
       link.innerHTML = this.options.html;
       L.DomEvent.disableClickPropagation(link);
       L.DomEvent.on(link, this.options.event, L.DomEvent.stop)
-        .on(link, this.options.event, function(e) {
+        .on(link, this.options.event, function() {
           map.closePopup();
           var et = $("#edit-tools");
           et.toggle();
@@ -3543,7 +3547,7 @@ $(function(){
     return opts;
   }
 
-  $("#cleanup").on("click", function(e) {
+  $("#cleanup").on("click", function() {
     var toclean = getCleanFillOpts();
     if (toclean.length == 0) {
       // nothing to clean
@@ -3577,7 +3581,7 @@ $(function(){
           }
           try {
             pt.time = new Date(timePt).toISOString();
-          } catch (error) {
+          } catch {
             onerror("Invalid interpolated time", {
               time: timePt, prev: prev.time, next: next.time,
               distPt:  distPrevPt, distNext: distPrevNext
@@ -3654,7 +3658,7 @@ $(function(){
     return allCounts;
   }
 
-  $("#fillup").on("click", function(e) {
+  $("#fillup").on("click", function() {
     var toFill = getCleanFillOpts();
     if (toFill.length == 0) {
       // nothing to fill
@@ -3671,7 +3675,7 @@ $(function(){
     return false;
   });
 
-  $("#revert").on("click", function(e) {
+  $("#revert").on("click", function() {
     var count = 0;
     applySegmentTool(function (segment) {
       var points = segment ? segment.getLatLngs() : undefined;
@@ -3892,7 +3896,7 @@ $(function(){
   map.addControl(loadcontrol);
   var fileloader = loadcontrol.loader;
   var loadCount = 0;
-  fileloader.on('data:error', function(e) {
+  fileloader.on('data:error', function() {
     setStatus("Failed: check file and type", { 'class': 'status-error', 'timeout': 3 });
   });
 
@@ -3913,7 +3917,7 @@ $(function(){
             newTrack();
             return;
           }
-          var encversion = options.key.substring(0,2); // version, ignored for now
+          //var encversion = options.key.substring(0,2); // version, ignored for now
           var key = encodeURIComponent(options.key.substring(2));
           var deckey = strdecode(key, key);
           var iv = deckey.substring(0,24);
@@ -4029,7 +4033,7 @@ $(function(){
     // see File types below. By default, all extensions are allowed.
     //extensions: ['.gpx', '.json', '.kml', '.geojson'],
   };
-  $("#dropbox-chooser").on("click", function(e) {
+  $("#dropbox-chooser").on("click", function() {
     // Check Dropbox is supported
     if (!Dropbox.isBrowserSupported()){
       alert("Sorry, your browser does not support Dropbox loading");
@@ -4060,7 +4064,7 @@ $(function(){
     // of the user's downloads. The value passed to this callback is a float
     // between 0 and 1. The progress callback is guaranteed to be called at least
     // once with the value 1.
-    progress: function(progress) {},
+    progress: function(/*progress*/) {},
 
     // Cancel is called if the user presses the Cancel button or closes the Saver.
     cancel: function() {
@@ -4075,12 +4079,12 @@ $(function(){
       dropboxSaveOptions.deleteTemp();
     },
 
-    deleteTemp: function(res) {
+    deleteTemp: function() {
       dropboxTempShare.delete(
         dropboxSaveOptions.gpxurl,
         dropboxSaveOptions.files[0].url,
         dropboxSaveOptions.passcode,
-        undefined, function(msg) {
+        undefined, function() {
           console.warn("Failed to delete temp share");
         }
       );
@@ -4088,7 +4092,7 @@ $(function(){
 
   };
 
-  function dropboxSaver(evt) {
+  function dropboxSaver() {
     $("#confirm-dropbox").hide();
     try {
       Dropbox.save(dropboxSaveOptions);
@@ -4103,13 +4107,13 @@ $(function(){
     $("#confirm-dropbox").hide();
   });
 
-  $("#dropbox-saver").on("click", function(e) {
+  $("#dropbox-saver").on("click", function() {
     // Check Dropbox is supported
     if (!Dropbox.isBrowserSupported()){
       alert("Sorry, your browser does not support Dropbox saving");
       return;
     }
-    var name = getConfirmedTrackName().replace(/[\\\/:\*\?"<>|]/g, "_"); // remove forbidden path chars
+    var name = getConfirmedTrackName().replace(/[\\/:*?"<>|]/g, "_"); // remove forbidden path chars
     var gpx = getTrackGPX(false);
     ga('send', 'event', 'file', 'save-dropbox', undefined, Math.round(gpx.length / 1000));
     dropboxTempShare.upload(
@@ -4130,7 +4134,7 @@ $(function(){
 
   var MAX_ROUTE_WPTS = 2;
 
-  function newRouteWaypoint(i, waypoint, n) {
+  function newRouteWaypoint(i, waypoint) {
 
     function getRouteWaypoinContent(latlng, index, marker) {
       if (!route) {
@@ -4426,7 +4430,9 @@ $(function(){
       altinput.onkeyup = function() {
         try {
           latlng.alt = isNumeric(altinput.value) ? txt2alt(altinput.value) : undefined;
-        } catch (e) {}
+        } catch (err) {
+          console.error(err);
+        }
       };
       p = L.DomUtil.create("span", "", p);
       p.innerHTML = altUnit();
@@ -4535,31 +4541,31 @@ $(function(){
     }
   }
 
-  map.on('popupclose', function(e) {
+  map.on('popupclose', function() {
     //console.log(e.type);
     if ((editMode === EDIT_MANUAL_TRACK) && (track.editor)) {
       track.editor.continueForward();
     }
   });
-  map.on('editable:enable', function(e) {
+  map.on('editable:enable', function() {
     //console.log(e.type);
   });
-  map.on('editable:drawing:start', function(e) {
+  map.on('editable:drawing:start', function() {
     //console.log(e.type);
   });
-  map.on('editable:drawing:dragend', function(e) {
+  map.on('editable:drawing:dragend', function() {
     //console.log(e.type);
   });
-  map.on('editable:drawing:commit', function(e) {
+  map.on('editable:drawing:commit', function() {
     //console.log(e.type);
   });
-  map.on('editable:drawing:end', function(e) {
+  map.on('editable:drawing:end', function() {
     //console.log(e.type);
   });
-  map.on('editable:drawing:click', function(e) {
+  map.on('editable:drawing:click', function() {
     //console.log(e.type);
   });
-  map.on('editable:shape:new', function(e) {
+  map.on('editable:shape:new', function() {
     //console.log(e.type);
   });
 
@@ -4571,7 +4577,7 @@ $(function(){
     //console.log(e.type + ": " + latlng.i);
     if (i == getTrackLength() - 1) {
       // last vertex
-      elevatePoint("newVertex", latlng, false, function(success) {
+      elevatePoint("newVertex", latlng, false, function() {
         polystats.updateStatsFrom(i);
       });
     }
@@ -4583,7 +4589,7 @@ $(function(){
   function dragVertex(e) {
     var latlng = e.vertex.getLatLng();
     var i = latlng.i;
-    elevatePoint("dragVertex", latlng, false, function(success) {
+    elevatePoint("dragVertex", latlng, false, function() {
       polystats.updateStatsFrom(i);
     });
     //console.log(e.type + ": " + i);
@@ -4596,7 +4602,7 @@ $(function(){
   }
   map.on('editable:vertex:dragstart', dragVertexStart);
 
-  map.on('editable:middlemarker:mousedown', function(e) {
+  map.on('editable:middlemarker:mousedown', function() {
     //console.log(e.type);
   });
 
@@ -4620,8 +4626,8 @@ $(function(){
   });
 
 
-  map.on('editable:created', function(e) {
-    //console.log("Created: " + e.layer.getEditorClass());
+  map.on('editable:created', function(/*event*/) {
+    //console.log("Created: " + event.layer.getEditorClass());
   });
 
   function checkGraphHopperRes(e) {
@@ -4650,7 +4656,7 @@ $(function(){
   }
 
   // not triggered by gh, only ors
-  function routingError(err, msg) {
+  function routingError(err) {
     console.log("Routing failed " + err.error.message);
     ga('send', 'event', 'api', 'ors.routing.ko', err.error.message);
     setEditMode(EDIT_NONE);
@@ -4803,7 +4809,7 @@ $(function(){
       .setLatLng(latlng)
       .setContent(getLatLngPopupContent(latlng, deleteTrackPoint, splitfn, gotopt, div))
       .openOn(map);
-    $(".leaflet-popup-close-button").on("click", function(e) {
+    $(".leaflet-popup-close-button").on("click", function() {
       if (track.editor) {
         track.editor.continueForward();
       }
@@ -4820,7 +4826,7 @@ $(function(){
     if (elevation) toggleElevation();
   }
 
-  function toggleElevation(e) {
+  function toggleElevation() {
     // is elevation currently displayed?
     if (!elevation) {
       // ignore if track has less than 2 points
@@ -4850,7 +4856,7 @@ $(function(){
             el: el,
             gjl: gjl
           };
-        } catch (err) {
+        } catch {
           console.log('no elevation');
         }
       }
@@ -4892,7 +4898,7 @@ $(function(){
   });
 
   if (getValStorage()) {
-    $("#cfgsave").on("change", function(e) {
+    $("#cfgsave").on("change", function() {
       var saveCfg = isChecked("#cfgsave");
       setSaveState(saveCfg);
       setStateSaved(saveCfg);
@@ -5000,7 +5006,7 @@ $(function(){
       }
     });
   }
-  function changeShareLib(evt) {
+  function changeShareLib() {
     var libname = getSelectedOption(pasteLibSelect);
     share = PasteLibs.get(libname) || share;
     $("#share-web").html("<a href='" + share.web + "' title='" + share.web + "' >" + share.web + "</a>");
@@ -5044,7 +5050,7 @@ $(function(){
     "<label for='close-on-click'><div><input type='checkbox' id='close-on-click'> Auto close</div></label>"
   );
   setChecked("#close-on-click", mapsCloseOnClick);
-  $("#close-on-click").on("change", function (event) {
+  $("#close-on-click").on("change", function () {
     mapsCloseOnClick = isChecked("#close-on-click");
     saveValOpt("wt.mapsCloseOnClick", mapsCloseOnClick);
   });
@@ -5052,7 +5058,7 @@ $(function(){
   // Persist joinOnLoad option
   joinOnLoad = getBoolVal("wt.joinOnLoad", false);
   setChecked("#joinonload", joinOnLoad);
-  $("#joinonload").on("change", function(e) {
+  $("#joinonload").on("change", function() {
     joinOnLoad = isChecked("#joinonload");
     saveValOpt("wt.joinOnLoad", joinOnLoad);
   });

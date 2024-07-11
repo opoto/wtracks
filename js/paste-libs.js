@@ -18,7 +18,7 @@ class PasteLib {
       $.get(this._pingUrl)
       .done(onDone)
       .fail(onFail);
-    } catch (err) {
+    } catch {
       onFail();
     }
   }
@@ -255,7 +255,7 @@ class FileIO extends PasteLib {
           onFail(resp.message + (resp.error ? " (" + resp.error +")" : ""));
         }
       }).fail(onFail);
-    } catch (err) {
+    } catch {
       // browser does not support FormData, fallback to alternative method
       this.uploadSmall(name, gpx, onDone, onFail);
     }
@@ -343,7 +343,7 @@ PasteLibs.register("transfer.sh", TransferSH);
             onFail("gofile upload failed: " + resp.status);
           }
         }).fail(onFail);
-      } catch (err) {
+      } catch {
         onFail("gofile upload failed: formData not supported");
       }
     }

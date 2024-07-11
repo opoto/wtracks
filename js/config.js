@@ -1,6 +1,7 @@
 'use strict';
 /* globals strdecode */
 
+// eslint-disable-next-line no-unused-vars
 var config = {
   appname: "WTracks",
   email: {
