@@ -1974,7 +1974,7 @@ $(function(){
     var initlen = getTrackLength();
     var pts = route._selectedRoute ? route._selectedRoute.coordinates : undefined;
     if (pts && (pts.length > 0)) {
-      pts = L.PolyPrune.prune(pts, { tolerance: config.pruneDist, useAlt: true });
+      pts = L.PolyPrune.prune(pts, { tolerance: pruneDist, useAlt: true });
       ga('send', 'event', 'edit', 'merge', undefined, pts.length);
       for (var j = 0; j < pts.length; j++) {
         track.addLatLng(pts[j]);
@@ -2179,9 +2179,9 @@ $(function(){
     }
 
     // get & check input value
-    pruneDist = getRealInput($("#prune-dist"), true);
-    if (!pruneDist) return;
-
+    let tmp = getRealInput($("#prune-dist"), true);
+    if (!tmp) return;
+    pruneDist = tmp;
 
     pruneMaxDist;
     pruneMaxTime;
@@ -2321,7 +2321,7 @@ $(function(){
         $("#myloc").removeClass("loc-recording");
         $("#myloc").removeClass("control-selected");
         if ((showLocation == LOC_RECORDING) && (track.getLatLngs().length > 0)) {
-            let pts = L.PolyPrune.prune(track.getLatLngs(), { tolerance: config.pruneDist, useAlt: true });
+            let pts = L.PolyPrune.prune(track.getLatLngs(), { tolerance: pruneDist, useAlt: true });
             track.setLatLngs(pts);
             track.redraw();
         }
