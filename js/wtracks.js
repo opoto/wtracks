@@ -2324,6 +2324,7 @@ $(function(){
     showLocation = LOC_ONCE;
 
   function setLocationMode(mode) {
+    if (showLocation == mode) return;
     let watch;
     switch (mode) {
       case LOC_NONE:
@@ -2365,6 +2366,7 @@ $(function(){
           console.error(`GPS watch failed (${err.message})`);
           showWarning("GPS error", "Could not get current position", 4000);
           setEditMode(EDIT_NONE);
+          setLocationMode(LOC_NONE);
         },
         { // OPTIONS
           enableHighAccuracy: true,
