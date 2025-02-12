@@ -152,10 +152,11 @@ $(function(){
   var wasDragged;
 
   var EDIT_NONE = 0;
-  var EDIT_MANUAL_TRACK = 1;
-  var EDIT_AUTO_TRACK = 2;
-  var EDIT_MARKER = 3;
-  var EDIT_DRAG = 4;
+  var EDIT_RECORDING = 1;
+  var EDIT_MANUAL_TRACK = 2;
+  var EDIT_AUTO_TRACK = 3;
+  var EDIT_MARKER = 4;
+  var EDIT_DRAG = 5;
   var EDIT_DEFAULT = EDIT_MANUAL_TRACK;
   var editMode = -1;
 
@@ -2078,9 +2079,13 @@ $(function(){
       alert("Your browser does not support GPX editing");
       return;
     }
+    // current edit mode
     switch (editMode) {
+      case EDIT_RECORDING:
+        setLocationMode(LOC_NONE);
+        break;
       case EDIT_MANUAL_TRACK:
-        if (track) {
+          if (track) {
           track.disableEdit();
         }
         break;
@@ -2109,10 +2114,14 @@ $(function(){
       $("#map").css("cursor", "");
     }
     setExtremityVisibility(false);
+    // new edit mode
     switch (mode) {
       case EDIT_NONE:
         setExtremityVisibility(true);
         setInactiveSegmentClickable(true);
+        break;
+      case EDIT_RECORDING:
+        setInactiveSegmentClickable(false);
         break;
       case EDIT_MANUAL_TRACK:
         $("#" + EDIT_MANUAL_ID).addClass("control-selected");
@@ -2159,7 +2168,7 @@ $(function(){
     }
     editMode = mode;
     saveEditMode();
-    $("#edit-tools").toggle(editMode > 0);
+    $("#edit-tools").toggle(editMode > EDIT_RECORDING);
   }
 
   $("#prune-dist-opt, #prune-time-opt").on("change", (event) => {
@@ -2311,9 +2320,11 @@ $(function(){
     LOC_CONTINUOUS = 2,
     LOC_READY_TO_RECORD = 3,
     LOC_RECORDING = 4,
+    loc_recording_id,
     showLocation = LOC_ONCE;
 
   function setLocationMode(mode) {
+    let watch;
     switch (mode) {
       case LOC_NONE:
         $("#myloc").text("my_location");
@@ -2321,13 +2332,19 @@ $(function(){
         $("#myloc").removeClass("loc-recording");
         $("#myloc").removeClass("control-selected");
         if ((showLocation == LOC_RECORDING) && (track.getLatLngs().length > 0)) {
+            navigator.geolocation.clearWatch(loc_recording_id);
+            // compress recording
             let pts = L.PolyPrune.prune(track.getLatLngs(), { tolerance: pruneDist, useAlt: true });
-            track.setLatLngs(pts);
+            // discard single points
+            track.setLatLngs(pts.length > 1 ? pts : []);
+            updateExtremities();
+            removeMyLocMarker(true);
             track.redraw();
         }
         break;
       case LOC_CONTINUOUS:
         $("#myloc").addClass("control-selected");
+        watch = true;
         break;
       case LOC_READY_TO_RECORD:
         $("#myloc").text("fiber_manual_record");
@@ -2337,17 +2354,32 @@ $(function(){
         $("#myloc").text("stop");
         $("#myloc").removeClass("loc-ready-to-record");
         $("#myloc").addClass("loc-recording");
+        watch = true;
         break;
       default:
+    }
+    if (watch) {
+      loc_recording_id = navigator.geolocation.watchPosition(
+        gotLocation,
+        (err) => { // ERROR
+          console.error(`GPS watch failed (${err.message})`);
+          showWarning("GPS error", "Could not get current position", 4000);
+          setEditMode(EDIT_NONE);
+        },
+        { // OPTIONS
+          enableHighAccuracy: true,
+          timeout: 999999,
+          maximumAge: 10000,
+        }
+      )
+
     }
     showLocation = mode;
   }
 
-  function removeMyLocMarker() {
-    if ((showLocation == LOC_CONTINUOUS) || (showLocation == LOC_RECORDING)) {
-      gotoMyLocation();
-    } else {
-      setLocationMode(LOC_NONE);
+  function removeMyLocMarker(force) {
+    if (force || ((showLocation != LOC_CONTINUOUS) && (showLocation != LOC_RECORDING))) {
+      force || setLocationMode(LOC_NONE);
       if (myLocMarker) {
         myLocMarker.remove();
         myLocMarker = undefined;
@@ -2366,49 +2398,46 @@ $(function(){
     if (showIcon) {
       myLocMarker = new L.marker([pos.lat, pos.lng], { icon: myLocIcon, clickable: false });
       myLocMarker.addTo(map);
-    }
-    if (showIcon || (showLocation == LOC_CONTINUOUS) || (showLocation == LOC_RECORDING)) {
       myLocTimer = setTimeout(removeMyLocMarker, 5000);
-      if (showLocation == LOC_RECORDING) {
-        if (editMode == EDIT_NONE) {
-          track.addLatLng(new L.LatLng(pos.lat, pos.lng));
-          updateExtremities();
-        } else {
-          setLocationMode(LOC_NONE);
-        }
-      }
     } else {
       setLocationMode(LOC_NONE);
     }
   }
 
+  let isHighAccuracy;
+  function gotLocation(position) {
+    let newPt = new L.LatLng(
+      position.coords.latitude,
+      position.coords.longitude
+    );
+    console.debug(newPt);
+    if ((showLocation == LOC_ONCE) && isHighAccuracy) {
+      setLocationMode(LOC_READY_TO_RECORD);
+    } else if (showLocation == LOC_RECORDING) {
+      let lastPt = track.getLatLngs()?.slice(-1)?.at(0);
+      if (!lastPt || lastPt.distanceTo(newPt) > (pruneDist / 2)) {
+        //showWarning("Added", lastPt && lastPt.distanceTo(newPt), 2000);
+        track.addLatLng(newPt);
+      }
+    }
+    setLocation(newPt, true);
+  }
+
   function gotoMyLocation() {
 
-    let isHighAccuracy = false;
+    isHighAccuracy = false;
 
-    function gotLocation(position) {
-      console.debug(`(${position.coords.latitude}, ${position.coords.longitude})`);
-      if ((showLocation == LOC_ONCE) && isHighAccuracy) {
-        setLocationMode(LOC_READY_TO_RECORD);
-      }
-      setLocation({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      }, true);
-    }
-
-    function highAccuracyFailed() {
+    function highAccuracyFailed(err) {
       isHighAccuracy = false;
-      console.log("GPS location failed, trying low accuracy");
+      console.log(`GPS location failed, trying low accuracy (${err.message})`);
       navigator.geolocation.getCurrentPosition(
         gotLocation, lowAccuracyFailed, { maximumAge: 60000, timeout: 5000, enableHighAccuracy: false });
     }
 
-    function lowAccuracyFailed() {
-      console.log("low accuracy geolococation failed");
+    function lowAccuracyFailed(err) {
+      console.log(`low accuracy geolococation failed (${err.message})`);
       getMyIpLocation();
     }
-
 
     if (navigator.geolocation) {
       isHighAccuracy = true;
@@ -3194,14 +3223,12 @@ $(function(){
             setLocationMode(LOC_CONTINUOUS);
           } else if (showLocation == LOC_READY_TO_RECORD) {
             setLocationMode(LOC_RECORDING);
-            setEditMode(EDIT_NONE);
+            setEditMode(EDIT_RECORDING);
             // create new segment
             newSegment();
           } else if (showLocation == LOC_RECORDING) {
             setEditMode(EDIT_NONE);
             setLocationMode(LOC_NONE);
-          } else if (showLocation == LOC_ONCE) {
-            setLocationMode(LOC_CONTINUOUS);
           } else {
             setLocationMode(LOC_ONCE);
             gotoMyLocation();
