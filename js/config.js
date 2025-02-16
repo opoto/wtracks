@@ -425,34 +425,6 @@ var config = {
       },
       visible: false
     },
-    "IT Bugianen": {
-      // type: "pmtiles",
-      // url: "//maki.s3.fr-par.scw.cloud/Bugianen.pmtiles",
-      url: "//www.montagne.top/maki/Bugianen/{z}/{x}/{y}.jpg",
-      options: {
-        minZoom : 11,
-        maxZoom : 18,
-        minNativeZoom : 12,
-        maxNativeZoom : 16,
-        attribution : "&copy; CC BY-NC-SA 3.0 IT <a href='https://tartamillo.wordpress.com'>Maki</a>",
-      },
-      visible: false
-    },
-    "EU eSlope Western-Alps": {
-      overlay: true,
-      // type: "pmtiles",
-      // url: "//maps.s3.fr-par.scw.cloud/AlpsWC_eslo.pmtiles",
-      url: "//www.montagne.top/tile/AlpsWC_eslo/{z}/{x}/{y}.png",
-      options: {
-        opacity: 0.45,
-        minNativeZoom : 13,
-        maxNativeZoom : 16,
-        minZoom : 13,
-        maxZoom : 19,
-        attribution : "&copy; CC 1.0 <a href='https://github.com/eslopemap'>E.Slope</a>; &copy; <a href='https://geoservices.ign.fr/cgu-licences'>IGN</a>; &copy; <a href='http://www.datigeo-piem-download.it/direct/Geoportale/RegionePiemonte/Licenze/New/Licenza_CC40BY.pdf'>GeoPiemonte</a>; &copy; <a href='https://www.swisstopo.admin.ch/en/home/meta/conditions/geodata/ogd.html'>SwissTopo</a>",
-      },
-      visible: false
-    },
     "CH Swisstopo slopes": {
       url: "//wms.geo.admin.ch/",
       type: "wms",
@@ -469,17 +441,6 @@ var config = {
       },
       visible: false
     },
-    /* Not working anymore in Jan 2022
-    "Hills": {
-      overlay: true,
-      url: '//tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png',
-      options: {
-        maxZoom: 17,
-        attribution: 'Hillshading: SRTM3 v2 (<a href="https://www2.jpl.nasa.gov/srtm/">NASA</a>)'
-      },
-      visible: true
-    },
-    */
     "Cycling": {
       overlay: true,
       url: '//tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png',
