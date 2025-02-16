@@ -23,6 +23,7 @@ var config = {
     ovlTrackColor: "#FFAAAA",
     ovlTrackWeight: 3,
     fwdGuide: true,
+    hideWpt: false,
     wptLabel: true,
     extMarkers: true,
     recTimeAbs: false

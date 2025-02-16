@@ -142,6 +142,7 @@ $(function(){
   var pruneMaxDist = getVal("wt.pruneMaxDist", config.pruneMaxDist);
   var pruneMaxTime = getVal("wt.pruneMaxTime", config.pruneMaxTime);
   var wptLabel = getBoolVal("wt.wptLabel", config.display.wptLabel);
+  var hideWpt = getBoolVal("wt.hideWpt", config.display.hideWpt);
   var smoothLevel = getVal("wt.smoothLevel", config.smoothLevel);
 
   var fwdGuide = getBoolVal("wt.fwdGuide", config.display.fwdGuide);
@@ -609,7 +610,7 @@ $(function(){
       editLayer.removeLayer(track);
       track = undefined;
     }
-    if (waypoints) {
+    if (waypoints && !waypoints.isHidden) {
       editLayer.removeLayer(waypoints);
     }
     if (editLayer) {
@@ -622,7 +623,10 @@ $(function(){
     routeStart = undefined;
     editLayer = L.layerGroup([]).addTo(map);
     waypoints = L.featureGroup([]);
-    editLayer.addLayer(waypoints);
+    waypoints.isHidden = hideWpt;
+    if (!hideWpt) {
+      editLayer.addLayer(waypoints);
+    }
     newSegment();
     createExtremities();
     setTrackName(NEW_TRACK_NAME);
@@ -924,7 +928,7 @@ $(function(){
     wptLayer.addLayer(marker);
 
     if (wptLayer == waypoints) {
-      marker.getElement().removeAttribute("title"); // remove default HTML tooltip
+      !wptLayer.isHidden && marker.getElement().removeAttribute("title"); // remove default HTML tooltip
       setWaypointTooltip(marker);
       marker.on("click", function() {
         if (editMode == EDIT_DRAG) return;
@@ -946,6 +950,13 @@ $(function(){
       wpt.unbindTooltip();
       setWaypointTooltip(wpt);
     });
+  });
+
+  $("#hideWpt").on("change", function(){
+    hideWpt = !hideWpt;
+    saveValOpt("wt.hideWpt", hideWpt);
+    waypoints.isHidden = hideWpt;
+    hideWpt ? editLayer.removeLayer(waypoints) : editLayer.addLayer(waypoints);
   });
 
   $("#fwdGuide").on("change", function(){
@@ -1215,6 +1226,7 @@ $(function(){
     setChecked("#merge", false);
     setChecked("#apikeys-warn", !apikeyNoMore);
     setChecked("#fwdGuide", fwdGuide);
+    setChecked("#hideWpt", hideWpt);
     setChecked("#wptLabel", wptLabel);
     setChecked("#extMarkers", extMarkers);
     setChecked("#autoGrayBaseLayer", autoGrayBaseLayer);
@@ -1379,7 +1391,7 @@ $(function(){
     }
 
     // Waypoints
-    var wpts = waypoints ? waypoints.getLayers() : undefined;
+    var wpts = waypoints && !waypoints.isHidden ? waypoints.getLayers() : undefined;
     if (wpts && wpts.length > 0) {
       var i = 0;
       while (i < wpts.length) {
@@ -2487,13 +2499,13 @@ $(function(){
     var trackname = getTrackName();
     // Count points to save
     // 1. waypoints
-    var numPts = waypoints.getLayers().length;
+    var numPts = waypoints && !waypoints.isHidden ? waypoints.getLayers().length : 0;
     // 2. All segment points
     forEachSegment(function(segment) {
         numPts += segment.getLatLngs().length;
     });
-    // Don't save if more than 1500 points
-    if (numPts < 2500) {
+    // Don't save if more than 3000 points
+    if (numPts < 3000) {
       var gpx = getGPX(trackname, /*savealt*/ false, /*asroute*/ false, /*nometadata*/ false);
       saveValOpt("wt.gpx", gpx);
     }
@@ -2523,6 +2535,7 @@ $(function(){
     saveValOpt("wt.mapsCloseOnClick", mapsCloseOnClick);
     saveValOpt("wt.apikeyNoMore", apikeyNoMore);
     saveValOpt("wt.fwdGuide", fwdGuide);
+    saveValOpt("wt.hideWpt", hideWpt);
     saveValOpt("wt.wptLabel", wptLabel);
     saveValOpt("wt.extMarkers", extMarkers);
     saveValOpt("wt.autoGrayBaseLayer", autoGrayBaseLayer);
@@ -3451,8 +3464,13 @@ $(function(){
   });
   $("#" + EDIT_MARKER_ID).on("click", function(e) {
     e.preventDefault();
-    ga('send', 'event', 'edit', 'marker');
-    setEditMode(EDIT_MARKER);
+    if (waypoints && !waypoints.isHidden) {
+      ga('send', 'event', 'edit', 'marker');
+      setEditMode(EDIT_MARKER);
+    } else {
+      showWarning("Cannot edit hidden waypoints",
+        "Go to 'Settings / Display options' to unhide waypoints");
+    }
   });
   $("#" + EDIT_ADDSEGMENT_ID).on("click", function(e) {
     e.preventDefault();
@@ -3884,7 +3902,7 @@ $(function(){
           coords = f.geometry.coordinates;
           var latlng = newPoint(coords);
           newWaypoint(latlng, f.properties, wptLayer);
-          bounds.extend(latlng);
+          if (!hideWpt) bounds.extend(latlng);
         }
       }
     });
