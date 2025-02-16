@@ -961,7 +961,7 @@ $(function(){
 
   function prepareTrim() {
     var trimMax = Math.round(getTrackLength() / 2);
-    $("#trim-txt").text("");
+    $("#trim-txt").text("0/" + getTrackLength());
     $("#trim-range").attr("max", trimMax);
     $("#trim-range").val(0);
     $('.no-trim:not([class*="isdisabled"])').prop('disabled', false);
@@ -1778,9 +1778,14 @@ $(function(){
     $("#seg-editor-list").append("<ul id='segments-list'></ul>");
     segList = $("#segments-list");
     let i = 0;
+    let totalPts = 0;
     forEachSegment(function(segment) {
         addEditorSegmentItem(segment, i++);
+        const segPts = segment.getLatLngs().length;
+        console.debug(`${segment.name}: ${segPts}`);
+        totalPts += segPts;
     }, ALL_SEGMENTS);
+    console.debug(`TOTAL: ${totalPts}`);
     let hasSegments = (i > 0);
     $(".if-segments").toggle(hasSegments);
     $(".no-segments").toggle(!hasSegments);
