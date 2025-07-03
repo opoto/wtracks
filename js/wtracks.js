@@ -1343,9 +1343,9 @@ $(function(){
       gpx += "<metadata>\n";
       gpx += "  " + xmlname + "\n";
       gpx += "  <desc>" + (metadata.desc ? htmlEncode(metadata.desc) : "") + "</desc>\n";
-      gpx += "  <author><name>" + config.appname + "</name></author>\n";
+      gpx += "  <author><name>" + htmlEncode(config.appname) + "</name></author>\n";
       gpx += "  <link href='" + window.location.href + "'>\n";
-      gpx += "    <text>" + config.appname + "</text>\n";
+      gpx += "    <text>" + htmlEncode(config.appname) + "</text>\n";
       gpx += "    <type>text/html</type>\n";
       gpx += "  </link>\n";
       gpx += "  <time>" + startdate.toISOString() + "</time>\n";
@@ -1422,7 +1422,7 @@ $(function(){
       // check if it is a polyline
       gpx += "<" + wraptag + ">\n";
       if (segment.name) {
-        gpx += `  <name>${segment.name}</name>\n`;
+        gpx += `  <name>${htmlEncode(segment.name)}</name>\n`;
       }
       if (segment.color) {
         gpx += "  <extensions>\n";
