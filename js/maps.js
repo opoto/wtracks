@@ -4,7 +4,7 @@
       consentCookies, b64EncodeUnicode, b64DecodeUnicode, supportsBase64,
       saveJsonValOpt, objectForEach, arrayForEach, mapsForEach, noTranslate,
       isStateSaved, setSaveState, doAndroidChromiumTweak,
-      mymaps, MAP_MY, setMyMaps, mapsListNames,mapsListProps,
+      mymaps, MAP_MY, setMyMaps, mapsListNames, mapsListProps,
       CrsValues, renameMapListEntry, saveMapList, getMapListEntryIndex,
       addMapListEntry, delMapListEntry, getMapList, resetMapList,
       moveMapListEntry, addSelectOption, getSelectedOption,
@@ -252,7 +252,7 @@ function validateMymapBox() {
   if (valid) {
     //mymapsInputs.removeClass("invalid");
     $("#mymap-box").hide();
-    mymap[name] = undefined;
+    delete mymap.name; // discard, stored in mapsListNames
     mymap.url = $("#mymap-url").val().trim();
     mymap.type = $('input:radio[name=mymap-type]:checked').val();
     mymap.overlay = isChecked("#mymap-overlay");
