@@ -69,24 +69,41 @@ class DPaste extends PasteLib {
   static get maxTime() { return "2 months"; }
   static get maxDownloads() { return "Unlimited"; }
   static get _pingUrl() { return "https://dpaste.com"; }
+  static get _config() {
+    return {
+      "expiry_days": 60 // 1 day to 365 days (7 days is the default)
+    };
+  }
 
   static upload(name, gpx, onDone, onFail) {
     $.post( "//dpaste.com/api/v2/",
-        { "content": gpx,
+        { ...this._config,
+          "content": gpx,
           "title": name,
           "syntax": "xml",
-          "expiry_days": 60 // 1 day to 365 days (7 days is the default)
     }).done(function(data) {
-      onDone(data, data + ".txt");
+      onDone(data, data.trim() + ".txt");
     }).fail(onFail);
   }
 }
 PasteLibs.register("dpaste", DPaste);
 
- // ------------------------------------------------------------------
+// DPaste with 1d retention (for dropbox upload)
+class DPaste1D extends DPaste {
+  static get maxTime() { return "1 day"; }
+  static get _config() {
+    return {
+      "expiry_days": 1 // 1 day to 365 days (7 days is the default)
+    };
+  }
+}
+PasteLibs.register("dpaste1d", DPaste1D);
+
+// ------------------------------------------------------------------
  // HTPut
  // ------------------------------------------------------------------
 
+ // SEPT 2025: DNS not found
  class HTPut extends PasteLib {
   static get name() { return "HTPut"; }
   static get enabled() { return false; } // CORS?
@@ -214,6 +231,7 @@ PasteLibs.register("tmpfile", TmpFile);
  // file.io
  // ------------------------------------------------------------------
 
+// SEPT 2025: sold to LimeWire
 class FileIO extends PasteLib {
   static get name() { return "File.io"; }
   static get enabled() { return false; } // sharing requires more than 1 request
@@ -272,6 +290,7 @@ PasteLibs.register("fileio", FileIO);
  // transfer.sh
  // ------------------------------------------------------------------
 
+// SEPT 2025: DNS not found
 class TransferSH extends PasteLib {
   static get name() { return "transfer.sh"; }
   static get enabled() { return false; }
