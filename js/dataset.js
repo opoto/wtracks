@@ -1,5 +1,8 @@
-'use strict';
-/* globals ga, arrayForEach */
+import {
+  arrayForEach
+} from './utils.js';
+
+/* globals ga */
 
 // Data
 var datas = [
@@ -51,7 +54,7 @@ var datas = [
 
 ];
 
-function getDataset(idx) {
+export function getDataset(idx) {
   var data = datas[0].refs;
   if (idx >= 0 && idx < datas.length) {
     data = datas[idx].refs.sort(function(a, b) {
@@ -63,6 +66,6 @@ function getDataset(idx) {
   }
   return data;
 }
-function forEachDataset(fn) {
+export function forEachDataset(fn) {
   arrayForEach(datas, fn);
 }

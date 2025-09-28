@@ -1,18 +1,29 @@
-'use strict';
-/* globals
-      $, ga, L, google, Dropbox, jscolor, config, PasteLibs,
-      isCryptoSupported, aesGcmEncrypt, aesGcmDecrypt,
-      isUnset, isUndefined, jsonClone, getParameterByName, clearUrlQuery, corsUrl,
-      consentCookies, htmlEncode, strencode, strdecode, saveAs, forceReload, isSafari,
-      getBoolVal, getJsonVal, getBoolVal, getVal,
-      saveValOpt, saveJsonValOpt, storeVal, getValStorage, storedValuesForEach,
-      objectForEach, arrayForEach, arrayLast, mapsForEach,
-      roundDecimal, isNumeric, noTranslate,
-      addSelectOption, getSelectedOption, selectOption, isChecked, setChecked,
-      enableInput, setDateTimeInput, getDateTimeInput, getRealInput,
-      mymaps, mapsList, MAP_MY, getMapListEntryProps, PMTiles, getCrsFromName,
-      isStateSaved, setSaveState, getUseServiceWorker, setUseServiceWorker, initServiceWorker
-*/
+// ESM module for main wtracks application
+// Import dependencies from other modules
+import config from './config.js';
+
+import {
+  isUnset, isUndefined, jsonClone, getParameterByName, clearUrlQuery, corsUrl,
+  htmlEncode, strencode, strdecode, isSafari, getBoolVal, getJsonVal, getVal,
+  storeVal, getValStorage, storedValuesForEach, objectForEach, arrayForEach,
+  arrayLast, roundDecimal, isNumeric, noTranslate, addSelectOption,
+  getSelectedOption, selectOption, isChecked, setChecked, enableInput,
+  setDateTimeInput, getDateTimeInput, getRealInput
+} from './utils.js';
+
+import {
+  consentCookies, forceReload, saveValOpt, saveJsonValOpt, mapsForEach,
+  mymaps, mapsList, MAP_MY, getMapListEntryProps, getCrsFromName,
+  isStateSaved, setSaveState, getUseServiceWorker, setUseServiceWorker, initServiceWorker
+} from './wtracks-commons.js';
+
+import {
+  isCryptoSupported, aesGcmEncrypt, aesGcmDecrypt
+} from './encdec.js';
+
+// Dependencies loaded as globals via script tags in the HTML
+/* globals $, ga, L, google, Dropbox, jscolor, PasteLibs,
+     saveAs, PMTiles */
 
 var map;
 var track;

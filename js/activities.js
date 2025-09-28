@@ -1,25 +1,32 @@
-'use strict';
-/* globals
-      $, ga, L, config,
-      isUnset, isUndefined,
-      consentCookies, htmlEncode, b64EncodeUnicode, b64DecodeUnicode, supportsBase64,
-      getBoolVal, getJsonVal, getBoolVal, getVal,
-      saveValOpt, saveJsonValOpt, storeVal, storeJsonVal, getValStorage,
-      objectForEach, arrayForEach, arrayMove, arrayLast, mapsForEach,
-      copyOnClick, noTranslate,
-      isStateSaved, setSaveState, getSaveState, getDataset, forEachDataset,
-      addSelectOption, getSelectedOption, selectOption, addsSelectOption, isChecked, setChecked
-*/
+// ESM module for activities functionality
+// Import dependencies from other modules
+import config from './config.js';
+import {
+  isUnset, b64EncodeUnicode, b64DecodeUnicode, supportsBase64,
+  getJsonVal, storeJsonVal, objectForEach, arrayForEach, noTranslate,
+  addSelectOption, selectOption
+} from './utils.js';
 
-var polystats;
-var activity;
-var activityname;
-var activities;
+import {
+  consentCookies
+} from './wtracks-commons.js';
+
+import {
+  getDataset, forEachDataset
+} from './dataset.js';
+
+// Dependencies loaded as globals via script tags in the HTML
+/* globals $, ga, L */
+
+let polystats;
+let activity;
+let activityname;
+let activities;
 
 noTranslate();
 
 // vehicle menu
-var selectVehicle = $("#activityvehicle")[0];
+let selectVehicle = $("#activityvehicle")[0];
 
 // utility function to sort speedRefs by increasing slope
 function sortSpeedRefs(speedRefs) {
@@ -46,7 +53,7 @@ function saveActivity(name, a) {
 }
 
 // activity menu
-var selectActivity = $("#activities")[0];
+let selectActivity = $("#activities")[0];
 
 function activitiesLen() {
   return selectActivity.length;
@@ -57,7 +64,7 @@ $("#activities").change(displaySelectedActivity);
 
 // activity deletion button
 $("#activitydel").click(function() {
-  var name = $("#activities").children(':selected').val();
+  let name = $("#activities").children(':selected').val();
   if (confirm("Delete " + name + "?")) {
     ga('send', 'event', 'activity', 'delete', undefined, activitiesLen());
     activities[name] = undefined;
@@ -69,7 +76,7 @@ $("#activitydel").click(function() {
 // activity save button
 $("#activitysave").click(function() {
   ga('send', 'event', 'activity', 'save', undefined, activitiesLen());
-  var name = $("#activityname").val();
+  let name = $("#activityname").val();
   if (activity && name) {
     saveActivity(name, activity);
     displaySelectedActivity();
@@ -77,10 +84,10 @@ $("#activitysave").click(function() {
 });
 
 function moveActivity(inc) {
-  var name = $("#activities").children(':selected').val();
-  var idx = selectActivity.selectedIndex + inc;
-  var newActivities = {};
-  var i = 0;
+  let name = $("#activities").children(':selected').val();
+  let idx = selectActivity.selectedIndex + inc;
+  let newActivities = {};
+  let i = 0;
   objectForEach(activities, function(a) {
     if (i == idx) {
       newActivities[name] = activities[name];
@@ -99,9 +106,9 @@ function moveActivity(inc) {
   activities = newActivities;
   storeJsonVal("wt.activities", activities);
   // update menu
-  var curIdx = selectActivity.selectedIndex;
-  var moved = selectActivity.children[curIdx];
-  var beforeIdx = (inc == -1) ? curIdx - 1 : curIdx + 2;
+  let curIdx = selectActivity.selectedIndex;
+  let moved = selectActivity.children[curIdx];
+  let beforeIdx = (inc == -1) ? curIdx - 1 : curIdx + 2;
   selectActivity.insertBefore(moved, selectActivity.children[beforeIdx]);
   selectOption($("#activities"), name);
 }
@@ -123,7 +130,7 @@ $("#activitydown").click(function(event) {
 
 
 function exportA(json) {
-  var data = b64EncodeUnicode(json);
+  let data = b64EncodeUnicode(json);
   $("#prompt-text").text("Copy and share data below (Ctrl+C & Enter):");
   $("#prompt-ok").hide();
   $("#prompt-val").val(data);
@@ -150,7 +157,7 @@ $("#prompt-val").keyup(function(event) {
   if (event.which == 27) {
     $("#prompt").hide();
   } else if (event.keyCode == 13) {
-    var isImport = $("#prompt-ok").is(":visible");
+    let isImport = $("#prompt-ok").is(":visible");
     if (isImport) {
       importA();
     } else {
@@ -163,12 +170,12 @@ $("#prompt-ok").click(importA);
 
 function importA() {
   $("#import-error").hide();
-  var data = $("#prompt-val").val();
-  var imported = false;
+  let data = $("#prompt-val").val();
+  let imported = false;
   try {
-    var importedActivities = JSON.parse(b64DecodeUnicode(data));
+    let importedActivities = JSON.parse(b64DecodeUnicode(data));
     objectForEach(importedActivities, function(a) {
-      var msg = activities[a] ? "Overwrite " : "Import ";
+      let msg = activities[a] ? "Overwrite " : "Import ";
       if (confirm(msg + a + "?")) {
         activities[a] = importedActivities[a];
         imported = true;
@@ -187,12 +194,12 @@ function importA() {
 
 $("#activityexportall").click(function() {
   ga('send', 'event', 'activity', 'export-all', undefined, activitiesLen());
-  var str = JSON.stringify(activities);
+  let str = JSON.stringify(activities);
   exportA(str);
 });
 $("#activityexport").click(function() {
   ga('send', 'event', 'activity', 'export', undefined, activitiesLen());
-  var str = "{\"" + activityname + "\":" + JSON.stringify(activity) + "}";
+  let str = "{\"" + activityname + "\":" + JSON.stringify(activity) + "}";
   exportA(str);
 });
 $("#activityimport").click(function() {
@@ -220,7 +227,7 @@ function createActivity(vehicle, method, params) {
 // and some defaults activity parameters
 $("#activitynew").click(function() {
   ga('send', 'event', 'activity', 'new', undefined, activitiesLen());
-  var index = 1;
+  let index = 1;
   activityname = "New";
   while (activities[activityname]) {
     ++index;
@@ -240,13 +247,13 @@ $("#activityreset").click(function() {
 });
 
 function refSpeedInput(val, col) {
-  var rs = document.createElement("input");
+  let rs = document.createElement("input");
   rs.setAttribute("type", "text");
   rs.setAttribute("value", val);
   rs.onkeyup = function() {
     // compute parameter index
     // (it may have changed since lines may have been deleted)
-    var rowIdx = $(this).closest("tr").index();
+    let rowIdx = $(this).closest("tr").index();
     activity.speedprofile.parameters[rowIdx][col] = parseFloat(this.value);
     displaySpeedProfile(activity.speedprofile);
   };
@@ -260,19 +267,19 @@ function delRefSpeed(i) {
 }
 
 function addRefSpeedLine(i) {
-  var p = activity.speedprofile.parameters[i];
+  let p = activity.speedprofile.parameters[i];
   $("#spformula table tbody").append("<tr><td></td><td></td></tr>");
-  var tr = $("#spformula table tbody tr:last-of-type()")[0];
+  let tr = $("#spformula table tbody tr:last-of-type()")[0];
   $(tr.children[0]).append(refSpeedInput(p[0], 0));
   $(tr.children[1]).append(refSpeedInput(p[1], 1));
-  var delrs = document.createElement("a");
+  let delrs = document.createElement("a");
   delrs.setAttribute("href", "#");
   delrs.setAttribute("class", "btn-link");
   delrs.innerHTML = "×";
   delrs.addEventListener("click", function(e) {
     // compute parameter index
     // (it may have changed since lines may have been deleted)
-    var index = $(this).closest("tr").index();
+    let index = $(this).closest("tr").index();
     delRefSpeed(index);
     e.preventDefault();
   });
@@ -280,8 +287,8 @@ function addRefSpeedLine(i) {
 }
 
 function addRefSpeed() {
-  var p = activity.speedprofile.parameters;
-  var i = p.length;
+  let p = activity.speedprofile.parameters;
+  let i = p.length;
   p.push([0, 0]);
   addRefSpeedLine(i);
   displaySpeedProfile(activity.speedprofile);
@@ -301,7 +308,7 @@ function genericSpFormula() {
   });
 }
 
-var spFormula = {};
+let spFormula = {};
 spFormula[L.PolyStats.REFSPEEDS] = {
   defaultFormulaParams: [
     [-35, 0.4722], [-20, 0.6944], [-12, 0.9722], [-10, 1.1111], [-6, 1.25],
@@ -314,7 +321,7 @@ spFormula[L.PolyStats.REFSPEEDS] = {
     arrayForEach(activity.speedprofile.parameters, function(idx, params) {
       addRefSpeedLine(idx);
     });
-    var addrs = document.createElement("a");
+    let addrs = document.createElement("a");
     addrs.setAttribute("href", "#");
     addrs.setAttribute("class", "btn-link");
     addrs.innerHTML = "+";
@@ -344,10 +351,10 @@ spFormula[L.PolyStats.POWER] = {
 spFormula[L.PolyStats.POLYNOMIAL] = {
   defaultFormulaParams: [1.1, -0.1, -0.001],
   displayFormulaParams: function() {
-    var i = 0;
-    var html = "";
+    let i = 0;
+    let html = "";
     while (i < activity.speedprofile.parameters.length) {
-      var param = "<input id='p" + i + "' type='text'/>";
+      let param = "<input id='p" + i + "' type='text'/>";
       if (i > 0) {
         param += " * slope";
         if (i > 1) {
@@ -364,7 +371,7 @@ spFormula[L.PolyStats.POLYNOMIAL] = {
 };
 
 function displayFormula(method) {
-  var spf = spFormula[method];
+  let spf = spFormula[method];
   if (!spf) {
     window.onerror("No speed profile for " + method, "activities.js", "displayFormula", "-");
     return;
@@ -397,7 +404,7 @@ function displaySelectedActivity() {
   activityname = $("#activities").children(':selected').val();
   if (activityname) {
     // clone a copy to edit
-    var a = activities[activityname];
+    let a = activities[activityname];
     activity = createActivity(a.vehicle, a.speedprofile.method,
       a.speedprofile.parameters);
       displayActivity();
@@ -406,29 +413,29 @@ function displaySelectedActivity() {
 
 /*** display speed profile graph ***/
 
-var importfnname;
-var inputdata;
-var refspeeds;
-var speedprofile;
+let importfnname;
+let inputdata;
+let refspeeds;
+let speedprofile;
 
 
 function displaySpeedProfile(sp) {
 
   // draw line from profile
-  var speedline = [];
-  var minslope = -40;
-  var maxslope = 40;
+  let speedline = [];
+  let minslope = -40;
+  let maxslope = 40;
   if (refspeeds && refspeeds.length > 1) {
     minslope = refspeeds[0][0];
     maxslope = refspeeds[refspeeds.length - 1][0];
   }
-  var incslope = (maxslope - minslope) / 20;
-  for (var slope = minslope; slope <= maxslope; slope += incslope) {
+  let incslope = (maxslope - minslope) / 20;
+  for (let slope = minslope; slope <= maxslope; slope += incslope) {
     speedline.push([slope, polystats.getSpeed(slope, sp)]);
   }
 
   // Plot graph
-  var data = [];
+  let data = [];
   if (refspeeds) {
     data.push({
       data: refspeeds,
@@ -453,10 +460,10 @@ function computeSpeedProfile() {
     return;
   }
 
-  var method = $("#method option:selected").val();
-  var degree = Number($("#degree option:selected").val());
-  var iterations = Number($("#iterations option:selected").val());
-  var pruning = Number($("#pruning option:selected").val());
+  let method = $("#method option:selected").val();
+  let degree = Number($("#degree option:selected").val());
+  let iterations = Number($("#iterations option:selected").val());
+  let pruning = Number($("#pruning option:selected").val());
 
   activity.speedprofile = polystats[importfnname](inputdata, method, iterations, pruning, degree);
 
@@ -470,7 +477,7 @@ function computeSpeedProfile() {
 $("#method").change(updateMethod);
 
 function updateMethod() {
-  var method = $("#method option:selected").val();
+  let method = $("#method option:selected").val();
   displayFormula(method);
   displaySpeedProfile(activity.speedprofile);
 }
@@ -479,7 +486,7 @@ function updateMethod() {
 function importGeoJson(geojson) {
   importfnname = "computeSpeedProfileFromTrack";
   inputdata = geojson;
-  var sp = polystats[importfnname](inputdata, L.PolyStats.REFSPEEDS);
+  let sp = polystats[importfnname](inputdata, L.PolyStats.REFSPEEDS);
   refspeeds = sp.refspeeds;
   displaySpeedProfile(activity.speedprofile);
 }
@@ -487,7 +494,7 @@ function importGeoJson(geojson) {
 /********* speed profile from reference speeds *********/
 
 function changeData() {
-  var dataidx = $("#data option:selected").val();
+  let dataidx = $("#data option:selected").val();
   if (!isUnset(dataidx)) {
     refspeeds = inputdata = getDataset(dataidx);
   }
@@ -510,7 +517,7 @@ function resetComputeParams() {
   selectOption($("#pruning"), "0.3");
 }
 
-var wtReady = false;
+let wtReady = false;
 // on ready event (HTML + scripts loaded and executed):
 $(function(){
   if (wtReady) {
@@ -532,7 +539,7 @@ $(function(){
   }
 
   /*** dummy track required for polystats ***/
-  var track = L.polyline([]);
+  let track = L.polyline([]);
   polystats = L.polyStats(track, {
     chrono: true
   });
@@ -548,14 +555,14 @@ $(function(){
     addSelectOption(selectActivity, activity);
   });
 
-  var selectdata = $("#data")[0];
+  let selectdata = $("#data")[0];
   forEachDataset(function(idx, data) {
     addSelectOption(selectdata, idx, data.name);
   });
 
   displaySelectedActivity();
 
-  var fileloader = L.FileLayer.fileLoader(undefined, {
+  let fileloader = L.FileLayer.fileLoader(undefined, {
     layer: importGeoJson,
     addToMap: false,
     fileSizeLimit: 1024 * 1024,
@@ -563,7 +570,7 @@ $(function(){
   });
   $("#trackfile").change(function() {
     selectOption($("#data"), "none");
-    var file = $("#trackfile")[0].files[0];
+    let file = $("#trackfile")[0].files[0];
     fileloader.load(file);
   });
 
