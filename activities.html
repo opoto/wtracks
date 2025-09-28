@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <link rel="shortcut icon" href="img/favicon.ico" />
+  <link rel="shortcut icon" href="img/favicon.ico">
   <meta charset='utf-8'>
   <meta http-equiv="x-ua-compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width,height=device-height, user-scalable=no" />
+  <meta name="viewport" content="width=device-width,height=device-height, user-scalable=no">
   <META name="keywords" content="Leaflet, OpenStreetMap, GPX, GPS, speed, regression, GIS, outdoor">
   <link rel="manifest" href="./manifest.json">
   <!-- Google Material design fontss -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <title>Speed profile editor</title>
   <script defer src= "js/jquery.min.js"></script>
@@ -21,14 +21,10 @@
   <!-- File upload -->
   <script defer src= "js/togeojson.js"></script>
   <script defer src= "js/leaflet.filelayer.js"></script>
-  <link rel="stylesheet" href="css/activities.css" />
+  <link rel="stylesheet" href="css/activities.css">
 
-  <script defer src="js/dataset.js"></script>
-  <script defer src="js/config.js"></script>
-  <script defer src="js/utils.js"></script>
   <script defer src="js/no-ie.js"></script>
-  <script defer src="js/wtracks-commons.js"></script>
-  <script defer src="js/activities.js"></script>
+  <script src="js/activities.js" type="module"></script>
 
 </head>
 
@@ -54,7 +50,7 @@
       <div class="prompt-content">
         <a href="#" id="prompt-close" class="btn-link">×</a>
         <p id="prompt-text"></p>
-        <input id="prompt-val" type="text" size="50" value="" />
+        <input id="prompt-val" type="text" size="50" value="">
         <p id="import-error" class="status-error">Invalid input! Value must be a previously exported activity value.</p>
         <button id="prompt-ok">Ok</button>
 
@@ -94,7 +90,7 @@
       <table class="form">
         <tr>
           <td>Name:</td>
-          <td><input type="text" id="activityname" placeholder="Activity's name" /></td>
+          <td><input type="text" id="activityname" placeholder="Activity's name"></td>
         </tr>
         <tr>
           <td>Routing vehicule:</td>

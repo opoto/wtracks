@@ -1,6 +1,3 @@
-'use strict';
-/* globals crypto */
-
 /*
  * Simple lib to encrypt / decrypt a text with a password. Encrypted form is base64 encoded.
  * Requires WebCrypto API, TextEncoder/TextDecoder and Promise (>= ES6)
@@ -10,8 +7,8 @@
 /**
  * Check if required dependencies are available
  */
-function isCryptoSupported() {
-  var supported = false;
+export function isCryptoSupported() {
+  let supported = false;
   try {
     supported = crypto && crypto.subtle && crypto.subtle.importKey && crypto.subtle.digest &&
       crypto.getRandomValues && crypto.subtle.encrypt && crypto.subtle.decrypt &&
@@ -37,15 +34,15 @@ function isCryptoSupported() {
   *   var ciphertext = await aesGcmEncrypt('my secret text', 'pw');
   *   aesGcmEncrypt('my secret text', 'pw').then(function(ciphertext) { console.log(ciphertext); });
   */
-function aesGcmEncrypt(plaintext, password) {
+export function aesGcmEncrypt(plaintext, password) {
   return new Promise(function (resolve, reject) {
-    var pwUtf8 = new TextEncoder().encode(password);                                 // encode password as UTF-8
-    var alg = { name: 'AES-GCM' };
+    const pwUtf8 = new TextEncoder().encode(password);                                 // encode password as UTF-8
+    let alg = { name: 'AES-GCM' };
 
     return crypto.subtle.digest('SHA-256', pwUtf8)                                     // hash the password
     .then( function(pwHash) {
 
-      var iv = crypto.getRandomValues(new Uint8Array(12));                           // get 96-bit random iv
+      const iv = crypto.getRandomValues(new Uint8Array(12));                           // get 96-bit random iv
 
       alg.iv = iv;                                                                     // specify algorithm to use
 
@@ -54,17 +51,17 @@ function aesGcmEncrypt(plaintext, password) {
     })
     .then( function(key) {
 
-      var ptUint8 = new TextEncoder().encode(plaintext);                             // encode plaintext as UTF-8
+      const ptUint8 = new TextEncoder().encode(plaintext);                             // encode plaintext as UTF-8
       return crypto.subtle.encrypt(alg, key, ptUint8);                                 // encrypt plaintext using key
 
     })
     .then( function(ctBuffer) {
 
-      var ctArray = Array.from(new Uint8Array(ctBuffer));                            // ciphertext as byte array
-      var ctStr = ctArray.map(function(byte) { return String.fromCharCode(byte); } ).join('');           // ciphertext as string
-      var ctBase64 = btoa(ctStr);                                                    // encode ciphertext as base64
+      const ctArray = Array.from(new Uint8Array(ctBuffer));                            // ciphertext as byte array
+      const ctStr = ctArray.map(function(byte) { return String.fromCharCode(byte); } ).join('');           // ciphertext as string
+      const ctBase64 = btoa(ctStr);                                                    // encode ciphertext as base64
 
-      var ivHex = Array.from(alg.iv).map(function(b) { return ('00' + b.toString(16)).slice(-2); } ).join(''); // iv as hex string
+      const ivHex = Array.from(alg.iv).map(function(b) { return ('00' + b.toString(16)).slice(-2); } ).join(''); // iv as hex string
 
       resolve({ iv:ivHex, ciphertext:ctBase64 });                                      // return {iv,ciphertext}
 
@@ -83,33 +80,43 @@ function aesGcmEncrypt(plaintext, password) {
   * @returns {String} Decrypted plaintext.
   *
   * @example
-  *   var plaintext = await aesGcmDecrypt(ciphertext, 'pw');
+  *   let plaintext = await aesGcmDecrypt(ciphertext, 'pw');
   *   aesGcmDecrypt(ciphertext, 'pw').then(function(plaintext) { console.log(plaintext); });
   */
-function aesGcmDecrypt(ciphertext, iv, password) {
+export function aesGcmDecrypt(ciphertext, iv, password) {
   return new Promise(function (resolve, reject) {
-    var pwUtf8 = new TextEncoder().encode(password);                                 // encode password as UTF-8
-    var alg = { name: 'AES-GCM' };
-    return crypto.subtle.digest('SHA-256', pwUtf8)                                     // hash the password
+    // encode password as UTF-8
+    const pwUtf8 = new TextEncoder().encode(password);
+    let alg = { name: 'AES-GCM' };
+    // hash the password
+    return crypto.subtle.digest('SHA-256', pwUtf8)
     .then(function(pwHash){
 
-      iv = iv.match(/.{2}/g).map(function(byte) { return parseInt(byte, 16); });                          // convert iv to bytes
+      // convert iv to bytes
+      iv = iv.match(/.{2}/g).map(function(byte) { return parseInt(byte, 16); });
 
-      alg.iv = new Uint8Array(iv);                                                     // specify algorithm to use
+      // specify algorithm to use
+      alg.iv = new Uint8Array(iv);
 
-      return crypto.subtle.importKey('raw', pwHash, alg, false, ['decrypt']);          // use pw to generate key
+              // use pw to generate key
+      return crypto.subtle.importKey('raw', pwHash, alg, false, ['decrypt']);
 
     })
     .then(function(key){
-      var ctStr = atob(ciphertext);                                                  // decode base64 ciphertext
-      var ctUint8 = new Uint8Array(ctStr.match(/[\s\S]/g).map(function(ch) { return ch.charCodeAt(0); } ));// ciphertext as Uint8Array
+      // decode base64 ciphertext
+      const ctStr = atob(ciphertext);
+      // ciphertext as Uint8Array
+      const ctUint8 = new Uint8Array(ctStr.match(/[\s\S]/g).map(function(ch) { return ch.charCodeAt(0); } ));
 
-      return crypto.subtle.decrypt(alg, key, ctUint8);                                 // decrypt ciphertext using key
+      // decrypt ciphertext using key
+      return crypto.subtle.decrypt(alg, key, ctUint8);
     })
     .then(function(plainBuffer){
-      var plaintext = new TextDecoder().decode(plainBuffer);                         // decode password from UTF-8
+      // decode password from UTF-8
+      const plaintext = new TextDecoder().decode(plainBuffer);
 
-      resolve(plaintext);                                                              // return the plaintext
+      // return the plaintext
+      resolve(plaintext);
     });
   });
 }

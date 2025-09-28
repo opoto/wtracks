@@ -2,10 +2,10 @@
 <html>
 
 <head>
-  <link rel="shortcut icon" href="img/favicon.ico" />
+  <link rel="shortcut icon" href="img/favicon.ico">
   <meta charset='utf-8'>
   <meta http-equiv="x-ua-compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width,height=device-height, user-scalable=no" />
+  <meta name="viewport" content="width=device-width,height=device-height, user-scalable=no">
   <META name="keywords" content="Leaflet, OpenStreetMap, GPX, GPS, speed, regression, GIS, outdoor">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self';
     style-src 'self' 'unsafe-inline' https://cdn.rawgit.com https://cdnjs.cloudflare.com https://fonts.googleapis.com;
@@ -18,7 +18,7 @@
     object-src 'none'">
   <link rel="manifest" href="./manifest.json">
   <!-- Google Material design fontss -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <title>Maps editor</title>
   <script defer src="js/jquery.min.js"></script>
@@ -26,14 +26,11 @@
   <script defer src="js/leaflet.wmts.js"></script>
   <script defer src="js/draganddrop.js"></script>
 
-  <link rel="stylesheet" href="css/draganddrop.css" />
-  <link rel="stylesheet" href="css/wtracks.css" />
+  <link rel="stylesheet" href="css/draganddrop.css">
+  <link rel="stylesheet" href="css/wtracks.css">
 
-  <script defer src="js/config.js"></script>
-  <script defer src="js/utils.js"></script>
   <script defer src="js/no-ie.js"></script>
-  <script defer src="js/wtracks-commons.js"></script>
-  <script defer src="js/maps.js"></script>
+  <script src="js/maps.js" type="module"></script>
 </head>
 
 <body>
@@ -50,7 +47,7 @@
         <span id="exportv" class="help-b material-icons" title="Help">help_outline</span>
       </p>
       <i class="material-icons copyonclick" title="Copy link" data-copyonclick-from="export-val">filter_none</i>
-      <input id="export-val" type="text" size="50" value="" readonly="readonly"/>
+      <input id="export-val" type="text" size="50" value="" readonly="readonly">
       <p id="exportv-help" class="help-p">
         To use this link, simply paste it in the address bar of a web browser.
         WTracks will ask for confirmation before importing each map in local browser storage.
@@ -66,7 +63,7 @@
 
       <div id="import-input">
         <p id="input-text">Paste exported map data:</p>
-        <input id="input-val" type="text" size="50" value="" />
+        <input id="input-val" type="text" size="50" value="">
         <p id="input-error" class="status-error">Invalid input! Value must be a previously exported map value.</p>
         <p id="input-error-url" class="status-error">Invalid input! Is it too long for a URL?
           Paste the value again in the input field above and retry.</p>
@@ -130,21 +127,21 @@
           </tr>
           <tr>
             <td>Name: </td>
-            <td><input id="mymap-name" type="text" value="" required placeholder="Required" pattern="\S.*"/></td>
+            <td><input id="mymap-name" type="text" value="" required placeholder="Required" pattern="\S.*"></td>
           </tr>
           <tr>
             <td>Type: </td>
             <td>
-              <label><input name="mymap-type" type="radio" value="base" checked="checked"/> Base</label>
-              <label><input name="mymap-type" type="radio" value="wms"/> WMS</label>
-              <label><input name="mymap-type" type="radio" value="wmts"/> WMTS</label>
-              <label><input name="mymap-type" type="radio" value="pmtiles"/> PMTiles</label>
+              <label><input name="mymap-type" type="radio" value="base" checked="checked"> Base</label>
+              <label><input name="mymap-type" type="radio" value="wms"> WMS</label>
+              <label><input name="mymap-type" type="radio" value="wmts"> WMTS</label>
+              <label><input name="mymap-type" type="radio" value="pmtiles"> PMTiles</label>
             </td>
           </tr>
           <tr>
             <td>Overlay: </td>
             <td>
-              <input id="mymap-overlay" type="checkbox"/>
+              <input id="mymap-overlay" type="checkbox">
             </td>
           </tr>
           <tr>
@@ -154,7 +151,7 @@
               :
             </td>
             <td>
-              <input id="mymap-url" type="text" value="" required placeholder="Required, https or // URL" pattern="(http(s)?:)?\/\/\S+"/>
+              <input id="mymap-url" type="text" value="" required placeholder="Required, https or // URL" pattern="(http(s)?:)?\/\/\S+">
               <p id="mapurl-help" class="help-p">
                 Because this site is hosted using https, http URL will not work.
                 Your URL will not be sent to WTracks server. Only enter URL with credentials on your personal devices,
@@ -165,20 +162,20 @@
           <tr>
             <td>Zoom: </td>
             <td>
-              <input id="mymap-minz" type="text" size="2" value="" pattern="([1-2][0-9]|[1-9])"/> to
-              <input id="mymap-maxz" type="text" size="2" value="" required pattern="([1-2][0-9]|[1-9])"/>
+              <input id="mymap-minz" type="text" size="2" value="" pattern="([1-2][0-9]|[1-9])"> to
+              <input id="mymap-maxz" type="text" size="2" value="" required pattern="([1-2][0-9]|[1-9])">
             </td>
           </tr>
           <tr class="map-wms">
             <td>Layers: </td>
             <td>
-              <input id="mymap-layers" type="text" size="50" placeholder="Required" required pattern="\S.*" value="" />
+              <input id="mymap-layers" type="text" size="50" placeholder="Required" required pattern="\S.*" value="">
             </td>
           </tr>
           <tr class="map-wmts">
             <td>Layer: </td>
             <td><input id="mymap-layer" type="text" size="50" placeholder="Required" required
-                value="" /></td>
+                value=""></td>
           </tr>
           <tr class="map-wmts map-wms">
             <td></td>
@@ -199,27 +196,27 @@
           </tr>
           <tr class="map-wmts">
             <td>Tile Matrix Set: </td>
-            <td><input id="mymap-tilematrixSet" type="text" size="50" value="" /></td>
+            <td><input id="mymap-tilematrixSet" type="text" size="50" value=""></td>
           </tr>
           <tr class="map-wms">
             <td>CRS: </td>
-            <td><select id="mymap-crs"/></td>
+            <td><select id="mymap-crs"></select></td>
           </tr>
           <tr class="map-wms">
             <td>Styles: </td>
-            <td><input id="mymap-styles" type="text" size="50" value="" /></td>
+            <td><input id="mymap-styles" type="text" size="50" value=""></td>
           </tr>
           <tr class="map-wmts">
             <td>Style: </td>
-            <td><input id="mymap-style" type="text" size="50" value="" /></td>
+            <td><input id="mymap-style" type="text" size="50" value=""></td>
           </tr>
           <tr class="map-wms map-wmts">
             <td>Format: </td>
-            <td><input id="mymap-format" type="text" size="50" value="" /></td>
+            <td><input id="mymap-format" type="text" size="50" value=""></td>
           </tr>
           <tr>
             <td><i class="material-icons symbol">copyright</i>: </td>
-            <td><input id="mymap-attr" type="text" placeholder="Map attributions and copyright" size="50" value="" /></td>
+            <td><input id="mymap-attr" type="text" placeholder="Map attributions and copyright" size="50" value=""></td>
           </tr>
           <tr>
             <td></td>

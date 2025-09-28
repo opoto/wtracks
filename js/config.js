@@ -1,8 +1,9 @@
-'use strict';
-/* globals strdecode */
+// ESM module for application configuration
+// Import dependencies from other modules
+import { strdecode } from './utils.js';
 
-// eslint-disable-next-line no-unused-vars
-var config = {
+// Main application configuration
+const config = {
   appname: "WTracks",
   email: {
     name: "olivier.potonniee",
@@ -471,3 +472,5 @@ var config = {
     }
   }
 };
+
+export default config;

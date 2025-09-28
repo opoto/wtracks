@@ -1,25 +1,37 @@
-'use strict';
-/* globals
-      $, ga, L, config, initGoogleAnalytics,
-      getBoolVal, getJsonVal, getVal, storeVal, storeJsonVal, getValStorage,
-      objectForEach, arrayForEach, arrayMove,
-      copyOnClick
-*/
+// ESM module for wtracks common functionality
+// Import dependencies from other modules
+import config from './config.js';
+import {
+  getBoolVal, getJsonVal, getVal, storeVal, storeJsonVal, getValStorage,
+  objectForEach, arrayForEach, arrayMove, copyOnClick, initGoogleAnalytics,
+  setEmailListener
+} from './utils.js';
+
+// Dependencies loaded as globals via script tags in the HTML
+/* globals $, ga, L */
 
 if (config.google && config.google.analyticsid) {
   initGoogleAnalytics(config.google.analyticsid(), config.google.gtagid && config.google.gtagid());
 }
 
+if (config.email && config.email.selector) {
+  setEmailListener(config.email.selector, config.email.name,
+    config.email.domain, config.email.subject);
+}
+
 /* ---------------------- Start service worker ------------------------ */
 
 let useServiceWorker = getBoolVal("wt.useServiceWorker", config.useServiceWorker);
-function getUseServiceWorker() {
+
+export function getUseServiceWorker() {
   return useServiceWorker;
 }
-function setUseServiceWorker(v) {
+
+export function setUseServiceWorker(v) {
   useServiceWorker = v;
 }
-function initServiceWorker(isLoaded) {
+
+export function initServiceWorker(isLoaded) {
   function registerSW() {
     navigator.serviceWorker.register('./service-worker.js');
   }
@@ -44,7 +56,7 @@ function initServiceWorker(isLoaded) {
 }
 initServiceWorker();
 
-function forceReload() {
+export function forceReload() {
   $.ajax(
     { url: window.location.toString(),
       headers:{ 'Cache-Control': 'no-cache, no-store, must-revalidate' }
@@ -60,32 +72,34 @@ function forceReload() {
   });
 }
 
-function saveValOpt(name, val) {
+export function saveValOpt(name, val) {
   if (config.saveprefs() && isStateSaved()) {
     storeVal(name, val);
   }
 }
 
-function saveJsonValOpt(name, val) {
+export function saveJsonValOpt(name, val) {
   if (config.saveprefs() && isStateSaved()) {
     storeJsonVal(name, val);
   }
 }
 
-function getStateSaved() {
+export function getStateSaved() {
   return getVal("wt.saveState", getValStorage() ? "true" : "false");
 }
-function isStateSaved() {
+
+export function isStateSaved() {
   return getStateSaved() === "true";
 }
-function setSaveState(saveCfg) {
+
+export function setSaveState(saveCfg) {
   if (isStateSaved() != saveCfg) {
     ga('send', 'event', 'setting', saveCfg ? 'save-on' : 'save-off');
     storeVal("wt.saveState", saveCfg ? "true" : "false");
   }
 }
 
-function consentCookies() {
+export function consentCookies() {
   if (!getValStorage()) return; // skip if cookies are blocked
   var now = new Date();
   var EXPIRATION = Math.round(1000*60*60*24*30.5*18); // 18 months in ms
@@ -106,7 +120,7 @@ function consentCookies() {
 }
 
 /* help buttons */
-function toggleHelp(e) {
+export function toggleHelp(e) {
   $("#" + e.target.id + "-help").toggle();
   $("." + e.target.id + "-help").toggle();
   e.stopPropagation();
@@ -116,7 +130,7 @@ $(".help-b").click(toggleHelp);
 
 copyOnClick(".copyonclick");
 
-var CrsValues = [
+export const CrsValues = [
   null,
   L.CRS.EPSG3395,
   L.CRS.EPSG3857,
@@ -124,7 +138,7 @@ var CrsValues = [
   L.CRS.EPSG900913
 ];
 
-function getCrsFromName(crsname) {
+export function getCrsFromName(crsname) {
   for (var i = CrsValues.length - 1; i >=0; i--) {
     var crs = CrsValues[i];
     if (crs && crs.code == crsname) {
@@ -134,7 +148,7 @@ function getCrsFromName(crsname) {
   return undefined;
 }
 
-function getCrsName(crs) {
+export function getCrsName(crs) {
   for (var i = CrsValues.length - 1; i >=0; i--) {
     if (CrsValues[i] == crs) {
       return CrsValues[i] ? CrsValues[i].code : "";
@@ -144,19 +158,19 @@ function getCrsName(crs) {
 }
 
 // ------------------------ Maps Configuration
-var mymaps = getJsonVal("wt.mymaps", {});
-var mapsList = getJsonVal("wt.mapslist", [[], []]);
-var mapsListNames = mapsList[0];
-var mapsListProps = mapsList[1];
+export let mymaps = getJsonVal("wt.mymaps", {});
+export let mapsList = getJsonVal("wt.mapslist", [[], []]);
+export let mapsListNames = mapsList[0];
+export let mapsListProps = mapsList[1];
 
-var MAP_DEF = '0';
-var MAP_MY = '1';
+export const MAP_DEF = '0';
+export const MAP_MY = '1';
 
-function setMyMaps(newMyMaps) {
+export function setMyMaps(newMyMaps) {
   mymaps = newMyMaps;
 }
 
-function addMapListEntry(name, _in, _on) {
+export function addMapListEntry(name, _in, _on) {
   mapsListNames.push(name);
   var props = {
     'in': _in,
@@ -166,43 +180,43 @@ function addMapListEntry(name, _in, _on) {
   return props;
 }
 
-function delMapListEntry(idx) {
+export function delMapListEntry(idx) {
   if (idx >=0) {
     mapsListNames.splice(idx, 1);
     mapsListProps.splice(idx, 1);
   }
 }
 
-function moveMapListEntry(from, to) {
+export function moveMapListEntry(from, to) {
   arrayMove(mapsListNames, from, to);
   arrayMove(mapsListProps, from, to);
 }
 
-function getMapListEntryIndex(name) {
+export function getMapListEntryIndex(name) {
   return mapsListNames.indexOf(name);
 }
 
-function getMapListEntryProps(name) {
+export function getMapListEntryProps(name) {
   var idx = mapsListNames.indexOf(name);
   return idx >= 0 ?
     mapsListProps[idx] :
     undefined;
 }
 
-function renameMapListEntry(oldname, newname) {
+export function renameMapListEntry(oldname, newname) {
   var idx = getMapListEntryIndex(oldname);
   if (idx >=0) {
     mapsListNames[idx] = newname;
   }
 }
 
-function resetMapList() {
+export function resetMapList() {
   mapsList = [[], []];
   mapsListNames = mapsList[0];
   mapsListProps = mapsList[1];
 }
 
-function getMapList() {
+export function getMapList() {
   if (mapsListNames.length) {
     // check my maps
     objectForEach(mymaps, function(name) {
@@ -237,12 +251,15 @@ function getMapList() {
   }
   saveMapList();
 }
-function saveMapList() {
+
+export function saveMapList() {
   saveJsonValOpt("wt.mapslist", mapsList);
 }
+
+// Initialize maps on module load
 getMapList();
 
-function mapsForEach(func) {
+export function mapsForEach(func) {
   arrayForEach(mapsListNames, function(idx) {
     var name = mapsListNames[idx];
     var prop = mapsListProps[idx];
@@ -253,7 +270,7 @@ function mapsForEach(func) {
 // --------------------------------------------
 //  Draggable items list: Workaround for Android Chrome display bug
 
-var isAndroidChromium = false;
+export let isAndroidChromium = false;
 if (navigator.userAgentData && navigator.userAgentData.platform == 'Android') {
   arrayForEach(navigator.userAgentData.brands, function(i, brand) {
     if (brand.brand == "Chromium") {
@@ -263,7 +280,7 @@ if (navigator.userAgentData && navigator.userAgentData.platform == 'Android') {
   });
 }
 
-function doAndroidChromiumTweak(item) {
+export function doAndroidChromiumTweak(item) {
   if (isAndroidChromium) {
     item.css("display", "inline-block");
   }

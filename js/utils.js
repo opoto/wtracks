@@ -1,43 +1,45 @@
-'use strict';
-/* globals $, ga, dataLayer, config */
+// ESM module for utility functions
+
+// Dependencies are loaded as globals via script tags in the HTML
+/* globals $, ga */
 
 /* ----------------------- Testing values and types ---------------------- */
 
-function isNumeric(obj) {
+export function isNumeric(obj) {
   return isFinite(String(obj));
 }
 
-function isUndefined(v) {
+export function isUndefined(v) {
   return typeof v === "undefined";
 }
 
-function isUnset(v) {
+export function isUnset(v) {
   return (typeof v === "undefined") || (v === null);
 }
 
-function roundDecimal(number, decimals) {
+export function roundDecimal(number, decimals) {
   const coef = Math.pow(10, decimals);
   return Math.round(number * coef) / coef;
 }
 
 /* ----------------------- Html encode/decode ---------------------- */
 
-function htmlEncode(txt) {
+export function htmlEncode(txt) {
   return $('<div/>').text(txt).html();
 }
-function htmlDecode(html) {
+export function htmlDecode(html) {
     return $('<div/>').html(html).text();
 }
 
 /* ----------------------- Browser utilities ---------------------- */
 
 // is current bowser safari?
-function isSafari() {
+export function isSafari() {
   return /^((?!chrome|android|ubuntu).)*safari/i.test(navigator.userAgent);
 }
 
 // Extract URL parameters from current location, or optLocation if set
-function getParameterByName(name, defaultValue, optLocation) {
+export function getParameterByName(name, defaultValue, optLocation) {
   let val;
   if (window.URLSearchParams) {
     val = new URLSearchParams(optLocation ? optLocation : window.location.search).get(name);
@@ -49,17 +51,17 @@ function getParameterByName(name, defaultValue, optLocation) {
 }
 
 // Remove query parameters from URL if it has some
-function clearUrlQuery() {
+export function clearUrlQuery() {
   if (window.location.search && window.history && window.history.pushState) {
     window.history.pushState({}, document.title, window.location.pathname);
   }
 }
 
-function jsonClone(obj) {
+export function jsonClone(obj) {
   return $.extend(true, {}, obj);
 }
 
-function noTranslate(selector) {
+export function noTranslate(selector) {
     // default selector
     selector = selector ? selector : ".material-icons";
     $(selector).addClass("notranslate");
@@ -69,7 +71,7 @@ function noTranslate(selector) {
 /* ------------------ Html utils -------------------- */
 
 // add a drop down menu item
-function addSelectOption(select, optval, optdisplay) {
+export function addSelectOption(select, optval, optdisplay) {
   const opt = document.createElement("option");
   opt.innerHTML = optdisplay || optval;
   opt.value = optval;
@@ -78,26 +80,26 @@ function addSelectOption(select, optval, optdisplay) {
 }
 
 // select a drop down menu item
-function selectOption(select, optval) {
+export function selectOption(select, optval) {
   let jqselect = $(select);
   jqselect.children(":selected").prop("selected", false);
   jqselect.children("option[value='" + optval + "']").prop("selected", true);
 }
 // get selected drop down option
-function getSelectedOption(select) {
+export function getSelectedOption(select) {
   return $(select).children(':selected').val();
 }
 
 // get checkbox status
-function isChecked(selector) {
+export function isChecked(selector) {
   return $(selector).is(':checked');
 }
 // set checkbox status
-function setChecked(selector, val) {
+export function setChecked(selector, val) {
   $(selector).prop('checked', val === true);
 }
 
-function enableInput(condition, inputSelector) {
+export function enableInput(condition, inputSelector) {
   if (condition) {
     $(inputSelector).removeAttr("disabled");
   } else {
@@ -105,7 +107,7 @@ function enableInput(condition, inputSelector) {
   }
 }
 
-function setInvalidInput(jqInput, isInvalid, invalidClass) {
+export function setInvalidInput(jqInput, isInvalid, invalidClass) {
   if (!invalidClass) {
     invalidClass = "invalid";
   }
@@ -117,7 +119,7 @@ function setInvalidInput(jqInput, isInvalid, invalidClass) {
   }
 }
 
-function getRealInput(jqInput, mandatory, invalidClass) {
+export function getRealInput(jqInput, mandatory, invalidClass) {
   let val;
   let valStr = jqInput.val().trim();
   if (valStr) {
@@ -133,7 +135,7 @@ function getRealInput(jqInput, mandatory, invalidClass) {
   return val;
 }
 
-function getDateTimeInput(jqInput, mandatory, invalidClass) {
+export function getDateTimeInput(jqInput, mandatory, invalidClass) {
 
   let dateStr = jqInput.val().trim().replace(" ", "T");
   if (mandatory && !dateStr) {
@@ -158,7 +160,7 @@ function getDateTimeInput(jqInput, mandatory, invalidClass) {
   return date;
 }
 
-function setDateTimeInput(jqInput, ptTime) {
+export function setDateTimeInput(jqInput, ptTime) {
   let v = "";
   if (ptTime) {
     // get point's recorded date
@@ -173,7 +175,7 @@ function setDateTimeInput(jqInput, ptTime) {
 /* ----------------------- Local storage -------------------------- */
 
 let valStorage;
-function getValStorage() {
+export function getValStorage() {
   if (valStorage === undefined) {
     try {
       window.localStorage.setItem("wt_test_storage", "1");
@@ -186,7 +188,7 @@ function getValStorage() {
   return valStorage;
 }
 
-function storeVal(name, val) {
+export function storeVal(name, val) {
   //console.log("store " + name + "=" + val);
   const store = getValStorage();
   if (store) {
@@ -208,30 +210,30 @@ function storeVal(name, val) {
   }
 }
 
-function storeJsonVal(name, val) {
+export function storeJsonVal(name, val) {
   if (JSON && JSON.stringify) {
     const v = JSON.stringify(val);
     storeVal(name, v);
   }
 }
 
-function getVal(name, defval) {
+export function getVal(name, defval) {
   const store = getValStorage();
   const v = store ? store.getItem(name) : undefined;
   return isUnset(v) ? defval : v;
 }
 
-function getNumVal(name, defval) {
+export function getNumVal(name, defval) {
   const v = getVal(name, defval);
   return v && parseFloat(v);
 }
 
-function getBoolVal(name, defval) {
+export function getBoolVal(name, defval) {
   const v = getVal(name, defval);
   return v && (v == "true" || v === true);
 }
 
-function getJsonVal(name, defval) {
+export function getJsonVal(name, defval) {
   let v = getVal(name);
   let val;
   try {
@@ -243,7 +245,7 @@ function getJsonVal(name, defval) {
   return isUnset(v) ? defval : val;
 }
 
-function storedValuesForEach(fn) {
+export function storedValuesForEach(fn) {
   const store = getValStorage();
   for (var i=store.length - 1; i >= 0; i--) {
     if (fn(store.key(i))) {
@@ -256,7 +258,7 @@ function storedValuesForEach(fn) {
 
 // ga('send', 'event', category, action, label, value)
 
-function initGoogleAnalytics(trackingid, gtagId) {
+export function initGoogleAnalytics(trackingid, gtagId) {
   let gaScriptUrl = 'https://www.google-analytics.com/analytics.js';
   const gaDbg = getVal("wt.ga.dbg", "0");
   if (gaDbg != '0') {
@@ -308,7 +310,7 @@ function initGoogleAnalytics(trackingid, gtagId) {
   }
 }
 
-function wtEvent(name, category, action, label, value) {
+export function wtEvent(name, category, action, label, value) {
   ga('send', 'event', name, category, action, label, value);
 }
 
@@ -328,7 +330,7 @@ function wtEvent(name, category, action, label, value) {
  * that opens the following URL:
  * "mailto:<name>@<domain>?subject=<subject>
  */
-function setEmailListener(selector, name, domain, subject) {
+export function setEmailListener(selector, name, domain, subject) {
   $(selector).click(function() {
     function doEmail(d, i, tail) {
       location.href = "mailto:" + i + "@" + d + tail;
@@ -336,10 +338,6 @@ function setEmailListener(selector, name, domain, subject) {
     doEmail(domain, name, "?subject=" + subject);
     return false;
   });
-}
-if (config.email && config.email.selector) {
-  setEmailListener(config.email.selector, config.email.name,
-    config.email.domain, config.email.subject);
 }
 
 /* ------------------------------ CORS URL  --------------------------------- */
@@ -359,14 +357,12 @@ let CORS_PROXY = "https://api.codetabs.com/v1/proxy?quest="; // https://codetabs
   // see https://github.com/Rob--W/cors-anywhere/issues/434
 "https://crossorigin.me/"
   */
-function corsUrl(url) {
+export function corsUrl(url) {
   return CORS_PROXY + url;
-  // config.corsproxy.url() + url;
-  //  + config.corsproxy.query + encodeURIComponent(url);
 }
 
 /* ------------------------------ Encoding --------------------------------- */
-function n10dLocation() {
+export function n10dLocation() {
   let res = window.location.toString();
   res = res.replace(/\?.*$/, "").replace(/\#.*$/, "");
   res = res.replace(/^.*:\/\//, "//");
@@ -375,12 +371,12 @@ function n10dLocation() {
   return res;
 }
 
-function getLocalCode() {
+export function getLocalCode() {
   const res = getVal("wtracks.code");
   return res;
 }
 
-function strxor(s, k) {
+export function strxor(s, k) {
   let enc = "";
   // make sure that input is string
   s = s.toString();
@@ -394,7 +390,7 @@ function strxor(s, k) {
   return enc;
 }
 
-function getEncodeParams(s1, s2) {
+export function getEncodeParams(s1, s2) {
   const islocal = (window.location.toString().indexOf("file:") === 0) ||
     (window.location.toString().indexOf(".dev.local:") > 0);
   const res = {
@@ -406,23 +402,23 @@ function getEncodeParams(s1, s2) {
   return res;
 }
 
-function strencode(s) {
+export function strencode(s) {
   const param = getEncodeParams();
   return encodeURIComponent(strxor(s, param.k));
 }
 
-function strdecode(s1, s2) {
+export function strdecode(s1, s2) {
   const param = getEncodeParams(s1, s2);
   return param.s ? strxor(decodeURIComponent(param.s), param.k ? param.k : "") : param.s;
 }
 
 // Base 64 encoding / decoding
 
-function supportsBase64() {
+export function supportsBase64() {
   return btoa && atob ? true : false;
 }
 
-function b64EncodeUnicode(str) {
+export function b64EncodeUnicode(str) {
   return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
     return String.fromCharCode('0x' + p1);
   }))
@@ -430,7 +426,7 @@ function b64EncodeUnicode(str) {
   .replaceAll("+", "-").replaceAll("/", "_");
 }
 
-function b64DecodeUnicode(str) {
+export function b64DecodeUnicode(str) {
   // Assume URL safe base 64, with - and _ instead of + and /
   str = str.replaceAll("-", "+").replaceAll("_", "/");
   return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
@@ -440,7 +436,7 @@ function b64DecodeUnicode(str) {
 
 /* ----------------- Clipboard helpers -------------------- */
 
-function copyToClipboard(msg, text) {
+export function copyToClipboard(msg, text) {
   window.prompt(msg + "\nCopy to clipboard: Ctrl+C, Enter", text);
 }
 
@@ -456,7 +452,7 @@ function copyToClipboard(msg, text) {
  *    'preCopy': function to call before copy (default is none)
  *    'postCopy': function to call after copy (default is none)
  */
- function copyOnClick(selector, options) {
+ export function copyOnClick(selector, options) {
 
   let copyOk = (options && options.copyOk) || "Copied to clipboard";
   let copyKO = (options && options.copyKO) || "! Cannot copy !";
@@ -521,7 +517,7 @@ function copyToClipboard(msg, text) {
 
 /* ------------------ Iteration helpers ----------------- */
 
-function arrayMove(arr, old_index, new_index) {
+export function arrayMove(arr, old_index, new_index) {
     if (new_index >= arr.length) {
         let k = new_index - arr.length + 1;
         while (k--) {
@@ -532,7 +528,7 @@ function arrayMove(arr, old_index, new_index) {
     return arr;
 }
 
-function objectForEach(object, func) {
+export function objectForEach(object, func) {
   if (object) {
     for (let o in object) {
       if (hasOwnProperty.call(object, o)) {
@@ -541,7 +537,7 @@ function objectForEach(object, func) {
     }
   }
 }
-function arrayForEach(array, func) {
+export function arrayForEach(array, func) {
   if (array) {
     let i = 0;
     let len = array.length;
@@ -556,7 +552,7 @@ function arrayForEach(array, func) {
   }
 }
 
-function arrayLast(array) {
+export function arrayLast(array) {
   return array.slice(-1)[0];
 }
 

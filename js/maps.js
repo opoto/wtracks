@@ -1,22 +1,29 @@
-'use strict';
-/* globals
-      $, ga, config, getParameterByName,
-      consentCookies, b64EncodeUnicode, b64DecodeUnicode, supportsBase64,
-      saveJsonValOpt, objectForEach, arrayForEach, mapsForEach, noTranslate,
-      isStateSaved, setSaveState, doAndroidChromiumTweak,
-      mymaps, MAP_MY, setMyMaps, mapsListNames, mapsListProps,
-      CrsValues, renameMapListEntry, saveMapList, getMapListEntryIndex,
-      addMapListEntry, delMapListEntry, getMapList, resetMapList,
-      moveMapListEntry, addSelectOption, getSelectedOption,
-      selectOption, isChecked, setChecked,
-*/
+// ESM module for maps functionality
+// Import dependencies from other modules
+import config from './config.js';
+import {
+  saveJsonValOpt, mapsForEach,
+  isStateSaved, setSaveState, doAndroidChromiumTweak,
+  mymaps, MAP_MY, setMyMaps, mapsListNames, mapsListProps,
+  CrsValues, renameMapListEntry, saveMapList, getMapListEntryIndex,
+  addMapListEntry, delMapListEntry, getMapList, resetMapList,
+  moveMapListEntry, consentCookies
+} from './wtracks-commons.js';
+
+import {
+  getParameterByName, b64EncodeUnicode, b64DecodeUnicode, supportsBase64,
+  objectForEach, arrayForEach, addSelectOption, getSelectedOption,
+  selectOption, isChecked, setChecked, noTranslate
+} from './utils.js';
+
+// Dependencies loaded as globals via script tags in the HTML
+/* globals $, ga */
 
 /* ----------------- My maps editing ------------------- */
 
-var OVERLAY_ICON = "<i class='material-icons map-overlay notranslate' 'translate'='no' title='Map overlay'>layers</i> ";
-var MYMAPS_BTNS = "<i class='material-icons item-edit notranslate' 'translate'='no' title='Edit'>create</i> " +
+export const OVERLAY_ICON = "<i class='material-icons map-overlay notranslate' 'translate'='no' title='Map overlay'>layers</i> ";
+export const MYMAPS_BTNS = "<i class='material-icons item-edit notranslate' 'translate'='no' title='Edit'>create</i> " +
        "<i class='material-icons item-delete notranslate' 'translate'='no' title='Delete'>delete</i> ";
-
 
 // --------------------------------------------
 
@@ -126,7 +133,7 @@ function updateMapItem(oldname, newname, oldoverlay, newoverlay) {
   }
 }
 
-function showMapsList() {
+export function showMapsList() {
   $("#mymaps-list").empty();
   mapsForEach(function(name, value) {
     addMymapsItem(name, value);
@@ -195,12 +202,12 @@ function openMymapBox() {
   changeMymapType();
 }
 
-function newMymap() {
+export function newMymap() {
   mymap = { options: {} };
   openMymapBox();
 }
 
-function editMymap(mymapname) {
+export function editMymap(mymapname) {
   if (mymapname) {
     mymap = mymaps[mymapname];
     if (mymap) {
@@ -306,7 +313,7 @@ function cancelMymapBox() {
   mymap = undefined;
 }
 
-function deleteMymap(mymapname) {
+export function deleteMymap(mymapname) {
   if (mymapname) {
     mymap = mymaps[mymapname];
     if (mymap && confirm("Delete \"" + mymapname + "\"?")) {
@@ -454,7 +461,7 @@ $("input:radio[name=mymap-type]").change(changeMymapType);
 
 // ---------------- Export my maps
 
-function openExportMaps(evt, mapname) {
+export function openExportMaps(evt, mapname) {
   var toexport = {};
   if (mapname) {
     toexport[mapname] = mymaps[mapname] || config.maps[mapname];
@@ -492,7 +499,7 @@ if (!supportsBase64() || !JSON || !JSON.parse || !JSON.stringify) {
 // ------------------- Import maps
 
 var importedMymaps;
-function openImportBox(event, data) {
+export function openImportBox(event, data) {
   $("#input-val").val(data ? data : "");
   $("#import-input").show();
   $("#import-select").hide();
@@ -661,3 +668,18 @@ $(function(){
 $(window).on("unload", function() {
   $("#mymaps-list").sortable('destroy');
 });
+
+// Initialize the module
+export function initMapsModule() {
+  // This function can be called to ensure the module is properly initialized
+  return {
+    showMapsList,
+    newMymap,
+    editMymap,
+    deleteMymap,
+    openExportMaps,
+    openImportBox,
+    OVERLAY_ICON,
+    MYMAPS_BTNS
+  };
+}
