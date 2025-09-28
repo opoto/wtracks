@@ -25,14 +25,14 @@ import {
 /* globals $, ga, L, google, Dropbox, jscolor, PasteLibs,
      saveAs, PMTiles */
 
-var map;
-var track;
-var waypoints;
-var extremities;
-var editLayer;
-var route;
-var routeStart;
-var polystats;
+let map;
+let track;
+let waypoints;
+let extremities;
+let editLayer;
+let route;
+let routeStart;
+let polystats;
 
 /*
   setInteractive "plugin" from
@@ -62,9 +62,9 @@ L.Layer.prototype.setInteractive = function (interactive) {
 let statusTimeout;
 function setStatus(msg, options) {
   $("#status-msg").text(msg);
-  var statusclass = options && options.class ? options.class : "status-info";
+  const statusclass = options && options.class ? options.class : "status-info";
   $("#status-msg").attr("class", statusclass);
-  var showspinner = options && !isUnset(options.spinner) && options.spinner;
+  const showspinner = options && !isUnset(options.spinner) && options.spinner;
   $("#spinner").toggle(showspinner);
   $("#status").fadeIn();
   if (options && options.timeout) {
@@ -82,12 +82,12 @@ function clearStatus() {
 
 setStatus("Loading...", { spinner: true });
 
-var wtReady = false;
+let wtReady = false;
 // on ready event (HTML + scripts loaded and executed):
-$(function(){
+$(function () {
   if (wtReady) {
     onerror("duplicate ready event", {
-      "Stack":  new Error().stack
+      "Stack": new Error().stack
     });
     return;
   }
@@ -107,7 +107,7 @@ $(function(){
     // hide all group
     $(".fold-" + eltInfo[0] + ":not(.fold-link)").hide();
     $(".fold-" + eltInfo[0] + "-closed").show();
-    $(".fold-link.fold-" +  eltInfo[0]).removeClass("fold-selected");
+    $(".fold-link.fold-" + eltInfo[0]).removeClass("fold-selected");
     $(".fold-" + eltInfo[0] + "-closed").parent("div").removeClass("fold-selected-title");
     // show
     $("." + eltInfo[1]).show();
@@ -115,7 +115,7 @@ $(function(){
     $("#" + eltInfo[0] + "-" + eltInfo[1]).addClass("fold-selected");
     $("#" + eltInfo[0] + "-" + eltInfo[1]).parent("div").addClass("fold-selected-title");
   }
-  $(".fold").on("click", function(e) { openFolder(e.currentTarget.id); });
+  $(".fold").on("click", function (e) { openFolder(e.currentTarget.id); });
 
   // defaults
   openFolder("file-newtrk");
@@ -145,43 +145,43 @@ $(function(){
     }
   });
 
-  var NEW_TRACK_NAME = "New Track";
-  var EMPTY_METADATA = { name: NEW_TRACK_NAME, desc: "" };
+  const NEW_TRACK_NAME = "New Track";
+  const EMPTY_METADATA = { name: NEW_TRACK_NAME, desc: "" };
 
-  var metadata = EMPTY_METADATA;
-  var pruneDist = getVal("wt.pruneDist", config.pruneDist);
-  var pruneMaxDist = getVal("wt.pruneMaxDist", config.pruneMaxDist);
-  var pruneMaxTime = getVal("wt.pruneMaxTime", config.pruneMaxTime);
-  var wptLabel = getBoolVal("wt.wptLabel", config.display.wptLabel);
-  var hideWpt = getBoolVal("wt.hideWpt", config.display.hideWpt);
-  var smoothLevel = getVal("wt.smoothLevel", config.smoothLevel);
+  let metadata = EMPTY_METADATA;
+  let pruneDist = getVal("wt.pruneDist", config.pruneDist);
+  let pruneMaxDist = getVal("wt.pruneMaxDist", config.pruneMaxDist);
+  let pruneMaxTime = getVal("wt.pruneMaxTime", config.pruneMaxTime);
+  let wptLabel = getBoolVal("wt.wptLabel", config.display.wptLabel);
+  let hideWpt = getBoolVal("wt.hideWpt", config.display.hideWpt);
+  let smoothLevel = getVal("wt.smoothLevel", config.smoothLevel);
 
-  var fwdGuide = getBoolVal("wt.fwdGuide", config.display.fwdGuide);
-  var fwdGuideGa = true; // collect stats on this user preference
-  var extMarkers = getBoolVal("wt.extMarkers", config.display.extMarkers);
-  var autoGrayBaseLayer = getBoolVal("wt.autoGrayBaseLayer", config.display.autoGrayBaseLayer);
-  var noMixOverlays = getBoolVal("wt.noMixOverlays", false);
-  var wasDragged;
+  let fwdGuide = getBoolVal("wt.fwdGuide", config.display.fwdGuide);
+  let fwdGuideGa = true; // collect stats on this user preference
+  let extMarkers = getBoolVal("wt.extMarkers", config.display.extMarkers);
+  let autoGrayBaseLayer = getBoolVal("wt.autoGrayBaseLayer", config.display.autoGrayBaseLayer);
+  let noMixOverlays = getBoolVal("wt.noMixOverlays", false);
+  let wasDragged;
 
-  var EDIT_NONE = 0;
-  var EDIT_RECORDING = 1;
-  var EDIT_MANUAL_TRACK = 2;
-  var EDIT_AUTO_TRACK = 3;
-  var EDIT_MARKER = 4;
-  var EDIT_DRAG = 5;
-  var EDIT_DEFAULT = EDIT_MANUAL_TRACK;
-  var editMode = -1;
+  const EDIT_NONE = 0;
+  const EDIT_RECORDING = 1;
+  const EDIT_MANUAL_TRACK = 2;
+  const EDIT_AUTO_TRACK = 3;
+  const EDIT_MARKER = 4;
+  const EDIT_DRAG = 5;
+  const EDIT_DEFAULT = EDIT_MANUAL_TRACK;
+  let editMode = -1;
 
-  var mapsCloseOnClick = getBoolVal("wt.mapsCloseOnClick", config.mapsCloseOnClick);
+  let mapsCloseOnClick = getBoolVal("wt.mapsCloseOnClick", config.mapsCloseOnClick);
 
-  var apikeys = {};
+  let apikeys = {};
   arrayForEach(["ghkey", "ggkey", "orskey"], function name(i, kname) {
-    apikeys[kname] = getVal("wt."+kname, undefined);
+    apikeys[kname] = getVal("wt." + kname, undefined);
   });
 
-  var apikeyNoMore = getBoolVal("wt.apikeyNoMore", false);
+  let apikeyNoMore = getBoolVal("wt.apikeyNoMore", false);
 
-  var MARKER_ICON = L.icon({
+  const MARKER_ICON = L.icon({
     iconUrl: 'img/marker-icon.png',
     iconRetinaUrl: 'img/marker-icon-2x.png',
     iconSize: [16, 26],
@@ -192,20 +192,20 @@ $(function(){
     shadowSize: [26, 26],
     shadowAnchor: [8, 26]
   });
-  var START_MARKER_ICON = L.icon({
+  const START_MARKER_ICON = L.icon({
     iconUrl: 'img/marker-start.png',
     iconSize: [17, 17],
     iconAnchor: [8, 8],
     popupAnchor: [0, 0]
   });
-  var END_MARKER_ICON = L.icon({
+  const END_MARKER_ICON = L.icon({
     iconUrl: 'img/marker-end.png',
     iconSize: [17, 17],
     iconAnchor: [8, 8],
     popupAnchor: [0, 0]
   });
 
-  var OFF_KEY = "OFF_";
+  const OFF_KEY = "OFF_";
   function getApiKey(apikey, defkey) {
     return !apikey || apikey.startsWith(OFF_KEY) ? defkey : apikey;
   }
@@ -214,7 +214,7 @@ $(function(){
   }
 
   // load Google Maps API
-  var gk = getApiKey(apikeys.ggkey, config.google.mapsapikey());
+  let gk = getApiKey(apikeys.ggkey, config.google.mapsapikey());
   $.getScript("https://maps.googleapis.com/maps/api/js" + (gk ? "?key=" + gk : ""));
 
   // load Dropbox API
@@ -233,7 +233,7 @@ $(function(){
   }
 
   function askTrackName() {
-    var name = prompt("Track name:", getTrackName());
+    const name = prompt("Track name:", getTrackName());
     if (name) {
       setTrackName(name);
     }
@@ -276,7 +276,7 @@ $(function(){
     $("#warning-box").append(warnElt);
     warns++;
     let closeButton = warnElt.find(".close-button");
-    closeButton.on("click", function() {
+    closeButton.on("click", function () {
       warnElt.remove();
       if (--warns <= 0) {
         $("#warning-box").hide();
@@ -285,9 +285,9 @@ $(function(){
     });
     $("#warning-box").show();
     /* */
-    setTimeout(function() {
+    setTimeout(function () {
       closeButton.trigger("click");
-    }, timeout ? timeout: 7000);
+    }, timeout ? timeout : 7000);
     /* */
   }
 
@@ -309,9 +309,9 @@ $(function(){
   function openApiKeyInfo(force) {
     if ((force || !apikeyNoMore) && $(".apikeys-dont").length == 0) {
       let apiKeyInfo = $("<a href='doc/#api-keys'>Set your API keys</a> to enable elevation and routing services." +
-      "<span class='apikeys-dont'><br />To ignore this warning click <a class='apikeys-nomore' href='#'>stop</a></span>");
+        "<span class='apikeys-dont'><br />To ignore this warning click <a class='apikeys-nomore' href='#'>stop</a></span>");
       apiKeyInfo.find(".apikeys-dont").toggle(!force);
-      apiKeyInfo.find(".apikeys-nomore").on("click", function(evt) {
+      apiKeyInfo.find(".apikeys-nomore").on("click", function (evt) {
         changeApikeyNomore(true);
         $(evt.target).parents(".warning").find(".close-button").trigger("click");
         return false;
@@ -322,10 +322,10 @@ $(function(){
 
   /* ----------------------------------------------------- */
 
-  var selectActivity = $("#activity")[0];
-  var activities = getJsonVal("wt.activities");
-  var loadedActivities = ""; // bug tracking
-  var currentActivity;
+  const selectActivity = $("#activity")[0];
+  let activities = getJsonVal("wt.activities");
+  let loadedActivities = ""; // bug tracking
+  let currentActivity;
   const ACTIVITY_RECORDED = "Recorded";
   function loadActivities() {
     loadedActivities = "Loaded ";
@@ -335,14 +335,14 @@ $(function(){
     }
     loadedActivities += " " + Object.keys(activities).length + " activities";
     // append activities
-    objectForEach(activities, function(activityName) {
+    objectForEach(activities, function (activityName) {
       if (!selectActivity.options[activityName]) {
         addSelectOption(selectActivity, activityName);
       }
     });
     loadedActivities += " in " + $("#activity option").length + " options";
     // remove deleted activities
-    $("#activity option").each(function(i, v) {
+    $("#activity option").each(function (i, v) {
       if (!activities[v.value] && (v.value != ACTIVITY_RECORDED)) {
         v.remove();
       }
@@ -366,32 +366,32 @@ $(function(){
     if (!activityName) {
       activityName = Object.keys(activities)[0];
       let dbgActivities = "";
-      $("#activity option").each(function(i, a) {
+      $("#activity option").each(function (i, a) {
         if (i > 0) {
           dbgActivities += "; ";
         }
         dbgActivities += (a.innerText + ($(a).is(":selected") ? "*" : ""));
       });
-      $("#activity option").each(function(a) { console.log(a); });
-      onerror( "No current activity", {
+      $("#activity option").each(function (a) { console.log(a); });
+      onerror("No current activity", {
         "Saved": getVal("wt.activity"),
         "First": activityName,
         "Nb activities": Object.keys(activities).length,
         "Menu": dbgActivities,
         "Loaded": loadedActivities,
-        "Stack":  new Error().stack
+        "Stack": new Error().stack
       });
       selectOption(selectActivity, activityName);
     }
     let requestedActivity = activityName;
     if (!activities[requestedActivity]) {
       if ($.isEmptyObject(activities)) {
-        onerror( "No activity");
+        onerror("No activity");
         loadActivities();
       }
       activityName = Object.keys(activities)[0];
       if (requestedActivity != ACTIVITY_RECORDED) {
-        onerror( "Activity was not found", {
+        onerror("Activity was not found", {
           "Activity": requestedActivity,
           "Nb activities": Object.keys(activities).length
         });
@@ -407,7 +407,7 @@ $(function(){
   // in case activities were updated in other tab/window
   $("#activity").on("click", loadActivities);
   // on user selection
-  $("#activity").on("change", function() {
+  $("#activity").on("change", function () {
     let selectedActivity = getCurrentActivityName();
     let currentActivityName = currentActivity.name;
     ga('send', 'event', 'activity', 'change', selectedActivity);
@@ -435,27 +435,27 @@ $(function(){
    * @returns number of segments found
    */
   function forEachSegment(func, uids) {
-    var count = 0;
+    let count = 0;
 
     if (editLayer) {
 
       // sort segments on manual ordering if ordered
       let layers = editLayer.getLayers();
-      let compare = function ( a, b ) {
+      let compare = function (a, b) {
         if (a._wtOrder == b._wtOrder) {
           return 0;
         } else if (!a._wtOrder) {
-            return -1;
+          return -1;
         } else if (!b._wtOrder) {
           return 1;
         }
         // else
         return (a._wtOrder < b._wtOrder) ? -1 : 1;
       };
-      layers = layers.sort( compare );
+      layers = layers.sort(compare);
 
       // iterate on ordered segments
-      arrayForEach(layers, function(idx, segment) {
+      arrayForEach(layers, function (idx, segment) {
         // check if it is a polyline
         if (segment.getLatLngs && segment.getLatLngs().length > 0) {
           if (Array.isArray(uids) && uids.includes) {
@@ -476,7 +476,7 @@ $(function(){
   }
 
   function applySegmentTool(toolFunc) {
-    var onAllSegments = isChecked("#allsegments");
+    const onAllSegments = isChecked("#allsegments");
     if (onAllSegments) {
       forEachSegment(toolFunc);
     } else {
@@ -507,7 +507,7 @@ $(function(){
   }
 
   function updateAllOverlayTrackStyle() {
-    forEachSegment(function(segment) {
+    forEachSegment(function (segment) {
       // check it is not current track
       if (segment != track) {
         updateOverlayTrackStyle(segment);
@@ -560,14 +560,14 @@ $(function(){
 
   function createExtremities() {
     function createExtremity(name, icon) {
-      var mkOpts = {
+      const mkOpts = {
         title: name,
         alt: name,
         icon: icon,
         keyboard: false,
         interactive: false
       };
-      var marker = L.marker([0,0], mkOpts);
+      let marker = L.marker([0, 0], mkOpts);
       extremities.addLayer(marker);
     }
     extremities = L.featureGroup([]);
@@ -588,7 +588,7 @@ $(function(){
   }
 
   function updateExtremity(latlng, i) {
-    var eidx = -1;
+    let eidx = -1;
     if (i == 0) {
       eidx = 0;
     } else if (i == getTrackLength() - 1) {
@@ -601,7 +601,7 @@ $(function(){
 
   function updateExtremities() {
     if (extremities && track) {
-      var last = getTrackLength() - 1;
+      const last = getTrackLength() - 1;
       if (last >= 0) {
         updateExtremity(track.getLatLngs()[0], 0);
         updateExtremity(track.getLatLngs()[last], last);
@@ -609,7 +609,7 @@ $(function(){
     }
   }
 
-  $("#extMarkers").on("change", function(){
+  $("#extMarkers").on("change", function () {
     extMarkers = !extMarkers;
     saveValOpt("wt.extMarkers", extMarkers);
     setExtremityVisibility(extMarkers);
@@ -645,27 +645,27 @@ $(function(){
 
   // =================== UNDO ====================
 
-  var UNDO_ICON = "undo";
-  var EDIT_AUTO_ICON = "navigation";
-  var EDIT_AUTO_ID = "edit-auto";
-  var EDIT_MANUAL_ICON = "timeline";
-  var EDIT_MANUAL_ID = "edit-manual";
-  var EDIT_DRAG_ID = "edit-drag";
-  var EDIT_DRAG_ICON = "open_with";
-  var EDIT_MARKER_ID = "edit-marker";
-  var EDIT_ADDSEGMENT_ID = "add-segment";
-  var EDIT_ADDSEGMENT_ICON = "add-segment-icon";
-  var EDIT_DELSEGMENT_ID = "delete-segment";
-  var EDIT_DELSEGMENT_ICON = "delete-segment-icon";
+  const UNDO_ICON = "undo";
+  const EDIT_AUTO_ICON = "navigation";
+  const EDIT_AUTO_ID = "edit-auto";
+  const EDIT_MANUAL_ICON = "timeline";
+  const EDIT_MANUAL_ID = "edit-manual";
+  const EDIT_DRAG_ID = "edit-drag";
+  const EDIT_DRAG_ICON = "open_with";
+  const EDIT_MARKER_ID = "edit-marker";
+  const EDIT_ADDSEGMENT_ID = "add-segment";
+  const EDIT_ADDSEGMENT_ICON = "add-segment-icon";
+  const EDIT_DELSEGMENT_ID = "delete-segment";
+  const EDIT_DELSEGMENT_ICON = "delete-segment-icon";
 
-  var UndoRoute = {
-    getType: function() {
+  const UndoRoute = {
+    getType: function () {
       return "route";
     },
-    init: function(args) {
+    init: function (args) {
       this.fromPt = args.fromPt;
     },
-    undo: function() {
+    undo: function () {
       if (!route && (track.getLatLngs().length > this.fromPt.i)) {
         track.setLatLngs(track.getLatLngs().slice(0, this.fromPt.i + 1));
         polystats.updateStatsFrom(0);
@@ -681,19 +681,19 @@ $(function(){
         setEditMode(EDIT_AUTO_TRACK);
       }
     },
-    getIconId: function() {
+    getIconId: function () {
       return EDIT_AUTO_ID;
     }
   };
 
-  var UndoNewPt = {
-    getType: function() {
+  const UndoNewPt = {
+    getType: function () {
       return "newPt";
     },
-    init: function(args) {
+    init: function (args) {
       this.newPt = args.newPt;
     },
-    undo: function() {
+    undo: function () {
       if (track.getLatLngs().length > this.newPt.i) {
         track.editor.endDrawing();
         if (track.getLatLngs().length > 0) {
@@ -707,20 +707,20 @@ $(function(){
         saveState();
       }
     },
-    getIconId: function() {
+    getIconId: function () {
       return EDIT_MANUAL_ID;
     }
   };
 
-  var UndoMovePt = {
-    getType: function() {
+  let UndoMovePt = {
+    getType: function () {
       return "movePt";
     },
-    init: function(args) {
+    init: function (args) {
       this.pt = args.pt;
       this.backupPt = jsonClone(args.pt);
     },
-    undo: function() {
+    undo: function () {
       if (track.getLatLngs().length > this.pt.i) {
         track.editor.endDrawing();
         this.pt.lat = this.backupPt.lat;
@@ -733,19 +733,19 @@ $(function(){
         saveState();
       }
     },
-    getIconId: function() {
+    getIconId: function () {
       return EDIT_MANUAL_ID;
     }
   };
 
-  var UndoDeletePt = {
-    getType: function() {
+  let UndoDeletePt = {
+    getType: function () {
       return "deletePt";
     },
-    init: function(args) {
+    init: function (args) {
       this.pt = args.pt;
     },
-    undo: function() {
+    undo: function () {
       if (track.getLatLngs().length > this.pt.i) {
         track.editor.endDrawing();
         track.getLatLngs().splice(this.pt.i, 0, this.pt);
@@ -756,18 +756,18 @@ $(function(){
         saveState();
       }
     },
-    getIconId: function() {
+    getIconId: function () {
       return EDIT_MANUAL_ID;
     }
   };
 
-  var undos = [];
+  let undos = [];
   function undo() {
     if (undos.length < 1) {
       console.debug("nothing to undo");
       return;
     }
-    var toUndo = undos.pop();
+    const toUndo = undos.pop();
     ga('send', 'event', 'edit', 'undo', toUndo.getType());
     toUndo.undo();
     if (undos.length < 1) {
@@ -775,11 +775,11 @@ $(function(){
     }
   }
   function addUndo(undoObjectType, args) {
-    var newUndo = Object.create(undoObjectType);
+    const newUndo = Object.create(undoObjectType);
     newUndo.init(args);
     undos.push(newUndo);
     if (undos.length == 1) {
-      var id = newUndo.getIconId();
+      const id = newUndo.getIconId();
       $("#" + id).attr("oldhtml", $("#" + id + " span").html());
       $("#" + id).attr("oldtitle", $("#" + id).attr("title"));
       $("#" + id + " span").html(UNDO_ICON);
@@ -805,7 +805,7 @@ $(function(){
         ttip.setContent(wpt.options.title);
       } else {
         // new tooltip
-        ttip = wpt.bindTooltip(wpt.options.title, {permanent: wptLabel});
+        ttip = wpt.bindTooltip(wpt.options.title, { permanent: wptLabel });
         if (wptLabel) {
           ttip.openTooltip();
         }
@@ -826,61 +826,61 @@ $(function(){
     }
 
     function getMarkerPopupContent(marker) {
-      var div = L.DomUtil.create('div', "popupdiv"),
-        label;
+      let div = L.DomUtil.create('div', "popupdiv");
+      let label;
 
       if (editMode === EDIT_MARKER) {
 
         // name
         label = L.DomUtil.create('div', "popupdiv", div);
         label.innerHTML = "<span class='popupfield'>Name:</span> ";
-        var name = L.DomUtil.create('input', "popup-nameinput", label);
+        let name = L.DomUtil.create('input', "popup-nameinput", label);
         name.type = "text";
         name.placeholder = "Textual name";
         $(name).val(marker.options.title ? marker.options.title : "");
-        name.onkeyup = function() {
-          var nameval = $(name).val().trim();
+        name.onkeyup = function () {
+          const nameval = $(name).val().trim();
           marker.options.title = nameval;
           setWaypointTooltip(marker);
-          var elt = marker.getElement();
+          const elt = marker.getElement();
           elt.alt = nameval;
         };
 
         // description
         label = L.DomUtil.create('div', "popupdiv", div);
         label.innerHTML = "<span class='popupfield'>Desc:</span>";
-        var richtxtlbl = L.DomUtil.create('label', "rich-text", label);
-        var richtxtcb = L.DomUtil.create('input', "rich-text", richtxtlbl);
+        let richtxtlbl = L.DomUtil.create('label', "rich-text", label);
+        let richtxtcb = L.DomUtil.create('input', "rich-text", richtxtlbl);
         richtxtcb.type = 'checkbox';
         $(richtxtlbl).append("Rich text");
-        var desc = L.DomUtil.create('textarea', "popup-descinput", label);
+        let desc = L.DomUtil.create('textarea', "popup-descinput", label);
         desc.placeholder = "Textual/HTML description";
         $(desc).val(marker.options.desc ? marker.options.desc : "");
-        desc.onkeyup = function() {
-          var descval = $(desc).val();
+        desc.onkeyup = function () {
+          const descval = $(desc).val();
           marker.options.desc = descval;
         };
 
-        var setRichDesc = function() {
-          var h = Math.max(120, $(desc).height());
+        const setRichDesc = function () {
+          const h = Math.max(120, $(desc).height());
           $(desc).attr('origheight', h);
           $(desc).trumbowyg({
-              btns: [
-                'formatting',
-                ['strong', 'em', 'underline', 'removeformat'],
-                ['link', 'insertImage'],
-                'btnGrp-lists',
-                ['horizontalRule']
-              ],
-              autogrow: false
+            btns: [
+              'formatting',
+              ['strong', 'em', 'underline', 'removeformat'],
+              ['link', 'insertImage'],
+              'btnGrp-lists',
+              ['horizontalRule']
+            ],
+            autogrow: false
           })
-          .on('tbwchange', desc.onkeyup)
-          .on('tbwinit', function() {
-            $("div.trumbowyg-editor, .trumbowyg-box").css('min-height', h);
-          });
+            .on('tbwchange', desc.onkeyup)
+            .on('tbwinit', function () {
+              $("div.trumbowyg-editor, .trumbowyg-box").css('min-height', h);
+            });
         };
 
-        $(richtxtcb).on("change", function(){
+        $(richtxtcb).on("change", function () {
           if (isChecked(richtxtcb)) {
             setRichDesc();
           } else {
@@ -897,13 +897,13 @@ $(function(){
 
         // name
         if (marker.options.title) {
-          var popupName = L.DomUtil.create('div', "popup-name", div);
+          let popupName = L.DomUtil.create('div', "popup-name", div);
           popupName.innerHTML = marker.options.title;
         }
 
         // description
         if (marker.options.desc) {
-          var popupDesc = L.DomUtil.create('pre', "popup-desc", div);
+          const popupDesc = L.DomUtil.create('pre', "popup-desc", div);
           popupDesc.innerHTML = marker.options.desc;
         }
 
@@ -911,23 +911,23 @@ $(function(){
 
       // cmt
       if (marker.options.cmt) {
-        var popupCmt = L.DomUtil.create('pre', "popup-desc", div);
+        const popupCmt = L.DomUtil.create('pre', "popup-desc", div);
         popupCmt.innerHTML = marker.options.cmt;
       }
 
       // time
       if (marker.options.time) {
-        var popupTime = L.DomUtil.create('pre', "popup-desc", div);
+        const popupTime = L.DomUtil.create('pre', "popup-desc", div);
         popupTime.innerHTML = marker.options.time;
       }
 
 
-      var latlng = marker.getLatLng();
-      var markerDiv = getLatLngPopupContent(latlng, deleteMarker, undefined, undefined, div);
+      const latlng = marker.getLatLng();
+      const markerDiv = getLatLngPopupContent(latlng, deleteMarker, undefined, undefined, div);
       return markerDiv;
     }
 
-    var wptOpts = {
+    const wptOpts = {
       title: properties.name || "",
       alt: properties.name || "",
       desc: properties.desc || properties.description || "",
@@ -935,15 +935,15 @@ $(function(){
       time: properties.time || undefined,
       icon: MARKER_ICON
     };
-    var marker = L.marker(latlng, wptOpts);
+    const marker = L.marker(latlng, wptOpts);
     wptLayer.addLayer(marker);
 
     if (wptLayer == waypoints) {
       !wptLayer.isHidden && marker.getElement().removeAttribute("title"); // remove default HTML tooltip
       setWaypointTooltip(marker);
-      marker.on("click", function() {
+      marker.on("click", function () {
         if (editMode == EDIT_DRAG) return;
-        L.popup({ "className" : "overlay" })
+        L.popup({ "className": "overlay" })
           .setLatLng(marker.getLatLng())
           .setContent(getMarkerPopupContent(marker))
           .openOn(map);
@@ -953,7 +953,7 @@ $(function(){
     return marker;
   }
 
-  $("#wptLabel").on("change", function(){
+  $("#wptLabel").on("change", function () {
     wptLabel = !wptLabel;
     saveValOpt("wt.wptLabel", wptLabel);
     arrayForEach(waypoints.getLayers(), function (idx, wpt) {
@@ -963,14 +963,14 @@ $(function(){
     });
   });
 
-  $("#hideWpt").on("change", function(){
+  $("#hideWpt").on("change", function () {
     hideWpt = !hideWpt;
     saveValOpt("wt.hideWpt", hideWpt);
     waypoints.isHidden = hideWpt;
     hideWpt ? editLayer.removeLayer(waypoints) : editLayer.addLayer(waypoints);
   });
 
-  $("#fwdGuide").on("change", function(){
+  $("#fwdGuide").on("change", function () {
     fwdGuide = !fwdGuide;
     saveValOpt("wt.fwdGuide", fwdGuide);
     updateMapStyle();
@@ -979,20 +979,20 @@ $(function(){
 
   /* ------------------------ TRIMMING ---------------------------------- */
 
-  var polytrim;
+  let polytrim;
 
   function prepareTrim() {
-    var trimMax = Math.round(getTrackLength() / 2);
+    const trimMax = Math.round(getTrackLength() / 2);
     $("#trim-txt").text("0/" + getTrackLength());
     $("#trim-range").attr("max", trimMax);
     $("#trim-range").val(0);
     $('.no-trim:not([class*="isdisabled"])').prop('disabled', false);
-    var trimType = $("#trim-type")[0].selectedIndex;
+    const trimType = $("#trim-type")[0].selectedIndex;
     polytrim = L.polyTrim(track, trimType);
   }
 
   function trimTrack() {
-    var n = parseInt($("#trim-range").val());
+    const n = parseInt($("#trim-range").val());
     console.log("trimming " + n);
     $("#trim-txt").text(n + "/" + polytrim.getPolySize());
     $('.no-trim:not([class*="isdisabled"])').prop('disabled', (n !== 0));
@@ -1000,7 +1000,7 @@ $(function(){
   }
 
   function finishTrim() {
-    var n = parseInt($("#trim-range").val());
+    const n = parseInt($("#trim-range").val());
     if (n > 0) {
       ga('send', 'event', 'tool', 'trim', undefined, n);
       if (polytrim.getDirection() === polytrim.FROM_END) {
@@ -1023,31 +1023,31 @@ $(function(){
   /* --------------------------------------*/
   // Track display settings
 
-  var trackColor;
-  var trackWeight;
-  var ovlTrackColor;
-  var ovlTrackWeight;
-  var trackUI = {
+  let trackColor;
+  let trackWeight;
+  let ovlTrackColor;
+  let ovlTrackWeight;
+  const trackUI = {
     trk: {
-      getDefaultColor : function() {
+      getDefaultColor: function () {
         return config.display.trackColor;
       },
-      getColor : function() {
+      getColor: function () {
         return trackColor;
       },
-      setColor : function(v) {
+      setColor: function (v) {
         trackColor = v;
         saveValOpt("wt.trackColor", v);
         updateTrackStyle();
         updateMapStyle();
       },
-      getDefaultWeight : function() {
+      getDefaultWeight: function () {
         return config.display.trackWeight;
       },
-      getWeight : function() {
+      getWeight: function () {
         return trackWeight;
       },
-      setWeight : function(v) {
+      setWeight: function (v) {
         trackWeight = v;
         saveValOpt("wt.trackWeight", v);
         updateTrackStyle();
@@ -1055,61 +1055,61 @@ $(function(){
       }
     },
     ovl: {
-      getDefaultColor : function() {
+      getDefaultColor: function () {
         return config.display.ovlTrackColor;
       },
-      getColor : function() {
+      getColor: function () {
         return ovlTrackColor;
       },
-      setColor : function(v) {
+      setColor: function (v) {
         ovlTrackColor = v;
         saveValOpt("wt.ovlTrackColor", v);
         updateAllOverlayTrackStyle();
       },
-      getDefaultWeight : function() {
+      getDefaultWeight: function () {
         return config.display.ovlTrackWeight;
       },
-      getWeight : function() {
+      getWeight: function () {
         return ovlTrackWeight;
       },
-      setWeight : function(v) {
+      setWeight: function (v) {
         ovlTrackWeight = v;
         saveValOpt("wt.ovlTrackWeight", v);
         updateAllOverlayTrackStyle();
       }
     }
   };
-  var trackUISetting = trackUI.trk;
+  let trackUISetting = trackUI.trk;
   trackColor = getVal("wt.trackColor", trackUI.trk.getDefaultColor());
   trackWeight = getVal("wt.trackWeight", trackUI.trk.getDefaultWeight());
   ovlTrackColor = getVal("wt.ovlTrackColor", trackUI.ovl.getDefaultColor());
   ovlTrackWeight = getVal("wt.ovlTrackWeight", trackUI.ovl.getDefaultWeight());
   updateMapStyle();
 
-  $("input:radio[name=track-type]").on("change", function(){
-    var t = $("input:radio[name=track-type]:checked").val();
+  $("input:radio[name=track-type]").on("change", function () {
+    const t = $("input:radio[name=track-type]:checked").val();
     trackUISetting = trackUI[t];
     initTrackDisplaySettings();
   });
-  $("#track-color").on("change", function(){
-    var v = $("#track-color").val();
+  $("#track-color").on("change", function () {
+    const v = $("#track-color").val();
     ga('send', 'event', 'setting', 'trackColor', v);
     trackUISetting.setColor(v);
   });
-  $("#track-weight").on("change", function(){
-    var v = $("#track-weight").val();
+  $("#track-weight").on("change", function () {
+    const v = $("#track-weight").val();
     ga('send', 'event', 'setting', 'trackWeight', v);
     $("#track-weight-v").text(v);
     trackUISetting.setWeight(v);
   });
-  $("#track-resetcolorweight").on("click", function(){
+  $("#track-resetcolorweight").on("click", function () {
     trackUISetting.setColor(trackUISetting.getDefaultColor());
     trackUISetting.setWeight(trackUISetting.getDefaultWeight());
     ga('send', 'event', 'setting', 'trackReset');
     initTrackDisplaySettings();
   });
   function initTrackDisplaySettings() {
-    var v;
+    let v;
     v = trackUISetting.getColor();
     $("#track-color").val(v);
     $("#track-color-picker")[0].jscolor.fromString(v);
@@ -1121,13 +1121,13 @@ $(function(){
   /* --------------------------------------*/
   // API keys
 
-  var elevationService;
-  var routerFactory;
+  let elevationService;
+  let routerFactory;
 
   function showApiKey(name) {
-    var value = apikeys[name];
-    var useDefault = isUndefined(getApiKey(value));
-    var input = $("#" + name + "-value");
+    const value = apikeys[name];
+    const useDefault = isUndefined(getApiKey(value));
+    const input = $("#" + name + "-value");
     //console.debug(name + ": " + value);
     setChecked("#" + name + "-chk", !useDefault);
     input.val(isUndefined(value) ? "" : getApiKeyVal(value));
@@ -1135,14 +1135,14 @@ $(function(){
   }
 
   function updateApiKey(name) {
-    var useDefault = !isChecked("#" + name + "-chk");
-    var key = $("#" + name + "-value").val().trim();
+    const useDefault = !isChecked("#" + name + "-chk");
+    let key = $("#" + name + "-value").val().trim();
     if (key === "") {
       key = undefined;
     } else if (useDefault) {
       key = OFF_KEY + key;
     }
-    var gav = useDefault ? -1 : key ? 1 : 0;
+    const gav = useDefault ? -1 : key ? 1 : 0;
     ga('send', 'event', 'setting', 'keys', name, gav);
     //console.debug(name + "= " + key + " (" + gav + ")");
     saveValOpt("wt." + name, key);
@@ -1174,26 +1174,26 @@ $(function(){
       (getApiKey(apikeys.orskey) ? orsElevationService : null);
 
     $("#elevate").prop('disabled', isUnset(elevationService));
-    var classOp = elevationService ? "removeClass" : "addClass";
+    const classOp = elevationService ? "removeClass" : "addClass";
     $("#elevate")[classOp]("isdisabled");
     $("#elevatetxt-help-enable").html(elevationService ? "" :
-        "<br><a href='doc/#api-keys'>Set your API keys</a> to enable elevation services.");
+      "<br><a href='doc/#api-keys'>Set your API keys</a> to enable elevation services.");
 
     routerFactory = getApiKey(apikeys.ghkey) ?
       createGraphHopperRouter : getApiKey(apikeys.orskey) ?
-      createOrsRouter : null;
+        createOrsRouter : null;
 
   }
 
   function checkApikey(name) {
-    var useDefault = !isChecked("#" + name + "-chk");
+    const useDefault = !isChecked("#" + name + "-chk");
     $("#" + name + "-value").attr("disabled", useDefault);
-    var key = updateApiKey(name);
+    const key = updateApiKey(name);
     return key;
   }
 
   function apiKeyChange(evt) {
-    var keyname = evt.target.id.match(/^[^\\-]+/)[0];
+    const keyname = evt.target.id.match(/^[^\\-]+/)[0];
     apikeys[keyname] = checkApikey(keyname);
     updateApiServices();
   }
@@ -1206,7 +1206,7 @@ $(function(){
     $("#" + name + "-chk").trigger("change");
   }
 
-  $("#keys-reset").on("click", function() {
+  $("#keys-reset").on("click", function () {
     ga('send', 'event', 'setting', 'keys', 'reset');
     objectForEach(apikeys, function name(kname) {
       resetApiKey(kname);
@@ -1218,14 +1218,14 @@ $(function(){
   });
   updateApiServices();
 
-  $("#apikeys-warn").on("change", function() {
+  $("#apikeys-warn").on("change", function () {
     changeApikeyNomore(!isChecked("#apikeys-warn"));
   });
 
   /* ------------------------ MENU ---------------------------------- */
 
   function closeMenu() {
-    if (! $("#menu").is(":hidden")) {
+    if (!$("#menu").is(":hidden")) {
       $("#menu").hide();
       finishTrim();
     }
@@ -1252,7 +1252,7 @@ $(function(){
     if (($("#save-time-from").val() == "") &&
       (getTrackLength() > 0) &&
       track.getLatLngs()[0].time) {
-        setDateTimeInput($("#save-time-from"), track.getLatLngs()[0].time);
+      setDateTimeInput($("#save-time-from"), track.getLatLngs()[0].time);
     }
     initSaveTimeProfiles();
     checkToolsAllSegments();
@@ -1264,21 +1264,21 @@ $(function(){
     return $("#menu").is(":visible");
   }
 
-  $("#menu-close").on("click", function() {
+  $("#menu-close").on("click", function () {
     closeMenu();
     return false;
   });
-  $("#track-new").on("click", function() {
+  $("#track-new").on("click", function () {
     ga('send', 'event', 'file', 'new');
     newTrack();
     setEditMode(EDIT_MANUAL_TRACK);
     saveState();
     closeMenu();
   });
-  $("#menu-track").on("click", function() {
+  $("#menu-track").on("click", function () {
     $(".collapsable-track").toggle();
   });
-  $("#menu-tools").on("click", function() {
+  $("#menu-tools").on("click", function () {
     $(".collapsable-tools").toggle();
   });
 
@@ -1286,7 +1286,7 @@ $(function(){
 
   function LatLngToGPX(ptindent, latlng, gpxelt, properties) {
 
-    var gpx = ptindent + "<" + gpxelt;
+    let gpx = ptindent + "<" + gpxelt;
     gpx += " lat=\"" + getCoordinate(latlng.lat) + "\" lon=\"" + getCoordinate(latlng.lng) + "\">";
     if (!isNaN(latlng.alt)) {
       gpx += "<ele>" + latlng.alt + "</ele>";
@@ -1313,14 +1313,14 @@ $(function(){
   }
 
   function getSegmentGPX(segment, ptindent, pttag) {
-    var gpx = "";
-    var latlngs = segment ? segment.getLatLngs() : undefined;
+    let gpx = "";
+    const latlngs = segment ? segment.getLatLngs() : undefined;
     if (latlngs && latlngs.length > 0) {
-      var j = 0;
+      let j = 0;
       while (j < latlngs.length) {
-        var pt = latlngs[j];
-        var time = pt.time;
-        gpx += LatLngToGPX(ptindent, pt, pttag, { 'time': time, 'ext' : pt.ext });
+        const pt = latlngs[j];
+        const time = pt.time;
+        gpx += LatLngToGPX(ptindent, pt, pttag, { 'time': time, 'ext': pt.ext });
         j++;
       }
     }
@@ -1329,18 +1329,18 @@ $(function(){
 
   function getGPX(trackname, savealt, asroute, nometadata) {
 
-    var startdate = new Date();
-    var xmlname = "<name>" + htmlEncode(trackname) + "</name>";
-    var gpx = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n';
+    let startdate = new Date();
+    const xmlname = "<name>" + htmlEncode(trackname) + "</name>";
+    let gpx = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n';
     gpx += '<gpx creator="' + config.appname + '"\n';
     gpx += '    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" version="1.1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"';
 
     // xmlns from each segment
-    var xmlnsArr = [];
-    arrayForEach(editLayer.getLayers(), function(idx, segment) {
+    const xmlnsArr = [];
+    arrayForEach(editLayer.getLayers(), function (idx, segment) {
       if (segment.xmlnsArr && segment.xmlnsArr.length) {
-        for (var i = 0; i < segment.xmlnsArr.length; i++) {
-          var item = segment.xmlnsArr[i];
+        for (let i = 0; i < segment.xmlnsArr.length; i++) {
+          const item = segment.xmlnsArr[i];
           if (xmlnsArr.indexOf(item) < 0) {
             gpx += '\n    ' + item;
             xmlnsArr.push(item);
@@ -1368,12 +1368,12 @@ $(function(){
       }
       if (map.getBounds().isValid()) {
         try {
-          var sw = map.getBounds().getSouthWest();
-          var ne = map.getBounds().getNorthEast();
+          const sw = map.getBounds().getSouthWest();
+          const ne = map.getBounds().getNorthEast();
           gpx += '  <bounds minlat="' + getCoordinate(Math.min(sw.lat, ne.lat)) +
-          '" minlon="' + getCoordinate(Math.min(sw.lng, ne.lng)) +
-          '" maxlat="' + getCoordinate(Math.max(sw.lat, ne.lat)) +
-          '" maxlon="' + getCoordinate(Math.max(sw.lng, ne.lng)) + '"/>\n';
+            '" minlon="' + getCoordinate(Math.min(sw.lng, ne.lng)) +
+            '" maxlat="' + getCoordinate(Math.max(sw.lat, ne.lat)) +
+            '" maxlon="' + getCoordinate(Math.max(sw.lng, ne.lng)) + '"/>\n';
         } catch (err) {
           let sz;//, zoom;
           try {
@@ -1402,17 +1402,17 @@ $(function(){
     }
 
     // Waypoints
-    var wpts = waypoints && !waypoints.isHidden ? waypoints.getLayers() : undefined;
+    const wpts = waypoints && !waypoints.isHidden ? waypoints.getLayers() : undefined;
     if (wpts && wpts.length > 0) {
-      var i = 0;
+      let i = 0;
       while (i < wpts.length) {
-        var wpt = wpts[i];
+        const wpt = wpts[i];
         gpx += LatLngToGPX("", wpt.getLatLng(), "wpt", wpt.options);
         i++;
       }
     }
 
-    var ptindent, pttag, wraptag, segtag;
+    let ptindent, pttag, wraptag, segtag;
     if (asroute) {
       ptindent = "  ";
       wraptag = "rte";
@@ -1426,9 +1426,9 @@ $(function(){
 
 
     startdate = startdate.getTime();
-    var selectedSegment = track;
+    const selectedSegment = track;
     // for each segment
-    forEachSegment(function(segment) {
+    forEachSegment(function (segment) {
       segmentClickListener({ target: segment }, true);
       // check if it is a polyline
       gpx += "<" + wraptag + ">\n";
@@ -1456,7 +1456,7 @@ $(function(){
   }
 
   function getConfirmedTrackName() {
-    var trackname = getTrackName();
+    let trackname = getTrackName();
     if (!trackname || trackname === NEW_TRACK_NAME) {
       askTrackName();
       trackname = getTrackName();
@@ -1465,9 +1465,9 @@ $(function(){
   }
 
   function getTrackGPX(doConfirmName) {
-    var asroute = isChecked("#as-route");
-    var nometadata = isChecked("#nometadata");
-    var trackname = doConfirmName ? getConfirmedTrackName() : getTrackName();
+    const asroute = isChecked("#as-route");
+    const nometadata = isChecked("#nometadata");
+    const trackname = doConfirmName ? getConfirmedTrackName() : getTrackName();
     return getGPX(trackname, /*savealt*/ false, asroute, nometadata);
   }
 
@@ -1494,7 +1494,7 @@ $(function(){
 
       $("#save-time-profile").on("change", checkSaveTimeProfile);
     } catch {
-      onerror("no save-time-profile selector", {cells: $("#menutools tr").length});
+      onerror("no save-time-profile selector", { cells: $("#menutools tr").length });
       forceReload();
     }
 
@@ -1539,7 +1539,7 @@ $(function(){
         // last segment time is the start of the next segment
         from = lastSegTime;
       });
-      setStatus("Time saved", {timeout:3});
+      setStatus("Time saved", { timeout: 3 });
       ga('send', 'event', 'tool', 'save-time');
       saveState();
 
@@ -1588,20 +1588,20 @@ $(function(){
       if (nbErr) {
         console.error(nbErr, "points could not be moved because of invalid date format");
       }
-      setStatus("Shift completed", {timeout:3});
+      setStatus("Shift completed", { timeout: 3 });
       ga('send', 'event', 'tool', 'shift-time');
       saveState();
     }
   });
 
-  $("#track-download").on("click", function() {
+  $("#track-download").on("click", function () {
     setEditMode(EDIT_NONE);
     setStatus("Formatting..", { spinner: true });
-    var gpx = getTrackGPX(true);
+    const gpx = getTrackGPX(true);
     ga('send', 'event', 'file', 'save', undefined, Math.round(gpx.length / 1000));
     try {
-      var blob = new Blob([gpx],
-        isSafari() ? {type: "text/plain;charset=utf-8"} : {type: "application/gpx+xml;charset=utf-8"}
+      const blob = new Blob([gpx],
+        isSafari() ? { type: "text/plain;charset=utf-8" } : { type: "application/gpx+xml;charset=utf-8" }
       );
       saveAs(blob, getTrackName() + ".gpx");
       clearStatus();
@@ -1621,7 +1621,7 @@ $(function(){
   function addEditorSegmentItem(segment, i) {
 
     function getSegmentName() {
-      return segment.name ? segment.name : "Segment #" + (i+1);
+      return segment.name ? segment.name : "Segment #" + (i + 1);
     }
 
     function editSegmentName() {
@@ -1695,10 +1695,10 @@ $(function(){
       let colorPickerButton = newitem.find(`.item-color-picker-${i}`)[0];
       if (!colorPickerButton) {
         onerror("ColorPickerButton missing", {
-          "i" : i,
-          "segItem" : segItem,
-          "newItem" : newitem.html(),
-          "jscolor.lookupClass" : jscolor.lookupClass
+          "i": i,
+          "segItem": segItem,
+          "newItem": newitem.html(),
+          "jscolor.lookupClass": jscolor.lookupClass
         });
       } else {
         colorPicker = newitem.find(`.item-color-picker-${i}`)[0].jscolor;
@@ -1712,7 +1712,7 @@ $(function(){
 
   function onAllCheckedSegment(opName, minCount, func, noConfirm) {
     let uids = [], names = "";
-    $("#segments-list li").each(function() {
+    $("#segments-list li").each(function () {
       if (isChecked($(this).find(".seg-check"))) {
         let uid = $(this).attr("uid");
         uids.push(uid);
@@ -1727,8 +1727,8 @@ $(function(){
 
   function joinCheckedSegments() {
     setEditMode(EDIT_NONE);
-    var seg1;
-    let count = onAllCheckedSegment("Join", 2, function(segment) {
+    let seg1;
+    let count = onAllCheckedSegment("Join", 2, function (segment) {
       if (!seg1) {
         seg1 = segment;
       } else {
@@ -1739,7 +1739,7 @@ $(function(){
     });
     if (count > 1) {
       track = null;
-      segmentClickListener({target: seg1}, true);
+      segmentClickListener({ target: seg1 }, true);
       saveState();
       polystats.updateStatsFrom(0);
       setStatus("Joined " + count + " segments", { timeout: 3 });
@@ -1751,7 +1751,7 @@ $(function(){
   }
 
   function deleteCheckedSegments() {
-    let count = onAllCheckedSegment("Delete", 1, function(segment) {
+    let count = onAllCheckedSegment("Delete", 1, function (segment) {
       deleteSegment(segment);
     });
     if (count > 0) {
@@ -1767,7 +1767,7 @@ $(function(){
     segment.isHidden = (segment.isHidden) ? false : true;
     if (((segment.isHidden) && (segment == track)) ||
       ((!segment.isHidden) && ((!track) || track.getLatLngs().length < 1))) {
-        segmentChanged = selectFirstSegment();
+      segmentChanged = selectFirstSegment();
     }
     if (!segmentChanged) {
       updateOverlayTrackStyle(segment);
@@ -1802,11 +1802,11 @@ $(function(){
     segList = $("#segments-list");
     let i = 0;
     let totalPts = 0;
-    forEachSegment(function(segment) {
-        addEditorSegmentItem(segment, i++);
-        const segPts = segment.getLatLngs().length;
-        console.debug(`${segment.name}: ${segPts}`);
-        totalPts += segPts;
+    forEachSegment(function (segment) {
+      addEditorSegmentItem(segment, i++);
+      const segPts = segment.getLatLngs().length;
+      console.debug(`${segment.name}: ${segPts}`);
+      totalPts += segPts;
     }, ALL_SEGMENTS);
     console.debug(`TOTAL: ${totalPts}`);
     let hasSegments = (i > 0);
@@ -1816,13 +1816,13 @@ $(function(){
       segList.sortable({
         //scroll: true,
         handle: ".item-drag",
-        update: function() {
+        update: function () {
           // collect segment uids
           let lyUids = {};
-          forEachSegment(function(segment) {
+          forEachSegment(function (segment) {
             lyUids[L.Util.stamp(segment)] = segment;
           }, ALL_SEGMENTS);
-          $("#segments-list li").each(function(idx) {
+          $("#segments-list li").each(function (idx) {
             let uid = $(this).attr("uid");
             lyUids[uid]._wtOrder = idx;
           });
@@ -1833,12 +1833,12 @@ $(function(){
     $("#join-segs").on("click", joinCheckedSegments);
     $("#del-segs").on("click", deleteCheckedSegments);
     $("#toggle-segs").on("click", toggleCheckedSegments);
-    $("#seg-check-all").on("change", ()=>{
+    $("#seg-check-all").on("change", () => {
       let checked = isChecked($("#seg-check-all"));
       setChecked($("#seg-editor-list .seg-check"), checked);
       onCheck();
     });
-    $(".seg-check").on("change", ()=>{
+    $(".seg-check").on("change", () => {
       onCheck();
     });
     onCheck();
@@ -1847,7 +1847,7 @@ $(function(){
   //---------------------------------------------------
   // Share
 
-  $("#track-share").on("click", function() {
+  $("#track-share").on("click", function () {
     closeMenu();
     $("#wtshare-map-name").text(baseLayer);
     $("#wtshare-ask").show();
@@ -1860,7 +1860,7 @@ $(function(){
       $(".if-encrypt").show();
     }
   });
-  function closeShareBox(){
+  function closeShareBox() {
     $("#wtshare-box").hide();
     return false;
   }
@@ -1868,46 +1868,46 @@ $(function(){
   $("#wtshare-cancel").on("click", closeShareBox);
   $("#wtshare-ok").on("click", closeShareBox);
 
-  function uploadClicked(){
+  function uploadClicked() {
     $("#wtshare-ask").hide();
     $("#wtshare-processing").show();
-    var gpx = getTrackGPX(true);
-    var params = "";
+    const gpx = getTrackGPX(true);
+    let params = "";
     if (isChecked("#wtshare-map")) {
       params += "&map=" + encodeURIComponent(baseLayer);
       overlays = [];
-      objectForEach(overlaysOn, function(oname, oon) {
+      objectForEach(overlaysOn, function (oname, oon) {
         if (oon) overlays.push(oname);
       });
       params += "&overlays=" + encodeURIComponent(overlays.join(','));
     }
     if (isChecked("#wtshare-enc")) {
-      var pwd = Math.random().toString(36).substring(2);
+      const pwd = Math.random().toString(36).substring(2);
       aesGcmEncrypt(gpx, pwd)
-      .then(function(cipher) {
-        //console.log("iv  : " + cipher.iv);
-        //console.log("pwd : " + pwd);
-        var encversion = "01";
-        params += "&key=" + encversion + strencode(cipher.iv + pwd);
-        gpx = cipher.ciphertext;
-        ga('send', 'event', 'file', 'encrypt', undefined, Math.round(gpx.length / 1000));
-        shareGpx(gpx, params, "cipher-yes");
-      })
-      .catch(function(err) {
-        onerror('Crypto-encrypt :' + err);
-        setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
-        $("#wtshare-box").hide();
-      });
+        .then(function (cipher) {
+          //console.log("iv  : " + cipher.iv);
+          //console.log("pwd : " + pwd);
+          const encversion = "01";
+          params += "&key=" + encversion + strencode(cipher.iv + pwd);
+          gpx = cipher.ciphertext;
+          ga('send', 'event', 'file', 'encrypt', undefined, Math.round(gpx.length / 1000));
+          shareGpx(gpx, params, "cipher-yes");
+        })
+        .catch(function (err) {
+          onerror('Crypto-encrypt :' + err);
+          setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
+          $("#wtshare-box").hide();
+        });
     } else {
       shareGpx(gpx, params, isCryptoSupported() ? "cipher-no" : "cipher-unavailable");
     }
   }
 
   function uploadFailed(share, gpx, error) {
-    var errmsg = error.statusText || error;
-    var gpxkb = Math.round(gpx.length / 1000);
+    const errmsg = error.statusText || error;
+    const gpxkb = Math.round(gpx.length / 1000);
     onerror('Upload failed', {
-      "Lib" : share.name,
+      "Lib": share.name,
       "Error": errmsg,
       "GPX KB": gpxkb
     });
@@ -1922,11 +1922,11 @@ $(function(){
     share.upload(
       getTrackName(), gpx,
       function (gpxurl, rawgpxurl) {
-        var url = window.location.toString();
-        url = url.replace(/#+.*$/,""); // remove fragment
-        url = url.replace(/\?.*$/,""); // remove parameters
-        url = url.replace(/index\.html$/,""); // remove index.html
-        url = url.replace(/\/*$/,"/"); // keep 1 and only 1 trailing /
+        let url = window.location.toString();
+        url = url.replace(/#+.*$/, ""); // remove fragment
+        url = url.replace(/\?.*$/, ""); // remove parameters
+        url = url.replace(/index\.html$/, ""); // remove index.html
+        url = url.replace(/\/*$/, "/"); // keep 1 and only 1 trailing /
         url = url + "?ext=gpx&noproxy=true&url=" + encodeURIComponent(rawgpxurl) + params;
         $("#wtshare-val").val(url);
         $("#wtshare-open").attr("href", url);
@@ -1938,18 +1938,18 @@ $(function(){
         $("#wtshare-done").show();
         $("#wtshare-val").focus();
         $("#wtshare-val").select();
-      }, function(error) {
+      }, function (error) {
         uploadFailed(share, gpx, error);
         $("#wtshare-box").hide();
       });
   }
 
-  function showQRCode(){
+  function showQRCode() {
     $("#wtshare-links").hide();
     $("#wtshare-qrcode").show();
     return false;
   }
-  function hideQRCode(){
+  function hideQRCode() {
     $("#wtshare-links").show();
     $("#wtshare-qrcode").hide();
     return false;
@@ -1979,7 +1979,7 @@ $(function(){
   //---------------------------------------------------
 
   function setInactiveSegmentClickable(clickable) {
-    forEachSegment(function(segment) {
+    forEachSegment(function (segment) {
       if (segment != track) {
         segment.setInteractive(clickable);
       }
@@ -1988,7 +1988,7 @@ $(function(){
 
   function editableWaypoints(editable) {
     var wpts = waypoints.getLayers();
-    for (var i = 0; i < wpts.length; i++) {
+    for (let i = 0; i < wpts.length; i++) {
       if (editable) {
         wpts[i].enableEdit();
       } else {
@@ -2005,11 +2005,11 @@ $(function(){
     if (pts && (pts.length > 0)) {
       pts = L.PolyPrune.prune(pts, { tolerance: pruneDist, useAlt: true });
       ga('send', 'event', 'edit', 'merge', undefined, pts.length);
-      for (var j = 0; j < pts.length; j++) {
+      for (let j = 0; j < pts.length; j++) {
         track.addLatLng(pts[j]);
       }
       updateExtremities();
-      elevate("mergeRouteToTrack", pts, false, function() {
+      elevate("mergeRouteToTrack", pts, false, function () {
         polystats.updateStatsFrom(initlen);
         saveState();
       });
@@ -2047,7 +2047,7 @@ $(function(){
   function showRoutingCredit() {
     var credit = (routerFactory == createGraphHopperRouter) ?
       "<a href='https://graphhopper.com'>GraphHopper</a> " :
-      "<a href='https://openrouteservice.org'>OpenRoute Service</a>" ;
+      "<a href='https://openrouteservice.org'>OpenRoute Service</a>";
     $("#map").append("<span class='routing-credit'>Powered by " + credit + "</span>");
   }
 
@@ -2062,7 +2062,7 @@ $(function(){
   function enterDragMode() {
     setExtremityVisibility(true);
     track.setInteractive(true);
-    track.on("dragend", function() {
+    track.on("dragend", function () {
       wasDragged = true;
       updateExtremities();
     });
@@ -2113,7 +2113,7 @@ $(function(){
         setLocationMode(LOC_NONE);
         break;
       case EDIT_MANUAL_TRACK:
-          if (track) {
+        if (track) {
           track.disableEdit();
         }
         break;
@@ -2165,8 +2165,8 @@ $(function(){
         } catch (err) {
           onerror("Cannot edit", {
             "err": err.toString(),
-            "points" : track.getLatLngs().length,
-            "wasMode" : wasMode,
+            "points": track.getLatLngs().length,
+            "wasMode": wasMode,
             "stack": err.stack
           });
           mode = EDIT_NONE;
@@ -2198,13 +2198,12 @@ $(function(){
     saveEditMode();
     $("#edit-tools").toggle(editMode > EDIT_RECORDING);
   }
-
   $("#prune-dist-opt, #prune-time-opt").on("change", (event) => {
     if (!isChecked($(event.target))) {
       $(event.target.nextSibling).removeClass("invalid");
     }
   });
-  $("#compress").on("click", function() {
+  $("#compress").on("click", function () {
 
     function getKeepOpt(selOpt, valOpt) {
       let value;
@@ -2285,7 +2284,7 @@ $(function(){
   }
   $("#prune-time-opt, #prune-dist-opt").on("change", checkPruneKeepOpts);
 
-  $("#smooth").on("click", function() {
+  $("#smooth").on("click", function () {
 
     smoothLevel = $("#smooth-level").val();
     saveValOpt("wt.smoothLevel", smoothLevel);
@@ -2295,14 +2294,14 @@ $(function(){
         let pts = segment.getLatLngs();
         for (let round = 0; round < smoothLevel; round++) {
           let i = 1;
-          while (i+1 < pts.length) {
-            const prevPt = pts[i-1];
+          while (i + 1 < pts.length) {
+            const prevPt = pts[i - 1];
             const pt = pts[i];
-            const nextPt = pts[i+1];
+            const nextPt = pts[i + 1];
             if (!isUndefined(prevPt.alt) && !isUndefined(pt.alt) && !isUndefined(nextPt.alt)) {
               const distToPrev = pt.distanceTo(prevPt);
               const distPrevNext = pt.distanceTo(nextPt) + distToPrev;
-              const linearAlt = prevPt.alt + ((nextPt.alt - prevPt.alt) * (distToPrev / distPrevNext))
+              const linearAlt = prevPt.alt + ((nextPt.alt - prevPt.alt) * (distToPrev / distPrevNext));
               pt.alt = roundDecimal((pt.alt + linearAlt) / 2, 2);
             }
             i++;
@@ -2324,32 +2323,32 @@ $(function(){
   function getMyIpLocation() {
     console.log("Getting location from IP address");
     $.get(config.ipLookup.url())
-    .done(function(res) {
-      setLocation({
-        lat: res.lat,
-        lng: res.lon
-      }, false);
-    })
-    .fail(function() {
-      showWarning("IP Geolocation failed", "Do you you have an ad blocker?<br>Try deactivating it on this page to get geolocation working.");
-    });
+      .done(function (res) {
+        setLocation({
+          lat: res.lat,
+          lng: res.lon
+        }, false);
+      })
+      .fail(function () {
+        showWarning("IP Geolocation failed", "Do you you have an ad blocker?<br>Try deactivating it on this page to get geolocation working.");
+      });
   }
 
-  var myLocIcon = L.icon({
+  const myLocIcon = L.icon({
     iconUrl: 'img/mylocation.png',
     iconSize: [48, 48],
     iconAnchor: [24, 24]
   });
-  var myLocMarker;
-  var myLocTimer;
-  var
+  let myLocMarker;
+  let myLocTimer;
+
+  const
     LOC_NONE = 0,
     LOC_ONCE = 1,
     LOC_CONTINUOUS = 2,
     LOC_READY_TO_RECORD = 3,
-    LOC_RECORDING = 4,
-    loc_recording_id,
-    showLocation = LOC_ONCE;
+    LOC_RECORDING = 4;
+  let showLocation = LOC_ONCE;
 
   function setLocationMode(mode) {
     if (showLocation == mode) return;
@@ -2361,14 +2360,14 @@ $(function(){
         $("#myloc").removeClass("loc-recording");
         $("#myloc").removeClass("control-selected");
         if ((showLocation == LOC_RECORDING) && (track.getLatLngs().length > 0)) {
-            navigator.geolocation.clearWatch(loc_recording_id);
-            // compress recording
-            let pts = L.PolyPrune.prune(track.getLatLngs(), { tolerance: pruneDist, useAlt: true });
-            // discard single points
-            track.setLatLngs(pts.length > 1 ? pts : []);
-            updateExtremities();
-            removeMyLocMarker(true);
-            track.redraw();
+          navigator.geolocation.clearWatch(loc_recording_id);
+          // compress recording
+          let pts = L.PolyPrune.prune(track.getLatLngs(), { tolerance: pruneDist, useAlt: true });
+          // discard single points
+          track.setLatLngs(pts.length > 1 ? pts : []);
+          updateExtremities();
+          removeMyLocMarker(true);
+          track.redraw();
         }
         break;
       case LOC_CONTINUOUS:
@@ -2388,7 +2387,7 @@ $(function(){
       default:
     }
     if (watch) {
-      loc_recording_id = navigator.geolocation.watchPosition(
+      const loc_recording_id = navigator.geolocation.watchPosition(
         gotLocation,
         (err) => { // ERROR
           console.error(`GPS watch failed (${err.message})`);
@@ -2401,7 +2400,7 @@ $(function(){
           timeout: 999999,
           maximumAge: 10000,
         }
-      )
+      );
 
     }
     showLocation = mode;
@@ -2419,7 +2418,7 @@ $(function(){
 
   function setLocation(pos, showIcon) {
     if (showLocation == LOC_NONE) return; // cancelled in the meantime
-    var zoom = map.getZoom() ? map.getZoom() : config.display.zoom;
+    const zoom = map.getZoom() ? map.getZoom() : config.display.zoom;
     map.setView(pos, zoom);
     if (myLocMarker) {
       clearTimeout(myLocTimer);
@@ -2480,15 +2479,15 @@ $(function(){
   }
 
   function getSavedPosition(_lat, _lng) {
-    var vlat = getVal("wt.poslat", _lat);
-    var vlng = getVal("wt.poslng", _lng);
-    var pos = {
+    const vlat = getVal("wt.poslat", _lat);
+    const vlng = getVal("wt.poslng", _lng);
+    const pos = {
       lat: parseFloat(vlat),
       lng: parseFloat(vlng)
     };
     // ask for position on first use
     if (vlat == _lat && vlng == _lng) {
-      setTimeout(function() {
+      setTimeout(function () {
         setLocationMode(LOC_ONCE);
         gotoMyLocation();
       }, 1000);
@@ -2497,7 +2496,7 @@ $(function(){
   }
 
   function savePosition() {
-    var pos = map.getCenter();
+    const pos = map.getCenter();
     saveValOpt("wt.poslat", pos.lat);
     saveValOpt("wt.poslng", pos.lng);
   }
@@ -2512,12 +2511,12 @@ $(function(){
     // 1. waypoints
     var numPts = waypoints && !waypoints.isHidden ? waypoints.getLayers().length : 0;
     // 2. All segment points
-    forEachSegment(function(segment) {
-        numPts += segment.getLatLngs().length;
+    forEachSegment(function (segment) {
+      numPts += segment.getLatLngs().length;
     });
     // Don't save if more than 3000 points
     if (numPts < 3000) {
-      var gpx = getGPX(trackname, /*savealt*/ false, /*asroute*/ false, /*nometadata*/ false);
+      const gpx = getGPX(trackname, /*savealt*/ false, /*asroute*/ false, /*nometadata*/ false);
       saveValOpt("wt.gpx", gpx);
     }
   }
@@ -2527,7 +2526,7 @@ $(function(){
     saveJsonValOpt("wt.activities", activities);
     saveValOpt("wt.baseLayer", baseLayer);
     objectForEach(apikeys, function name(kname, kval) {
-      saveValOpt("wt."+kname, kval);
+      saveValOpt("wt." + kname, kval);
     });
     saveValOpt("wt.joinOnLoad", joinOnLoad);
     saveJsonValOpt("wt.mymaps", mymaps);
@@ -2564,7 +2563,7 @@ $(function(){
       }
     });
     var blob = new Blob([JSON.stringify(fullState)],
-      isSafari() ? {type: "text/plain;charset=utf-8"} : {type: "application/json;charset=utf-8"}
+      isSafari() ? { type: "text/plain;charset=utf-8" } : { type: "application/json;charset=utf-8" }
     );
     saveAs(blob, "wtracks.cfg");
     ga('send', 'event', 'setting', 'export');
@@ -2591,7 +2590,7 @@ $(function(){
     var f = evt.currentTarget.files ? evt.currentTarget.files[0] : undefined;
     if (f) {
       var reader = new FileReader();
-      reader.onload = function(le) {
+      reader.onload = function (le) {
         loadStateFile(le.target.result);
       };
       reader.readAsText(f);
@@ -2602,7 +2601,7 @@ $(function(){
   $('#load-state-file').on('change', onStateFileSelect);
   $('#load-state-file').on('click', function (e) {
     if (!confirm(
-        "This will override all your settings (maps, activities, etc.)\nContinue?"
+      "This will override all your settings (maps, activities, etc.)\nContinue?"
     )) {
       e.preventDefault();
     }
@@ -2617,12 +2616,12 @@ $(function(){
   }
 
   function restoreEditMode() {
-    var restoredMode = getVal("wt.editMode", EDIT_DEFAULT);
+    const restoredMode = getVal("wt.editMode", EDIT_DEFAULT);
     setEditMode(parseInt(restoredMode));
   }
 
   function restorePosition() {
-    var defpos = getSavedPosition(config.display.pos.lat, config.display.pos.lng);
+    const defpos = getSavedPosition(config.display.pos.lat, config.display.pos.lng);
     setLocationMode(LOC_ONCE);
     setLocation(defpos);
   }
@@ -2644,7 +2643,7 @@ $(function(){
   }
 
   function clearSavedState() {
-    storedValuesForEach( (key) => {
+    storedValuesForEach((key) => {
       if (key.startsWith("wt.") && (key != "wt.saveState")) {
         storeVal(key, undefined);
       }
@@ -2652,8 +2651,8 @@ $(function(){
   }
 
   function getProvider(mapobj) {
-    var url = typeof mapobj.url === "string" ? mapobj.url : mapobj.url();
-    var p = null;
+    const url = typeof mapobj.url === "string" ? mapobj.url : mapobj.url();
+    let p = null;
     var protocol = url.split('/')[0];
     // skip HTTP URLs when current is HTTPS
     if ((protocol.length == 0) || (protocol == "https:") || (location.protocol == "http:")) {
@@ -2671,7 +2670,7 @@ $(function(){
       if (isUnset(mapobj.type) || (mapobj.type === "base") || (mapobj.type === "overlay")) {
         tileCtor = L.tileLayer;
       } else if (mapobj.type === "pmtiles") {
-        const pmTileCtor = new PMTiles(url,{allow_200:true});
+        const pmTileCtor = new PMTiles(url, { allow_200: true });
         p = pmTileCtor.leafletLayer(mapopts);
       } else {
         tileCtor = L.tileLayer[mapobj.type];
@@ -2704,20 +2703,21 @@ $(function(){
   }
 
   // Add maps and overlays
-  var baseLayers = {};
-  var overlays = {};
-  var baseLayer = getVal("wt.baseLayer", config.display.map);
-  var requestedMap = getParameterByName("map");
-  var requestedOverlays = getParameterByName("overlays");
+  let baseLayers = {};
+  let overlays = {};
+  let baseLayer = getVal("wt.baseLayer", config.display.map);
+  const requestedMap = getParameterByName("map");
+  let requestedOverlays = getParameterByName("overlays");
   requestedOverlays = requestedOverlays ? requestedOverlays.split(',') : undefined;
-  mapsForEach(function(name, props) {
-    if (props.on ||  name == baseLayer || name === requestedMap || (requestedOverlays && requestedOverlays.includes(name))) {
-      var inList = props.in == MAP_MY ? mymaps : config.maps;
+  mapsForEach(function (name, props) {
+    if (props.on || name == baseLayer || name === requestedMap || (requestedOverlays && requestedOverlays.includes(name))) {
+      const inList = props.in == MAP_MY ? mymaps : config.maps;
       // WTracks legacy bug: make sure zoom values are numbers (fixes #42 & #43)
       inList[name].options.minZoom = Number(inList[name].options.minZoom);
       inList[name].options.maxZoom = Number(inList[name].options.maxZoom);
-      var tile = getProvider(inList[name]);
+      const tile = getProvider(inList[name]);
       if (tile) {
+
         // TODO: "overlay" type is a deprecated legacy, should be discarded in Dec 2022
         if ((inList[name].type === "overlay") || (inList[name].overlay)) {
           tile.options.isOverlay = true; // to easily find overlays in map layers
@@ -2732,7 +2732,7 @@ $(function(){
     }
   });
 
-  var baseLayerControl = L.control.layers(baseLayers, overlays);
+  const baseLayerControl = L.control.layers(baseLayers, overlays);
   baseLayerControl.addTo(map);
 
   // ----------------------
@@ -2741,10 +2741,10 @@ $(function(){
   if (!baseLayers[baseLayer]) {
     (baseLayer = config.display.map);
   }
-  var initialLayer = baseLayers[baseLayer];
+  let initialLayer = baseLayers[baseLayer];
   if (!initialLayer) {
     //var availableLayerNames = "";
-    objectForEach(baseLayers, function(name) {
+    objectForEach(baseLayers, function (name) {
       //availableLayerNames += name + "; ";
       if (!initialLayer) {
         initialLayer = baseLayers[name]; // use first one
@@ -2763,13 +2763,13 @@ $(function(){
   if (initialLayer) {
     map.addLayer(initialLayer);
   }
-  var layerInit = true;
+  let layerInit = true;
 
-  map.on("baselayerchange", function(e) {
+  map.on("baselayerchange", function (e) {
     baseLayer = e.name;
     if (layerInit) {
       // deffer to make sure GA is initialized
-      setTimeout(function(){
+      setTimeout(function () {
         ga('send', 'event', 'map', 'init', baseLayer);
       }, 2000);
       layerInit = false;
@@ -2782,13 +2782,13 @@ $(function(){
     }
     setAutoGrayBaseLayer(e.layer);
   });
-  map.on('zoomstart zoom zoomend', function(){
+  map.on('zoomstart zoom zoomend', function () {
     console.debug('Zoom level: ' + map.getZoom());
   });
 
   function changeBaseLayer(mapname) {
-    var found = false;
-    $(".leaflet-control-layers-base .leaflet-control-layers-selector").each(function(idx,elt) {
+    let found = false;
+    $(".leaflet-control-layers-base .leaflet-control-layers-selector").each(function (idx, elt) {
       if (mapname === elt.nextSibling.innerText.substring(1)) {
         $(elt).trigger("click");
         found = true;
@@ -2797,13 +2797,13 @@ $(function(){
     });
     if (!found) {
       // map is missing, inform user
-      setTimeout(function(){
+      setTimeout(function () {
         setStatus("Requested map not visible/configured: " + mapname, { timeout: 5, class: "status-error" });
       }, 4000);
     }
   }
 
-  var overlaysOn = getJsonVal("wt.overlaysOn", {});
+  let overlaysOn = getJsonVal("wt.overlaysOn", {});
 
   function setOverlay(name, yesno) {
     overlaysOn[name] = yesno;
@@ -2813,16 +2813,16 @@ $(function(){
 
   /********* Overlay opacity control *************/
   function addOpacityControl(ovlname, ovl) {
-    var layerId = L.Util.stamp(ovl);
-    var initialOpacity = isUndefined(ovl.options.opacity) ? 1 : ovl.options.opacity*1;
-    var ovlItem = $(".leaflet-control-layers-overlays span span").filter(function() { return $(this).text().trim() == ovlname });
+    const layerId = L.Util.stamp(ovl);
+    const initialOpacity = isUndefined(ovl.options.opacity) ? 1 : ovl.options.opacity * 1;
+    const ovlItem = $(".leaflet-control-layers-overlays span span").filter(function () { return $(this).text().trim() == ovlname; });
     // add slider
     var slider = $('<input class="overlay-opacity-slider" title="Opacity" type="range" min="0" max="100" value="' +
-       initialOpacity*100 + '"></input>')
-    .insertAfter(ovlItem);
-    slider.on("change", function(evt) {
+      initialOpacity * 100 + '"></input>')
+      .insertAfter(ovlItem);
+    slider.on("change", function (evt) {
       // search layer
-      objectForEach(map._layers, function(lId, layer) {
+      objectForEach(map._layers, function (lId, layer) {
         if (layer && L.Util.stamp(layer) === layerId) {
           // set opacity
           layer.setOpacity(Number(evt.target.value / 100));
@@ -2834,21 +2834,21 @@ $(function(){
   function removeOpacityControl(ovlname) {
     // remove slider
     $(".leaflet-control-layers-overlays span:contains('" + ovlname + "')")
-    .parent()
-    .find(".overlay-opacity-slider")
-    .remove();
+      .parent()
+      .find(".overlay-opacity-slider")
+      .remove();
   }
 
   if (requestedOverlays) {
-    requestedOverlays.forEach(function(oname) {
-      var ovl =  overlays[oname];
+    requestedOverlays.forEach(function (oname) {
+      var ovl = overlays[oname];
       if (ovl) {
         map.addLayer(ovl);
       }
     });
   } else {
-    objectForEach(overlaysOn, function(oname, oon) {
-      var ovl =  overlays[oname];
+    objectForEach(overlaysOn, function (oname, oon) {
+      var ovl = overlays[oname];
       if (ovl) {
         if (oon) {
           map.addLayer(ovl);
@@ -2860,29 +2860,29 @@ $(function(){
     });
   }
 
-  map.on("overlayadd", function(e) {
+  map.on("overlayadd", function (e) {
     ga('send', 'event', 'map', 'overlay', e.name);
     setOverlay(e.name, true);
-    setTimeout(function(){
+    setTimeout(function () {
       addOpacityControl(e.name, overlays[e.name]);
-    },100);
+    }, 100);
   });
 
-  map.on("overlayremove", function(e) {
+  map.on("overlayremove", function (e) {
     setOverlay(e.name, false);
     removeOpacityControl(e.name);
   });
 
-  $("#autoGrayBaseLayer").on("change", function(){
+  $("#autoGrayBaseLayer").on("change", function () {
     autoGrayBaseLayer = !autoGrayBaseLayer;
     saveValOpt("wt.autoGrayBaseLayer", autoGrayBaseLayer);
     setAutoGrayBaseLayer(null);
   });
-  $("#noMixOverlays").on("change", function(){
+  $("#noMixOverlays").on("change", function () {
     noMixOverlays = isChecked("#noMixOverlays");
     saveValOpt("wt.noMixOverlays", noMixOverlays);
     // update all overlays
-    objectForEach(map._layers, function(id, layer) {
+    objectForEach(map._layers, function (id, layer) {
       if (layer.options.isOverlay) {
         let op;
         if (noMixOverlays) {
@@ -2901,7 +2901,7 @@ $(function(){
   });
 
   function hasOverlaysOn() {
-    return Object.values(overlaysOn).some(function(oon) { return oon; });
+    return Object.values(overlaysOn).some(function (oon) { return oon; });
   }
   function setAutoGrayBaseLayer(layer) {
     if (!layer) {
@@ -2918,7 +2918,7 @@ $(function(){
     }
   }
 
-  setLocation({lat: 0, lng: 0}); // required to initialize map
+  setLocation({ lat: 0, lng: 0 }); // required to initialize map
 
   // ---------------------------------------------------------------------------
   // Elevation service
@@ -2926,7 +2926,7 @@ $(function(){
   // Delete existing elevation data before applying elevation result
   function elevationCleanup(points) {
     if (points && (points.length > 0)) {
-      for (var i = 0; i < points.length; i++) {
+      for (let i = 0; i < points.length; i++) {
         points[i].alt = undefined;
       }
     }
@@ -2934,12 +2934,12 @@ $(function(){
 
   // Google elevation API
   function googleElevationService(locations, points, inc, cleanup, done, fail) {
-    var elevator;
+    let elevator;
     try {
       elevator = new google.maps.ElevationService();
       elevator.getElevationForLocations({
         'locations': locations
-      }).then(({results}) => {
+      }).then(({ results }) => {
         if (isUndefined(points.length)) {
           // single point elevation
           points.alt = roundDecimal(results[0].elevation, 2);
@@ -2947,7 +2947,7 @@ $(function(){
           if (cleanup) {
             elevationCleanup(points);
           }
-          for (var i = 0; i < results.length; i++) {
+          for (let i = 0; i < results.length; i++) {
             var pos = i * inc;
             if (pos >= points.length) {
               // we reached last point from track
@@ -2970,13 +2970,13 @@ $(function(){
   // https://github.com/Jorl17/open-elevation
   // eslint-disable-next-line no-unused-vars
   function openElevationService(locations, points, inc, cleanup, done, fail) {
-    var ajaxreq, i, len;
+    let ajaxreq, i, len;
     // GET is faster for small number of points (avoid OPTIONS preflight request)
     if (locations.length < 20) {
       // GET method
-      var strpts = "";
-      for (i = 0, len=locations.length; i < len; i++) {
-        if (i>0) strpts += "|";
+      let strpts = "";
+      for (i = 0, len = locations.length; i < len; i++) {
+        if (i > 0) strpts += "|";
         strpts += locations[i].lat + "," + locations[i].lng;
       }
       ajaxreq = {
@@ -2986,8 +2986,8 @@ $(function(){
       };
     } else {
       // POST method
-      var jsonreq = { locations: [] };
-      for (i = 0, len=locations.length; i < len; i++) {
+      const jsonreq = { locations: [] };
+      for (i = 0, len = locations.length; i < len; i++) {
         jsonreq.locations.push(
           {
             "latitude": locations[i].lat,
@@ -3005,35 +3005,35 @@ $(function(){
       };
     }
     $.ajax(ajaxreq)
-    .done(function(json) {
-      if (isUndefined(points.length)) {
-        // single point elevation
-        points.alt = roundDecimal(json.results[0].elevation, 2);
-      } else {
-        if (cleanup) {
-          elevationCleanup(points);
-        }
-        for (var i = 0; i < json.results.length; i++) {
-          var pos = i * inc;
-          if (pos >= points.length) {
-            // we reached last point from track
-            pos = points.length - 1;
+      .done(function (json) {
+        if (isUndefined(points.length)) {
+          // single point elevation
+          points.alt = roundDecimal(json.results[0].elevation, 2);
+        } else {
+          if (cleanup) {
+            elevationCleanup(points);
           }
-          points[pos].alt = roundDecimal(json.results[i].elevation, 2);
+          for (let i = 0; i < json.results.length; i++) {
+            var pos = i * inc;
+            if (pos >= points.length) {
+              // we reached last point from track
+              pos = points.length - 1;
+            }
+            points[pos].alt = roundDecimal(json.results[i].elevation, 2);
+          }
         }
-      }
-      done("oe.elevate.ok");
-    })
-    .fail(function(err, msg) {
-      fail('oe.elevate.ko', msg ? msg : err.status);
-    });
+        done("oe.elevate.ok");
+      })
+      .fail(function (err, msg) {
+        fail('oe.elevate.ko', msg ? msg : err.status);
+      });
   }
 
 
   // https://openrouteservice.org/dev/#/api-docs/elevation/line/post
   function orsElevationService(locations, points, inc, cleanup, done, fail) {
-    var i, len,
-      polyline = [];
+    let i, len;
+    polyline = [];
 
     if (locations.length == 1) {
       // single point
@@ -3047,45 +3047,45 @@ $(function(){
         contentType: "application/json",
         data: JSON.stringify({
           "format_in": "point",
-          "geometry": [ locations[0].lng, locations[0].lat ]
+          "geometry": [locations[0].lng, locations[0].lat]
         }),
         dataType: "json"
       })
-      /*
-      $.get({
-        url: "https://api.openrouteservice.org/elevation/point?" +
-          "api_key=" + getApiKey(apikeys.orskey) +
-          "&geometry=" + locations[0].lng + "," + locations[0].lat,
-        dataType: "json"
-      })
-      */
-      .done(function (json) {
-        if (json.geometry && json.geometry.coordinates && json.geometry.coordinates[0]) {
-          points.alt = roundDecimal(json.geometry.coordinates[2], 2);
-          done('ors.elevate1.ok');
-        } else {
-          // "Server error"
-          fail('ors.elevate1.ko', (json.message ? json.message + ". ": "") + "Area not covered?");
-        }
-      })
-      .fail(function(err) {
-        var errmsg = "";
-        if (err.responseJSON && err.responseJSON.message) {
-          errmsg = err.responseJSON.message;
-        } else {
-          if (err.error) {
-            errmsg = err.error + ". ";
+        /*
+        $.get({
+          url: "https://api.openrouteservice.org/elevation/point?" +
+            "api_key=" + getApiKey(apikeys.orskey) +
+            "&geometry=" + locations[0].lng + "," + locations[0].lat,
+          dataType: "json"
+        })
+        */
+        .done(function (json) {
+          if (json.geometry && json.geometry.coordinates && json.geometry.coordinates[0]) {
+            points.alt = roundDecimal(json.geometry.coordinates[2], 2);
+            done('ors.elevate1.ok');
           } else {
-            errmsg = "Request failed. ";
+            // "Server error"
+            fail('ors.elevate1.ko', (json.message ? json.message + ". " : "") + "Area not covered?");
           }
-          errmsg += "Check API key";
-        }
-        fail('ors.elevate1.ko', errmsg);
-      });
+        })
+        .fail(function (err) {
+          var errmsg = "";
+          if (err.responseJSON && err.responseJSON.message) {
+            errmsg = err.responseJSON.message;
+          } else {
+            if (err.error) {
+              errmsg = err.error + ". ";
+            } else {
+              errmsg = "Request failed. ";
+            }
+            errmsg += "Check API key";
+          }
+          fail('ors.elevate1.ko', errmsg);
+        });
       return;
     }
     // multi-points
-    for (i = 0, len=locations.length; i < len; i++) {
+    for (i = 0, len = locations.length; i < len; i++) {
       polyline.push([locations[i].lng, locations[i].lat]);
     }
     $.ajax({
@@ -3103,35 +3103,35 @@ $(function(){
       }),
       dataType: "json"
     })
-    .done(function(json) {
-      if (json.geometry && json.geometry[0]) {
-        if (cleanup) {
-          elevationCleanup(points);
-        }
-        var results = json.geometry;
-        for (var i = 0; i < results.length; i++) {
-          var pos = i * inc;
-          if (pos >= points.length) {
-            // we reached last point from track
-            pos = points.length - 1;
+      .done(function (json) {
+        if (json.geometry && json.geometry[0]) {
+          if (cleanup) {
+            elevationCleanup(points);
           }
-          points[pos].alt = roundDecimal(results[i][2], 2);
-        }
-        done("ors.elevate.ok");
-      } else {
+          var results = json.geometry;
+          for (let i = 0; i < results.length; i++) {
+            var pos = i * inc;
+            if (pos >= points.length) {
+              // we reached last point from track
+              pos = points.length - 1;
+            }
+            points[pos].alt = roundDecimal(results[i][2], 2);
+          }
+          done("ors.elevate.ok");
+        } else {
           // "Server error"
-          fail('ors.elevate.ko', (json.message ? json.message + ". ": "") + "Area not covered?");
-      }
-    })
-    .fail(function(err) {
-      var errmsg;
-      if (err.responseJSON && err.responseJSON.message) {
-        errmsg = err.responseJSON.message;
-      } else {
-        errmsg = "Request failed. Check API key";
-      }
-      fail('ors.elevate.ko', errmsg);
-    });
+          fail('ors.elevate.ko', (json.message ? json.message + ". " : "") + "Area not covered?");
+        }
+      })
+      .fail(function (err) {
+        var errmsg;
+        if (err.responseJSON && err.responseJSON.message) {
+          errmsg = err.responseJSON.message;
+        } else {
+          errmsg = "Request failed. Check API key";
+        }
+        fail('ors.elevate.ko', errmsg);
+      });
   }
 
   // multi-point elevation API
@@ -3155,11 +3155,11 @@ $(function(){
         locations = points;
       } else {
         locations = [];
-        for (var i = 0; i < points.length; i += inc) {
+        for (let i = 0; i < points.length; i += inc) {
           locations.push(points[i]);
         }
         // make sure last point is included
-        if ((i < points.length) || (i-inc < (points.length - 1))) {
+        if ((i < points.length) || (i - inc < (points.length - 1))) {
           locations.push(points[points.length - 1]);
         }
       }
@@ -3169,17 +3169,17 @@ $(function(){
 
   function callElevationService(callerName, locations, points, inc, cleanup, cb) {
     elevationService(locations, points, inc, cleanup,
-      function(eventName){
+      function (eventName) {
         ga('send', 'event', 'api', eventName, callerName, locations.length);
         clearStatus();
         // callback
         if (cb) cb(true);
       },
-      function(eventName, msg){
+      function (eventName, msg) {
         ga('send', 'event', 'api', eventName,
-          JSON.stringify({ "op": callerName, "msg": msg}), locations.length);
+          JSON.stringify({ "op": callerName, "msg": msg }), locations.length);
         console.warn("elevation request failed: " + msg);
-        setStatus("Elevation failed (" + msg + ")" , {
+        setStatus("Elevation failed (" + msg + ")", {
           timeout: 3,
           class: "status-error"
         });
@@ -3224,7 +3224,7 @@ $(function(){
     showMarker: false,
     showPopup: true,
     //customIcon: false,
-    customIcon: L.divIcon({html:'<span class="material-icons notranslate">search</span>'}),
+    customIcon: L.divIcon({ html: '<span class="material-icons notranslate">search</span>' }),
     retainZoomLevel: true,
     draggable: false
   }).addTo(map);
@@ -3235,7 +3235,7 @@ $(function(){
       position: 'topleft',
     },
 
-    onAdd: function(map) {
+    onAdd: function (map) {
       var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-edit'),
         link = L.DomUtil.create('a', '', container);
 
@@ -3245,7 +3245,7 @@ $(function(){
       //link.id = 'myloc';
       L.DomEvent.disableClickPropagation(link);
       L.DomEvent.on(link, 'click', L.DomEvent.stop)
-        .on(link, 'click', function() {
+        .on(link, 'click', function () {
           map.closePopup();
           if (showLocation == LOC_CONTINUOUS) {
             setLocationMode(LOC_NONE);
@@ -3281,8 +3281,8 @@ $(function(){
       event: 'click'
     },
 
-    onAdd: function(map) {
-      var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-edit'),
+    onAdd: function (map) {
+      const container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-edit'),
         link = L.DomUtil.create('a', '', container),
         editopts = L.DomUtil.create('span', '', container);
 
@@ -3291,7 +3291,7 @@ $(function(){
       link.innerHTML = this.options.html;
       L.DomEvent.disableClickPropagation(link);
       L.DomEvent.on(link, this.options.event, L.DomEvent.stop)
-        .on(link, this.options.event, function() {
+        .on(link, this.options.event, function () {
           map.closePopup();
           var et = $("#edit-tools");
           et.toggle();
@@ -3303,17 +3303,17 @@ $(function(){
       editopts.id = 'edit-tools';
       editopts.class = 'wtracks-control-icon';
       editopts.innerHTML = '<a href="#" title="Manual Track (e)" id="' + EDIT_MANUAL_ID + '"><span class="material-icons wtracks-control-icon notranslate">' + EDIT_MANUAL_ICON + '</span></a>' +
-      '<a href="#" title="Auto Track (a)" id="' + EDIT_AUTO_ID + '"><span class="material-icons wtracks-control-icon notranslate">' + EDIT_AUTO_ICON + '</span></a>' +
-      '<a href="#" title="Add segment" id="' + EDIT_ADDSEGMENT_ID + '">' +
+        '<a href="#" title="Auto Track (a)" id="' + EDIT_AUTO_ID + '"><span class="material-icons wtracks-control-icon notranslate">' + EDIT_AUTO_ICON + '</span></a>' +
+        '<a href="#" title="Add segment" id="' + EDIT_ADDSEGMENT_ID + '">' +
         '<span class="material-icons wtracks-control-icon segment-icon notranslate">timeline</span>' +
         '<span class="material-icons wtracks-control-icon ' + EDIT_ADDSEGMENT_ICON + ' notranslate">add</span>' +
-      '</a>' +
-      '<a href="#" title="Delete segment" id="' + EDIT_DELSEGMENT_ID + '">' +
+        '</a>' +
+        '<a href="#" title="Delete segment" id="' + EDIT_DELSEGMENT_ID + '">' +
         '<span class="material-icons wtracks-control-icon segment-icon notranslate">timeline</span>' +
         '<span class="material-icons wtracks-control-icon ' + EDIT_DELSEGMENT_ICON + ' notranslate">clear</span>' +
-      '</a>' +
-      '<a href="#" title="Move track (m)" id="' + EDIT_DRAG_ID + '"><span class="material-icons wtracks-control-icon notranslate">' + EDIT_DRAG_ICON + '</span></a>' +
-      '<a href="#" title="Waypoint (w)" id="' + EDIT_MARKER_ID + '"><span class="material-icons wtracks-control-icon notranslate">place</span></a>';
+        '</a>' +
+        '<a href="#" title="Move track (m)" id="' + EDIT_DRAG_ID + '"><span class="material-icons wtracks-control-icon notranslate">' + EDIT_DRAG_ICON + '</span></a>' +
+        '<a href="#" title="Waypoint (w)" id="' + EDIT_MARKER_ID + '"><span class="material-icons wtracks-control-icon notranslate">place</span></a>';
 
       return container;
     }
@@ -3330,8 +3330,8 @@ $(function(){
   map.addControl(new L.EditorControl());
 
   function isUserInputOngoing() {
-    var elt = document.activeElement;
-    var tag = elt ? elt.tagName.toLowerCase() : undefined;
+    const elt = document.activeElement;
+    const tag = elt ? elt.tagName.toLowerCase() : undefined;
     if ((tag == "input") || (tag == "textarea")) {
       return true;
     }
@@ -3342,7 +3342,7 @@ $(function(){
     return $(".overlay:visible").length;
   }
 
-  $("body").on("keydown", function(event) {
+  $("body").on("keydown", function (event) {
     //console.debug(`key: which=${event.which}, key=${event.key}, code=${event.code},`)
     // number of currently opened overlays
     let nOverlays = openedOverlays();
@@ -3430,7 +3430,7 @@ $(function(){
       case "t": // Tools
         openMenu("tools");
         break;
-        case "s": // Segments
+      case "s": // Segments
         openMenu("segments");
         break;
       case "*": // Settings
@@ -3451,7 +3451,7 @@ $(function(){
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_ADDSEGMENT_ID));
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_DELSEGMENT_ID));
   L.DomEvent.disableClickPropagation(L.DomUtil.get(EDIT_DRAG_ID));
-  $("#" + EDIT_MANUAL_ID).on("click", function(e) {
+  $("#" + EDIT_MANUAL_ID).on("click", function (e) {
     e.preventDefault();
     if (editMode == EDIT_MANUAL_TRACK) {
       undo();
@@ -3460,7 +3460,7 @@ $(function(){
       setEditMode(EDIT_MANUAL_TRACK);
     }
   });
-  $("#" + EDIT_AUTO_ID).on("click", function(e) {
+  $("#" + EDIT_AUTO_ID).on("click", function (e) {
     e.preventDefault();
     if (!routerFactory) {
       openApiKeyInfo(true);
@@ -3473,7 +3473,7 @@ $(function(){
       setEditMode(EDIT_AUTO_TRACK);
     }
   });
-  $("#" + EDIT_MARKER_ID).on("click", function(e) {
+  $("#" + EDIT_MARKER_ID).on("click", function (e) {
     e.preventDefault();
     if (waypoints && !waypoints.isHidden) {
       ga('send', 'event', 'edit', 'marker');
@@ -3483,7 +3483,7 @@ $(function(){
         "Go to 'Settings / Display options' to unhide waypoints");
     }
   });
-  $("#" + EDIT_ADDSEGMENT_ID).on("click", function(e) {
+  $("#" + EDIT_ADDSEGMENT_ID).on("click", function (e) {
     e.preventDefault();
     // shortcut
     if ((editMode == EDIT_MANUAL_TRACK) && getTrackLength() == 0) {
@@ -3492,12 +3492,12 @@ $(function(){
     }
     ga('send', 'event', 'edit', 'new-segment');
     setEditMode(EDIT_NONE);
-    setStatus("New segment", {timeout: 2});
+    setStatus("New segment", { timeout: 2 });
     newSegment();
     setEditMode(EDIT_MANUAL_TRACK);
     saveState();
   });
-  $("#" + EDIT_DELSEGMENT_ID).click(function(e) {
+  $("#" + EDIT_DELSEGMENT_ID).click(function (e) {
     e.preventDefault();
     if ((getTrackLength() == 0) ||
       !confirm("Delete current segment?")) {
@@ -3508,14 +3508,14 @@ $(function(){
     saveState();
   });
 
-  $("#" + EDIT_DRAG_ID).on("click", function(e) {
+  $("#" + EDIT_DRAG_ID).on("click", function (e) {
     e.preventDefault();
     setEditMode(EDIT_DRAG);
   });
 
   function selectFirstSegment() {
     let found = false;
-    forEachSegment(function(segment) {
+    forEachSegment(function (segment) {
       segmentClickListener({ target: segment }, true);
       found = true;
       // stop on first segment
@@ -3553,7 +3553,7 @@ $(function(){
     var count = 0,
       ok = true;
     applySegmentTool(function (segment) {
-      elevate("toolElevate", segment.getLatLngs(), cleanup, function(success) {
+      elevate("toolElevate", segment.getLatLngs(), cleanup, function (success) {
         if (segment == track) {
           polystats.updateStatsFrom(0);
         } else {
@@ -3580,12 +3580,12 @@ $(function(){
 
   function toolCleanup(toclean) {
     var count = 0;
-    applySegmentTool(function(segment) {
+    applySegmentTool(function (segment) {
       var points = segment ? segment.getLatLngs() : undefined;
       if (points && (points.length > 0)) {
         count += points.length;
-        for (var i = 0; i < points.length; i++) {
-          for (var j = 0; j < toclean.length; j++) {
+        for (let i = 0; i < points.length; i++) {
+          for (let j = 0; j < toclean.length; j++) {
             points[i][toclean[j]] = undefined;
           }
         }
@@ -3610,7 +3610,7 @@ $(function(){
     return opts;
   }
 
-  $("#cleanup").on("click", function() {
+  $("#cleanup").on("click", function () {
     var toclean = getCleanFillOpts();
     if (toclean.length == 0) {
       // nothing to clean
@@ -3622,7 +3622,7 @@ $(function(){
       ga('send', 'event', 'tool', 'cleanup', toclean.toString(), count);
       saveState();
     } else {
-      setStatus("No data updated", {timeout:3});
+      setStatus("No data updated", { timeout: 3 });
     }
     return false;
   });
@@ -3633,9 +3633,9 @@ $(function(){
       "time": {
         interpolate(prev, next, pt) {
           let timePrev = new Date(prev.time).getTime(),
-          timeNext = new Date(next.time).getTime(),
-          distPrevPt = pt.distanceTo(prev),
-          distPrevNext = pt.distanceTo(next) + distPrevPt;
+            timeNext = new Date(next.time).getTime(),
+            distPrevPt = pt.distanceTo(prev),
+            distPrevNext = pt.distanceTo(next) + distPrevPt;
           let timePt;
           if (timePrev < timeNext) {
             timePt = timePrev + ((timeNext - timePrev) * (distPrevPt / distPrevNext));
@@ -3647,7 +3647,7 @@ $(function(){
           } catch {
             onerror("Invalid interpolated time", {
               time: timePt, prev: prev.time, next: next.time,
-              distPt:  distPrevPt, distNext: distPrevNext
+              distPt: distPrevPt, distNext: distPrevNext
             });
           }
         }
@@ -3662,17 +3662,17 @@ $(function(){
     };
 
     let allCounts = 0;
-    applySegmentTool(function(segment) {
+    applySegmentTool(function (segment) {
       let points = segment ? segment.getLatLngs() : undefined,
         count = 0;
 
       if (points && (points.length > 0)) {
-        for (var j = 0; j < toFill.length; j++) {
+        for (let j = 0; j < toFill.length; j++) {
           let opt = toFill[j],
             prev, // previous point with data
             next, // next point with data,
             iNxt = -1;
-          for (var i = 0; i < points.length; i++) {
+          for (let i = 0; i < points.length; i++) {
             let pt = points[i];
             if (isUndefined(pt[opt])) {
               if ((!next || (next.i <= i)) && (iNxt < points.length)) {
@@ -3721,31 +3721,31 @@ $(function(){
     return allCounts;
   }
 
-  $("#fillup").on("click", function() {
+  $("#fillup").on("click", function () {
     var toFill = getCleanFillOpts();
     if (toFill.length == 0) {
       // nothing to fill
       return;
     }
-    var count = toolFillup(toFill);
+    const count = toolFillup(toFill);
     if (count) {
       alert("Updated " + count + " points data");
       ga('send', 'event', 'tool', 'fillup', toFill.toString(), count);
       saveState();
     } else {
-      setStatus("No data updated", {timeout:3});
+      setStatus("No data updated", { timeout: 3 });
     }
     return false;
   });
 
-  $("#revert").on("click", function() {
-    var count = 0;
+  $("#revert").on("click", function () {
+    let count = 0;
     applySegmentTool(function (segment) {
-      var points = segment ? segment.getLatLngs() : undefined;
+      const points = segment ? segment.getLatLngs() : undefined;
       if (points && (points.length > 0)) {
-        var newpoints = [];
+        const newpoints = [];
         count += points.length;
-        for (var i = points.length - 1; i >= 0; i--) {
+        for (let i = points.length - 1; i >= 0; i--) {
           newpoints.push(points[i]);
         }
         segment.setLatLngs(newpoints);
@@ -3766,7 +3766,7 @@ $(function(){
     return false;
   });
 
-  $(".statistics").on("click", function(e) {
+  $(".statistics").on("click", function (e) {
     var tag = e.target.tagName.toUpperCase();
     if ((tag !== "SELECT") && (tag !== "OPTION")) {
       toggleElevation(e);
@@ -3775,7 +3775,7 @@ $(function(){
 
   function segmentClickListener(event, noGaEvent) {
     if ((event.target != track) &&
-       ((editMode <= EDIT_NONE) || (editMode == EDIT_DRAG))) {
+      ((editMode <= EDIT_NONE) || (editMode == EDIT_DRAG))) {
       if (editMode == EDIT_DRAG) {
         exitDragMode();
       }
@@ -3857,7 +3857,7 @@ $(function(){
       track.color = color;
 
       // import polyline vertexes
-      for (var i = 0; i < coords.length; i++) {
+      for (let i = 0; i < coords.length; i++) {
         v.push(newPoint(coords[i],
           times ? times[i] : undefined,
           ptExts ? ptExts[i] : undefined,
@@ -3884,7 +3884,7 @@ $(function(){
     }
 
     L.geoJson(geojson, {
-      onEachFeature: function(f) {
+      onEachFeature: function (f) {
         var coords, times, ptExts, xmlnsArr;
         if (f.geometry.type === "LineString") {
           coords = f.geometry.coordinates;
@@ -3896,7 +3896,7 @@ $(function(){
           importSegment(f.properties.name, f.properties.stroke, coords, times, ptExts, xmlnsArr);
         }
         if (f.geometry.type === "MultiLineString") {
-          for (var i = 0; i < f.geometry.coordinates.length; i++) {
+          for (let i = 0; i < f.geometry.coordinates.length; i++) {
             coords = f.geometry.coordinates[i];
             times = f.properties.coordTimes && f.properties.coordTimes[i] &&
               (f.properties.coordTimes[i].length == coords.length) ?
@@ -3905,7 +3905,7 @@ $(function(){
               (f.properties.ptExts[i].length == coords.length) ?
               f.properties.ptExts[i] : undefined;
             xmlnsArr = f.properties.xmlnsArr && f.properties.xmlnsArr[i] ?
-                f.properties.xmlnsArr[i] : undefined;
+              f.properties.xmlnsArr[i] : undefined;
             importSegment(f.properties.name, f.properties.stroke, coords, times, ptExts, xmlnsArr);
           }
         } else if (f.geometry.type === "Point") {
@@ -3918,7 +3918,7 @@ $(function(){
       }
     });
     if (bounds.isValid()) {
-      map.fitBounds(bounds, { maxZoom: 16} );
+      map.fitBounds(bounds, { maxZoom: 16 });
     }
     clearStatus();
     if (!segmentClickListener({ target: activeTrack }, true)) {
@@ -3929,14 +3929,14 @@ $(function(){
     closeMenu();
     updateExtremities();
     setExtremityVisibility(extMarkers);
-    var addedLayers = editLayer.getLayers().length - initLayers;
+    const addedLayers = editLayer.getLayers().length - initLayers;
     if (addedLayers) {
       ga('send', 'event', 'file', 'load-segment', undefined, addedLayers);
     }
     return editLayer;
   }
 
-  var loadcontrol = L.Control.fileLayerLoad({
+  const loadcontrol = L.Control.fileLayerLoad({
     // Allows you to use a customized version of L.geoJson.
     // For example if you are using the Proj4Leaflet leaflet plugin,
     // you can pass L.Proj.geoJson and load the files into the
@@ -3950,16 +3950,16 @@ $(function(){
     fileSizeLimit: config.maxfilesize,
     // Restrict accepted file formats (default: .geojson, .kml, and .gpx) ?
     formats: [
-          '.gpx',
-          '.geojson',
-          '.kml'
-      ],
+      '.gpx',
+      '.geojson',
+      '.kml'
+    ],
     fitBounds: false
   });
   map.addControl(loadcontrol);
   var fileloader = loadcontrol.loader;
   var loadCount = 0;
-  fileloader.on('data:error', function() {
+  fileloader.on('data:error', function () {
     setStatus("Failed: check file and type", { 'class': 'status-error', 'timeout': 3 });
   });
 
@@ -3971,7 +3971,7 @@ $(function(){
     var _url = options.noproxy ? url : corsUrl(url);
     var req = {
       url: _url,
-      success: function(data) {
+      success: function (data) {
         loadCount = 0;
         if (options.key) {
           if (!isCryptoSupported()) {
@@ -3981,21 +3981,21 @@ $(function(){
             return;
           }
           //var encversion = options.key.substring(0,2); // version, ignored for now
-          var key = encodeURIComponent(options.key.substring(2));
-          var deckey = strdecode(key, key);
-          var iv = deckey.substring(0,24);
-          var pwd = deckey.substring(24);
+          const key = encodeURIComponent(options.key.substring(2));
+          const deckey = strdecode(key, key);
+          const iv = deckey.substring(0, 24);
+          const pwd = deckey.substring(24);
           //console.log("iv  : " + iv);
           //console.log("pwd : " + pwd);
           ga('send', 'event', 'file', 'decrypt', undefined, Math.round(data.length / 1000));
           aesGcmDecrypt(data, iv, pwd)
-          .then(function(gpx) {
-            fileloader.loadData(gpx, url, options.ext);
-          })
-          .catch(function(err) {
-            ga('send', 'event', 'error', 'crypto-decrypt', err);
-            setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
-          });
+            .then(function (gpx) {
+              fileloader.loadData(gpx, url, options.ext);
+            })
+            .catch(function (err) {
+              ga('send', 'event', 'error', 'crypto-decrypt', err);
+              setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
+            });
         } else {
           fileloader.loadData(data, url, options.ext);
         }
@@ -4007,7 +4007,7 @@ $(function(){
       };
     }
 
-    $.ajax(req).fail(function(resp) {
+    $.ajax(req).fail(function (resp) {
       setStatus("Failed: " + resp.statusText, { 'class': 'status-error', 'timeout': 3 });
       if (!track) {
         newTrack();
@@ -4023,7 +4023,7 @@ $(function(){
     }
     return ext;
   }
-  $("#track-get").on("click", function() {
+  $("#track-get").on("click", function () {
     var url = $("#track-get-url").val().trim();
     if (!url) {
       $("#track-get-url").focus();
@@ -4038,16 +4038,16 @@ $(function(){
       withCredentials: noproxy
     });
   });
-  $("#track-get-url").keypress(function(e) {
+  $("#track-get-url").keypress(function (e) {
     if (e.which == 13) {
       $("#track-get").trigger("click");
     }
   });
 
-  $("#track-upload").on("click", function() {
+  $("#track-upload").on("click", function () {
     $("#track-upload").val("");
   });
-  $("#track-upload").on("change", function() {
+  $("#track-upload").on("change", function () {
     var files = $("#track-upload")[0].files;
     if (files[0]) {
       ga('send', 'event', 'file', 'load-file');
@@ -4057,7 +4057,7 @@ $(function(){
       fileloader.loadMultiple(files, getLoadExt());
     }
   });
-  map.getContainer().addEventListener("drop", function() {
+  map.getContainer().addEventListener("drop", function () {
     loadCount = 0;
   });
 
@@ -4066,7 +4066,7 @@ $(function(){
   var dropboxLoadOptions = {
 
     // Required. Called when a user selects an item in the Chooser.
-    success: function(files) {
+    success: function (files) {
       $("#menu").hide();
       ga('send', 'event', 'file', 'load-dropbox');
       loadFromUrl(files[0].link, {
@@ -4077,7 +4077,7 @@ $(function(){
 
     // Optional. Called when the user closes the dialog without selecting a file
     // and does not include any parameters.
-    cancel: function() {
+    cancel: function () {
 
     },
 
@@ -4096,9 +4096,9 @@ $(function(){
     // see File types below. By default, all extensions are allowed.
     //extensions: ['.gpx', '.json', '.kml', '.geojson'],
   };
-  $("#dropbox-chooser").on("click", function() {
+  $("#dropbox-chooser").on("click", function () {
     // Check Dropbox is supported
-    if (!Dropbox.isBrowserSupported()){
+    if (!Dropbox.isBrowserSupported()) {
       alert("Sorry, your browser does not support Dropbox loading");
       return;
     }
@@ -4116,7 +4116,7 @@ $(function(){
 
     // Success is called once all files have been successfully added to the user's
     // Dropbox, although they may not have synced to the user's devices yet.
-    success: function() {
+    success: function () {
       // Indicate to the user that the files have been saved.
       setStatus("File saved in your Dropbox", { timeout: 3 });
       $("#menu").hide();
@@ -4127,27 +4127,27 @@ $(function(){
     // of the user's downloads. The value passed to this callback is a float
     // between 0 and 1. The progress callback is guaranteed to be called at least
     // once with the value 1.
-    progress: function(/*progress*/) {},
+    progress: function (/*progress*/) { },
 
     // Cancel is called if the user presses the Cancel button or closes the Saver.
-    cancel: function() {
+    cancel: function () {
       dropboxSaveOptions.deleteTemp();
     },
 
     // Error is called in the event of an unexpected response from the server
     // hosting the files, such as not being able to find a file. This callback is
     // also called if there is an error on Dropbox or if the user is over quota.
-    error: function(errorMessage) {
+    error: function (errorMessage) {
       setStatus(errorMessage || "Failed", { timeout: 5, class: "status-error" });
       dropboxSaveOptions.deleteTemp();
     },
 
-    deleteTemp: function() {
+    deleteTemp: function () {
       dropboxTempShare.delete(
         dropboxSaveOptions.gpxurl,
         dropboxSaveOptions.files[0].url,
         dropboxSaveOptions.passcode,
-        undefined, function() {
+        undefined, function () {
           console.warn("Failed to delete temp share");
         }
       );
@@ -4160,19 +4160,19 @@ $(function(){
     try {
       Dropbox.save(dropboxSaveOptions);
     } catch (err) {
-        setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
-        ga('send', 'event', 'error', 'Dropbox.save error', err);
+      setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
+      ga('send', 'event', 'error', 'Dropbox.save error', err);
     }
   }
   $("#dbs-ok").on("click", dropboxSaver);
-  $("#dbs-cancel").on("click", function(){
+  $("#dbs-cancel").on("click", function () {
     dropboxSaveOptions.deleteTemp();
     $("#confirm-dropbox").hide();
   });
 
-  $("#dropbox-saver").on("click", function() {
+  $("#dropbox-saver").on("click", function () {
     // Check Dropbox is supported
-    if (!Dropbox.isBrowserSupported()){
+    if (!Dropbox.isBrowserSupported()) {
       alert("Sorry, your browser does not support Dropbox saving");
       return;
     }
@@ -4187,7 +4187,7 @@ $(function(){
         dropboxSaveOptions.gpxurl = gpxurl;
         dropboxSaveOptions.passcode = passcode;
         $("#confirm-dropbox").show();
-      }, function(error) {
+      }, function (error) {
         uploadFailed(dropboxTempShare, gpx, error);
       }
     );
@@ -4211,7 +4211,7 @@ $(function(){
       del.href = "#";
       del.title = "Delete";
       del.innerHTML = "<span class='popupfield'><i class='material-icons notranslate'>delete</i></span>";
-      del.onclick = function(e) {
+      del.onclick = function (e) {
         if (!route) {
           return; // ignore
         }
@@ -4244,9 +4244,9 @@ $(function(){
       icon: MARKER_ICON
     });
 
-    marker.on("click", function(e) {
+    marker.on("click", function (e) {
 
-      L.popup({ "className" : "overlay" })
+      L.popup({ "className": "overlay" })
         .setLatLng(e.latlng)
         .setContent(getRouteWaypoinContent(e.latlng, i, marker))
         .openOn(map);
@@ -4255,10 +4255,10 @@ $(function(){
 
     var ename = routerFactory == createOrsRouter ?
       "ors.routing" : (routerFactory == createGraphHopperRouter ?
-      "gh.routing" : "unknownrouter");
-    ga('send', 'event', 'api', ename +'.ok');
+        "gh.routing" : "unknownrouter");
+    ga('send', 'event', 'api', ename + '.ok');
 
-    addUndo(UndoRoute, { fromPt : routeStart });
+    addUndo(UndoRoute, { fromPt: routeStart });
 
     return marker;
   }
@@ -4353,7 +4353,7 @@ $(function(){
       showStats();
     } else {
       // init
-      $("input:radio[name=unitopt][value=" +  lengthUnit + "]").prop("checked",true);
+      $("input:radio[name=unitopt][value=" + lengthUnit + "]").prop("checked", true);
     }
     $(".distUnit").text(isMetric() ? "meter" : "yard");
     scaleCtrl = L.control.scale({
@@ -4464,7 +4464,7 @@ $(function(){
     if (latlng.time && trackStart.time) {
       data = L.DomUtil.create('div', "popupdiv", div);
       data.innerHTML = "<span class='popupfield' title='Recorded duration'>Duration:</span> " +
-        time2txt((new Date(latlng.time) - new Date(trackStart.time))/1000);
+        time2txt((new Date(latlng.time) - new Date(trackStart.time)) / 1000);
     }
     return div;
 
@@ -4477,8 +4477,8 @@ $(function(){
     p = L.DomUtil.create("div", "popupdiv", div);
     p.innerHTML = "<span class='popupfield'>Position:</span> " +
       `<span title="${latlng.lat},${latlng.lng}">` +
-      roundDecimal(latlng.lat,5) + "," +
-      roundDecimal(latlng.lng,5) +
+      roundDecimal(latlng.lat, 5) + "," +
+      roundDecimal(latlng.lng, 5) +
       "</span>";
 
     if (editMode != EDIT_NONE) {
@@ -4490,7 +4490,7 @@ $(function(){
       altinput.placeholder = "Numeric altitude";
       altinput.class = altinput.className = "atlInput";
       $(altinput).val(isUndefined(latlng.alt) || !isNumeric(latlng.alt) ? "" : alt2txt(latlng.alt, true));
-      altinput.onkeyup = function() {
+      altinput.onkeyup = function () {
         try {
           latlng.alt = isNumeric(altinput.value) ? txt2alt(altinput.value) : undefined;
         } catch (err) {
@@ -4519,7 +4519,7 @@ $(function(){
         btn.href = "#";
         btn.title = "Previous point";
         btn.innerHTML = "<span class='popupfield'><i class='material-icons notranslate'>navigate_before</i></span>";
-        btn.onclick = function() {
+        btn.onclick = function () {
           gotopt(-1);
           return false;
         };
@@ -4550,7 +4550,7 @@ $(function(){
         btn.href = "#";
         btn.title = "Next point";
         btn.innerHTML = "<span class='popupfield'><i class='material-icons notranslate'>navigate_next</i></span>";
-        btn.onclick = function() {
+        btn.onclick = function () {
           gotopt(+1);
           return false;
         };
@@ -4604,31 +4604,31 @@ $(function(){
     }
   }
 
-  map.on('popupclose', function() {
+  map.on('popupclose', function () {
     //console.log(e.type);
     if ((editMode === EDIT_MANUAL_TRACK) && (track.editor)) {
       track.editor.continueForward();
     }
   });
-  map.on('editable:enable', function() {
+  map.on('editable:enable', function () {
     //console.log(e.type);
   });
-  map.on('editable:drawing:start', function() {
+  map.on('editable:drawing:start', function () {
     //console.log(e.type);
   });
-  map.on('editable:drawing:dragend', function() {
+  map.on('editable:drawing:dragend', function () {
     //console.log(e.type);
   });
-  map.on('editable:drawing:commit', function() {
+  map.on('editable:drawing:commit', function () {
     //console.log(e.type);
   });
-  map.on('editable:drawing:end', function() {
+  map.on('editable:drawing:end', function () {
     //console.log(e.type);
   });
-  map.on('editable:drawing:click', function() {
+  map.on('editable:drawing:click', function () {
     //console.log(e.type);
   });
-  map.on('editable:shape:new', function() {
+  map.on('editable:shape:new', function () {
     //console.log(e.type);
   });
 
@@ -4640,11 +4640,11 @@ $(function(){
     //console.log(e.type + ": " + latlng.i);
     if (i == getTrackLength() - 1) {
       // last vertex
-      elevatePoint("newVertex", latlng, false, function() {
+      elevatePoint("newVertex", latlng, false, function () {
         polystats.updateStatsFrom(i);
       });
     }
-    addUndo(UndoNewPt, {newPt: latlng});
+    addUndo(UndoNewPt, { newPt: latlng });
     updateExtremity(latlng, i);
   }
   map.on('editable:vertex:new', newVertex);
@@ -4652,7 +4652,7 @@ $(function(){
   function dragVertex(e) {
     var latlng = e.vertex.getLatLng();
     var i = latlng.i;
-    elevatePoint("dragVertex", latlng, false, function() {
+    elevatePoint("dragVertex", latlng, false, function () {
       polystats.updateStatsFrom(i);
     });
     //console.log(e.type + ": " + i);
@@ -4661,11 +4661,11 @@ $(function(){
   map.on('editable:vertex:dragend', dragVertex);
   function dragVertexStart(e) {
     var latlng = e.vertex.getLatLng();
-    addUndo(UndoMovePt, {pt: latlng});
+    addUndo(UndoMovePt, { pt: latlng });
   }
   map.on('editable:vertex:dragstart', dragVertexStart);
 
-  map.on('editable:middlemarker:mousedown', function() {
+  map.on('editable:middlemarker:mousedown', function () {
     //console.log(e.type);
   });
 
@@ -4678,9 +4678,9 @@ $(function(){
   }
   map.on('editable:dragend', draggedMark);
 
-  map.on('editable:vertex:deleted', function(e) {
+  map.on('editable:vertex:deleted', function (e) {
     if (!e.latlng.undoing) { // ensure we're not running an undo
-      addUndo(UndoDeletePt, {pt: e.latlng});
+      addUndo(UndoDeletePt, { pt: e.latlng });
     }
     var i = e.latlng.i;
     //console.log(e.type + ": " + i);
@@ -4689,7 +4689,7 @@ $(function(){
   });
 
 
-  map.on('editable:created', function(/*event*/) {
+  map.on('editable:created', function (/*event*/) {
     //console.log("Created: " + event.layer.getEditorClass());
   });
 
@@ -4730,7 +4730,7 @@ $(function(){
 
     if (editMode == EDIT_MARKER) {
       ga('send', 'event', 'edit', 'new-marker');
-      var marker = newWaypoint(e.latlng, {name: "New waypoint"}, waypoints);
+      var marker = newWaypoint(e.latlng, { name: "New waypoint" }, waypoints);
       elevatePoint("newMarker", e.latlng, false);
       marker.enableEdit();
     } else if (editMode == EDIT_AUTO_TRACK) {
@@ -4769,9 +4769,9 @@ $(function(){
             mergeRouteToTrack();
             restartRoute();
             map.fireEvent("click", { latlng: e.latlng });
-          } catch(err) {
+          } catch (err) {
             ga('send', 'event', 'error', 'merge-route-failed', err.toString() +
-                ", " + navigator.userAgent, wpts.length);
+              ", " + navigator.userAgent, wpts.length);
           }
         } else {
           wpts.push({ latLng: e.latlng });
@@ -4798,8 +4798,8 @@ $(function(){
       ga('send', 'event', 'edit', 'split-segment');
       setEditMode(EDIT_NONE);
       var i = latlng.i;
-      var seg1 = track.getLatLngs().slice(0,i),
-          seg2 = track.getLatLngs().slice(i);
+      var seg1 = track.getLatLngs().slice(0, i),
+        seg2 = track.getLatLngs().slice(i);
       var xmlnsArr = track.xmlnsArr;
       track.setLatLngs(seg1);
       seg1 = track;
@@ -4820,24 +4820,24 @@ $(function(){
         segIdx = 0;
       }
       forEachSegment((segment) => {
-          // were segments ordered?
-          if (isUndefined(segIdx)) {
-            // yes
-            if (segment == track) {
-              segment._wtOrder = seg1Order + 1; // set it just after seg1
-            } else if (segment._wtOrder > seg1Order) {
-              segment._wtOrder++;
-            }
-          } else {
-            // no, assign order to segment
-            segment._wtOrder = segIdx++;
-            if (seg1 == segment) {
-              seg1Order = segment._wtOrder;
-              segIdx++; // book 1 index for new segment
-            } else if (segment == track) {
-              segment._wtOrder = seg1Order + 1; // set it just after seg1
-            }
+        // were segments ordered?
+        if (isUndefined(segIdx)) {
+          // yes
+          if (segment == track) {
+            segment._wtOrder = seg1Order + 1; // set it just after seg1
+          } else if (segment._wtOrder > seg1Order) {
+            segment._wtOrder++;
           }
+        } else {
+          // no, assign order to segment
+          segment._wtOrder = segIdx++;
+          if (seg1 == segment) {
+            seg1Order = segment._wtOrder;
+            segIdx++; // book 1 index for new segment
+          } else if (segment == track) {
+            segment._wtOrder = seg1Order + 1; // set it just after seg1
+          }
+        }
       }, ALL_SEGMENTS);
     }
     function gotopt(diff) {
@@ -4863,16 +4863,16 @@ $(function(){
     }
     var div = getTrackPointPopupContent(latlng);
     var splitfn,
-        i = latlng.i,
-        len = getTrackLength();
-    if ((i>1) & (i<len-1)) {
+      i = latlng.i,
+      len = getTrackLength();
+    if ((i > 1) & (i < len - 1)) {
       splitfn = splitSegment;
     }
-    var pop = L.popup({ "className" : "overlay" })
+    var pop = L.popup({ "className": "overlay" })
       .setLatLng(latlng)
       .setContent(getLatLngPopupContent(latlng, deleteTrackPoint, splitfn, gotopt, div))
       .openOn(map);
-    $(".leaflet-popup-close-button").on("click", function() {
+    $(".leaflet-popup-close-button").on("click", function () {
       if (track.editor) {
         track.editor.continueForward();
       }
@@ -4883,7 +4883,7 @@ $(function(){
 
 
   // ---- ELEVATION
-  var elevation;
+  let elevation;
 
   function hideElevation() {
     if (elevation) toggleElevation();
@@ -4896,7 +4896,7 @@ $(function(){
       if (track && getTrackLength() > 1) {
         setEditMode(EDIT_NONE);
         map.closePopup();
-        var options = $(document).width() < 600 ? {
+        const options = $(document).width() < 600 ? {
           width: 355,
           height: 125,
           margins: {
@@ -4953,16 +4953,16 @@ $(function(){
     }
     ga('send', 'event', 'menu', item);
   }
-  $(".tablinks").on("click", function(event) {
+  $(".tablinks").on("click", function (event) {
     menu(event.currentTarget.id.replace("tab", ""), event);
   });
-  $(".donatebtn").on("click", function(event) {
+  $(".donatebtn").on("click", function (event) {
     ga('send', 'event', 'menu', 'donate', event.target.id);
   });
 
   if (getValStorage()) {
-    $("#cfgsave").on("change", function() {
-      var saveCfg = isChecked("#cfgsave");
+    $("#cfgsave").on("change", function () {
+      const saveCfg = isChecked("#cfgsave");
       setSaveState(saveCfg);
       setStateSaved(saveCfg);
       if (saveCfg) {
@@ -4994,7 +4994,7 @@ $(function(){
   setChecked("#merge", false);
 
   // get visit info
-  var about = getVal("wt.about", undefined);
+  const about = getVal("wt.about", undefined);
   // set saving status
   setStateSaved(isStateSaved());
 
@@ -5007,10 +5007,10 @@ $(function(){
     changeBaseLayer(requestedMap);
   }
 
-  var url = getParameterByName("url");
+  const url = getParameterByName("url");
   if (url) {
     ga('send', 'event', 'file', 'load-urlparam');
-    var qr = getParameterByName("qr");
+    const qr = getParameterByName("qr");
     if (qr === "1") {
       ga('send', 'event', 'file', 'load-qrcode');
     }
@@ -5023,7 +5023,7 @@ $(function(){
     });
     setEditMode(EDIT_NONE);
   } else {
-    var reqpos = {
+    const reqpos = {
       lat: parseFloat(getParameterByName("lat")),
       lng: parseFloat(getParameterByName("lng"))
     };
@@ -5037,15 +5037,15 @@ $(function(){
   }
 
   /* Show About dialog if not shown since a while */
-  var now = new Date();
-  var ONE_MONTH = Math.round(1000*60*60*24*30.5); // 1 month in ms
-  var FIRST_VISIT = "1";
+  const now = new Date();
+  const ONE_MONTH = Math.round(1000 * 60 * 60 * 24 * 30.5); // 1 month in ms
+  const FIRST_VISIT = "1";
   if (about) {
     if ((about == FIRST_VISIT) || (now.getTime() > new Date(about).getTime() + ONE_MONTH)) {
       // reset about tag
       storeVal("wt.about", now.toISOString());
       // wait for potential urlparam to be loaded
-      setTimeout(function(){ openMenu("about"); }, 4000);
+      setTimeout(function () { openMenu("about"); }, 4000);
     }
   } else {
     storeVal("wt.about", FIRST_VISIT);
@@ -5060,17 +5060,17 @@ $(function(){
 
   /* -------------- Share libs --------------- */
 
-  var pasteLibSelect = $("#share-libs")[0];
+  const pasteLibSelect = $("#share-libs")[0];
   function initShareLib() {
-    arrayForEach(PasteLibs.libNames, function(i, name) {
-      let lib = PasteLibs.get(name);
+    arrayForEach(PasteLibs.libNames, function (i, name) {
+      const lib = PasteLibs.get(name);
       if (lib.enabled) {
         addSelectOption(pasteLibSelect, name, lib.name);
       }
     });
   }
   function changeShareLib() {
-    var libname = getSelectedOption(pasteLibSelect);
+    const libname = getSelectedOption(pasteLibSelect);
     share = PasteLibs.get(libname) || share;
     $("#share-web").html("<a href='" + share.web + "' title='" + share.web + "' >" + share.web + "</a>");
     $("#share-max-size").html(share.maxSize);
@@ -5078,8 +5078,8 @@ $(function(){
     $("#share-max-downloads").html(share.maxDownloads);
     $("#share-status").html("?");
     share.ping(
-      function() { $("#share-status").html("working <span class='green material-icons notranslate'>check_circle_outline</span>");},
-      function() { $("#share-status").html("NOT working <span class='red material-icons notranslate'>highlight_off</span>");}
+      function () { $("#share-status").html("working <span class='green material-icons notranslate'>check_circle_outline</span>"); },
+      function () { $("#share-status").html("NOT working <span class='red material-icons notranslate'>highlight_off</span>"); }
     );
     // share prompt dialog
     $("#wtshare-name").text(share.name);
@@ -5094,11 +5094,11 @@ $(function(){
   /* ------------------------------------------- */
 
   // specific style for personal maps & overlays
-  $(".leaflet-control-layers-list .leaflet-control-layers-selector").each(function(idx, elt) {
-    var mname = $(elt.parentNode).find("span");
+  $(".leaflet-control-layers-list .leaflet-control-layers-selector").each(function (idx, elt) {
+    const mname = $(elt.parentNode).find("span");
     if (mname && mname.text) {
-      var name = mname.text().substring(1);
-      var props = getMapListEntryProps(name);
+      const name = mname.text().substring(1);
+      const props = getMapListEntryProps(name);
       if (props && (props.in == MAP_MY)) {
         mname.addClass("mymap-name");
       }
@@ -5121,13 +5121,13 @@ $(function(){
   // Persist joinOnLoad option
   joinOnLoad = getBoolVal("wt.joinOnLoad", false);
   setChecked("#joinonload", joinOnLoad);
-  $("#joinonload").on("change", function() {
+  $("#joinonload").on("change", function () {
     joinOnLoad = isChecked("#joinonload");
     saveValOpt("wt.joinOnLoad", joinOnLoad);
   });
 
   // ready
-  $("#menu-button").on("click", function() {
+  $("#menu-button").on("click", function () {
     if (isMenuVisible()) {
       closeMenu();
     } else {
@@ -5156,7 +5156,7 @@ $(function(){
     });
   }
 
-  $(window).on("unload", function() {
+  $(window).on("unload", function () {
     saveState();
   });
 

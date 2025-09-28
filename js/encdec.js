@@ -8,7 +8,7 @@
  * Check if required dependencies are available
  */
 export function isCryptoSupported() {
-  var supported = false;
+  let supported = false;
   try {
     supported = crypto && crypto.subtle && crypto.subtle.importKey && crypto.subtle.digest &&
       crypto.getRandomValues && crypto.subtle.encrypt && crypto.subtle.decrypt &&
@@ -36,13 +36,13 @@ export function isCryptoSupported() {
   */
 export function aesGcmEncrypt(plaintext, password) {
   return new Promise(function (resolve, reject) {
-    var pwUtf8 = new TextEncoder().encode(password);                                 // encode password as UTF-8
-    var alg = { name: 'AES-GCM' };
+    const pwUtf8 = new TextEncoder().encode(password);                                 // encode password as UTF-8
+    let alg = { name: 'AES-GCM' };
 
     return crypto.subtle.digest('SHA-256', pwUtf8)                                     // hash the password
     .then( function(pwHash) {
 
-      var iv = crypto.getRandomValues(new Uint8Array(12));                           // get 96-bit random iv
+      const iv = crypto.getRandomValues(new Uint8Array(12));                           // get 96-bit random iv
 
       alg.iv = iv;                                                                     // specify algorithm to use
 
@@ -51,17 +51,17 @@ export function aesGcmEncrypt(plaintext, password) {
     })
     .then( function(key) {
 
-      var ptUint8 = new TextEncoder().encode(plaintext);                             // encode plaintext as UTF-8
+      const ptUint8 = new TextEncoder().encode(plaintext);                             // encode plaintext as UTF-8
       return crypto.subtle.encrypt(alg, key, ptUint8);                                 // encrypt plaintext using key
 
     })
     .then( function(ctBuffer) {
 
-      var ctArray = Array.from(new Uint8Array(ctBuffer));                            // ciphertext as byte array
-      var ctStr = ctArray.map(function(byte) { return String.fromCharCode(byte); } ).join('');           // ciphertext as string
-      var ctBase64 = btoa(ctStr);                                                    // encode ciphertext as base64
+      const ctArray = Array.from(new Uint8Array(ctBuffer));                            // ciphertext as byte array
+      const ctStr = ctArray.map(function(byte) { return String.fromCharCode(byte); } ).join('');           // ciphertext as string
+      const ctBase64 = btoa(ctStr);                                                    // encode ciphertext as base64
 
-      var ivHex = Array.from(alg.iv).map(function(b) { return ('00' + b.toString(16)).slice(-2); } ).join(''); // iv as hex string
+      const ivHex = Array.from(alg.iv).map(function(b) { return ('00' + b.toString(16)).slice(-2); } ).join(''); // iv as hex string
 
       resolve({ iv:ivHex, ciphertext:ctBase64 });                                      // return {iv,ciphertext}
 
@@ -86,8 +86,8 @@ export function aesGcmEncrypt(plaintext, password) {
 export function aesGcmDecrypt(ciphertext, iv, password) {
   return new Promise(function (resolve, reject) {
     // encode password as UTF-8
-    var pwUtf8 = new TextEncoder().encode(password);
-    var alg = { name: 'AES-GCM' };
+    const pwUtf8 = new TextEncoder().encode(password);
+    let alg = { name: 'AES-GCM' };
     // hash the password
     return crypto.subtle.digest('SHA-256', pwUtf8)
     .then(function(pwHash){
@@ -104,16 +104,16 @@ export function aesGcmDecrypt(ciphertext, iv, password) {
     })
     .then(function(key){
       // decode base64 ciphertext
-      var ctStr = atob(ciphertext);
+      const ctStr = atob(ciphertext);
       // ciphertext as Uint8Array
-      var ctUint8 = new Uint8Array(ctStr.match(/[\s\S]/g).map(function(ch) { return ch.charCodeAt(0); } ));
+      const ctUint8 = new Uint8Array(ctStr.match(/[\s\S]/g).map(function(ch) { return ch.charCodeAt(0); } ));
 
       // decrypt ciphertext using key
       return crypto.subtle.decrypt(alg, key, ctUint8);
     })
     .then(function(plainBuffer){
       // decode password from UTF-8
-      var plaintext = new TextDecoder().decode(plainBuffer);
+      const plaintext = new TextDecoder().decode(plainBuffer);
 
       // return the plaintext
       resolve(plaintext);
