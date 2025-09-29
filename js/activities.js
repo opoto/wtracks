@@ -1,19 +1,9 @@
 // ESM module for activities functionality
 // Import dependencies from other modules
 import config from './config.js';
-import {
-  isUnset, b64EncodeUnicode, b64DecodeUnicode, supportsBase64,
-  getJsonVal, storeJsonVal, objectForEach, arrayForEach, noTranslate,
-  addSelectOption, selectOption
-} from './utils.js';
-
-import {
-  consentCookies
-} from './wtracks-commons.js';
-
-import {
-  getDataset, forEachDataset
-} from './dataset.js';
+import * as WC from './wtracks-commons.js';
+import * as WDS from './dataset.js';
+import * as WU from './utils.js';
 
 // Dependencies loaded as globals via script tags in the HTML
 /* globals $, ga, L */
@@ -23,14 +13,14 @@ let activity;
 let activityname;
 let activities;
 
-noTranslate();
+WU.noTranslate();
 
 // vehicle menu
 let selectVehicle = $("#activityvehicle")[0];
 
 // utility function to sort speedRefs by increasing slope
 function sortSpeedRefs(speedRefs) {
-  speedRefs.sort(function(a, b) {
+  speedRefs.sort(function (a, b) {
     return a[0] - b[0];
   });
 }
@@ -38,9 +28,9 @@ function sortSpeedRefs(speedRefs) {
 // save an activity: add it to menu, and save it to browser local storage
 function saveActivity(name, a) {
   if (!activities[name]) {
-    addSelectOption(selectActivity, name);
+    WU.addSelectOption(selectActivity, name);
   }
-  selectOption($("#activities"), name);
+  WU.selectOption($("#activities"), name);
 
   if (a.speedprofile.method == L.PolyStats.REFSPEEDS) {
     sortSpeedRefs(a.speedprofile.parameters);
@@ -49,7 +39,7 @@ function saveActivity(name, a) {
   // clear potential refspeeds used for computation
   a.refspeeds = undefined;
   activities[name] = a;
-  storeJsonVal("wt.activities", activities);
+  WU.storeJsonVal("wt.activities", activities);
 }
 
 // activity menu
@@ -63,18 +53,18 @@ function activitiesLen() {
 $("#activities").change(displaySelectedActivity);
 
 // activity deletion button
-$("#activitydel").click(function() {
+$("#activitydel").click(function () {
   let name = $("#activities").children(':selected').val();
   if (confirm("Delete " + name + "?")) {
     ga('send', 'event', 'activity', 'delete', undefined, activitiesLen());
     activities[name] = undefined;
-    storeJsonVal("wt.activities", activities);
+    WU.storeJsonVal("wt.activities", activities);
     activityname = $("#activities").children(':selected').remove();
   }
 });
 
 // activity save button
-$("#activitysave").click(function() {
+$("#activitysave").click(function () {
   ga('send', 'event', 'activity', 'save', undefined, activitiesLen());
   let name = $("#activityname").val();
   if (activity && name) {
@@ -88,7 +78,7 @@ function moveActivity(inc) {
   let idx = selectActivity.selectedIndex + inc;
   let newActivities = {};
   let i = 0;
-  objectForEach(activities, function(a) {
+  WU.objectForEach(activities, function (a) {
     if (i == idx) {
       newActivities[name] = activities[name];
       i++;
@@ -104,24 +94,24 @@ function moveActivity(inc) {
   }
   // save
   activities = newActivities;
-  storeJsonVal("wt.activities", activities);
+  WU.storeJsonVal("wt.activities", activities);
   // update menu
   let curIdx = selectActivity.selectedIndex;
   let moved = selectActivity.children[curIdx];
   let beforeIdx = (inc == -1) ? curIdx - 1 : curIdx + 2;
   selectActivity.insertBefore(moved, selectActivity.children[beforeIdx]);
-  selectOption($("#activities"), name);
+  WU.selectOption($("#activities"), name);
 }
 
 // activity up button
-$("#activityup").click(function(event) {
+$("#activityup").click(function (event) {
   if (selectActivity.selectedIndex > 0) {
     moveActivity(-1);
   }
   event.preventDefault();
 });
 // activity down button
-$("#activitydown").click(function(event) {
+$("#activitydown").click(function (event) {
   if (selectActivity.selectedIndex < selectActivity.children.length - 1) {
     moveActivity(1);
   }
@@ -130,7 +120,7 @@ $("#activitydown").click(function(event) {
 
 
 function exportA(json) {
-  let data = b64EncodeUnicode(json);
+  let data = WU.b64EncodeUnicode(json);
   $("#prompt-text").text("Copy and share data below (Ctrl+C & Enter):");
   $("#prompt-ok").hide();
   $("#prompt-val").val(data);
@@ -149,11 +139,11 @@ function promptA() {
   $("#prompt-val").focus();
 }
 
-$("#prompt-close").click(function() {
+$("#prompt-close").click(function () {
   $("#prompt").hide();
 });
 
-$("#prompt-val").keyup(function(event) {
+$("#prompt-val").keyup(function (event) {
   if (event.which == 27) {
     $("#prompt").hide();
   } else if (event.keyCode == 13) {
@@ -173,8 +163,8 @@ function importA() {
   let data = $("#prompt-val").val();
   let imported = false;
   try {
-    let importedActivities = JSON.parse(b64DecodeUnicode(data));
-    objectForEach(importedActivities, function(a) {
+    let importedActivities = JSON.parse(WU.b64DecodeUnicode(data));
+    WU.objectForEach(importedActivities, function (a) {
       let msg = activities[a] ? "Overwrite " : "Import ";
       if (confirm(msg + a + "?")) {
         activities[a] = importedActivities[a];
@@ -182,32 +172,32 @@ function importA() {
       }
     });
     $("#prompt").hide();
-  } catch (ex) {
+  } catch (err) {
     $("#import-error").show();
   }
   if (imported) {
-    storeJsonVal("wt.activities", activities);
+    WU.storeJsonVal("wt.activities", activities);
     // reload page
     window.location.reload();
   }
 }
 
-$("#activityexportall").click(function() {
+$("#activityexportall").click(function () {
   ga('send', 'event', 'activity', 'export-all', undefined, activitiesLen());
   let str = JSON.stringify(activities);
   exportA(str);
 });
-$("#activityexport").click(function() {
+$("#activityexport").click(function () {
   ga('send', 'event', 'activity', 'export', undefined, activitiesLen());
   let str = "{\"" + activityname + "\":" + JSON.stringify(activity) + "}";
   exportA(str);
 });
-$("#activityimport").click(function() {
+$("#activityimport").click(function () {
   ga('send', 'event', 'activity', 'import', undefined, activitiesLen());
   promptA();
 });
 
-if (!supportsBase64()) {
+if (!WU.supportsBase64()) {
   $("#activityexportall").attr("disabled", "disabled");
   $("#activityexport").attr("disabled", "disabled");
   $("#activityimport").attr("disabled", "disabled");
@@ -225,7 +215,7 @@ function createActivity(vehicle, method, params) {
 
 // activity creation button: initialize editor with new activity name
 // and some defaults activity parameters
-$("#activitynew").click(function() {
+$("#activitynew").click(function () {
   ga('send', 'event', 'activity', 'new', undefined, activitiesLen());
   let index = 1;
   activityname = "New";
@@ -238,10 +228,10 @@ $("#activitynew").click(function() {
 });
 
 // reset stored activities to defaults
-$("#activityreset").click(function() {
+$("#activityreset").click(function () {
   if (confirm("Delete current activities and restore defaults?")) {
     activities = config.activities.defaults;
-    storeJsonVal("wt.activities", activities);
+    WU.storeJsonVal("wt.activities", activities);
     window.location = window.location;
   }
 });
@@ -250,7 +240,7 @@ function refSpeedInput(val, col) {
   let rs = document.createElement("input");
   rs.setAttribute("type", "text");
   rs.setAttribute("value", val);
-  rs.onkeyup = function() {
+  rs.onkeyup = function () {
     // compute parameter index
     // (it may have changed since lines may have been deleted)
     let rowIdx = $(this).closest("tr").index();
@@ -276,7 +266,7 @@ function addRefSpeedLine(i) {
   delrs.setAttribute("href", "#");
   delrs.setAttribute("class", "btn-link");
   delrs.innerHTML = "×";
-  delrs.addEventListener("click", function(e) {
+  delrs.addEventListener("click", function (e) {
     // compute parameter index
     // (it may have changed since lines may have been deleted)
     let index = $(this).closest("tr").index();
@@ -296,13 +286,13 @@ function addRefSpeed() {
 
 function genericSpFormula() {
   function updParam(idx) {
-    return function() {
+    return function () {
       activity.speedprofile.parameters[idx] = parseFloat($("#spformula #p" + idx).val());
       displaySpeedProfile(activity.speedprofile);
     };
   }
   $("#spformula input").off("keyup");
-  arrayForEach(activity.speedprofile.parameters, function(i, params) {
+  WU.arrayForEach(activity.speedprofile.parameters, function (i, params) {
     $("#spformula #p" + i).val(params);
     $("#spformula #p" + i).on("keyup", updParam(i));
   });
@@ -314,18 +304,18 @@ spFormula[L.PolyStats.REFSPEEDS] = {
     [-35, 0.4722], [-20, 0.6944], [-12, 0.9722], [-10, 1.1111], [-6, 1.25],
     [-3, 1.25], [2, 1.1111], [6, 0.9722], [10, 0.8333], [19, 0.5555], [38, 0.2777]
   ],
-  displayFormulaParams: function() {
+  displayFormulaParams: function () {
     $("#spformula").empty();
     $("#spformula").append("<table></table>");
     $("#spformula table").append("<thead><tr><th>Slope (%)</th><th>Speed (m/s)</th></tr></thead><tbody></tbody>");
-    arrayForEach(activity.speedprofile.parameters, function(idx, params) {
+    WU.arrayForEach(activity.speedprofile.parameters, function (idx, params) {
       addRefSpeedLine(idx);
     });
     let addrs = document.createElement("a");
     addrs.setAttribute("href", "#");
     addrs.setAttribute("class", "btn-link");
     addrs.innerHTML = "+";
-    addrs.addEventListener("click", function(e) {
+    addrs.addEventListener("click", function (e) {
       addRefSpeed();
       $("#spformula table tbody").scrollTop($("#spformula table tbody")[0].scrollHeight);
       e.preventDefault();
@@ -336,21 +326,21 @@ spFormula[L.PolyStats.REFSPEEDS] = {
 };
 spFormula[L.PolyStats.LINEAR] = {
   defaultFormulaParams: [0.2, 4],
-  displayFormulaParams: function() {
+  displayFormulaParams: function () {
     $("#spformula").html("speed = <input id='p0' type='text'/> * slope + <input id='p1' type='text'/>");
     genericSpFormula(L.PolyStats.LINEAR);
   }
 };
 spFormula[L.PolyStats.POWER] = {
   defaultFormulaParams: [1, 2],
-  displayFormulaParams: function() {
+  displayFormulaParams: function () {
     $("#spformula").html("speed = <input id='p0' type='text'/> * slope ^ <input id='p1' type='text'/>");
     genericSpFormula(L.PolyStats.POWER);
   }
 };
 spFormula[L.PolyStats.POLYNOMIAL] = {
   defaultFormulaParams: [1.1, -0.1, -0.001],
-  displayFormulaParams: function() {
+  displayFormulaParams: function () {
     let i = 0;
     let html = "";
     while (i < activity.speedprofile.parameters.length) {
@@ -391,12 +381,12 @@ function displayFormula(method) {
 
 function displayActivity() {
   $("#activityname").val(activityname);
-  selectOption($("#activityvehicle"), activity.vehicle);
-  selectOption($("#method"), activity.speedprofile.method);
+  WU.selectOption($("#activityvehicle"), activity.vehicle);
+  WU.selectOption($("#method"), activity.speedprofile.method);
   updateMethod();
 }
 
-$("#activityname").keyup(function() {
+$("#activityname").keyup(function () {
   activityname = $("#activityname").val();
 });
 
@@ -407,7 +397,7 @@ function displaySelectedActivity() {
     let a = activities[activityname];
     activity = createActivity(a.vehicle, a.speedprofile.method,
       a.speedprofile.parameters);
-      displayActivity();
+    displayActivity();
   }
 }
 
@@ -416,20 +406,18 @@ function displaySelectedActivity() {
 let importfnname;
 let inputdata;
 let refspeeds;
-let speedprofile;
-
 
 function displaySpeedProfile(sp) {
 
   // draw line from profile
-  let speedline = [];
+  const speedline = [];
   let minslope = -40;
   let maxslope = 40;
   if (refspeeds && refspeeds.length > 1) {
     minslope = refspeeds[0][0];
     maxslope = refspeeds[refspeeds.length - 1][0];
   }
-  let incslope = (maxslope - minslope) / 20;
+  const incslope = (maxslope - minslope) / 20;
   for (let slope = minslope; slope <= maxslope; slope += incslope) {
     speedline.push([slope, polystats.getSpeed(slope, sp)]);
   }
@@ -495,8 +483,8 @@ function importGeoJson(geojson) {
 
 function changeData() {
   let dataidx = $("#data option:selected").val();
-  if (!isUnset(dataidx)) {
-    refspeeds = inputdata = getDataset(dataidx);
+  if (!WU.isUnset(dataidx)) {
+    refspeeds = inputdata = WDS.getDataset(dataidx);
   }
   importfnname = "computeSpeedProfileFromSpeeds";
   if (activity && activity.speedprofile) {
@@ -509,33 +497,33 @@ function changeData() {
 
 function resetComputeParams() {
   /*
-  selectOption($("#data"), "none");
+  WU.selectOption($("#data"), "none");
   $("#trackfile").val("");
   */
-  selectOption($("#degree"), "2");
-  selectOption($("#iterations"), "1");
-  selectOption($("#pruning"), "0.3");
+  WU.selectOption($("#degree"), "2");
+  WU.selectOption($("#iterations"), "1");
+  WU.selectOption($("#pruning"), "0.3");
 }
 
 let wtReady = false;
 // on ready event (HTML + scripts loaded and executed):
-$(function(){
+$(function () {
   if (wtReady) {
     onerror("duplicate ready event", {
-      "Stack":  new Error().stack
+      "Stack": new Error().stack
     });
     return;
   }
   wtReady = true;
 
-  consentCookies();
+  WC.consentCookies();
 
   // -------- ACTIVITIES
-  activities = getJsonVal("wt.activities");
+  activities = WU.getJsonVal("wt.activities");
   // initialize activities on first use
   if (!activities) {
     activities = config.activities.defaults;
-    storeJsonVal("wt.activities", activities);
+    WU.storeJsonVal("wt.activities", activities);
   }
 
   /*** dummy track required for polystats ***/
@@ -546,30 +534,30 @@ $(function(){
 
 
   // add vehicles to menu
-  arrayForEach(config.activities.vehicles, function(idx, vehicle) {
-    addSelectOption(selectVehicle, vehicle);
+  WU.arrayForEach(config.activities.vehicles, function (idx, vehicle) {
+    WU.addSelectOption(selectVehicle, vehicle);
   });
 
   // add activities to menu
-  objectForEach(activities, function(activity) {
-    addSelectOption(selectActivity, activity);
+  WU.objectForEach(activities, function (activity) {
+    WU.addSelectOption(selectActivity, activity);
   });
 
   let selectdata = $("#data")[0];
-  forEachDataset(function(idx, data) {
-    addSelectOption(selectdata, idx, data.name);
+  WDS.forEachDataset(function (idx, data) {
+    WU.addSelectOption(selectdata, idx, data.name);
   });
 
   displaySelectedActivity();
 
-  let fileloader = L.FileLayer.fileLoader(undefined, {
+  const fileloader = L.FileLayer.fileLoader(undefined, {
     layer: importGeoJson,
     addToMap: false,
     fileSizeLimit: 1024 * 1024,
     formats: ['gpx', 'geojson', 'kml']
   });
-  $("#trackfile").change(function() {
-    selectOption($("#data"), "none");
+  $("#trackfile").change(function () {
+    WU.selectOption($("#data"), "none");
     let file = $("#trackfile")[0].files[0];
     fileloader.load(file);
   });

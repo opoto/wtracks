@@ -1,20 +1,8 @@
 // ESM module for maps functionality
 // Import dependencies from other modules
 import config from './config.js';
-import {
-  saveJsonValOpt, mapsForEach,
-  isStateSaved, setSaveState, doAndroidChromiumTweak,
-  mymaps, MAP_MY, setMyMaps, mapsListNames, mapsListProps,
-  CrsValues, renameMapListEntry, saveMapList, getMapListEntryIndex,
-  addMapListEntry, delMapListEntry, getMapList, resetMapList,
-  moveMapListEntry, consentCookies
-} from './wtracks-commons.js';
-
-import {
-  getParameterByName, b64EncodeUnicode, b64DecodeUnicode, supportsBase64,
-  objectForEach, arrayForEach, addSelectOption, getSelectedOption,
-  selectOption, isChecked, setChecked, noTranslate
-} from './utils.js';
+import * as WU from './utils.js';
+import * as WC from './wtracks-commons.js';
 
 // Dependencies loaded as globals via script tags in the HTML
 /* globals $, ga */
@@ -23,7 +11,7 @@ import {
 
 export const OVERLAY_ICON = "<i class='material-icons map-overlay notranslate' 'translate'='no' title='Map overlay'>layers</i> ";
 export const MYMAPS_BTNS = "<i class='material-icons item-edit notranslate' 'translate'='no' title='Edit'>create</i> " +
-       "<i class='material-icons item-delete notranslate' 'translate'='no' title='Delete'>delete</i> ";
+  "<i class='material-icons item-delete notranslate' 'translate'='no' title='Delete'>delete</i> ";
 
 // --------------------------------------------
 
@@ -44,10 +32,10 @@ function addMymapsItem(name, props, addHandlers) {
   var mymapbtns = "",
     mymapclass = "",
     inList = config.maps;
-  if (props.in == MAP_MY) {
+  if (props.in == WC.MAP_MY) {
     mymapbtns = MYMAPS_BTNS;
     mymapclass = " mymap-name";
-    inList = mymaps;
+    inList = WC.mymaps;
   }
   var mapv = inList[name];
 
@@ -58,7 +46,7 @@ function addMymapsItem(name, props, addHandlers) {
     // migrate overlay type to map attribute
     mapv.type = "base";
     mapv.overlay = true;
-    saveJsonValOpt("wt.mymaps", mymaps);
+    WC.saveJsonValOpt("wt.mymaps", WC.mymaps);
   }
   if (mapv.overlay) {
     mapitem += OVERLAY_ICON;
@@ -77,7 +65,7 @@ function addMymapsItem(name, props, addHandlers) {
     addMapItemHandlers(newitem);
   }
   // TODO: Workaround for Android Chrome display bug
-  doAndroidChromiumTweak(newitem);
+  WC.doAndroidChromiumTweak(newitem);
 }
 
 function getMapName(elt) {
@@ -91,13 +79,13 @@ function getMapName(elt) {
 
 function getMapProps(elt) {
   var name = getMapName(elt);
-  var idx = mapsListNames.indexOf(name);
-  return mapsListProps[idx];
+  var idx = WC.mapsListNames.indexOf(name);
+  return WC.mapsListProps[idx];
 }
 
 function getMapItem(name) {
   var res;
-  $("#mymaps-list .item-name").each(function(i, v) {
+  $("#mymaps-list .item-name").each(function (i, v) {
     if (name == v.innerText) {
       res = $(v).parents("li");
       return true;
@@ -115,7 +103,7 @@ function updateMapItem(oldname, newname, oldoverlay, newoverlay) {
         mapItem.find(".item-name").text(newname);
       }
       if (oldoverlay != newoverlay) {
-        if (oldoverlay)  {
+        if (oldoverlay) {
           // remove overlay icon
           mapItem.find(".map-overlay").remove();
           mapItem.find(".item-name").removeClass("overlay-name");
@@ -135,7 +123,7 @@ function updateMapItem(oldname, newname, oldoverlay, newoverlay) {
 
 export function showMapsList() {
   $("#mymaps-list").empty();
-  mapsForEach(function(name, value) {
+  WC.mapsForEach(function (name, value) {
     addMymapsItem(name, value);
   });
   addMapItemHandlers($('#mymaps-list li'));
@@ -144,7 +132,7 @@ export function showMapsList() {
 function toggleMapVisibility(e) {
   var mprops = getMapProps(e.currentTarget);
   mprops.on = !mprops.on;
-  saveMapList();
+  WC.saveMapList();
   setMapItemVisibility($(e.currentTarget), mprops);
   ga('send', 'event', 'map', 'visibility');
 }
@@ -175,9 +163,9 @@ var mymap;
 
 function initCrsSelector() {
   var crsSelect = $("#mymap-crs")[0];
-  for (var i = CrsValues.length - 1; i >=0; i--) {
-    var crs = CrsValues[i];
-    addSelectOption(crsSelect, crs ? crs.code : "");
+  for (var i = WC.CrsValues.length - 1; i >= 0; i--) {
+    const crs = WC.CrsValues[i];
+    WU.addSelectOption(crsSelect, crs ? crs.code : "");
   }
 }
 initCrsSelector();
@@ -195,7 +183,7 @@ function openMymapBox() {
   $("#mymap-style").val(mymap.options.style);
   $("#mymap-format").val(mymap.options.format);
   $("#mymap-attr").val(mymap.options.attribution);
-  setChecked("#mymap-overlay", mymap.overlay);
+  WU.setChecked("#mymap-overlay", mymap.overlay);
   $("#mymap-box input:radio[name=mymap-type][value=" + mymap.type + "]").prop('checked', true);
   $("#mymap-box").show();
   $("#mymap-name").focus();
@@ -209,7 +197,7 @@ export function newMymap() {
 
 export function editMymap(mymapname) {
   if (mymapname) {
-    mymap = mymaps[mymapname];
+    mymap = WC.mymaps[mymapname];
     if (mymap) {
       mymap.name = mymapname;
       openMymapBox();
@@ -218,18 +206,18 @@ export function editMymap(mymapname) {
 }
 
 var mymapsInputs = $("#mymap-box input");
-mymapsInputs.on("invalid", function(evt) {
+mymapsInputs.on("invalid", function (evt) {
   var invalidInput = $(evt.target);
   invalidInput.addClass("invalid");
   invalidInput.focus();
 });
-mymapsInputs.on("input", function(evt) {
+mymapsInputs.on("input", function (evt) {
   if (evt.target.checkValidity()) {
     $(evt.target).removeClass("invalid");
   }
 });
 
-mymapsInputs.keyup(function(event) {
+mymapsInputs.keyup(function (event) {
   if (event.which == 27) {
     cancelMymapBox();
     event.stopPropagation();
@@ -241,7 +229,7 @@ mymapsInputs.keyup(function(event) {
 function validateMymapBox() {
   var valid = true;
   // check validity on displayed inputs
-  $("#mymap-box input:visible").each(function(i, v) {
+  $("#mymap-box input:visible").each(function (i, v) {
     var display = $(v).css('display');
     if ((display != "none") && (!v.checkValidity())) {
       valid = false;
@@ -251,7 +239,7 @@ function validateMymapBox() {
   var oldname = mymap.name;
   var oldoverlay = mymap.overlay;
   var newname = $("#mymap-name").val().trim();
-  if ((oldname != newname) && (getMapListEntryIndex(newname) >= 0)) {
+  if ((oldname != newname) && (WC.getMapListEntryIndex(newname) >= 0)) {
     $("#mymap-name").trigger("invalid");
     console.warn("Map name already used: " + newname);
     valid = false;
@@ -262,9 +250,9 @@ function validateMymapBox() {
     delete mymap.name; // discard, stored in mapsListNames
     mymap.url = $("#mymap-url").val().trim();
     mymap.type = $('input:radio[name=mymap-type]:checked').val();
-    mymap.overlay = isChecked("#mymap-overlay");
+    mymap.overlay = WU.isChecked("#mymap-overlay");
     mymap.options = {};
-    mymap.options.minZoom= Number($("#mymap-minz").val().trim());
+    mymap.options.minZoom = Number($("#mymap-minz").val().trim());
     mymap.options.maxZoom = Number($("#mymap-maxz").val().trim());
     if (mymap.type === "wms") {
       mymap.options.layers = $("#mymap-layers").val().trim();
@@ -278,32 +266,32 @@ function validateMymapBox() {
       mymap.options.format = $("#mymap-format").val().trim();
     }
     mymap.options.attribution = $("#mymap-attr").val().trim();
-    if (oldname && mymaps[oldname]) {
+    if (oldname && WC.mymaps[oldname]) {
       updateMapItem(oldname, newname, oldoverlay, mymap.overlay);
       if (oldname != newname) {
         // rebuild object to preserve order
         var tmp = {};
-        objectForEach(mymaps, function(name, value) {
+        WU.objectForEach(WC.mymaps, function (name, value) {
           if (name == oldname) {
             tmp[newname] = mymap;
           } else {
             tmp[name] = value;
           }
         });
-        setMyMaps(tmp);
-        renameMapListEntry(oldname, newname);
-        saveMapList();
+        WC.setMyMaps(tmp);
+        WC.renameMapListEntry(oldname, newname);
+        WC.saveMapList();
       } else {
-        mymaps[newname] = mymap;
+        WC.mymaps[newname] = mymap;
       }
       ga('send', 'event', 'map', 'edit');
     } else {
-      mymaps[newname] = mymap;
-      addMymapsItem(newname, addMapListEntry(newname, MAP_MY, true), true);
-      saveMapList();
+      WC.mymaps[newname] = mymap;
+      addMymapsItem(newname, WC.addMapListEntry(newname, WC.MAP_MY, true), true);
+      WC.saveMapList();
       ga('send', 'event', 'map', 'add');
     }
-    saveJsonValOpt("wt.mymaps", mymaps);
+    WC.saveJsonValOpt("wt.mymaps", WC.mymaps);
   }
 }
 
@@ -315,14 +303,14 @@ function cancelMymapBox() {
 
 export function deleteMymap(mymapname) {
   if (mymapname) {
-    mymap = mymaps[mymapname];
+    mymap = WC.mymaps[mymapname];
     if (mymap && confirm("Delete \"" + mymapname + "\"?")) {
-      mymaps[mymapname] = undefined;
-      saveJsonValOpt("wt.mymaps", mymaps);
+      WC.mymaps[mymapname] = undefined;
+      WC.saveJsonValOpt("wt.mymaps", undefined);
       // delete map in lists
-      delMapListEntry(getMapListEntryIndex(mymapname));
+      WC.delMapListEntry(WC.getMapListEntryIndex(mymapname));
       updateMapItem(mymapname);
-      saveMapList();
+      WC.saveMapList();
       ga('send', 'event', 'map', 'delete');
     }
   }
@@ -351,19 +339,19 @@ function changeMymapType() {
 }
 
 function deleteAllMymaps() {
-  if (!$.isEmptyObject(mymaps) &&
-      confirm("Delete all your personal maps?")) {
-    setMyMaps({});
-    saveJsonValOpt("wt.mymaps", undefined);
-    getMapList();
+  if (!$.isEmptyObject(WC.mymaps) &&
+    confirm("Delete all your personal maps?")) {
+    WC.setMyMaps({});
+    WC.saveJsonValOpt("wt.mymaps", undefined);
+    WC.getMapList();
     showMapsList();
     ga('send', 'event', 'map', 'deleteall');
   }
 }
 function reorderMapList() {
   if (confirm("Re-order map list according to defaults, with personal maps at the end?")) {
-    resetMapList();
-    getMapList();
+    WC.resetMapList();
+    WC.getMapList();
     showMapsList();
     ga('send', 'event', 'map', 'reorder');
   }
@@ -390,11 +378,11 @@ function getLayersList() {
   function setLayerAttr(option, attrName, node, selector) {
     try {
       var value;
-      arrayForEach(node.querySelectorAll(selector), function(idx,item) {
+      WU.arrayForEach(node.querySelectorAll(selector), function (idx, item) {
         value = value ? value + "|" + item.textContent : item.textContent;
       });
       option.attr(attrName, value);
-    } catch(err) {
+    } catch (err) {
       console.warn(err);
     }
   }
@@ -406,33 +394,33 @@ function getLayersList() {
     url: url,
     dataType: "xml"
   })
-  .done(function (resp) {
-    $("#mymap-layerslist").empty();
-    var ids = resp.querySelectorAll(layerSelector);
-    $("#mymap-layerslist").append("<option id='' value=''>" + (ids.length ? "Click to select" : "No layer found") + "</option>");
-    arrayForEach(ids, function (idx, val) {
-      var id = val.textContent;
-      $("#mymap-layerslist").append("<option value='" + id + "' name='" + id + "'>" + id +
-        "</option>");
-      var opt = $($("#mymap-layerslist>option[value='"+id+"']")[0]);
-      var layerElt = val.parentElement;
-      if (mapType == "WMTS") {
-        setLayerAttr(opt, "style", layerElt, "Style>Identifier");
-        setLayerAttr(opt, "tilematrixSet", layerElt, "TileMatrixSet");
-        setLayerAttr(opt, "format", layerElt, "Layer>Format");
-      }
+    .done(function (resp) {
+      $("#mymap-layerslist").empty();
+      var ids = resp.querySelectorAll(layerSelector);
+      $("#mymap-layerslist").append("<option id='' value=''>" + (ids.length ? "Click to select" : "No layer found") + "</option>");
+      WU.arrayForEach(ids, function (idx, val) {
+        var id = val.textContent;
+        $("#mymap-layerslist").append("<option value='" + id + "' name='" + id + "'>" + id +
+          "</option>");
+        var opt = $($("#mymap-layerslist>option[value='" + id + "']")[0]);
+        var layerElt = val.parentElement;
+        if (mapType == "WMTS") {
+          setLayerAttr(opt, "style", layerElt, "Style>Identifier");
+          setLayerAttr(opt, "tilematrixSet", layerElt, "TileMatrixSet");
+          setLayerAttr(opt, "format", layerElt, "Layer>Format");
+        }
+      });
+      var curval = $("#" + valfield).val().trim();
+      WU.selectOption("#mymap-layerslist", curval);
+      $("#mymap-layerslist").show();
+    })
+    .fail(function () {
+      $("#mymap-layerslist-error").show();
+    })
+    .always(function () {
+      $("#mymap-getlayerslist").show();
+      $("#mymap-getlayerslist-processing").hide();
     });
-    var curval = $("#"+valfield).val().trim();
-    selectOption("#mymap-layerslist", curval);
-    $("#mymap-layerslist").show();
-  })
-  .fail(function() {
-   $("#mymap-layerslist-error").show();
-  })
-  .always(function() {
-    $("#mymap-getlayerslist").show();
-    $("#mymap-getlayerslist-processing").hide();
-  });
 }
 
 function onWmtsLayerChanged() {
@@ -444,7 +432,7 @@ function onWmtsLayerChanged() {
   $("#mymap-tilematrixSet").val(opt.attr("tilematrixSet"));
 }
 function onWmsLayerChanged() {
-  $("#mymap-layers").val(getSelectedOption("#mymap-layerslist"));
+  $("#mymap-layers").val(WU.getSelectedOption("#mymap-layerslist"));
   $("#mymap-layers").removeClass("invalid");
 }
 
@@ -464,27 +452,27 @@ $("input:radio[name=mymap-type]").change(changeMymapType);
 export function openExportMaps(evt, mapname) {
   var toexport = {};
   if (mapname) {
-    toexport[mapname] = mymaps[mapname] || config.maps[mapname];
+    toexport[mapname] = WC.mymaps[mapname] || config.maps[mapname];
   } else {
-    toexport = mymaps;
+    toexport = WC.mymaps;
   }
   if (!$.isEmptyObject(toexport)) {
     var json = JSON.stringify(toexport);
-    var data = b64EncodeUnicode(json);
+    var data = WU.b64EncodeUnicode(json);
     $("#export-val").val(window.location.toString() + "?import=" + data);
     $("#export-box").show();
     $("#export-val").focus();
     $("#export-val").select();
-    ga('send', 'event', 'map', 'export', undefined, mapname ? 1 : mymaps.length);
+    ga('send', 'event', 'map', 'export', undefined, mapname ? 1 : WC.mymaps.length);
   }
 }
 
-$("#export-box-close").click(function() {
+$("#export-box-close").click(function () {
   $("#export-box").hide();
   return false;
 });
 
-$("#export-val").keyup(function(event) {
+$("#export-val").keyup(function (event) {
   if ((event.which == 27) || (event.keyCode == 13)) {
     $("#export-box").hide();
   }
@@ -492,7 +480,7 @@ $("#export-val").keyup(function(event) {
 
 $("#mymaps-export").click(openExportMaps);
 
-if (!supportsBase64() || !JSON || !JSON.parse || !JSON.stringify) {
+if (!WU.supportsBase64() || !JSON || !JSON.parse || !JSON.stringify) {
   $("#mymaps-export").attr("disabled", "disabled");
 }
 
@@ -519,16 +507,16 @@ function readImportMymaps(event) {
   $("#input-error-url").hide();
   var data = $("#input-val").val();
   if (data.match(/^https?:\/\//)) {
-    data = getParameterByName("import", undefined, data.substring(data.indexOf('?') + 1));
+    data = WU.getParameterByName("import", undefined, data.substring(data.indexOf('?') + 1));
   }
   if (data) {
     try {
-      importedMymaps = data ? JSON.parse(b64DecodeUnicode(data)) : {};
+      importedMymaps = data ? JSON.parse(WU.b64DecodeUnicode(data)) : {};
       $("#import-list").empty();
       var i = 0;
-      objectForEach(importedMymaps, function(name, value) {
+      WU.objectForEach(importedMymaps, function (name, value) {
         var id = "import-i" + i++;
-        var limap = "<tr><td><input id='" + id  + "' type='checkbox' checked='checked'/></td>";
+        var limap = "<tr><td><input id='" + id + "' type='checkbox' checked='checked'/></td>";
         limap += "<td><label for='" + id + "'><span translate='no' class='notranslate'>";
         var count = 0;
         var ext = "";
@@ -536,7 +524,7 @@ function readImportMymaps(event) {
           if (count > 0) {
             ext = " (" + count + ")";
           }
-          if (getMapListEntryIndex(name + ext) < 0) {
+          if (WC.getMapListEntryIndex(name + ext) < 0) {
             if (ext) {
               // replace name
               importedMymaps[name] = undefined;
@@ -551,7 +539,7 @@ function readImportMymaps(event) {
         $("#import-list").append(limap);
       });
       // show info about persistence activation if needed
-      if (isStateSaved()) {
+      if (WC.isStateSaved()) {
         $("#importv-savecfg").hide();
       } else {
         $("#importv-savecfg").show();
@@ -573,7 +561,7 @@ function readImportMymaps(event) {
   }
 }
 $("#import-ok").off("click").click(readImportMymaps);
-$("#import-box").keyup(function(event) {
+$("#import-box").keyup(function (event) {
   if (event.which == 27) {
     $("#import-box").hide();
   } else if (event.keyCode == 13) {
@@ -590,20 +578,20 @@ function closeImportBox() {
 
 function importMymaps() {
   var imported = 0;
-  $("#import-list input:checked").each(function(i,elt) {
+  $("#import-list input:checked").each(function (i, elt) {
     var name = $(elt).parents("tr").find("span").text();
-    var isnew = !mymaps[name];
-    mymaps[name] = importedMymaps[name];
+    var isnew = !WC.mymaps[name];
+    WC.mymaps[name] = importedMymaps[name];
     if (isnew) {
-      addMymapsItem(name, addMapListEntry(name, MAP_MY, true), true);
+      addMymapsItem(name, WC.addMapListEntry(name, WC.MAP_MY, true), true);
     }
     imported++;
   });
   if (imported > 0) {
     // requires saved state
-    setSaveState(true);
-    saveJsonValOpt("wt.mymaps", mymaps);
-    saveMapList();
+    WC.setSaveState(true);
+    WC.saveJsonValOpt("wt.mymaps", WC.mymaps);
+    WC.saveMapList();
     ga('send', 'event', 'map', 'import', undefined, imported);
   }
   closeImportBox();
@@ -616,38 +604,38 @@ $("#import-box-close").click(closeImportBox);
 
 var wtReady = false;
 // on ready event (HTML + scripts loaded and executed):
-$(function(){
+$(function () {
   if (wtReady) {
     onerror("duplicate ready event", {
-      "Stack":  new Error().stack
+      "Stack": new Error().stack
     });
     return;
   }
   wtReady = true;
 
-  noTranslate();
-  noTranslate("label");
-  consentCookies();
+  WU.noTranslate();
+  WU.noTranslate("label");
+  WC.consentCookies();
 
   showMapsList();
   // ----- drag & drop list -----
   $("#mymaps-list").sortable({
     //scroll: true,
     handle: ".item-drag, .item-name",
-    update: function() {
+    update: function () {
       //let moved = false;
       // reorder MapListEntry according to MapItems
-      $("#mymaps-list .item-name").each(function(i, v) {
+      $("#mymaps-list .item-name").each(function (i, v) {
         var name = v.innerText;
         // get new index
         var item = getMapItem(name);
         var toIdx = item.index();
         // get old index
-        var fromIdx = getMapListEntryIndex(name);
+        var fromIdx = WC.getMapListEntryIndex(name);
         if (fromIdx != toIdx) {
           // update list data
-          moveMapListEntry(fromIdx, toIdx);
-          saveMapList();
+          WC.moveMapListEntry(fromIdx, toIdx);
+          WC.saveMapList();
           ga('send', 'event', 'map', 'move');
           //moved = true;
         }
@@ -659,13 +647,13 @@ $(function(){
   });
 
   // import maps?
-  var toimport = getParameterByName("import");
+  var toimport = WU.getParameterByName("import");
   if (toimport) {
     openImportBox(null, toimport);
   }
 });
 
-$(window).on("unload", function() {
+$(window).on("unload", function () {
   $("#mymaps-list").sortable('destroy');
 });
 

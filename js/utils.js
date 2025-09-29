@@ -28,7 +28,7 @@ export function htmlEncode(txt) {
   return $('<div/>').text(txt).html();
 }
 export function htmlDecode(html) {
-    return $('<div/>').html(html).text();
+  return $('<div/>').html(html).text();
 }
 
 /* ----------------------- Browser utilities ---------------------- */
@@ -62,10 +62,10 @@ export function jsonClone(obj) {
 }
 
 export function noTranslate(selector) {
-    // default selector
-    selector = selector ? selector : ".material-icons";
-    $(selector).addClass("notranslate");
-    $(selector).attr("translate", "no");
+  // default selector
+  selector = selector ? selector : ".material-icons";
+  $(selector).addClass("notranslate");
+  $(selector).attr("translate", "no");
 }
 
 /* ------------------ Html utils -------------------- */
@@ -126,7 +126,7 @@ export function getRealInput(jqInput, mandatory, invalidClass) {
     try {
       val = parseFloat(valStr);
       setInvalidInput(jqInput, isNaN(val), invalidClass);
-    } catch (error) {
+    } catch (err) {
       setInvalidInput(jqInput, true, invalidClass);
     }
   } else if (mandatory) {
@@ -149,10 +149,10 @@ export function getDateTimeInput(jqInput, mandatory, invalidClass) {
       // Workaround for potential missing seconds
       b.push("00");
     }
-    date = new Date(b[0], b[1]-1, b[2], b[3], b[4], b[5]);
+    date = new Date(b[0], b[1] - 1, b[2], b[3], b[4], b[5]);
     date.toISOString(); // make sure it works
     setInvalidInput(jqInput, false, invalidClass);
-  } catch(err) {
+  } catch (err) {
     setInvalidInput(jqInput, true, invalidClass);
     date = undefined;
   }
@@ -166,7 +166,7 @@ export function setDateTimeInput(jqInput, ptTime) {
     // get point's recorded date
     const d = new Date(ptTime);
     // get this time in local value in "normalized" format
-    v=d.getFullYear() + "-" + ("0" + (d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2) + "T" + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2)+ ":" + ("0" + d.getSeconds()).slice(-2);
+    v = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2) + "T" + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2) + ":" + ("0" + d.getSeconds()).slice(-2);
     // set input value
   }
   jqInput.val(v);
@@ -201,7 +201,7 @@ export function storeVal(name, val) {
       try {
         store.setItem(name, val);
       } catch (err) {
-        const kbsz = val.length ? Math.round(val.length/1024) : 0;
+        const kbsz = val.length ? Math.round(val.length / 1024) : 0;
         console.error("Cannot store value " + name + ": " + kbsz + "KB");
         wtEvent('error', 'storeVal failed: ' + err.toString(), name, kbsz);
         // switch to sessionStorage?
@@ -247,7 +247,7 @@ export function getJsonVal(name, defval) {
 
 export function storedValuesForEach(fn) {
   const store = getValStorage();
-  for (var i=store.length - 1; i >= 0; i--) {
+  for (var i = store.length - 1; i >= 0; i--) {
     if (fn(store.key(i))) {
       break;
     }
@@ -265,9 +265,9 @@ export function initGoogleAnalytics(trackingid, gtagId) {
     gaScriptUrl = 'https://www.google-analytics.com/analytics_debug.js';
   }
   /**/
-  (function(i, s, o, g, r, a, m) {
+  (function (i, s, o, g, r, a, m) {
     i.GoogleAnalyticsObject = r;
-    i[r] = i[r] || function() {
+    i[r] = i[r] || function () {
       (i[r].q = i[r].q || []).push(arguments);
     };
     i[r].l = 1 * new Date();
@@ -275,7 +275,7 @@ export function initGoogleAnalytics(trackingid, gtagId) {
     m = s.getElementsByTagName(o)[0];
     a.async = 1;
     a.src = g;
-    a.onerror = function(err) {
+    a.onerror = function (err) {
       console.error("Google Analytics blocked. Ad blocker?");
     };
     try {
@@ -285,7 +285,7 @@ export function initGoogleAnalytics(trackingid, gtagId) {
     }
   })(window, document, 'script', gaScriptUrl, 'ga');
   if (gaDbg === "2") {
-    window.ga_debug = {trace: true};
+    window.ga_debug = { trace: true };
   }
   ga('create', trackingid, 'auto');
   if (getBoolVal("wt.ga.off", false)) {
@@ -301,7 +301,7 @@ export function initGoogleAnalytics(trackingid, gtagId) {
     document.head.appendChild(gtagJs);
 
     window.dataLayer = window.dataLayer || [];
-    window.gtag = function(){window.dataLayer.push(arguments);};
+    window.gtag = function () { window.dataLayer.push(arguments); };
     window.gtag('js', new Date());
     const gtagCfg = (gaDbg != '0') ? { 'debug_mode': true } : {};
     window.gtag('config', gtagId, gtagCfg);
@@ -331,7 +331,7 @@ export function wtEvent(name, category, action, label, value) {
  * "mailto:<name>@<domain>?subject=<subject>
  */
 export function setEmailListener(selector, name, domain, subject) {
-  $(selector).click(function() {
+  $(selector).click(function () {
     function doEmail(d, i, tail) {
       location.href = "mailto:" + i + "@" + d + tail;
     }
@@ -364,7 +364,7 @@ export function corsUrl(url) {
 /* ------------------------------ Encoding --------------------------------- */
 export function n10dLocation() {
   let res = window.location.toString();
-  res = res.replace(/\?.*$/, "").replace(/\#.*$/, "");
+  res = res.replace(/\?.*$/, "").replace(/#.*$/, "");
   res = res.replace(/^.*:\/\//, "//");
   res = res.replace(/index.html$/, "");
   res = res.replace(/\/*$/, "/");
@@ -419,17 +419,17 @@ export function supportsBase64() {
 }
 
 export function b64EncodeUnicode(str) {
-  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function (match, p1) {
     return String.fromCharCode('0x' + p1);
   }))
-  // Convert to URL safe base 64: replace  + and / by - and _
-  .replaceAll("+", "-").replaceAll("/", "_");
+    // Convert to URL safe base 64: replace  + and / by - and _
+    .replaceAll("+", "-").replaceAll("/", "_");
 }
 
 export function b64DecodeUnicode(str) {
   // Assume URL safe base 64, with - and _ instead of + and /
   str = str.replaceAll("-", "+").replaceAll("_", "/");
-  return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+  return decodeURIComponent(Array.prototype.map.call(atob(str), function (c) {
     return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
   }).join(''));
 }
@@ -452,7 +452,7 @@ export function copyToClipboard(msg, text) {
  *    'preCopy': function to call before copy (default is none)
  *    'postCopy': function to call after copy (default is none)
  */
- export function copyOnClick(selector, options) {
+export function copyOnClick(selector, options) {
 
   let copyOk = (options && options.copyOk) || "Copied to clipboard";
   let copyKO = (options && options.copyKO) || "! Cannot copy !";
@@ -470,7 +470,7 @@ export function copyToClipboard(msg, text) {
 
     clicked.prop("disabled", true);
     input.prop("disabled", true);
-    setTimeout(function() {
+    setTimeout(function () {
       if (type) {
         input.attr("type", type);
       }
@@ -491,9 +491,9 @@ export function copyToClipboard(msg, text) {
     let input;
     if (event.target.attributes["data-copyonclick-from"]) {
       let inputId = event.target.attributes["data-copyonclick-from"].value;
-      input = $("#"+inputId);
+      input = $("#" + inputId);
     }
-    if(!input || input.length == 0) {
+    if (!input || input.length == 0) {
       console.error("copyOnClick: invalid or missing 'data-copyonclick-from' attribute");
     }
     if (options && options.preCopy) {
@@ -501,8 +501,8 @@ export function copyToClipboard(msg, text) {
     }
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(input.val())
-      .then(function() { showCopyStatus(clicked, input, copyOk); })
-      .catch(function() { showCopyStatus(clicked, input, copyKO); });
+        .then(function () { showCopyStatus(clicked, input, copyOk); })
+        .catch(function () { showCopyStatus(clicked, input, copyKO); });
     } else {
       input[0].select();
       try {
@@ -518,14 +518,14 @@ export function copyToClipboard(msg, text) {
 /* ------------------ Iteration helpers ----------------- */
 
 export function arrayMove(arr, old_index, new_index) {
-    if (new_index >= arr.length) {
-        let k = new_index - arr.length + 1;
-        while (k--) {
-            arr.push(undefined);
-        }
+  if (new_index >= arr.length) {
+    let k = new_index - arr.length + 1;
+    while (k--) {
+      arr.push(undefined);
     }
-    arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
-    return arr;
+  }
+  arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+  return arr;
 }
 
 export function objectForEach(object, func) {
@@ -559,7 +559,7 @@ export function arrayLast(array) {
 /* ---------------------- track errors ------------------------ */
 let errors = [];
 
-window.onerror = function(messageOrEvent, source, line, row, err) {
+window.onerror = function (messageOrEvent, source, line, row, err) {
   let label, errmsg, notWTracks;
   try {
     label = {
@@ -576,7 +576,7 @@ window.onerror = function(messageOrEvent, source, line, row, err) {
       errmsg.indexOf("Refused to evaluate a string as JavaScript because 'unsafe-eval'") >= 0 ||
       errmsg.indexOf("chrome-extension://") >= 0;
     if (typeof source == "string") {
-      label.location =  source + ": " + line + ", " + row;
+      label.location = source + ": " + line + ", " + row;
     } else if (source) {
       label.details = source;
     }
@@ -592,7 +592,7 @@ window.onerror = function(messageOrEvent, source, line, row, err) {
       label.details.notWTracks = errmsg;
       errmsg = "notWTracks";
     }
-  } catch(ex) {
+  } catch (ex) {
     errmsg = ex.toString();
     label = ex;
   }

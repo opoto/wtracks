@@ -1,6 +1,4 @@
-import {
-  arrayForEach
-} from './utils.js';
+import * as WU from './utils.js';
 
 /* globals ga */
 
@@ -67,5 +65,5 @@ export function getDataset(idx) {
   return data;
 }
 export function forEachDataset(fn) {
-  arrayForEach(datas, fn);
+  WU.arrayForEach(datas, fn);
 }

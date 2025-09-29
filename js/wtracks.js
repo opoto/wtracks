@@ -1,29 +1,13 @@
 // ESM module for main wtracks application
 // Import dependencies from other modules
 import config from './config.js';
-
-import {
-  isUnset, isUndefined, jsonClone, getParameterByName, clearUrlQuery, corsUrl,
-  htmlEncode, strencode, strdecode, isSafari, getBoolVal, getJsonVal, getVal,
-  storeVal, getValStorage, storedValuesForEach, objectForEach, arrayForEach,
-  arrayLast, roundDecimal, isNumeric, noTranslate, addSelectOption,
-  getSelectedOption, selectOption, isChecked, setChecked, enableInput,
-  setDateTimeInput, getDateTimeInput, getRealInput
-} from './utils.js';
-
-import {
-  consentCookies, forceReload, saveValOpt, saveJsonValOpt, mapsForEach,
-  mymaps, mapsList, MAP_MY, getMapListEntryProps, getCrsFromName,
-  isStateSaved, setSaveState, getUseServiceWorker, setUseServiceWorker, initServiceWorker
-} from './wtracks-commons.js';
-
-import {
-  isCryptoSupported, aesGcmEncrypt, aesGcmDecrypt
-} from './encdec.js';
+import * as WU from './utils.js';
+import * as WC from './wtracks-commons.js';
+import * as CRY from './encdec.js';
+import PasteLibs from './paste-libs.js';
 
 // Dependencies loaded as globals via script tags in the HTML
-/* globals $, ga, L, google, Dropbox, jscolor, PasteLibs,
-     saveAs, PMTiles */
+/* globals $, ga, L, google, Dropbox, jscolor, saveAs, PMTiles */
 
 let map;
 let track;
@@ -41,7 +25,7 @@ let polystats;
 */
 L.Layer.prototype.setInteractive = function (interactive) {
   if (this.getLayers) {
-    arrayForEach(this.getLayers(), function (idx, layer) {
+    WU.arrayForEach(this.getLayers(), function (idx, layer) {
       layer.setInteractive(interactive);
     });
     return;
@@ -64,7 +48,7 @@ function setStatus(msg, options) {
   $("#status-msg").text(msg);
   const statusclass = options && options.class ? options.class : "status-info";
   $("#status-msg").attr("class", statusclass);
-  const showspinner = options && !isUnset(options.spinner) && options.spinner;
+  const showspinner = options && !WU.isUnset(options.spinner) && options.spinner;
   $("#spinner").toggle(showspinner);
   $("#status").fadeIn();
   if (options && options.timeout) {
@@ -93,7 +77,7 @@ $(function () {
   }
   wtReady = true;
 
-  consentCookies();
+  WC.consentCookies();
 
   /* folding settings */
   function toggleElement(e) {
@@ -149,18 +133,18 @@ $(function () {
   const EMPTY_METADATA = { name: NEW_TRACK_NAME, desc: "" };
 
   let metadata = EMPTY_METADATA;
-  let pruneDist = getVal("wt.pruneDist", config.pruneDist);
-  let pruneMaxDist = getVal("wt.pruneMaxDist", config.pruneMaxDist);
-  let pruneMaxTime = getVal("wt.pruneMaxTime", config.pruneMaxTime);
-  let wptLabel = getBoolVal("wt.wptLabel", config.display.wptLabel);
-  let hideWpt = getBoolVal("wt.hideWpt", config.display.hideWpt);
-  let smoothLevel = getVal("wt.smoothLevel", config.smoothLevel);
+  let pruneDist = WU.getNumVal("wt.pruneDist", config.pruneDist);
+  let pruneMaxDist = WU.getNumVal("wt.pruneMaxDist", config.pruneMaxDist);
+  let pruneMaxTime = WU.getNumVal("wt.pruneMaxTime", config.pruneMaxTime);
+  let wptLabel = WU.getBoolVal("wt.wptLabel", config.display.wptLabel, true);
+  let hideWpt = WU.getBoolVal("wt.hideWpt", config.display.hideWpt, true);
+  let smoothLevel = WU.getNumVal("wt.smoothLevel", config.smoothLevel);
 
-  let fwdGuide = getBoolVal("wt.fwdGuide", config.display.fwdGuide);
+  let fwdGuide = WU.getBoolVal("wt.fwdGuide", config.display.fwdGuide, true);
   let fwdGuideGa = true; // collect stats on this user preference
-  let extMarkers = getBoolVal("wt.extMarkers", config.display.extMarkers);
-  let autoGrayBaseLayer = getBoolVal("wt.autoGrayBaseLayer", config.display.autoGrayBaseLayer);
-  let noMixOverlays = getBoolVal("wt.noMixOverlays", false);
+  let extMarkers = WU.getBoolVal("wt.extMarkers", config.display.extMarkers);
+  let autoGrayBaseLayer = WU.getBoolVal("wt.autoGrayBaseLayer", config.display.autoGrayBaseLayer);
+  let noMixOverlays = WU.getBoolVal("wt.noMixOverlays", false);
   let wasDragged;
 
   const EDIT_NONE = 0;
@@ -172,14 +156,14 @@ $(function () {
   const EDIT_DEFAULT = EDIT_MANUAL_TRACK;
   let editMode = -1;
 
-  let mapsCloseOnClick = getBoolVal("wt.mapsCloseOnClick", config.mapsCloseOnClick);
+  let mapsCloseOnClick = WU.getBoolVal("wt.mapsCloseOnClick", config.mapsCloseOnClick, true);
 
   let apikeys = {};
-  arrayForEach(["ghkey", "ggkey", "orskey"], function name(i, kname) {
-    apikeys[kname] = getVal("wt." + kname, undefined);
+  WU.arrayForEach(["ghkey", "ggkey", "orskey"], function name(i, kname) {
+    apikeys[kname] = WU.getVal("wt." + kname, undefined);
   });
 
-  let apikeyNoMore = getBoolVal("wt.apikeyNoMore", false);
+  let apikeyNoMore = WU.getBoolVal("wt.apikeyNoMore", false);
 
   const MARKER_ICON = L.icon({
     iconUrl: 'img/marker-icon.png',
@@ -302,7 +286,7 @@ $(function () {
 
   function changeApikeyNomore(v) {
     apikeyNoMore = v;
-    saveValOpt("wt.apikeyNoMore", apikeyNoMore);
+    WC.saveValOpt("wt.apikeyNoMore", apikeyNoMore);
     ga('send', 'event', 'setting', 'keysNomore', undefined, apikeyNoMore ? 1 : 0);
   }
 
@@ -323,7 +307,7 @@ $(function () {
   /* ----------------------------------------------------- */
 
   const selectActivity = $("#activity")[0];
-  let activities = getJsonVal("wt.activities");
+  let activities = WU.getJsonVal("wt.activities");
   let loadedActivities = ""; // bug tracking
   let currentActivity;
   const ACTIVITY_RECORDED = "Recorded";
@@ -331,13 +315,13 @@ $(function () {
     loadedActivities = "Loaded ";
     if ($.isEmptyObject(activities)) {
       activities = config.activities.defaults;
-      saveJsonValOpt("wt.activities", activities);
+      WC.saveJsonValOpt("wt.activities", activities);
     }
     loadedActivities += " " + Object.keys(activities).length + " activities";
     // append activities
-    objectForEach(activities, function (activityName) {
+    WU.objectForEach(activities, function (activityName) {
       if (!selectActivity.options[activityName]) {
-        addSelectOption(selectActivity, activityName);
+        WU.addSelectOption(selectActivity, activityName);
       }
     });
     loadedActivities += " in " + $("#activity option").length + " options";
@@ -350,21 +334,21 @@ $(function () {
     loadedActivities += ", kept " + $("#activity option").length;
     // this is to show the timing recorded in GPX
     if (!selectActivity.options[ACTIVITY_RECORDED]) {
-      addSelectOption(selectActivity, ACTIVITY_RECORDED);
+      WU.addSelectOption(selectActivity, ACTIVITY_RECORDED);
     }
 
   }
   loadActivities();
-  selectOption(selectActivity, getVal("wt.activity", ACTIVITY_RECORDED));
+  WU.selectOption(selectActivity, WU.getVal("wt.activity", ACTIVITY_RECORDED));
 
   function getCurrentActivityName() {
-    return getSelectedOption("#activity");
+    return WU.getSelectedOption("#activity");
   }
 
   function updateCurrentActivity() {
     let activityName = getCurrentActivityName();
     if (!activityName) {
-      activityName = Object.keys(activities)[0];
+      activityName = activities ? Object.keys(activities)[0] : undefined;
       let dbgActivities = "";
       $("#activity option").each(function (i, a) {
         if (i > 0) {
@@ -374,14 +358,14 @@ $(function () {
       });
       $("#activity option").each(function (a) { console.log(a); });
       onerror("No current activity", {
-        "Saved": getVal("wt.activity"),
+        "Saved": WU.getVal("wt.activity"),
         "First": activityName,
         "Nb activities": Object.keys(activities).length,
         "Menu": dbgActivities,
         "Loaded": loadedActivities,
         "Stack": new Error().stack
       });
-      selectOption(selectActivity, activityName);
+      if (activityName) WU.selectOption(selectActivity, activityName);
     }
     let requestedActivity = activityName;
     if (!activities[requestedActivity]) {
@@ -395,7 +379,7 @@ $(function () {
           "Activity": requestedActivity,
           "Nb activities": Object.keys(activities).length
         });
-        selectOption(selectActivity, activityName);
+        WU.selectOption(selectActivity, activityName);
       }
     }
     currentActivity = activities[activityName];
@@ -410,8 +394,8 @@ $(function () {
   $("#activity").on("change", function () {
     let selectedActivity = getCurrentActivityName();
     let currentActivityName = currentActivity.name;
-    ga('send', 'event', 'activity', 'change', selectedActivity);
-    saveValOpt("wt.activity", selectedActivity);
+    ga('send', 'event', 'activity', 'change', selectedActivity, undefined, Object.keys(activities).length);
+    WC.saveValOpt("wt.activity", selectedActivity);
     if (selectedActivity != ACTIVITY_RECORDED) {
       if (selectedActivity != currentActivityName) {
         polystats.setSpeedProfile(updateCurrentActivity().speedprofile); // will show stats
@@ -455,7 +439,7 @@ $(function () {
       layers = layers.sort(compare);
 
       // iterate on ordered segments
-      arrayForEach(layers, function (idx, segment) {
+      WU.arrayForEach(layers, function (idx, segment) {
         // check if it is a polyline
         if (segment.getLatLngs && segment.getLatLngs().length > 0) {
           if (Array.isArray(uids) && uids.includes) {
@@ -476,7 +460,7 @@ $(function () {
   }
 
   function applySegmentTool(toolFunc) {
-    const onAllSegments = isChecked("#allsegments");
+    const onAllSegments = WU.isChecked("#allsegments");
     if (onAllSegments) {
       forEachSegment(toolFunc);
     } else {
@@ -484,7 +468,7 @@ $(function () {
     }
   }
   function checkToolsAllSegments() {
-    enableInput(!isChecked("#allsegments"), "#trim-type, #trim-range");
+    WU.enableInput(!WU.isChecked("#allsegments"), "#trim-type, #trim-range");
   }
   $("#allsegments").on("change", checkToolsAllSegments);
 
@@ -611,12 +595,12 @@ $(function () {
 
   $("#extMarkers").on("change", function () {
     extMarkers = !extMarkers;
-    saveValOpt("wt.extMarkers", extMarkers);
+    WC.saveValOpt("wt.extMarkers", extMarkers);
     setExtremityVisibility(extMarkers);
   });
 
   function newTrack() {
-    metadata = jsonClone(EMPTY_METADATA);
+    metadata = WU.jsonClone(EMPTY_METADATA);
     if (track) {
       editLayer.removeLayer(track);
       track = undefined;
@@ -718,7 +702,7 @@ $(function () {
     },
     init: function (args) {
       this.pt = args.pt;
-      this.backupPt = jsonClone(args.pt);
+      this.backupPt = WU.jsonClone(args.pt);
     },
     undo: function () {
       if (track.getLatLngs().length > this.pt.i) {
@@ -881,7 +865,7 @@ $(function () {
         };
 
         $(richtxtcb).on("change", function () {
-          if (isChecked(richtxtcb)) {
+          if (WU.isChecked(richtxtcb)) {
             setRichDesc();
           } else {
             $(".popup-descinput").trumbowyg('destroy');
@@ -889,7 +873,7 @@ $(function () {
           }
         });
         if (marker.options.desc && marker.options.desc.indexOf("<") >= 0) {
-          setChecked(richtxtcb, 'checked');
+          WU.setChecked(richtxtcb, 'checked');
           setRichDesc();
         }
 
@@ -955,8 +939,8 @@ $(function () {
 
   $("#wptLabel").on("change", function () {
     wptLabel = !wptLabel;
-    saveValOpt("wt.wptLabel", wptLabel);
-    arrayForEach(waypoints.getLayers(), function (idx, wpt) {
+    WC.saveValOpt("wt.wptLabel", wptLabel);
+    WU.arrayForEach(waypoints.getLayers(), function (idx, wpt) {
       // create new tooltip (they're not mutable!)
       wpt.unbindTooltip();
       setWaypointTooltip(wpt);
@@ -965,14 +949,14 @@ $(function () {
 
   $("#hideWpt").on("change", function () {
     hideWpt = !hideWpt;
-    saveValOpt("wt.hideWpt", hideWpt);
+    WC.saveValOpt("wt.hideWpt", hideWpt);
     waypoints.isHidden = hideWpt;
     hideWpt ? editLayer.removeLayer(waypoints) : editLayer.addLayer(waypoints);
   });
 
   $("#fwdGuide").on("change", function () {
     fwdGuide = !fwdGuide;
-    saveValOpt("wt.fwdGuide", fwdGuide);
+    WC.saveValOpt("wt.fwdGuide", fwdGuide);
     updateMapStyle();
     fwdGuideGa = true;
   });
@@ -1037,7 +1021,7 @@ $(function () {
       },
       setColor: function (v) {
         trackColor = v;
-        saveValOpt("wt.trackColor", v);
+        WC.saveValOpt("wt.trackColor", v);
         updateTrackStyle();
         updateMapStyle();
       },
@@ -1049,7 +1033,7 @@ $(function () {
       },
       setWeight: function (v) {
         trackWeight = v;
-        saveValOpt("wt.trackWeight", v);
+        WC.saveValOpt("wt.trackWeight", v);
         updateTrackStyle();
         updateMapStyle();
       }
@@ -1063,7 +1047,7 @@ $(function () {
       },
       setColor: function (v) {
         ovlTrackColor = v;
-        saveValOpt("wt.ovlTrackColor", v);
+        WC.saveValOpt("wt.ovlTrackColor", v);
         updateAllOverlayTrackStyle();
       },
       getDefaultWeight: function () {
@@ -1074,16 +1058,16 @@ $(function () {
       },
       setWeight: function (v) {
         ovlTrackWeight = v;
-        saveValOpt("wt.ovlTrackWeight", v);
+        WC.saveValOpt("wt.ovlTrackWeight", v);
         updateAllOverlayTrackStyle();
       }
     }
   };
   let trackUISetting = trackUI.trk;
-  trackColor = getVal("wt.trackColor", trackUI.trk.getDefaultColor());
-  trackWeight = getVal("wt.trackWeight", trackUI.trk.getDefaultWeight());
-  ovlTrackColor = getVal("wt.ovlTrackColor", trackUI.ovl.getDefaultColor());
-  ovlTrackWeight = getVal("wt.ovlTrackWeight", trackUI.ovl.getDefaultWeight());
+  trackColor = WU.getVal("wt.trackColor", trackUI.trk.getDefaultColor());
+  trackWeight = WU.getVal("wt.trackWeight", trackUI.trk.getDefaultWeight());
+  ovlTrackColor = WU.getVal("wt.ovlTrackColor", trackUI.ovl.getDefaultColor());
+  ovlTrackWeight = WU.getVal("wt.ovlTrackWeight", trackUI.ovl.getDefaultWeight());
   updateMapStyle();
 
   $("input:radio[name=track-type]").on("change", function () {
@@ -1126,16 +1110,16 @@ $(function () {
 
   function showApiKey(name) {
     const value = apikeys[name];
-    const useDefault = isUndefined(getApiKey(value));
+    const useDefault = WU.isUndefined(getApiKey(value));
     const input = $("#" + name + "-value");
     //console.debug(name + ": " + value);
-    setChecked("#" + name + "-chk", !useDefault);
-    input.val(isUndefined(value) ? "" : getApiKeyVal(value));
+    WU.setChecked("#" + name + "-chk", !useDefault);
+    input.val(WU.isUndefined(value) ? "" : getApiKeyVal(value));
     input.attr("disabled", useDefault);
   }
 
   function updateApiKey(name) {
-    const useDefault = !isChecked("#" + name + "-chk");
+    const useDefault = !WU.isChecked("#" + name + "-chk");
     let key = $("#" + name + "-value").val().trim();
     if (key === "") {
       key = undefined;
@@ -1144,8 +1128,8 @@ $(function () {
     }
     const gav = useDefault ? -1 : key ? 1 : 0;
     ga('send', 'event', 'setting', 'keys', name, gav);
-    //console.debug(name + "= " + key + " (" + gav + ")");
-    saveValOpt("wt." + name, key);
+    //console.debug(name + "= " + key);
+    WC.saveValOpt("wt." + name, key);
     return key;
   }
 
@@ -1173,7 +1157,7 @@ $(function () {
       googleElevationService :
       (getApiKey(apikeys.orskey) ? orsElevationService : null);
 
-    $("#elevate").prop('disabled', isUnset(elevationService));
+    $("#elevate").prop('disabled', WU.isUnset(elevationService));
     const classOp = elevationService ? "removeClass" : "addClass";
     $("#elevate")[classOp]("isdisabled");
     $("#elevatetxt-help-enable").html(elevationService ? "" :
@@ -1186,7 +1170,7 @@ $(function () {
   }
 
   function checkApikey(name) {
-    const useDefault = !isChecked("#" + name + "-chk");
+    const useDefault = !WU.isChecked("#" + name + "-chk");
     $("#" + name + "-value").attr("disabled", useDefault);
     const key = updateApiKey(name);
     return key;
@@ -1201,25 +1185,25 @@ $(function () {
   $(".key-value").on("focusout", apiKeyChange);
 
   function resetApiKey(name) {
-    setChecked("#" + name + "-chk", false);
+    WU.setChecked("#" + name + "-chk", false);
     $("#" + name + "-value").val("");
     $("#" + name + "-chk").trigger("change");
   }
 
   $("#keys-reset").on("click", function () {
     ga('send', 'event', 'setting', 'keys', 'reset');
-    objectForEach(apikeys, function name(kname) {
+    WU.objectForEach(apikeys, function name(kname) {
       resetApiKey(kname);
     });
   });
 
-  objectForEach(apikeys, function name(kname) {
+  WU.objectForEach(apikeys, function name(kname) {
     showApiKey(kname);
   });
   updateApiServices();
 
   $("#apikeys-warn").on("change", function () {
-    changeApikeyNomore(!isChecked("#apikeys-warn"));
+    changeApikeyNomore(!WU.isChecked("#apikeys-warn"));
   });
 
   /* ------------------------ MENU ---------------------------------- */
@@ -1234,14 +1218,14 @@ $(function () {
   function openMenu(tab) {
     if (isMenuVisible()) return;
     setEditMode(EDIT_NONE);
-    setChecked("#merge", false);
-    setChecked("#apikeys-warn", !apikeyNoMore);
-    setChecked("#fwdGuide", fwdGuide);
-    setChecked("#hideWpt", hideWpt);
-    setChecked("#wptLabel", wptLabel);
-    setChecked("#extMarkers", extMarkers);
-    setChecked("#autoGrayBaseLayer", autoGrayBaseLayer);
-    setChecked("#noMixOverlays", noMixOverlays);
+    WU.setChecked("#merge", false);
+    WU.setChecked("#apikeys-warn", !apikeyNoMore);
+    WU.setChecked("#fwdGuide", fwdGuide);
+    WU.setChecked("#hideWpt", hideWpt);
+    WU.setChecked("#wptLabel", wptLabel);
+    WU.setChecked("#extMarkers", extMarkers);
+    WU.setChecked("#autoGrayBaseLayer", autoGrayBaseLayer);
+    WU.setChecked("#noMixOverlays", noMixOverlays);
     prepareTrim();
     $("#prune-dist").val(pruneDist);
     $("#prune-max-dist").val(pruneMaxDist);
@@ -1252,7 +1236,7 @@ $(function () {
     if (($("#save-time-from").val() == "") &&
       (getTrackLength() > 0) &&
       track.getLatLngs()[0].time) {
-      setDateTimeInput($("#save-time-from"), track.getLatLngs()[0].time);
+      WU.setDateTimeInput($("#save-time-from"), track.getLatLngs()[0].time);
     }
     initSaveTimeProfiles();
     checkToolsAllSegments();
@@ -1295,13 +1279,13 @@ $(function () {
       gpx += "<time>" + properties.time + "</time>";
     }
     if (properties.title) {
-      gpx += "<name>" + htmlEncode(properties.title) + "</name>";
+      gpx += "<name>" + WU.htmlEncode(properties.title) + "</name>";
     }
     if (properties.cmt) {
-      gpx += "<cmt>" + htmlEncode(properties.cmt) + "</cmt>";
+      gpx += "<cmt>" + WU.htmlEncode(properties.cmt) + "</cmt>";
     }
     if (properties.desc) {
-      gpx += "<desc>" + htmlEncode(properties.desc) + "</desc>";
+      gpx += "<desc>" + WU.htmlEncode(properties.desc) + "</desc>";
     }
     if (properties.ext) {
       gpx += "\n" + ptindent + "  <extensions>";
@@ -1330,14 +1314,14 @@ $(function () {
   function getGPX(trackname, savealt, asroute, nometadata) {
 
     let startdate = new Date();
-    const xmlname = "<name>" + htmlEncode(trackname) + "</name>";
+    const xmlname = "<name>" + WU.htmlEncode(trackname) + "</name>";
     let gpx = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n';
     gpx += '<gpx creator="' + config.appname + '"\n';
     gpx += '    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" version="1.1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"';
 
     // xmlns from each segment
     const xmlnsArr = [];
-    arrayForEach(editLayer.getLayers(), function (idx, segment) {
+    WU.arrayForEach(editLayer.getLayers(), function (idx, segment) {
       if (segment.xmlnsArr && segment.xmlnsArr.length) {
         for (let i = 0; i < segment.xmlnsArr.length; i++) {
           const item = segment.xmlnsArr[i];
@@ -1353,10 +1337,10 @@ $(function () {
     if (!nometadata) {
       gpx += "<metadata>\n";
       gpx += "  " + xmlname + "\n";
-      gpx += "  <desc>" + (metadata.desc ? htmlEncode(metadata.desc) : "") + "</desc>\n";
-      gpx += "  <author><name>" + htmlEncode(config.appname) + "</name></author>\n";
+      gpx += "  <desc>" + (metadata.desc ? WU.htmlEncode(metadata.desc) : "") + "</desc>\n";
+      gpx += "  <author><name>" + WU.htmlEncode(config.appname) + "</name></author>\n";
       gpx += "  <link href='" + window.location.href + "'>\n";
-      gpx += "    <text>" + htmlEncode(config.appname) + "</text>\n";
+      gpx += "    <text>" + WU.htmlEncode(config.appname) + "</text>\n";
       gpx += "    <type>text/html</type>\n";
       gpx += "  </link>\n";
       gpx += "  <time>" + startdate.toISOString() + "</time>\n";
@@ -1433,7 +1417,7 @@ $(function () {
       // check if it is a polyline
       gpx += "<" + wraptag + ">\n";
       if (segment.name) {
-        gpx += `  <name>${htmlEncode(segment.name)}</name>\n`;
+        gpx += `  <name>${WU.htmlEncode(segment.name)}</name>\n`;
       }
       if (segment.color) {
         gpx += "  <extensions>\n";
@@ -1465,8 +1449,8 @@ $(function () {
   }
 
   function getTrackGPX(doConfirmName) {
-    const asroute = isChecked("#as-route");
-    const nometadata = isChecked("#nometadata");
+    const asroute = WU.isChecked("#as-route");
+    const nometadata = WU.isChecked("#nometadata");
     const trackname = doConfirmName ? getConfirmedTrackName() : getTrackName();
     return getGPX(trackname, /*savealt*/ false, asroute, nometadata);
   }
@@ -1475,8 +1459,8 @@ $(function () {
   function initSaveTimeProfiles() {
 
     function checkSaveTimeProfile() {
-      let selected = getSelectedOption("#save-time-profile");
-      enableInput(selected == SAVE_TIME_TO, "#save-time-to");
+      let selected = WU.getSelectedOption("#save-time-profile");
+      WU.enableInput(selected == SAVE_TIME_TO, "#save-time-to");
       if (selected != SAVE_TIME_TO) {
         $("#save-time-to").removeClass("invalid");
       }
@@ -1488,14 +1472,14 @@ $(function () {
 
     try {
 
-      addSelectOption(profiles, currentActivity.name);
-      addSelectOption(profiles, SAVE_TIME_TO, "To date:");
+      WU.addSelectOption(profiles, currentActivity.name);
+      WU.addSelectOption(profiles, SAVE_TIME_TO, "To date:");
       checkSaveTimeProfile();
 
       $("#save-time-profile").on("change", checkSaveTimeProfile);
     } catch {
       onerror("no save-time-profile selector", { cells: $("#menutools tr").length });
-      forceReload();
+      WC.forceReload();
     }
 
   }
@@ -1504,18 +1488,18 @@ $(function () {
 
     if (track && (track.getLatLngs().length > 0)) {
 
-      let profile = getSelectedOption("#save-time-profile");
+      let profile = WU.getSelectedOption("#save-time-profile");
       let from;
       let to, duration;
       let distance = 0;
-      from = getDateTimeInput($("#save-time-from"), true);
+      from = WU.getDateTimeInput($("#save-time-from"), true);
       if (!from) return;
       if (profile == SAVE_TIME_TO) {
-        to = getDateTimeInput($("#save-time-to"), true);
+        to = WU.getDateTimeInput($("#save-time-to"), true);
         if (!to) return;
         duration = to.getTime() - from.getTime();
         applySegmentTool(function (segment) {
-          distance += L.PolyStats.getPointDistance(arrayLast(segment.getLatLngs()));
+          distance += L.PolyStats.getPointDistance(WU.arrayLast(segment.getLatLngs()));
         });
       }
 
@@ -1523,19 +1507,19 @@ $(function () {
       let lastSegDist = 0;
       applySegmentTool(function (segment) {
         const pts = segment.getLatLngs();
-        arrayForEach(pts, (idx, pt) => {
+        WU.arrayForEach(pts, (idx, pt) => {
           if (profile == SAVE_TIME_TO) {
             const relDist = (lastSegDist + L.PolyStats.getPointDistance(pt)) / distance;
             lastSegTime = new Date(from.getTime() + (duration * relDist));
             pt.time = lastSegTime.toISOString();
           } else {
-            if (!isUndefined(L.PolyStats.getPointTime(pt))) {
+            if (!WU.isUndefined(L.PolyStats.getPointTime(pt))) {
               lastSegTime = new Date(from.getTime() + (L.PolyStats.getPointTime(pt) * 1000));
               pt.time = lastSegTime.toISOString();
             }
           }
         });
-        lastSegDist += L.PolyStats.getPointDistance(arrayLast(segment.getLatLngs()));
+        lastSegDist += L.PolyStats.getPointDistance(WU.arrayLast(segment.getLatLngs()));
         // last segment time is the start of the next segment
         from = lastSegTime;
       });
@@ -1550,10 +1534,10 @@ $(function () {
 
     if (track && (track.getLatLngs().length > 0)) {
 
-      let unit = getSelectedOption("#shift-time-unit");
+      let unit = WU.getSelectedOption("#shift-time-unit");
       let byUnit;
       let byMs;
-      byUnit = getRealInput($("#shift-time-by"), true);
+      byUnit = WU.getRealInput($("#shift-time-by"), true);
       if (!byUnit) return;
       switch (unit) {
         case "day":
@@ -1573,7 +1557,7 @@ $(function () {
       let nbErr = 0;
       applySegmentTool(function (segment) {
         const pts = segment.getLatLngs();
-        arrayForEach(pts, (idx, pt) => {
+        WU.arrayForEach(pts, (idx, pt) => {
           if (pt.time) {
             try {
               let oldTime = new Date(pt.time);
@@ -1601,7 +1585,7 @@ $(function () {
     ga('send', 'event', 'file', 'save', undefined, Math.round(gpx.length / 1000));
     try {
       const blob = new Blob([gpx],
-        isSafari() ? { type: "text/plain;charset=utf-8" } : { type: "application/gpx+xml;charset=utf-8" }
+        WU.isSafari() ? { type: "text/plain;charset=utf-8" } : { type: "application/gpx+xml;charset=utf-8" }
       );
       saveAs(blob, getTrackName() + ".gpx");
       clearStatus();
@@ -1669,10 +1653,10 @@ $(function () {
     // name
     let segName = getSegmentName();
     let itemName = newitem.find(".item-name");
-    let lastPt = arrayLast(segment.getLatLngs());
+    let lastPt = WU.arrayLast(segment.getLatLngs());
     //let firstPt = segment.getLatLngs()[0];
     let segDuration = getRecordedTime(segment.getLatLngs());
-    if (isUndefined(segDuration)) {
+    if (WU.isUndefined(segDuration)) {
       segDuration = " <i class='material-icons' title='Estimated time'>av_timer</i> " + time2txt(L.PolyStats.getPointTime(lastPt));
     } else {
       segDuration = " <i class='material-icons' title='Recorded time'>schedule</i> " + time2txt(segDuration);
@@ -1713,7 +1697,7 @@ $(function () {
   function onAllCheckedSegment(opName, minCount, func, noConfirm) {
     let uids = [], names = "";
     $("#segments-list li").each(function () {
-      if (isChecked($(this).find(".seg-check"))) {
+      if (WU.isChecked($(this).find(".seg-check"))) {
         let uid = $(this).attr("uid");
         uids.push(uid);
         names += $(this).find(".item-name").attr("segName") + "\n";
@@ -1789,9 +1773,9 @@ $(function () {
 
   function openSegmentsEditor() {
     function onCheck() {
-      enableInput($("#segments-list .seg-check:checked").length > 1, "#join-segs");
-      enableInput($("#segments-list .seg-check:checked").length > 0, "#del-segs");
-      enableInput($("#segments-list .seg-check:checked").length > 0, "#toggle-segs");
+      WU.enableInput($("#segments-list .seg-check:checked").length > 1, "#join-segs");
+      WU.enableInput($("#segments-list .seg-check:checked").length > 0, "#del-segs");
+      WU.enableInput($("#segments-list .seg-check:checked").length > 0, "#toggle-segs");
     }
     let segList = $("#segments-list");
     if (segList && segList.sortable) {
@@ -1834,8 +1818,8 @@ $(function () {
     $("#del-segs").on("click", deleteCheckedSegments);
     $("#toggle-segs").on("click", toggleCheckedSegments);
     $("#seg-check-all").on("change", () => {
-      let checked = isChecked($("#seg-check-all"));
-      setChecked($("#seg-editor-list .seg-check"), checked);
+      let checked = WU.isChecked($("#seg-check-all"));
+      WU.setChecked($("#seg-editor-list .seg-check"), checked);
       onCheck();
     });
     $(".seg-check").on("change", () => {
@@ -1856,7 +1840,7 @@ $(function () {
     $("#wtshare-val").val("");
     $("#wtshare-box").show();
     $("#wtshare-start").focus();
-    if (isCryptoSupported()) {
+    if (CRY.isCryptoSupported()) {
       $(".if-encrypt").show();
     }
   });
@@ -1871,24 +1855,24 @@ $(function () {
   function uploadClicked() {
     $("#wtshare-ask").hide();
     $("#wtshare-processing").show();
-    const gpx = getTrackGPX(true);
+    let gpx = getTrackGPX(true);
     let params = "";
-    if (isChecked("#wtshare-map")) {
+    if (WU.isChecked("#wtshare-map")) {
       params += "&map=" + encodeURIComponent(baseLayer);
       overlays = [];
-      objectForEach(overlaysOn, function (oname, oon) {
+      WU.objectForEach(overlaysOn, function (oname, oon) {
         if (oon) overlays.push(oname);
       });
       params += "&overlays=" + encodeURIComponent(overlays.join(','));
     }
-    if (isChecked("#wtshare-enc")) {
+    if (WU.isChecked("#wtshare-enc")) {
       const pwd = Math.random().toString(36).substring(2);
-      aesGcmEncrypt(gpx, pwd)
+      CRY.aesGcmEncrypt(gpx, pwd)
         .then(function (cipher) {
           //console.log("iv  : " + cipher.iv);
           //console.log("pwd : " + pwd);
           const encversion = "01";
-          params += "&key=" + encversion + strencode(cipher.iv + pwd);
+          params += "&key=" + encversion + WU.strencode(cipher.iv + pwd);
           gpx = cipher.ciphertext;
           ga('send', 'event', 'file', 'encrypt', undefined, Math.round(gpx.length / 1000));
           shareGpx(gpx, params, "cipher-yes");
@@ -1899,7 +1883,7 @@ $(function () {
           $("#wtshare-box").hide();
         });
     } else {
-      shareGpx(gpx, params, isCryptoSupported() ? "cipher-no" : "cipher-unavailable");
+      shareGpx(gpx, params, CRY.isCryptoSupported() ? "cipher-no" : "cipher-unavailable");
     }
   }
 
@@ -1970,7 +1954,7 @@ $(function () {
   $("#wtshare-val").on("keyup", closeShareBoxOnEscape);
   $("#wtshare-ok").on("keyup", closeShareBoxOnEscape);
 
-  var sharename = getVal("wt.share", undefined);
+  var sharename = WU.getVal("wt.share", undefined);
   var share = PasteLibs.get(sharename);
 
   // fileio automatically deletes paste after download, perfect for dropbox use case
@@ -2199,7 +2183,7 @@ $(function () {
     $("#edit-tools").toggle(editMode > EDIT_RECORDING);
   }
   $("#prune-dist-opt, #prune-time-opt").on("change", (event) => {
-    if (!isChecked($(event.target))) {
+    if (!WU.isChecked($(event.target))) {
       $(event.target.nextSibling).removeClass("invalid");
     }
   });
@@ -2207,15 +2191,15 @@ $(function () {
 
     function getKeepOpt(selOpt, valOpt) {
       let value;
-      if (isChecked(selOpt)) {
-        value = getRealInput($(valOpt), true);
+      if (WU.isChecked(selOpt)) {
+        value = WU.getRealInput($(valOpt), true);
         if (!value) throw "missing value";
       }
       return value;
     }
 
     // get & check input value
-    let tmp = getRealInput($("#prune-dist"), true);
+    let tmp = WU.getRealInput($("#prune-dist"), true);
     if (!tmp) return;
     pruneDist = tmp;
 
@@ -2235,9 +2219,9 @@ $(function () {
       }
     }
 
-    saveValOpt("wt.pruneDist", pruneDist);
-    saveValOpt("wt.pruneMaxDist", pruneMaxDist);
-    saveValOpt("wt.pruneMaxTime", pruneMaxTime);
+    WC.saveValOpt("wt.pruneDist", pruneDist);
+    WC.saveValOpt("wt.pruneMaxDist", pruneMaxDist);
+    WC.saveValOpt("wt.pruneMaxTime", pruneMaxTime);
 
     if (track) {
 
@@ -2279,15 +2263,15 @@ $(function () {
     }
   });
   function checkPruneKeepOpts() {
-    enableInput(isChecked("#prune-time-opt"), "#prune-max-time");
-    enableInput(isChecked("#prune-dist-opt"), "#prune-max-dist");
+    WU.enableInput(WU.isChecked("#prune-time-opt"), "#prune-max-time");
+    WU.enableInput(WU.isChecked("#prune-dist-opt"), "#prune-max-dist");
   }
   $("#prune-time-opt, #prune-dist-opt").on("change", checkPruneKeepOpts);
 
   $("#smooth").on("click", function () {
 
     smoothLevel = $("#smooth-level").val();
-    saveValOpt("wt.smoothLevel", smoothLevel);
+    WC.saveValOpt("wt.smoothLevel", smoothLevel);
 
     if (track) {
       applySegmentTool(function (segment) {
@@ -2298,11 +2282,11 @@ $(function () {
             const prevPt = pts[i - 1];
             const pt = pts[i];
             const nextPt = pts[i + 1];
-            if (!isUndefined(prevPt.alt) && !isUndefined(pt.alt) && !isUndefined(nextPt.alt)) {
+            if (!WU.isUndefined(prevPt.alt) && !WU.isUndefined(pt.alt) && !WU.isUndefined(nextPt.alt)) {
               const distToPrev = pt.distanceTo(prevPt);
               const distPrevNext = pt.distanceTo(nextPt) + distToPrev;
               const linearAlt = prevPt.alt + ((nextPt.alt - prevPt.alt) * (distToPrev / distPrevNext));
-              pt.alt = roundDecimal((pt.alt + linearAlt) / 2, 2);
+              pt.alt = WU.roundDecimal((pt.alt + linearAlt) / 2, 2);
             }
             i++;
           }
@@ -2316,7 +2300,7 @@ $(function () {
     }
   });
 
-  var joinOnLoad = false; // deactivate while we restore saved GPX
+  let joinOnLoad = false; // deactivate while we restore saved GPX
 
   // geolocation
 
@@ -2348,7 +2332,7 @@ $(function () {
     LOC_CONTINUOUS = 2,
     LOC_READY_TO_RECORD = 3,
     LOC_RECORDING = 4;
-  let showLocation = LOC_ONCE;
+  let showLocation = LOC_ONCE, loc_recording_id;
 
   function setLocationMode(mode) {
     if (showLocation == mode) return;
@@ -2387,7 +2371,7 @@ $(function () {
       default:
     }
     if (watch) {
-      const loc_recording_id = navigator.geolocation.watchPosition(
+      loc_recording_id = navigator.geolocation.watchPosition(
         gotLocation,
         (err) => { // ERROR
           console.error(`GPS watch failed (${err.message})`);
@@ -2479,8 +2463,8 @@ $(function () {
   }
 
   function getSavedPosition(_lat, _lng) {
-    const vlat = getVal("wt.poslat", _lat);
-    const vlng = getVal("wt.poslng", _lng);
+    const vlat = WU.getVal("wt.poslat", _lat);
+    const vlng = WU.getVal("wt.poslng", _lng);
     const pos = {
       lat: parseFloat(vlat),
       lng: parseFloat(vlng)
@@ -2497,12 +2481,12 @@ $(function () {
 
   function savePosition() {
     const pos = map.getCenter();
-    saveValOpt("wt.poslat", pos.lat);
-    saveValOpt("wt.poslng", pos.lng);
+    WC.saveValOpt("wt.poslat", pos.lat);
+    WC.saveValOpt("wt.poslng", pos.lng);
   }
 
   function saveEditMode() {
-    if (editMode >= 0) saveValOpt("wt.editMode", editMode);
+    if (editMode >= 0) WC.saveValOpt("wt.editMode", editMode);
   }
 
   function saveTrack() {
@@ -2517,53 +2501,53 @@ $(function () {
     // Don't save if more than 3000 points
     if (numPts < 3000) {
       const gpx = getGPX(trackname, /*savealt*/ false, /*asroute*/ false, /*nometadata*/ false);
-      saveValOpt("wt.gpx", gpx);
+      WC.saveValOpt("wt.gpx", gpx);
     }
   }
 
   function saveSettings() {
-    saveValOpt("wt.activity", getCurrentActivityName());
-    saveJsonValOpt("wt.activities", activities);
-    saveValOpt("wt.baseLayer", baseLayer);
-    objectForEach(apikeys, function name(kname, kval) {
-      saveValOpt("wt." + kname, kval);
+    WC.saveValOpt("wt.activity", getCurrentActivityName());
+    WC.saveJsonValOpt("wt.activities", activities);
+    WC.saveValOpt("wt.baseLayer", baseLayer);
+    WU.objectForEach(apikeys, function name(kname, kval) {
+      WC.saveValOpt("wt." + kname, kval);
     });
-    saveValOpt("wt.joinOnLoad", joinOnLoad);
-    saveJsonValOpt("wt.mymaps", mymaps);
-    saveJsonValOpt("wt.overlaysOn", overlaysOn);
-    saveValOpt("wt.ovlTrackColor", ovlTrackColor);
-    saveValOpt("wt.ovlTrackWeight", ovlTrackWeight);
-    saveValOpt("wt.lengthUnit", lengthUnit);
-    saveValOpt("wt.useServiceWorker", getUseServiceWorker());
-    saveValOpt("wt.trackColor", trackColor);
-    saveValOpt("wt.trackWeight", trackWeight);
-    saveValOpt("wt.pruneDist", pruneDist);
-    saveValOpt("wt.pruneMaxDist", pruneMaxDist);
-    saveValOpt("wt.pruneMaxTime", pruneMaxTime);
-    saveValOpt("wt.smoothLevel", smoothLevel);
-    saveValOpt("wt.mapslist", mapsList);
-    saveValOpt("wt.mapsCloseOnClick", mapsCloseOnClick);
-    saveValOpt("wt.apikeyNoMore", apikeyNoMore);
-    saveValOpt("wt.fwdGuide", fwdGuide);
-    saveValOpt("wt.hideWpt", hideWpt);
-    saveValOpt("wt.wptLabel", wptLabel);
-    saveValOpt("wt.extMarkers", extMarkers);
-    saveValOpt("wt.autoGrayBaseLayer", autoGrayBaseLayer);
-    saveValOpt("wt.coordDecimals", coordDecimals);
-    saveValOpt("wt.coordRounding", coordRounding);
+    WC.saveValOpt("wt.joinOnLoad", joinOnLoad);
+    WC.saveJsonValOpt("wt.mymaps", WC.mymaps);
+    WC.saveJsonValOpt("wt.overlaysOn", overlaysOn);
+    WC.saveValOpt("wt.ovlTrackColor", ovlTrackColor);
+    WC.saveValOpt("wt.ovlTrackWeight", ovlTrackWeight);
+    WC.saveValOpt("wt.lengthUnit", lengthUnit);
+    WC.saveValOpt("wt.useServiceWorker", WC.getUseServiceWorker());
+    WC.saveValOpt("wt.trackColor", trackColor);
+    WC.saveValOpt("wt.trackWeight", trackWeight);
+    WC.saveValOpt("wt.pruneDist", pruneDist);
+    WC.saveValOpt("wt.pruneMaxDist", pruneMaxDist);
+    WC.saveValOpt("wt.pruneMaxTime", pruneMaxTime);
+    WC.saveValOpt("wt.smoothLevel", smoothLevel);
+    WC.saveJsonValOpt("wt.mapslist", WC.mapsList);
+    WC.saveValOpt("wt.mapsCloseOnClick", mapsCloseOnClick);
+    WC.saveValOpt("wt.apikeyNoMore", apikeyNoMore);
+    WC.saveValOpt("wt.fwdGuide", fwdGuide);
+    WC.saveValOpt("wt.hideWpt", hideWpt);
+    WC.saveValOpt("wt.wptLabel", wptLabel);
+    WC.saveValOpt("wt.extMarkers", extMarkers);
+    WC.saveValOpt("wt.autoGrayBaseLayer", autoGrayBaseLayer);
+    WC.saveValOpt("wt.coordDecimals", coordDecimals);
+    WC.saveValOpt("wt.coordRounding", coordRounding);
   }
 
   function saveStateFile() {
     var fullState = {};
-    storedValuesForEach((key) => {
+    WU.storedValuesForEach((key) => {
       // include all "wt." storage items
       // but exclude current edited track
       if (key.startsWith("wt.") && (key != "wt.gpx")) {
-        fullState[key] = getVal(key);
+        fullState[key] = WU.getVal(key);
       }
     });
-    var blob = new Blob([JSON.stringify(fullState)],
-      isSafari() ? { type: "text/plain;charset=utf-8" } : { type: "application/json;charset=utf-8" }
+    const blob = new Blob([JSON.stringify(fullState)],
+      WU.isSafari() ? { type: "text/plain;charset=utf-8" } : { type: "application/json;charset=utf-8" }
     );
     saveAs(blob, "wtracks.cfg");
     ga('send', 'event', 'setting', 'export');
@@ -2576,9 +2560,9 @@ $(function () {
     } catch (err) {
       setStatus("Invalid file: " + err, { timeout: 5, class: "status-error" });
     }
-    objectForEach(state, function (name, value) {
+    WU.objectForEach(state, function (name, value) {
       if (name.startsWith("wt.")) {
-        saveValOpt(name, value);
+        WC.saveValOpt(name, value);
       }
     });
     $(window).off("unload");
@@ -2608,7 +2592,7 @@ $(function () {
   });
 
   function saveState() {
-    if (isStateSaved()) {
+    if (WC.isStateSaved()) {
       saveTrack();
       savePosition();
       saveEditMode();
@@ -2616,7 +2600,7 @@ $(function () {
   }
 
   function restoreEditMode() {
-    const restoredMode = getVal("wt.editMode", EDIT_DEFAULT);
+    const restoredMode = WU.getVal("wt.editMode", EDIT_DEFAULT);
     setEditMode(parseInt(restoredMode));
   }
 
@@ -2627,7 +2611,7 @@ $(function () {
   }
 
   function restoreTrack() {
-    var gpx = getVal("wt.gpx", null);
+    var gpx = WU.getVal("wt.gpx", null);
     if (gpx) {
       loadCount = 0;
       fileloader.loadData(gpx, "dummy", "gpx");
@@ -2643,15 +2627,15 @@ $(function () {
   }
 
   function clearSavedState() {
-    storedValuesForEach((key) => {
-      if (key.startsWith("wt.") && (key != "wt.saveState")) {
-        storeVal(key, undefined);
+    WU.storedValuesForEach((key) => {
+      if (key.startsWith("wt.") && (key !== "wt.saveState")) {
+        WU.storeVal(key, undefined);
       }
     });
   }
 
   function getProvider(mapobj) {
-    const url = typeof mapobj.url === "string" ? mapobj.url : mapobj.url();
+    let url = typeof mapobj.url === "string" ? mapobj.url : mapobj.url();
     let p = null;
     var protocol = url.split('/')[0];
     // skip HTTP URLs when current is HTTPS
@@ -2667,7 +2651,7 @@ $(function () {
         mapopts.maxNativeZoom = mapopts.maxZoom;
         mapopts.maxZoom = Math.min(mapopts.maxZoom + 2, 28); // not above 28
       }
-      if (isUnset(mapobj.type) || (mapobj.type === "base") || (mapobj.type === "overlay")) {
+      if (WU.isUnset(mapobj.type) || (mapobj.type === "base") || (mapobj.type === "overlay")) {
         tileCtor = L.tileLayer;
       } else if (mapobj.type === "pmtiles") {
         const pmTileCtor = new PMTiles(url, { allow_200: true });
@@ -2676,8 +2660,8 @@ $(function () {
         tileCtor = L.tileLayer[mapobj.type];
         if (mapobj.type === "wms" && mapopts.crs) {
           // warning: no deep copy
-          mapopts = jsonClone(mapopts);
-          mapopts.crs = getCrsFromName(mapopts.crs);
+          mapopts = WU.jsonClone(mapopts);
+          mapopts.crs = WC.getCrsFromName(mapopts.crs);
         }
         /*
           If the URL contains a "version" query parameter,
@@ -2705,16 +2689,16 @@ $(function () {
   // Add maps and overlays
   let baseLayers = {};
   let overlays = {};
-  let baseLayer = getVal("wt.baseLayer", config.display.map);
-  const requestedMap = getParameterByName("map");
-  let requestedOverlays = getParameterByName("overlays");
+  let baseLayer = WU.getVal("wt.baseLayer", config.display.map);
+  const requestedMap = WU.getParameterByName("map");
+  let requestedOverlays = WU.getParameterByName("overlays");
   requestedOverlays = requestedOverlays ? requestedOverlays.split(',') : undefined;
-  mapsForEach(function (name, props) {
+  WC.mapsForEach(function (name, props) {
     if (props.on || name == baseLayer || name === requestedMap || (requestedOverlays && requestedOverlays.includes(name))) {
-      const inList = props.in == MAP_MY ? mymaps : config.maps;
+      const inList = props.in == WC.MAP_MY ? WC.mymaps : config.maps;
       // WTracks legacy bug: make sure zoom values are numbers (fixes #42 & #43)
-      inList[name].options.minZoom = Number(inList[name].options.minZoom);
-      inList[name].options.maxZoom = Number(inList[name].options.maxZoom);
+      inList[name].options.minZoom = Number(inList[name].options.minZoom) || undefined;
+      inList[name].options.maxZoom = Number(inList[name].options.maxZoom) || undefined;
       const tile = getProvider(inList[name]);
       if (tile) {
 
@@ -2744,7 +2728,7 @@ $(function () {
   let initialLayer = baseLayers[baseLayer];
   if (!initialLayer) {
     //var availableLayerNames = "";
-    objectForEach(baseLayers, function (name) {
+    WU.objectForEach(baseLayers, function (name) {
       //availableLayerNames += name + "; ";
       if (!initialLayer) {
         initialLayer = baseLayers[name]; // use first one
@@ -2776,7 +2760,7 @@ $(function () {
     } else {
       ga('send', 'event', 'map', 'change', baseLayer);
     }
-    saveValOpt("wt.baseLayer", baseLayer);
+    WC.saveValOpt("wt.baseLayer", baseLayer);
     if (mapsCloseOnClick) {
       $(".leaflet-control-layers").removeClass("leaflet-control-layers-expanded");
     }
@@ -2803,18 +2787,18 @@ $(function () {
     }
   }
 
-  let overlaysOn = getJsonVal("wt.overlaysOn", {});
+  let overlaysOn = WU.getJsonVal("wt.overlaysOn", {});
 
   function setOverlay(name, yesno) {
     overlaysOn[name] = yesno;
-    saveJsonValOpt("wt.overlaysOn", overlaysOn);
+    WC.saveJsonValOpt("wt.overlaysOn", overlaysOn);
     setAutoGrayBaseLayer(null);
   }
 
   /********* Overlay opacity control *************/
   function addOpacityControl(ovlname, ovl) {
     const layerId = L.Util.stamp(ovl);
-    const initialOpacity = isUndefined(ovl.options.opacity) ? 1 : ovl.options.opacity * 1;
+    const initialOpacity = WU.isUndefined(ovl.options.opacity) ? 1 : ovl.options.opacity * 1;
     const ovlItem = $(".leaflet-control-layers-overlays span span").filter(function () { return $(this).text().trim() == ovlname; });
     // add slider
     var slider = $('<input class="overlay-opacity-slider" title="Opacity" type="range" min="0" max="100" value="' +
@@ -2822,7 +2806,7 @@ $(function () {
       .insertAfter(ovlItem);
     slider.on("change", function (evt) {
       // search layer
-      objectForEach(map._layers, function (lId, layer) {
+      WU.objectForEach(map._layers, function (lId, layer) {
         if (layer && L.Util.stamp(layer) === layerId) {
           // set opacity
           layer.setOpacity(Number(evt.target.value / 100));
@@ -2847,7 +2831,7 @@ $(function () {
       }
     });
   } else {
-    objectForEach(overlaysOn, function (oname, oon) {
+    WU.objectForEach(overlaysOn, function (oname, oon) {
       var ovl = overlays[oname];
       if (ovl) {
         if (oon) {
@@ -2862,7 +2846,7 @@ $(function () {
 
   map.on("overlayadd", function (e) {
     ga('send', 'event', 'map', 'overlay', e.name);
-    setOverlay(e.name, true);
+    setOverlay(e.name, true, true);
     setTimeout(function () {
       addOpacityControl(e.name, overlays[e.name]);
     }, 100);
@@ -2875,14 +2859,14 @@ $(function () {
 
   $("#autoGrayBaseLayer").on("change", function () {
     autoGrayBaseLayer = !autoGrayBaseLayer;
-    saveValOpt("wt.autoGrayBaseLayer", autoGrayBaseLayer);
+    WC.saveValOpt("wt.autoGrayBaseLayer", autoGrayBaseLayer);
     setAutoGrayBaseLayer(null);
   });
   $("#noMixOverlays").on("change", function () {
-    noMixOverlays = isChecked("#noMixOverlays");
-    saveValOpt("wt.noMixOverlays", noMixOverlays);
+    noMixOverlays = WU.isChecked("#noMixOverlays");
+    WC.saveValOpt("wt.noMixOverlays", noMixOverlays);
     // update all overlays
-    objectForEach(map._layers, function (id, layer) {
+    WU.objectForEach(map._layers, function (id, layer) {
       if (layer.options.isOverlay) {
         let op;
         if (noMixOverlays) {
@@ -2940,20 +2924,20 @@ $(function () {
       elevator.getElevationForLocations({
         'locations': locations
       }).then(({ results }) => {
-        if (isUndefined(points.length)) {
+        if (WU.isUndefined(points.length)) {
           // single point elevation
-          points.alt = roundDecimal(results[0].elevation, 2);
+          points.alt = WU.roundDecimal(results[0].elevation, 2);
         } else {
           if (cleanup) {
             elevationCleanup(points);
           }
           for (let i = 0; i < results.length; i++) {
-            var pos = i * inc;
+            let pos = i * inc;
             if (pos >= points.length) {
               // we reached last point from track
               pos = points.length - 1;
             }
-            points[pos].alt = roundDecimal(results[i].elevation, 2);
+            points[pos].alt = WU.roundDecimal(results[i].elevation, 2);
           }
         }
         done("gg.elevate.ok");
@@ -3006,20 +2990,20 @@ $(function () {
     }
     $.ajax(ajaxreq)
       .done(function (json) {
-        if (isUndefined(points.length)) {
+        if (WU.isUndefined(points.length)) {
           // single point elevation
-          points.alt = roundDecimal(json.results[0].elevation, 2);
+          points.alt = WU.roundDecimal(json.results[0].elevation, 2);
         } else {
           if (cleanup) {
             elevationCleanup(points);
           }
           for (let i = 0; i < json.results.length; i++) {
-            var pos = i * inc;
+            let pos = i * inc;
             if (pos >= points.length) {
               // we reached last point from track
               pos = points.length - 1;
             }
-            points[pos].alt = roundDecimal(json.results[i].elevation, 2);
+            points[pos].alt = WU.roundDecimal(json.results[i].elevation, 2);
           }
         }
         done("oe.elevate.ok");
@@ -3032,8 +3016,8 @@ $(function () {
 
   // https://openrouteservice.org/dev/#/api-docs/elevation/line/post
   function orsElevationService(locations, points, inc, cleanup, done, fail) {
-    let i, len;
-    polyline = [];
+    let i, len,
+      polyline = [];
 
     if (locations.length == 1) {
       // single point
@@ -3061,7 +3045,7 @@ $(function () {
         */
         .done(function (json) {
           if (json.geometry && json.geometry.coordinates && json.geometry.coordinates[0]) {
-            points.alt = roundDecimal(json.geometry.coordinates[2], 2);
+            points.alt = WU.roundDecimal(json.geometry.coordinates[2], 2);
             done('ors.elevate1.ok');
           } else {
             // "Server error"
@@ -3110,12 +3094,12 @@ $(function () {
           }
           var results = json.geometry;
           for (let i = 0; i < results.length; i++) {
-            var pos = i * inc;
+            let pos = i * inc;
             if (pos >= points.length) {
               // we reached last point from track
               pos = points.length - 1;
             }
-            points[pos].alt = roundDecimal(results[i][2], 2);
+            points[pos].alt = WU.roundDecimal(results[i][2], 2);
           }
           done("ors.elevate.ok");
         } else {
@@ -3145,8 +3129,8 @@ $(function () {
       return;
     }
     var locations;
-    var inc;
-    if (isUndefined(points.length)) {
+    let inc;
+    if (WU.isUndefined(points.length)) {
       locations = [points];
     } else {
       setStatus("Elevating..", { spinner: true });
@@ -3155,8 +3139,10 @@ $(function () {
         locations = points;
       } else {
         locations = [];
-        for (let i = 0; i < points.length; i += inc) {
+        let i = 0;
+        while (i < points.length) {
           locations.push(points[i]);
+          i += inc;
         }
         // make sure last point is included
         if ((i < points.length) || (i - inc < (points.length - 1))) {
@@ -3354,7 +3340,7 @@ $(function () {
         // close menu
         closeMenu();
         // close color pickers
-        arrayForEach($('.jscolor-active'), (idx, elt) => {
+        WU.arrayForEach($('.jscolor-active'), (idx, elt) => {
           elt.jscolor.hide();
         });
         return;
@@ -3581,7 +3567,7 @@ $(function () {
   function toolCleanup(toclean) {
     var count = 0;
     applySegmentTool(function (segment) {
-      var points = segment ? segment.getLatLngs() : undefined;
+      const points = segment ? segment.getLatLngs() : undefined;
       if (points && (points.length > 0)) {
         count += points.length;
         for (let i = 0; i < points.length; i++) {
@@ -3601,10 +3587,10 @@ $(function () {
 
   function getCleanFillOpts() {
     var opts = [];
-    if (isChecked("#cleanupalt")) {
+    if (WU.isChecked("#cleanupalt")) {
       opts.push("alt");
     }
-    if (isChecked("#cleanuptime")) {
+    if (WU.isChecked("#cleanuptime")) {
       opts.push("time");
     }
     return opts;
@@ -3656,7 +3642,7 @@ $(function () {
         interpolate(prev, next, pt) {
           let distPrevPt = pt.distanceTo(prev),
             distPrevNext = pt.distanceTo(next) + distPrevPt;
-          pt.alt = roundDecimal(prev.alt + ((next.alt - prev.alt) * (distPrevPt / distPrevNext)), 2);
+          pt.alt = WU.roundDecimal(prev.alt + ((next.alt - prev.alt) * (distPrevPt / distPrevNext)), 2);
         }
       }
     };
@@ -3674,12 +3660,12 @@ $(function () {
             iNxt = -1;
           for (let i = 0; i < points.length; i++) {
             let pt = points[i];
-            if (isUndefined(pt[opt])) {
+            if (WU.isUndefined(pt[opt])) {
               if ((!next || (next.i <= i)) && (iNxt < points.length)) {
                 // search next
                 next = undefined;
                 for (iNxt = i + 1; iNxt < points.length; iNxt++) {
-                  if (!isUndefined(points[iNxt][opt])) {
+                  if (!WU.isUndefined(points[iNxt][opt])) {
                     next = points[iNxt];
                     break; // exit for loop
                   }
@@ -3810,7 +3796,7 @@ $(function () {
     setStatus("Loading..", { spinner: true });
     $("#edit-tools").hide();
     var bounds;
-    var merge = loadCount > 0 || isChecked("#merge");
+    var merge = loadCount > 0 || WU.isChecked("#merge");
     loadCount++;
     if (!merge) {
       newTrack();
@@ -3828,13 +3814,13 @@ $(function () {
         // alt
         point.alt = coord[2];
       }
-      if (!isUndefined(time)) {
+      if (!WU.isUndefined(time)) {
         point.time = time;
       }
-      if (!isUndefined(ext)) {
+      if (!WU.isUndefined(ext)) {
         point.ext = ext;
       }
-      if (!isUndefined(i)) {
+      if (!WU.isUndefined(i)) {
         point.i = i;
       }
       return point;
@@ -3968,13 +3954,13 @@ $(function () {
       options = {};
     }
     setStatus("Loading...", { "spinner": true });
-    var _url = options.noproxy ? url : corsUrl(url);
+    var _url = options.noproxy ? url : WU.corsUrl(url);
     var req = {
       url: _url,
       success: function (data) {
         loadCount = 0;
         if (options.key) {
-          if (!isCryptoSupported()) {
+          if (!CRY.isCryptoSupported()) {
             onerror('Crypto-not-supported');
             alert("Sorry, you cannot load this file: it is encrypted, and your browser does not provide the required services to decrypt it.");
             newTrack();
@@ -3982,13 +3968,13 @@ $(function () {
           }
           //var encversion = options.key.substring(0,2); // version, ignored for now
           const key = encodeURIComponent(options.key.substring(2));
-          const deckey = strdecode(key, key);
+          const deckey = WU.strdecode(key, key);
           const iv = deckey.substring(0, 24);
           const pwd = deckey.substring(24);
           //console.log("iv  : " + iv);
           //console.log("pwd : " + pwd);
           ga('send', 'event', 'file', 'decrypt', undefined, Math.round(data.length / 1000));
-          aesGcmDecrypt(data, iv, pwd)
+          CRY.aesGcmDecrypt(data, iv, pwd)
             .then(function (gpx) {
               fileloader.loadData(gpx, url, options.ext);
             })
@@ -4017,7 +4003,7 @@ $(function () {
   }
 
   function getLoadExt() {
-    var ext = getSelectedOption("#track-ext");
+    var ext = WU.getSelectedOption("#track-ext");
     if (ext === "auto") {
       ext = undefined;
     }
@@ -4031,7 +4017,7 @@ $(function () {
     }
     ga('send', 'event', 'file', 'load-url');
     setEditMode(EDIT_NONE);
-    var noproxy = isChecked("#noproxy");
+    var noproxy = WU.isChecked("#noproxy");
     loadFromUrl(url, {
       ext: getLoadExt(),
       noproxy: noproxy,
@@ -4270,7 +4256,7 @@ $(function () {
   var LENGTH_UNIT_IMPERIAL = "1";
 
   var defaultLengthUnit = LENGTH_UNIT_METRIC;
-  var lengthUnit = getVal("wt.lengthUnit", defaultLengthUnit);
+  var lengthUnit = WU.getVal("wt.lengthUnit", defaultLengthUnit);
 
   function isMetric() {
     return lengthUnit === LENGTH_UNIT_METRIC;
@@ -4301,7 +4287,7 @@ $(function () {
     if (isImperial()) {
       alt = alt * 0.3048;
     }
-    return roundDecimal(alt, 2);
+    return WU.roundDecimal(alt, 2);
   }
 
   function dist2txt(dist, noUnits) {
@@ -4329,12 +4315,12 @@ $(function () {
   // ------------ Manage Service Worker
 
   function initServiceWorkerSetting() {
-    setChecked("#use-service-worker", getUseServiceWorker());
+    WU.setChecked("#use-service-worker", WC.getUseServiceWorker());
   }
   $("#use-service-worker").on("change", () => {
-    setUseServiceWorker(isChecked("#use-service-worker"));
-    saveValOpt("wt.useServiceWorker", getUseServiceWorker());
-    initServiceWorker(true);
+    WC.setUseServiceWorker(WU.isChecked("#use-service-worker"));
+    WC.saveValOpt("wt.useServiceWorker", WC.getUseServiceWorker());
+    WC.initServiceWorker(true);
   });
 
   // ------------ Scale control and unit toggling
@@ -4348,7 +4334,7 @@ $(function () {
     if (event) {
       // setting changed
       lengthUnit = $("input[name=unitopt]:checked").val();
-      saveValOpt("wt.lengthUnit", lengthUnit);
+      WC.saveValOpt("wt.lengthUnit", lengthUnit);
       ga('send', 'event', 'setting', 'lengthUnit', undefined, parseFloat(lengthUnit));
       showStats();
     } else {
@@ -4396,23 +4382,23 @@ $(function () {
   const MAX_COORD_DECIMALS = 8;
   const DEFAULT_COORD_DECIMALS = 6;
   const DEFAULT_COORD_ROUNDING = true;
-  var coordDecimals = getVal("wt.coordDecimals", DEFAULT_COORD_DECIMALS);
-  var coordRounding = getBoolVal("wt.coordRounding", DEFAULT_COORD_ROUNDING);
+  var coordDecimals = WU.getVal("wt.coordDecimals", DEFAULT_COORD_DECIMALS);
+  var coordRounding = WU.getBoolVal("wt.coordRounding", DEFAULT_COORD_ROUNDING);
   function showCoordnateRounding(save) {
     if (save) {
-      saveValOpt("wt.coordDecimals", coordDecimals);
-      saveValOpt("wt.coordRounding", coordRounding);
+      WC.saveValOpt("wt.coordDecimals", coordDecimals);
+      WC.saveValOpt("wt.coordRounding", coordRounding);
     }
-    setChecked("#rounding-on", coordRounding);
+    WU.setChecked("#rounding-on", coordRounding);
     $("#rounding-decimals").prop("disabled", !coordRounding);
-    selectOption("#rounding-decimals", coordDecimals);
+    WU.selectOption("#rounding-decimals", coordDecimals);
   }
   $("#rounding-on").on("change", () => {
-    coordRounding = isChecked("#rounding-on");
-    showCoordnateRounding(true);
+    coordRounding = WU.isChecked("#rounding-on");
+    showCoordnateRounding(true, true);
   });
   $("#rounding-decimals").on("change", () => {
-    coordDecimals = parseInt(getSelectedOption("#rounding-decimals"));
+    coordDecimals = parseInt(WU.getSelectedOption("#rounding-decimals"));
     if (isNaN(coordDecimals)) {
       coordDecimals = DEFAULT_COORD_DECIMALS;
     } else if (coordDecimals > MAX_COORD_DECIMALS) {
@@ -4426,7 +4412,7 @@ $(function () {
 
   function getCoordinate(rawCoord) {
     if (coordDecimals >= 0) {
-      return roundDecimal(rawCoord, coordDecimals);
+      return WU.roundDecimal(rawCoord, coordDecimals);
     } else {
       return rawCoord;
     }
@@ -4456,9 +4442,9 @@ $(function () {
     var trackStart = track.getLatLngs()[0];
     data = L.DomUtil.create('div', "popupdiv", div);
     data.innerHTML = "<span class='popupfield' title='Recorded time'>Rec. time:</span> <input type='datetime-local' placeholder='yyyy-mm-dd HH:MM:SS' step='1' class='rec-time-abs'/>";
-    setDateTimeInput($(data).find("input"), latlng.time);
+    WU.setDateTimeInput($(data).find("input"), latlng.time);
     $(data).find(".rec-time-abs").on("change", (event) => {
-      const newDate = getDateTimeInput($(event.target));
+      const newDate = WU.getDateTimeInput($(event.target));
       latlng.time = newDate ? newDate.toISOString() : undefined;
     });
     if (latlng.time && trackStart.time) {
@@ -4477,8 +4463,8 @@ $(function () {
     p = L.DomUtil.create("div", "popupdiv", div);
     p.innerHTML = "<span class='popupfield'>Position:</span> " +
       `<span title="${latlng.lat},${latlng.lng}">` +
-      roundDecimal(latlng.lat, 5) + "," +
-      roundDecimal(latlng.lng, 5) +
+      WU.roundDecimal(latlng.lat, 5) + "," +
+      WU.roundDecimal(latlng.lng, 5) +
       "</span>";
 
     if (editMode != EDIT_NONE) {
@@ -4489,10 +4475,10 @@ $(function () {
       altinput.type = "text";
       altinput.placeholder = "Numeric altitude";
       altinput.class = altinput.className = "atlInput";
-      $(altinput).val(isUndefined(latlng.alt) || !isNumeric(latlng.alt) ? "" : alt2txt(latlng.alt, true));
+      $(altinput).val(WU.isUndefined(latlng.alt) || !WU.isNumeric(latlng.alt) ? "" : alt2txt(latlng.alt, true));
       altinput.onkeyup = function () {
         try {
-          latlng.alt = isNumeric(altinput.value) ? txt2alt(altinput.value) : undefined;
+          latlng.alt = WU.isNumeric(altinput.value) ? txt2alt(altinput.value) : undefined;
         } catch (err) {
           console.error(err);
         }
@@ -4500,7 +4486,7 @@ $(function () {
       p = L.DomUtil.create("span", "", p);
       p.innerHTML = altUnit();
     } else {
-      if (!isUndefined(latlng.alt)) {
+      if (!WU.isUndefined(latlng.alt)) {
         p = L.DomUtil.create("div", "popupdiv", div);
         p.innerHTML = "<span class='popupfield'>Altitude:</span> " + alt2txt(latlng.alt);
       }
@@ -4635,7 +4621,7 @@ $(function () {
   function newVertex(e) {
     var latlng = e.vertex.getLatLng();
     var prev = e.vertex.getPrevious();
-    let i = isUndefined(prev) ? 0 : prev.latlng.i + 1;
+    let i = WU.isUndefined(prev) ? 0 : prev.latlng.i + 1;
     latlng.i = i;
     //console.log(e.type + ": " + latlng.i);
     if (i == getTrackLength() - 1) {
@@ -4814,14 +4800,14 @@ $(function () {
       event.preventDefault();
       // order new segment after split one
       let seg1Order, segIdx;
-      if (!isUndefined(seg1._wtOrder)) {
+      if (!WU.isUndefined(seg1._wtOrder)) {
         seg1Order = seg1._wtOrder;
       } else {
         segIdx = 0;
       }
       forEachSegment((segment) => {
         // were segments ordered?
-        if (isUndefined(segIdx)) {
+        if (WU.isUndefined(segIdx)) {
           // yes
           if (segment == track) {
             segment._wtOrder = seg1Order + 1; // set it just after seg1
@@ -4934,13 +4920,13 @@ $(function () {
   setStatus("Welcome to " + config.appname + "!", { timeout: 3 });
 
   // Prevent automatic translation on controls, icons, and user data
-  noTranslate();
-  noTranslate(".leaflet-control-layers-list label div span");
-  noTranslate(".leaflet-control-attribution");
-  noTranslate(".leaflet-control-scale-line");
-  noTranslate("#track-name");
-  noTranslate("input");
-  noTranslate("#share-libs");
+  WU.noTranslate();
+  WU.noTranslate(".leaflet-control-layers-list label div span");
+  WU.noTranslate(".leaflet-control-attribution");
+  WU.noTranslate(".leaflet-control-scale-line");
+  WU.noTranslate("#track-name");
+  WU.noTranslate("input");
+  WU.noTranslate("#share-libs");
 
   function menu(item, event) {
     $("#menu").show();
@@ -4960,10 +4946,10 @@ $(function () {
     ga('send', 'event', 'menu', 'donate', event.target.id);
   });
 
-  if (getValStorage()) {
+  if (WU.getValStorage()) {
     $("#cfgsave").on("change", function () {
-      const saveCfg = isChecked("#cfgsave");
-      setSaveState(saveCfg);
+      const saveCfg = WU.isChecked("#cfgsave");
+      WC.setSaveState(saveCfg);
       setStateSaved(saveCfg);
       if (saveCfg) {
         saveState();
@@ -4979,24 +4965,24 @@ $(function () {
   }
 
   function setStateSaved(save) {
-    if (save != isChecked()) {
-      setChecked("#cfgsave", save);
+    if (save != WU.isChecked()) {
+      WU.setChecked("#cfgsave", save, true);
     }
     if (save) {
       $(".state-file").removeAttr("disabled");
       $(".state-file").removeClass("disabled-button");
     } else {
       $(".state-file").attr("disabled", true);
-      $(".state-file").addClass("disabled-button");
+      $(".state-file").addClass("disabled-button", true);
     }
   }
 
-  setChecked("#merge", false);
+  WU.setChecked("#merge", false);
 
   // get visit info
-  const about = getVal("wt.about", undefined);
+  const about = WU.getVal("wt.about", undefined);
   // set saving status
-  setStateSaved(isStateSaved());
+  setStateSaved(WC.isStateSaved());
 
   // make sure we have a track
   newTrack();
@@ -5007,25 +4993,25 @@ $(function () {
     changeBaseLayer(requestedMap);
   }
 
-  const url = getParameterByName("url");
+  const url = WU.getParameterByName("url");
   if (url) {
     ga('send', 'event', 'file', 'load-urlparam');
-    const qr = getParameterByName("qr");
+    const qr = WU.getParameterByName("qr");
     if (qr === "1") {
       ga('send', 'event', 'file', 'load-qrcode');
     }
     showLocation = LOC_NONE;
     loadFromUrl(url, {
-      ext: getParameterByName("ext"),
-      noproxy: getParameterByName("noproxy"),
-      withCredentials: getParameterByName("noproxy"),
-      key: getParameterByName("key")
+      ext: WU.getParameterByName("ext"),
+      noproxy: WU.getParameterByName("noproxy"),
+      withCredentials: WU.getParameterByName("noproxy"),
+      key: WU.getParameterByName("key")
     });
     setEditMode(EDIT_NONE);
   } else {
     const reqpos = {
-      lat: parseFloat(getParameterByName("lat")),
-      lng: parseFloat(getParameterByName("lng"))
+      lat: parseFloat(WU.getParameterByName("lat")),
+      lng: parseFloat(WU.getParameterByName("lng"))
     };
     if (reqpos.lat && reqpos.lng) {
       showLocation = LOC_ONCE;
@@ -5043,12 +5029,12 @@ $(function () {
   if (about) {
     if ((about == FIRST_VISIT) || (now.getTime() > new Date(about).getTime() + ONE_MONTH)) {
       // reset about tag
-      storeVal("wt.about", now.toISOString());
+      WU.storeVal("wt.about", now.toISOString());
       // wait for potential urlparam to be loaded
       setTimeout(function () { openMenu("about"); }, 4000);
     }
   } else {
-    storeVal("wt.about", FIRST_VISIT);
+    WU.storeVal("wt.about", FIRST_VISIT);
   }
 
   // Suggest setting API keys
@@ -5062,16 +5048,16 @@ $(function () {
 
   const pasteLibSelect = $("#share-libs")[0];
   function initShareLib() {
-    arrayForEach(PasteLibs.libNames, function (i, name) {
+    WU.arrayForEach(PasteLibs.libNames, function (i, name) {
       const lib = PasteLibs.get(name);
       if (lib.enabled) {
-        addSelectOption(pasteLibSelect, name, lib.name);
+        WU.addSelectOption(pasteLibSelect, name, lib.name);
       }
     });
   }
   function changeShareLib() {
-    const libname = getSelectedOption(pasteLibSelect);
-    share = PasteLibs.get(libname) || share;
+    const libname = WU.getSelectedOption(pasteLibSelect);
+    share = PasteLibs.get(libname);
     $("#share-web").html("<a href='" + share.web + "' title='" + share.web + "' >" + share.web + "</a>");
     $("#share-max-size").html(share.maxSize);
     $("#share-max-time").html(share.maxTime);
@@ -5084,10 +5070,10 @@ $(function () {
     // share prompt dialog
     $("#wtshare-name").text(share.name);
     $("#wtshare-web").attr("href", share.web);
-    saveValOpt("wt.share", libname);
+    WC.saveValOpt("wt.share", libname);
   }
   initShareLib();
-  selectOption(pasteLibSelect, sharename);
+  WU.selectOption(pasteLibSelect, sharename);
   changeShareLib();
   $("#share-libs").on("change", changeShareLib);
 
@@ -5098,8 +5084,8 @@ $(function () {
     const mname = $(elt.parentNode).find("span");
     if (mname && mname.text) {
       const name = mname.text().substring(1);
-      const props = getMapListEntryProps(name);
-      if (props && (props.in == MAP_MY)) {
+      const props = WC.getMapListEntryProps(name);
+      if (props && (props.in == WC.MAP_MY)) {
         mname.addClass("mymap-name");
       }
     }
@@ -5112,18 +5098,18 @@ $(function () {
   $(".leaflet-control-layers-base").append(
     "<label for='close-on-click'><div><input type='checkbox' id='close-on-click'> Auto close</div></label>"
   );
-  setChecked("#close-on-click", mapsCloseOnClick);
+  WU.setChecked("#close-on-click", mapsCloseOnClick);
   $("#close-on-click").on("change", function () {
-    mapsCloseOnClick = isChecked("#close-on-click");
-    saveValOpt("wt.mapsCloseOnClick", mapsCloseOnClick);
+    mapsCloseOnClick = WU.isChecked("#close-on-click");
+    WC.saveValOpt("wt.mapsCloseOnClick", mapsCloseOnClick);
   });
 
   // Persist joinOnLoad option
-  joinOnLoad = getBoolVal("wt.joinOnLoad", false);
-  setChecked("#joinonload", joinOnLoad);
+  joinOnLoad = WU.getBoolVal("wt.joinOnLoad", false);
+  WU.setChecked("#joinonload", joinOnLoad);
   $("#joinonload").on("change", function () {
-    joinOnLoad = isChecked("#joinonload");
-    saveValOpt("wt.joinOnLoad", joinOnLoad);
+    joinOnLoad = WU.isChecked("#joinonload");
+    WC.saveValOpt("wt.joinOnLoad", joinOnLoad);
   });
 
   // ready
@@ -5137,7 +5123,7 @@ $(function () {
   });
 
   // Remove potential query parameters from URL
-  clearUrlQuery();
+  WU.clearUrlQuery();
 
   // handling GPX file handler
   // https://github.com/WICG/file-handling/blob/main/explainer.md

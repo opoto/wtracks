@@ -1,6 +1,6 @@
 // ESM module for application configuration
 // Import dependencies from other modules
-import { strdecode } from './utils.js';
+import * as WU from './utils.js';
 
 // Main application configuration
 const config = {
@@ -41,7 +41,7 @@ const config = {
   useServiceWorker: false,
   ipLookup: {
     url: function() {
-      return "https://extreme-ip-lookup.com/json/?key=" +  strdecode(
+      return "https://extreme-ip-lookup.com/json/?key=" +  WU.strdecode(
         "mv%092W%26(a7%22%04%2B%3B%1B%16.%5EDE%3C",
         "w%14%0C%2F~%7C9%11%3B%3A%07'%00%5D%1B%03%5BLp%1F");
     }
@@ -50,7 +50,7 @@ const config = {
     key: function() {
       // Create a GraphHopper account, generate a key, and return it here
       // Simple obfscuation below to avoid reuse by ommision
-      return strdecode(
+      return WU.strdecode(
         "%1F%1AWI%0C%16%0EHJ%08A%0CBO%1A%0C%0BNZM%10%07RFC%1EI%1D%0E%11ZBY%19P%0A",
         "%05xRT%25L%1F8F%10B%00y%09%17!%0EFonY%2C%09%7CG%1BL%0F%135F%1A%03z%5D%0E");
     }
@@ -59,24 +59,24 @@ const config = {
     mapsapikey: function() {
       // Create a Google Maps API key, and return it here
       // Simple obfscuation below to avoid reuse by ommision
-      return strdecode(
+      return WU.strdecode(
         "nf%15%11%3C%0D%2CL-%10%15%20%1FVO%2C%0Az%077%1D(Q2%07KGLY%1C%1D%3C%1A%1FU(%0D%26%1E",
         "t%04%10%0C%15W%3D%3C!%08%16%2C%24%10B%01%0Fr2%14T%03%0A%08%03NB%5ED8%01d%40%7CX%2C%3F%60%15");
     },
     analyticsid: function() {
       // Create a Google analytics trackind ID, and return it here
       // Simple obfscuation below to avoid reuse by ommision
-      return strdecode("znBAYM%5C%1AV%5EMEG", "");
+      return WU.strdecode("znBAYM%5C%1AV%5EMEG", "");
     },
     gtagid: function() {
       // Google Tag ID for GA4
-      return strdecode("h%02%3BFXD%3Em%5E'D-", "r%60%3E%5Bq%1E%2F%1DR%3FG!");
+      return WU.strdecode("h%02%3BFXD%3Em%5E'D-", "r%60%3E%5Bq%1E%2F%1DR%3FG!");
     }
   },
   corsproxy: {
     url: function() {
       // proxy for fetching remote track files
-      return strdecode(
+      return WU.strdecode(
         "G%5B%1B%00%1CN%40%01%08%19%1B%1C%1AOM%06%1D%5CZ%15%1C%18%14%03%16%5DJ%01%1A%00A%06%0EG%0B%1E%15%11%5B%03%5E%19%40",
         "%5D9%1E%1D5%14Qq%04%01%18%10!%09%40%2B%18To6U3O9%12XO%13%07%24%5D%5ET%24%06%1A'WP%3F%1B%01X");
     },
@@ -84,12 +84,12 @@ const config = {
   },
   dropbox: {
     key: function() {
-      return strdecode("BMX%00%0B%0E%02B%10%0F%1E%09B%18G", "X%2F%5D%1D%22T%132%1C%17%1D%05y%5EJ");
+      return WU.strdecode("BMX%00%0B%0E%02B%10%0F%1E%09B%18G", "X%2F%5D%1D%22T%132%1C%17%1D%05y%5EJ");
     }
   },
   geonames: {
     key: function() {
-      return strdecode("X%5B%05O%07%0E%05", "B9%18%0C%25E%0D");
+      return WU.strdecode("X%5B%05O%07%0E%05", "B9%18%0C%25E%0D");
     }
   },
   /*------------ activities  -----------*/

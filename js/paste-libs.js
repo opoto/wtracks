@@ -1,32 +1,32 @@
-'use strict';
 /* globals $ */
 
-/* Generic abstract class */
+/* Generic abstract class to be implemented for each provider*/
 class PasteLib {
-  static get name() {}
-  static get enabled() {}
-  static get web() {}
-  static get maxSize() {}
-  static get maxTime() {}
-  static get maxDownloads() {}
+  static MISSING = "Not implemented";
+  static get name() { throw PasteLib.MISSING; }
+  static get enabled() { throw PasteLib.MISSING; }
+  static get web() { throw PasteLib.MISSING; }
+  static get maxSize() { throw PasteLib.MISSING; }
+  static get maxTime() { throw PasteLib.MISSING; }
+  static get maxDownloads() { throw PasteLib.MISSING; }
   // private
   static get _pingUrl() { return 2; }
 
-  static upload(name, gpx, onDone, onFail) {}
+  static upload(name, gpx, onDone, onFail) { }
   static ping(onDone, onFail) {
     try {
       $.get(this._pingUrl)
-      .done(onDone)
-      .fail(onFail);
+        .done(onDone)
+        .fail(onFail);
     } catch {
       onFail();
     }
   }
-  static delete(url, rawUrl, passcode, onDone, onFail) {}
+  static delete(url, rawUrl, passcode, onDone, onFail) { throw PasteLib.MISSING; }
 }
 
 /* Repository of libs */
-class PasteLibs {
+export default class PasteLibs {
   // wrap private properties
   static get libs() {
     if (!this._libs) {
@@ -63,7 +63,7 @@ class PasteLibs {
 
 class DPaste extends PasteLib {
   static get name() { return "DPaste"; }
-  static get enabled() { return true;}
+  static get enabled() { return true; }
   static get web() { return "https://dpaste.com/"; }
   static get maxSize() { return "250KB"; }
   static get maxTime() { return "2 months"; }
@@ -76,14 +76,15 @@ class DPaste extends PasteLib {
   }
 
   static upload(name, gpx, onDone, onFail) {
-    $.post( "//dpaste.com/api/v2/",
-        { ...this._config,
-          "content": gpx,
-          "title": name,
-          "syntax": "xml",
-    }).done(function(data) {
-      onDone(data, data.trim() + ".txt");
-    }).fail(onFail);
+    $.post("//dpaste.com/api/v2/",
+      {
+        ...this._config,
+        "content": gpx,
+        "title": name,
+        "syntax": "xml",
+      }).done(function (data) {
+        onDone(data, data.trim() + ".txt");
+      }).fail(onFail);
   }
 }
 PasteLibs.register("dpaste", DPaste);
@@ -100,11 +101,11 @@ class DPaste1D extends DPaste {
 PasteLibs.register("dpaste1d", DPaste1D);
 
 // ------------------------------------------------------------------
- // HTPut
- // ------------------------------------------------------------------
+// HTPut
+// ------------------------------------------------------------------
 
- // SEPT 2025: DNS not found
- class HTPut extends PasteLib {
+// SEPT 2025: DNS not found
+class HTPut extends PasteLib {
   static get name() { return "HTPut"; }
   static get enabled() { return false; } // CORS?
   static get web() { return "https://htput.com/"; }
@@ -124,7 +125,7 @@ PasteLibs.register("dpaste1d", DPaste1D);
       type: 'PUT',
       dataType: "json",
       data: gpx,
-    }).done(function(resp) {
+    }).done(function (resp) {
       if (resp.status === "ok") {
         sharedurl = window.location.protocol + sharedurl;
         onDone(sharedurl, sharedurl + "?contentType=text/plain", resp.pass);
@@ -142,7 +143,7 @@ PasteLibs.register("dpaste1d", DPaste1D);
         "Htput-pass": passcode
       },
       dataType: "json"
-    }).done(function(resp) {
+    }).done(function (resp) {
       if (onDone && resp.status === "ok") {
         onDone();
       } else if (onFail) {
@@ -154,14 +155,14 @@ PasteLibs.register("dpaste1d", DPaste1D);
 PasteLibs.register("htput", HTPut);
 
 
- // ------------------------------------------------------------------
- // Friendpaste
- // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// Friendpaste
+// ------------------------------------------------------------------
 
- // Does not work on Safari when 'prevent cross-site tracking' is set, because of the cookie friendpaste is setting
- class FriendPaste extends PasteLib {
+// Does not work on Safari when 'prevent cross-site tracking' is set, because of the cookie friendpaste is setting
+class FriendPaste extends PasteLib {
   static get name() { return "FriendPaste"; }
-  static get enabled() { return true;}
+  static get enabled() { return true; }
   static get web() { return "https://friendpaste.com/"; }
   static get maxSize() { return "approx. 80KB"; }
   static get maxTime() { return "Unknown"; }
@@ -173,14 +174,14 @@ PasteLibs.register("htput", HTPut);
       method: "POST",
       url: "//www.friendpaste.com/",
       dataType: "json",
-      contentType:"application/json; charset=utf-8",
+      contentType: "application/json; charset=utf-8",
       data: JSON.stringify({
         "title": name,
         "snippet": gpx,
         "password": "dummy",
         "language": "xml"
       })
-    }).done(function(resp) {
+    }).done(function (resp) {
       if (resp.ok) {
         onDone(resp.url + "?rev=" + resp.rev, resp.url + "/raw?rev=" + resp.rev);
       } else {
@@ -191,13 +192,13 @@ PasteLibs.register("htput", HTPut);
 }
 PasteLibs.register("friendpaste", FriendPaste);
 
- // ------------------------------------------------------------------
- // TmpFile
- // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// TmpFile
+// ------------------------------------------------------------------
 
 
 // 15s startup
- class TmpFile extends PasteLib {
+class TmpFile extends PasteLib {
   static get name() { return "TmpFile"; }
   static get enabled() { return true; }
   static get web() { return "https://glitch.com/edit/#!/tmpfile?path=README.md%3A1%3A0"; }
@@ -211,7 +212,7 @@ PasteLibs.register("friendpaste", FriendPaste);
       method: "POST",
       url: "https://tmpfile.glitch.me",
       data: gpx
-    }).done(function(resp) {
+    }).done(function (resp) {
       onDone(resp.urlAdmin, resp.url);
     }).fail(onFail);
   }
@@ -221,15 +222,15 @@ PasteLibs.register("friendpaste", FriendPaste);
       method: "DELETE",
       url: url
     })
-    .done(onDone)
-    .fail(onFail);
+      .done(onDone)
+      .fail(onFail);
   }
 }
 PasteLibs.register("tmpfile", TmpFile);
 
- // ------------------------------------------------------------------
- // file.io
- // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// file.io
+// ------------------------------------------------------------------
 
 // SEPT 2025: sold to LimeWire
 class FileIO extends PasteLib {
@@ -243,12 +244,12 @@ class FileIO extends PasteLib {
 
   // this method only supports small file (< 100KB)
   static uploadSmall(name, gpx, onDone, onFail) {
-    $.post( "//file.io/?expires=1d", { "text": gpx }
-    ).done(function(resp) {
+    $.post("//file.io/?expires=1d", { "text": gpx }
+    ).done(function (resp) {
       if (resp.success) {
         onDone(resp.link, resp.link);
       } else {
-        onFail(resp.message + (resp.error ? " (" + resp.error +")" : ""));
+        onFail(resp.message + (resp.error ? " (" + resp.error + ")" : ""));
       }
     }).fail(onFail);
   }
@@ -270,7 +271,7 @@ class FileIO extends PasteLib {
         if (resp.success) {
           onDone(resp.link, resp.link);
         } else {
-          onFail(resp.message + (resp.error ? " (" + resp.error +")" : ""));
+          onFail(resp.message + (resp.error ? " (" + resp.error + ")" : ""));
         }
       }).fail(onFail);
     } catch {
@@ -286,9 +287,9 @@ class FileIO extends PasteLib {
 }
 PasteLibs.register("fileio", FileIO);
 
- // ------------------------------------------------------------------
- // transfer.sh
- // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// transfer.sh
+// ------------------------------------------------------------------
 
 // SEPT 2025: DNS not found
 class TransferSH extends PasteLib {
@@ -312,7 +313,7 @@ class TransferSH extends PasteLib {
       timeout: 60000,
       dataType: "json",
       data: gpx,
-    }).done(function(resp) {
+    }).done(function (resp) {
       if (resp.status === "ok") {
         onDone(resp.text, resp.text);
       } else {
@@ -323,11 +324,11 @@ class TransferSH extends PasteLib {
 }
 PasteLibs.register("transfer.sh", TransferSH);
 
- // ------------------------------------------------------------------
- // gofile.io
- // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// gofile.io
+// ------------------------------------------------------------------
 
- class GoFileIO extends PasteLib {
+class GoFileIO extends PasteLib {
   static get name() { return "gofile.io"; }
   static get enabled() { return false; } // no direct download? CORS?
   static get web() { return "https://gofile.io/"; }

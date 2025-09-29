@@ -36,34 +36,44 @@ export function isCryptoSupported() {
   */
 export function aesGcmEncrypt(plaintext, password) {
   return new Promise(function (resolve, reject) {
-    const pwUtf8 = new TextEncoder().encode(password);                                 // encode password as UTF-8
+    // encode password as UTF-8
+    const pwUtf8 = new TextEncoder().encode(password);
     let alg = { name: 'AES-GCM' };
 
-    return crypto.subtle.digest('SHA-256', pwUtf8)                                     // hash the password
+    // hash the password
+    return crypto.subtle.digest('SHA-256', pwUtf8)
     .then( function(pwHash) {
 
-      const iv = crypto.getRandomValues(new Uint8Array(12));                           // get 96-bit random iv
+      // get 96-bit random iv
+      const iv = crypto.getRandomValues(new Uint8Array(12));
 
-      alg.iv = iv;                                                                     // specify algorithm to use
+      // specify algorithm to use
+      alg.iv = iv;
 
-      return crypto.subtle.importKey('raw', pwHash, alg, false, ['encrypt']);          // generate key from pw
+      // generate key from pw
+      return crypto.subtle.importKey('raw', pwHash, alg, false, ['encrypt']);
 
     })
     .then( function(key) {
 
-      const ptUint8 = new TextEncoder().encode(plaintext);                             // encode plaintext as UTF-8
-      return crypto.subtle.encrypt(alg, key, ptUint8);                                 // encrypt plaintext using key
+      // encode plaintext as UTF-8
+      const ptUint8 = new TextEncoder().encode(plaintext);
+      // encrypt plaintext using key
+      return crypto.subtle.encrypt(alg, key, ptUint8);
 
     })
     .then( function(ctBuffer) {
 
-      const ctArray = Array.from(new Uint8Array(ctBuffer));                            // ciphertext as byte array
+      // ciphertext as byte array
+      const ctArray = Array.from(new Uint8Array(ctBuffer));
       const ctStr = ctArray.map(function(byte) { return String.fromCharCode(byte); } ).join('');           // ciphertext as string
-      const ctBase64 = btoa(ctStr);                                                    // encode ciphertext as base64
+      // encode ciphertext as base64
+      const ctBase64 = btoa(ctStr);
 
       const ivHex = Array.from(alg.iv).map(function(b) { return ('00' + b.toString(16)).slice(-2); } ).join(''); // iv as hex string
 
-      resolve({ iv:ivHex, ciphertext:ctBase64 });                                      // return {iv,ciphertext}
+      // return {iv,ciphertext}
+      resolve({ iv:ivHex, ciphertext:ctBase64 });
 
     });
   });
