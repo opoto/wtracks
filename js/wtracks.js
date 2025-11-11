@@ -1339,7 +1339,7 @@ $(function () {
       gpx += "  " + xmlname + "\n";
       gpx += "  <desc>" + (metadata.desc ? WU.htmlEncode(metadata.desc) : "") + "</desc>\n";
       gpx += "  <author><name>" + WU.htmlEncode(config.appname) + "</name></author>\n";
-      gpx += "  <link href='" + window.location.href + "'>\n";
+      gpx += "  <link href='" + WU.htmlEncode(window.location.href) + "'>\n";
       gpx += "    <text>" + WU.htmlEncode(config.appname) + "</text>\n";
       gpx += "    <type>text/html</type>\n";
       gpx += "  </link>\n";
