@@ -3950,8 +3950,9 @@ $(function () {
   map.addControl(loadcontrol);
   var fileloader = loadcontrol.loader;
   var loadCount = 0;
-  fileloader.on('data:error', function () {
+  fileloader.on('data:error', function (err) {
     setStatus("Failed: check file and type", { 'class': 'status-error', 'timeout': 3 });
+    console.error(err);
   });
 
   function loadFromUrl(url, options) {
@@ -5134,14 +5135,15 @@ $(function () {
   // https://github.com/WICG/file-handling/blob/main/explainer.md
   // https://web.dev/file-handling/
   if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
-    launchQueue.setConsumer((launchParams) => {
+    launchQueue.setConsumer(async (launchParams) => {
       // Nothing to do when the queue is empty.
       if (!launchParams.files.length) {
         return;
       }
       // Handle the files
       console.info("We've got launch files: " + launchParams.files.map(f => f.name).join(", "));
-      fileloader.loadMultiple(launchParams.files, "gpx");
+      const files = await Promise.all(launchParams.files.map(handle => handle.getFile()));
+      fileloader.loadMultiple(files);
     });
   }
 
