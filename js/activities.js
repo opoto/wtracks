@@ -6,7 +6,7 @@ import * as WDS from './dataset.js';
 import * as WU from './utils.js';
 
 // Dependencies loaded as globals via script tags in the HTML
-/* globals $, ga, L */
+/* globals $, L */
 
 let polystats;
 let activity;
@@ -54,9 +54,9 @@ $("#activities").change(displaySelectedActivity);
 
 // activity deletion button
 $("#activitydel").click(function () {
-  let name = $("#activities").children(':selected').val();
+  const name = $("#activities").children(':selected').val();
   if (confirm("Delete " + name + "?")) {
-    ga('send', 'event', 'activity', 'delete', undefined, activitiesLen());
+    WU.wtEvent('activity', 'delete');
     activities[name] = undefined;
     WU.storeJsonVal("wt.activities", activities);
     activityname = $("#activities").children(':selected').remove();
@@ -65,7 +65,7 @@ $("#activitydel").click(function () {
 
 // activity save button
 $("#activitysave").click(function () {
-  ga('send', 'event', 'activity', 'save', undefined, activitiesLen());
+  WU.wtEvent('activity', 'save', undefined, activitiesLen());
   let name = $("#activityname").val();
   if (activity && name) {
     saveActivity(name, activity);
@@ -183,17 +183,17 @@ function importA() {
 }
 
 $("#activityexportall").click(function () {
-  ga('send', 'event', 'activity', 'export-all', undefined, activitiesLen());
+  WU.wtEvent('activity', 'export-all', undefined, activitiesLen());
   let str = JSON.stringify(activities);
   exportA(str);
 });
 $("#activityexport").click(function () {
-  ga('send', 'event', 'activity', 'export', undefined, activitiesLen());
+  WU.wtEvent('activity', 'export', undefined, activitiesLen());
   let str = "{\"" + activityname + "\":" + JSON.stringify(activity) + "}";
   exportA(str);
 });
 $("#activityimport").click(function () {
-  ga('send', 'event', 'activity', 'import', undefined, activitiesLen());
+  WU.wtEvent('activity', 'import', undefined, activitiesLen());
   promptA();
 });
 
@@ -216,7 +216,7 @@ function createActivity(vehicle, method, params) {
 // activity creation button: initialize editor with new activity name
 // and some defaults activity parameters
 $("#activitynew").click(function () {
-  ga('send', 'event', 'activity', 'new', undefined, activitiesLen());
+  WU.wtEvent('activity', 'new', undefined, activitiesLen());
   let index = 1;
   activityname = "New";
   while (activities[activityname]) {
@@ -566,6 +566,6 @@ $(function () {
   $("#compute").click(computeSpeedProfile);
   $("#resetcompute").click(resetComputeParams);
   changeData();
-  ga('send', 'event', 'activity', 'editor', undefined, activitiesLen());
+  WU.wtEvent('activity', 'editor', undefined, activitiesLen());
 
 });

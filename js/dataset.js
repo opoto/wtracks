@@ -1,7 +1,5 @@
 import * as WU from './utils.js';
 
-/* globals ga */
-
 // Data
 var datas = [
   {
@@ -60,7 +58,7 @@ export function getDataset(idx) {
     });
   } else {
     console.error("Missing dataset: " + idx);
-    ga('send', 'event', 'error', "Missing dataset", idx);
+    WU.wtEvent('error', "Missing dataset", idx);
   }
   return data;
 }

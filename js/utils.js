@@ -1,7 +1,7 @@
 // ESM module for utility functions
 
 // Dependencies are loaded as globals via script tags in the HTML
-/* globals $, ga */
+/* globals $ */
 
 /* ----------------------- Testing values and types ---------------------- */
 
@@ -254,64 +254,15 @@ export function storedValuesForEach(fn) {
   }
 }
 
-/* ---------------------- GOOGLE ANALYTICS ------------------------- */
+/* ---------------------- event reporting ------------------------- */
 
-// ga('send', 'event', category, action, label, value)
-
-export function initGoogleAnalytics(trackingid, gtagId) {
-  let gaScriptUrl = 'https://www.google-analytics.com/analytics.js';
-  const gaDbg = getVal("wt.ga.dbg", "0");
-  if (gaDbg != '0') {
-    gaScriptUrl = 'https://www.google-analytics.com/analytics_debug.js';
+export function wtEvent(name, category/*, action, label, value*/) {
+  if (window.goatcounter && !window.goatcounter.no_onload) {
+    window.goatcounter.count({
+      path: `${name}${category ? `: ${category}` : ""}`,
+      event: true,
+    });
   }
-  /**/
-  (function (i, s, o, g, r, a, m) {
-    i.GoogleAnalyticsObject = r;
-    i[r] = i[r] || function () {
-      (i[r].q = i[r].q || []).push(arguments);
-    };
-    i[r].l = 1 * new Date();
-    a = s.createElement(o);
-    m = s.getElementsByTagName(o)[0];
-    a.async = 1;
-    a.src = g;
-    a.onerror = function (err) {
-      console.error("Google Analytics blocked. Ad blocker?");
-    };
-    try {
-      m.parentNode.insertBefore(a, m);
-    } catch (err) {
-      console.error("Google Analytics blocked. Ad blocker?");
-    }
-  })(window, document, 'script', gaScriptUrl, 'ga');
-  if (gaDbg === "2") {
-    window.ga_debug = { trace: true };
-  }
-  ga('create', trackingid, 'auto');
-  if (getBoolVal("wt.ga.off", false)) {
-    console.log('Turning off GA reporting');
-    ga('set', 'sendHitTask', null);
-  }
-  ga('send', 'pageview');
-
-  // GA4 - Global site tag (gtag.js) - Google Analytics
-  if (!getBoolVal("wt.ga.off", false) && gtagId) {
-    let gtagJs = document.createElement('script');
-    gtagJs.setAttribute('src', 'https://www.googletagmanager.com/gtag/js?id=' + gtagId);
-    document.head.appendChild(gtagJs);
-
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function () { window.dataLayer.push(arguments); };
-    window.gtag('js', new Date());
-    const gtagCfg = (gaDbg != '0') ? { 'debug_mode': true } : {};
-    window.gtag('config', gtagId, gtagCfg);
-  } else {
-    console.debug("gtag off");
-  }
-}
-
-export function wtEvent(name, category, action, label, value) {
-  ga('send', 'event', name, category, action, label, value);
 }
 
 /* ---------------------- EMAIL ------------------------- */
@@ -343,6 +294,8 @@ export function setEmailListener(selector, name, domain, subject) {
 /* ------------------------------ CORS URL  --------------------------------- */
 // /!\ Some set a cookie, which fails with Safari when 'prevent cross site tracking' is activated
 let CORS_PROXY = "https://api.codetabs.com/v1/proxy?quest="; // https://codetabs.com/cors-proxy/cors-proxy.html
+CORS_PROXY = "http://localhost:3000/proxy/?target="
+// https://uploads.naturkartan-cdn.se/uploads/content_pdf/file/307/a7afecef68b1bf043639dd959acad686.gpx
 
 /*
 "https://proxy.cors.sh/"
@@ -598,7 +551,7 @@ window.onerror = function (messageOrEvent, source, line, row, err) {
   }
   if (getLocalCode()) {
     alert(errmsg);
-  } else if (ga) {
+  } else {
     wtEvent('error', errmsg, JSON.stringify(label));
   }
   errors.push(errmsg);

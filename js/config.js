@@ -62,15 +62,6 @@ const config = {
       return WU.strdecode(
         "nf%15%11%3C%0D%2CL-%10%15%20%1FVO%2C%0Az%077%1D(Q2%07KGLY%1C%1D%3C%1A%1FU(%0D%26%1E",
         "t%04%10%0C%15W%3D%3C!%08%16%2C%24%10B%01%0Fr2%14T%03%0A%08%03NB%5ED8%01d%40%7CX%2C%3F%60%15");
-    },
-    analyticsid: function() {
-      // Create a Google analytics trackind ID, and return it here
-      // Simple obfscuation below to avoid reuse by ommision
-      return WU.strdecode("znBAYM%5C%1AV%5EMEG", "");
-    },
-    gtagid: function() {
-      // Google Tag ID for GA4
-      return WU.strdecode("h%02%3BFXD%3Em%5E'D-", "r%60%3E%5Bq%1E%2F%1DR%3FG!");
     }
   },
   corsproxy: {
@@ -159,7 +150,7 @@ const config = {
       url: '//{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
       options : {
         maxZoom: 17,
-        attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+        attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://www.earthdata.nasa.gov/data/instruments/srtm">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
       },
       visible: true
     },

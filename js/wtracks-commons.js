@@ -3,12 +3,21 @@
 import config from './config.js';
 import * as WU from './utils.js';
 
-// Dependencies loaded as globals via script tags in the HTML
-/* globals $, ga, L */
+/* globals $, L */
 
-if (config.google && config.google.analyticsid) {
-  WU.initGoogleAnalytics(config.google.analyticsid(), config.google.gtagid && config.google.gtagid());
+// privacy-friendly usage stats
+window.goatcounter = {
+  path: function(p) { return location.host + p } // add domain name
 }
+// Only load on production environment, manually opt-out
+if ((window.location.host !== 'opoto.github.io') ||
+  (localStorage.getItem("goatcounter." + location.host) === "false") ||
+  (localStorage.getItem("goatcounter.ALL") === "false")) {
+  window.goatcounter.no_onload = true;
+}
+document.head.append(`
+  <script data-goatcounter="https://wtracks.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+`);
 
 if (config.email && config.email.selector) {
   WU.setEmailListener(config.email.selector, config.email.name,
@@ -91,7 +100,7 @@ export function isStateSaved() {
 
 export function setSaveState(saveCfg) {
   if (isStateSaved() != saveCfg) {
-    ga('send', 'event', 'setting', saveCfg ? 'save-on' : 'save-off');
+    WU.wtEvent('setting', saveCfg ? 'save-on' : 'save-off');
     WU.storeVal("wt.saveState", saveCfg ? "true" : "false");
   }
 }

@@ -5,7 +5,7 @@ import * as WU from './utils.js';
 import * as WC from './wtracks-commons.js';
 
 // Dependencies loaded as globals via script tags in the HTML
-/* globals $, ga */
+/* globals $ */
 
 /* ----------------- My maps editing ------------------- */
 
@@ -134,7 +134,7 @@ function toggleMapVisibility(e) {
   mprops.on = !mprops.on;
   WC.saveMapList();
   setMapItemVisibility($(e.currentTarget), mprops);
-  ga('send', 'event', 'map', 'visibility');
+  WU.wtEvent('map', 'visibility');
 }
 
 function editMapItem(e) {
@@ -284,12 +284,12 @@ function validateMymapBox() {
       } else {
         WC.mymaps[newname] = mymap;
       }
-      ga('send', 'event', 'map', 'edit');
+      WU.wtEvent('map', 'edit');
     } else {
       WC.mymaps[newname] = mymap;
       addMymapsItem(newname, WC.addMapListEntry(newname, WC.MAP_MY, true), true);
       WC.saveMapList();
-      ga('send', 'event', 'map', 'add');
+      WU.wtEvent('map', 'add');
     }
     WC.saveJsonValOpt("wt.mymaps", WC.mymaps);
   }
@@ -311,7 +311,7 @@ export function deleteMymap(mymapname) {
       WC.delMapListEntry(WC.getMapListEntryIndex(mymapname));
       updateMapItem(mymapname);
       WC.saveMapList();
-      ga('send', 'event', 'map', 'delete');
+      WU.wtEvent('map', 'delete');
     }
   }
 }
@@ -345,7 +345,7 @@ function deleteAllMymaps() {
     WC.saveJsonValOpt("wt.mymaps", undefined);
     WC.getMapList();
     showMapsList();
-    ga('send', 'event', 'map', 'deleteall');
+    WU.wtEvent('map', 'deleteall');
   }
 }
 function reorderMapList() {
@@ -353,7 +353,7 @@ function reorderMapList() {
     WC.resetMapList();
     WC.getMapList();
     showMapsList();
-    ga('send', 'event', 'map', 'reorder');
+    WU.wtEvent('map', 'reorder');
   }
 }
 
@@ -463,7 +463,7 @@ export function openExportMaps(evt, mapname) {
     $("#export-box").show();
     $("#export-val").focus();
     $("#export-val").select();
-    ga('send', 'event', 'map', 'export', undefined, mapname ? 1 : WC.mymaps.length);
+    WU.wtEvent('map', 'export', undefined, mapname ? 1 : WC.mymaps.length);
   }
 }
 
@@ -592,7 +592,7 @@ function importMymaps() {
     WC.setSaveState(true);
     WC.saveJsonValOpt("wt.mymaps", WC.mymaps);
     WC.saveMapList();
-    ga('send', 'event', 'map', 'import', undefined, imported);
+    WU.wtEvent('map', 'import', undefined, imported);
   }
   closeImportBox();
 }
@@ -636,7 +636,7 @@ $(function () {
           // update list data
           WC.moveMapListEntry(fromIdx, toIdx);
           WC.saveMapList();
-          ga('send', 'event', 'map', 'move');
+          WU.wtEvent('map', 'move');
           //moved = true;
         }
         // TODO: Workaround for Android Chrome display bug

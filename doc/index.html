@@ -4,7 +4,7 @@
   html5up.net | @ajlkn
   Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
-<html>
+<html lang="en">
 
 <head>
   <title>WTrack - Documentation</title>
@@ -15,6 +15,19 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
     rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/main.css" />
+    <!-- privacy-friendly usage stats -->
+  <script>
+    window.goatcounter = {
+      path: function(p) { return location.host + p } // add domain name
+    }
+    // Only load on production environment, manually opt-out
+    if ((window.location.host !== 'opoto.github.io') ||
+      (localStorage.getItem("goatcounter." + location.host) === "false") ||
+      (localStorage.getItem("goatcounter.ALL") === "false")) {
+      window.goatcounter.no_onload = true;
+    }
+  </script>
+  <script data-goatcounter="https://wtracks.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
 
 <body>
@@ -116,7 +129,7 @@
             information about this track step, and get the option to delete it.
           </li>
           <li>Routing editing: Click on map to set the starting point and
-            destination, the routing engine will automically compute the track
+            destination, the routing engine will automatically compute the track
             following map constraints. Click on the route to create intermediate
             waypoints that you may drag around.
           </li>
@@ -145,10 +158,10 @@
         <ul class="default">
           <li>Distance: One way (<span
               class="material-icons symbol">&#xE31C;</span>) and round-trip
-            (<span class="material-icons symbol">&#xE041;</span>) lenght of the
+            (<span class="material-icons symbol">&#xE041;</span>) length of the
             track</li>
           <li>Duration: Estimated duration (one way and round-trip) of the track
-            itinary based on the activity type. WTracks comes with default
+            itinerary based on the activity type. WTracks comes with default
             activities and timings, but you can configure your own, see below
           </li>
           <li>Maximum and minimum altitudes of the track</li>
@@ -193,7 +206,7 @@
         <p>The simplest way to share a track is using the "Share" button from
           the File menu tab.</p>
         <p><img src="images/sharing.png" alt="sharing" /></p>
-        <p>Altenatively, if your track file is available online, you can
+        <p>Alteratively, if your track file is available online, you can
           manually build
           a shareable URL using the following syntax:</p>
         <p class="code">https://opoto.github.io/wtracks/?url=&lt;link to online
@@ -206,7 +219,7 @@
             URL if it contains ? or &amp; or other special characters.
           </li>
           <li><span class="code">map</span> is the name of the map as is appears
-            in the top-right map selecetor.
+            in the top-right map selector.
             Map name with special characters need to be <a
               href="https://meyerweb.com/eric/tools/dencoder/">encoded</a>.
             In particular, space must be replaced by + sign.
@@ -281,7 +294,7 @@
 
         <h3>Trim</h3>
         <p>Trimming is an easy way to quickly delete track points at the
-          beggining or at the end of your track. Select which end of the track
+          beginning or at the end of your track. Select which end of the track
           you want to trim, then use the slider to define the number of points
           to remove. The map shows the result in real-time.</p>
         <p><img src="images/trim.png" alt="trim" /></p>
@@ -459,7 +472,7 @@
           or geolocation.</p>
         <p>In order to enhance your experience, the application stores some data
           in your browser, to restore your preferred
-          settings accross different visits. This data includes your selected
+          settings across different visits. This data includes your selected
           map style, activity type, or your last position.
           This information is stored in your browser local storage, which
           protects its disclosure. Again, this data is not
@@ -468,7 +481,7 @@
           unchecking "Locally save editor's state" in the "Settings / Remember
           me" menu:</p>
         <p><img src="images/remember-me.png" alt="save state setting" /></p>
-        <p>WTrack uses Google Analytics to monitor activity and help identify
+        <p>WTrack uses GoatCounter to monitor activity and help identify
           which features need to be enhanced.</p>
       </div>
     </section>
@@ -481,7 +494,7 @@
           <h2><span class="fa fa-envelope">&nbsp;</span>Contact</h2>
         </header>
 
-        <p>WTrack is a "hobby" project, developped in my free time, please
+        <p>WTrack is a "hobby" project, developed in my free time, please
           consider it with indulgence :)</p>
         <p><span class="fa fa-pencil">&nbsp;</span> Feel free to <a id="email"
             href="#">send me comments</a></p>

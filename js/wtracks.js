@@ -7,7 +7,7 @@ import * as CRY from './encdec.js';
 import PasteLibs from './paste-libs.js';
 
 // Dependencies loaded as globals via script tags in the HTML
-/* globals $, ga, L, google, Dropbox, jscolor, saveAs, PMTiles */
+/* globals $, L, google, Dropbox, jscolor, saveAs, PMTiles */
 
 let map;
 let track;
@@ -287,7 +287,7 @@ $(function () {
   function changeApikeyNomore(v) {
     apikeyNoMore = v;
     WC.saveValOpt("wt.apikeyNoMore", apikeyNoMore);
-    ga('send', 'event', 'setting', 'keysNomore', undefined, apikeyNoMore ? 1 : 0);
+    WU.wtEvent('setting', 'keysNomore', undefined, apikeyNoMore ? 1 : 0);
   }
 
   function openApiKeyInfo(force) {
@@ -394,7 +394,7 @@ $(function () {
   $("#activity").on("change", function () {
     let selectedActivity = getCurrentActivityName();
     let currentActivityName = currentActivity.name;
-    ga('send', 'event', 'activity', 'change', selectedActivity, undefined, Object.keys(activities).length);
+    WU.wtEvent('activity', 'change', selectedActivity, undefined, Object.keys(activities).length);
     WC.saveValOpt("wt.activity", selectedActivity);
     if (selectedActivity != ACTIVITY_RECORDED) {
       if (selectedActivity != currentActivityName) {
@@ -752,7 +752,7 @@ $(function () {
       return;
     }
     const toUndo = undos.pop();
-    ga('send', 'event', 'edit', 'undo', toUndo.getType());
+    WU.wtEvent('edit', 'undo', toUndo.getType());
     toUndo.undo();
     if (undos.length < 1) {
       endUndo(toUndo.getIconId());
@@ -986,7 +986,7 @@ $(function () {
   function finishTrim() {
     const n = parseInt($("#trim-range").val());
     if (n > 0) {
-      ga('send', 'event', 'tool', 'trim', undefined, n);
+      WU.wtEvent('tool', 'trim', undefined, n);
       if (polytrim.getDirection() === polytrim.FROM_END) {
         // From End
         polystats.updateStatsFrom(getTrackLength() - 1);
@@ -1077,19 +1077,19 @@ $(function () {
   });
   $("#track-color").on("change", function () {
     const v = $("#track-color").val();
-    ga('send', 'event', 'setting', 'trackColor', v);
+    WU.wtEvent('setting', 'trackColor', v);
     trackUISetting.setColor(v);
   });
   $("#track-weight").on("change", function () {
     const v = $("#track-weight").val();
-    ga('send', 'event', 'setting', 'trackWeight', v);
+    WU.wtEvent('setting', 'trackWeight', v);
     $("#track-weight-v").text(v);
     trackUISetting.setWeight(v);
   });
   $("#track-resetcolorweight").on("click", function () {
     trackUISetting.setColor(trackUISetting.getDefaultColor());
     trackUISetting.setWeight(trackUISetting.getDefaultWeight());
-    ga('send', 'event', 'setting', 'trackReset');
+    WU.wtEvent('setting', 'trackReset');
     initTrackDisplaySettings();
   });
   function initTrackDisplaySettings() {
@@ -1127,7 +1127,7 @@ $(function () {
       key = OFF_KEY + key;
     }
     const gav = useDefault ? -1 : key ? 1 : 0;
-    ga('send', 'event', 'setting', 'keys', name, gav);
+    WU.wtEvent('setting', 'keys', name, gav);
     //console.debug(name + "= " + key);
     WC.saveValOpt("wt." + name, key);
     return key;
@@ -1191,7 +1191,7 @@ $(function () {
   }
 
   $("#keys-reset").on("click", function () {
-    ga('send', 'event', 'setting', 'keys', 'reset');
+    WU.wtEvent('setting', 'keys', 'reset');
     WU.objectForEach(apikeys, function name(kname) {
       resetApiKey(kname);
     });
@@ -1253,7 +1253,7 @@ $(function () {
     return false;
   });
   $("#track-new").on("click", function () {
-    ga('send', 'event', 'file', 'new');
+    WU.wtEvent('file', 'new');
     newTrack();
     setEditMode(EDIT_MANUAL_TRACK);
     saveState();
@@ -1524,7 +1524,7 @@ $(function () {
         from = lastSegTime;
       });
       setStatus("Time saved", { timeout: 3 });
-      ga('send', 'event', 'tool', 'save-time');
+      WU.wtEvent('tool', 'save-time');
       saveState();
 
     }
@@ -1573,7 +1573,7 @@ $(function () {
         console.error(nbErr, "points could not be moved because of invalid date format");
       }
       setStatus("Shift completed", { timeout: 3 });
-      ga('send', 'event', 'tool', 'shift-time');
+      WU.wtEvent('tool', 'shift-time');
       saveState();
     }
   });
@@ -1582,7 +1582,7 @@ $(function () {
     setEditMode(EDIT_NONE);
     setStatus("Formatting..", { spinner: true });
     const gpx = getTrackGPX(true);
-    ga('send', 'event', 'file', 'save', undefined, Math.round(gpx.length / 1000));
+    WU.wtEvent('file', 'save', undefined, Math.round(gpx.length / 1000));
     try {
       const blob = new Blob([gpx],
         WU.isSafari() ? { type: "text/plain;charset=utf-8" } : { type: "application/gpx+xml;charset=utf-8" }
@@ -1727,7 +1727,7 @@ $(function () {
       saveState();
       polystats.updateStatsFrom(0);
       setStatus("Joined " + count + " segments", { timeout: 3 });
-      ga('send', 'event', 'tool', 'join', undefined, count);
+      WU.wtEvent('tool', 'join', undefined, count);
     } else {
       setStatus("No segments to join", { timeout: 3 });
     }
@@ -1739,7 +1739,7 @@ $(function () {
       deleteSegment(segment);
     });
     if (count > 0) {
-      ga('send', 'event', 'edit', 'delete-segments');
+      WU.wtEvent('edit', 'delete-segments');
       openSegmentsEditor();
       saveState();
       setStatus("Deleted " + count + " segment" + (count > 1 ? "s" : ""), { timeout: 3 });
@@ -1758,7 +1758,7 @@ $(function () {
     }
   }
   function segmentsToggled(count) {
-    ga('send', 'event', 'edit', 'toggle-segments');
+    WU.wtEvent('edit', 'toggle-segments');
     openSegmentsEditor();
     saveState();
     setStatus("Toggled " + count + " segment" + (count > 1 ? "s" : ""), { timeout: 3 });
@@ -1874,7 +1874,7 @@ $(function () {
           const encversion = "01";
           params += "&key=" + encversion + WU.strencode(cipher.iv + pwd);
           gpx = cipher.ciphertext;
-          ga('send', 'event', 'file', 'encrypt', undefined, Math.round(gpx.length / 1000));
+          WU.wtEvent('file', 'encrypt', undefined, Math.round(gpx.length / 1000));
           shareGpx(gpx, params, "cipher-yes");
         })
         .catch(function (err) {
@@ -1902,7 +1902,7 @@ $(function () {
   }
 
   function shareGpx(gpx, params, cryptoMode) {
-    ga('send', 'event', 'file', 'share', share.name + ', ' + cryptoMode, Math.round(gpx.length / 1000));
+    WU.wtEvent('file', 'share', share.name + ', ' + cryptoMode, Math.round(gpx.length / 1000));
     share.upload(
       getTrackName(), gpx,
       function (gpxurl, rawgpxurl) {
@@ -1955,8 +1955,13 @@ $(function () {
   $("#wtshare-ok").on("keyup", closeShareBoxOnEscape);
 
   var sharename = WU.getVal("wt.share", undefined);
-  var share = PasteLibs.get(sharename);
-
+  var share;
+  try {
+    share = PasteLibs.get(sharename);
+  } catch (err) {
+    err && console.error("Using first share library");
+    share = PasteLibs.get();
+  }
   // fileio automatically deletes paste after download, perfect for dropbox use case
   var dropboxTempShare = PasteLibs.get("dpaste1d");
 
@@ -1988,7 +1993,7 @@ $(function () {
     var pts = route._selectedRoute ? route._selectedRoute.coordinates : undefined;
     if (pts && (pts.length > 0)) {
       pts = L.PolyPrune.prune(pts, { tolerance: pruneDist, useAlt: true });
-      ga('send', 'event', 'edit', 'merge', undefined, pts.length);
+      WU.wtEvent('edit', 'merge', undefined, pts.length);
       for (let j = 0; j < pts.length; j++) {
         track.addLatLng(pts[j]);
       }
@@ -2071,7 +2076,7 @@ $(function () {
         // 2. update stats
         polystats.updateStatsFrom(0);
       }
-      ga('send', 'event', 'edit', 'drag-track', reelevate);
+      WU.wtEvent('edit', 'drag-track', reelevate);
     }
   }
 
@@ -2143,7 +2148,7 @@ $(function () {
           track.editor.continueForward();
           setInactiveSegmentClickable(false);
           if (fwdGuideGa) {
-            ga('send', 'event', 'setting', 'fwdGuide', undefined, fwdGuide ? 1 : 0);
+            WU.wtEvent('setting', 'fwdGuide', undefined, fwdGuide ? 1 : 0);
             fwdGuideGa = false;
           }
         } catch (err) {
@@ -2253,7 +2258,7 @@ $(function () {
       });
 
       if (removedpts > 0) {
-        ga('send', 'event', 'tool', 'compress', undefined, removedpts);
+        WU.wtEvent('tool', 'compress', undefined, removedpts);
         alert("Removed " + removedpts + " points out of " + totalpts + " (" + Math.round((removedpts / totalpts) * 100) + "%)");
         saveState();
       } else {
@@ -2550,7 +2555,7 @@ $(function () {
       WU.isSafari() ? { type: "text/plain;charset=utf-8" } : { type: "application/json;charset=utf-8" }
     );
     saveAs(blob, "wtracks.cfg");
-    ga('send', 'event', 'setting', 'export');
+    WU.wtEvent('setting', 'export');
   }
 
   function loadStateFile(filedata) {
@@ -2566,7 +2571,7 @@ $(function () {
       }
     });
     $(window).off("unload");
-    ga('send', 'event', 'setting', 'import');
+    WU.wtEvent('setting', 'import');
     location.reload();
   }
 
@@ -2754,11 +2759,11 @@ $(function () {
     if (layerInit) {
       // deffer to make sure GA is initialized
       setTimeout(function () {
-        ga('send', 'event', 'map', 'init', baseLayer);
+        WU.wtEvent('map', 'init', baseLayer);
       }, 2000);
       layerInit = false;
     } else {
-      ga('send', 'event', 'map', 'change', baseLayer);
+      WU.wtEvent('map', 'change', baseLayer);
     }
     WC.saveValOpt("wt.baseLayer", baseLayer);
     if (mapsCloseOnClick) {
@@ -2845,7 +2850,7 @@ $(function () {
   }
 
   map.on("overlayadd", function (e) {
-    ga('send', 'event', 'map', 'overlay', e.name);
+    WU.wtEvent('map', 'overlay', e.name);
     setOverlay(e.name, true, true);
     setTimeout(function () {
       addOpacityControl(e.name, overlays[e.name]);
@@ -3156,13 +3161,13 @@ $(function () {
   function callElevationService(callerName, locations, points, inc, cleanup, cb) {
     elevationService(locations, points, inc, cleanup,
       function (eventName) {
-        ga('send', 'event', 'api', eventName, callerName, locations.length);
+        WU.wtEvent('api', eventName, callerName, locations.length);
         clearStatus();
         // callback
         if (cb) cb(true);
       },
       function (eventName, msg) {
-        ga('send', 'event', 'api', eventName,
+        WU.wtEvent('api', eventName,
           JSON.stringify({ "op": callerName, "msg": msg }), locations.length);
         console.warn("elevation request failed: " + msg);
         setStatus("Elevation failed (" + msg + ")", {
@@ -3442,7 +3447,7 @@ $(function () {
     if (editMode == EDIT_MANUAL_TRACK) {
       undo();
     } else {
-      ga('send', 'event', 'edit', 'manual');
+      WU.wtEvent('edit', 'manual');
       setEditMode(EDIT_MANUAL_TRACK);
     }
   });
@@ -3455,14 +3460,14 @@ $(function () {
     if (editMode == EDIT_AUTO_TRACK) {
       undo();
     } else {
-      ga('send', 'event', 'edit', 'auto');
+      WU.wtEvent('edit', 'auto');
       setEditMode(EDIT_AUTO_TRACK);
     }
   });
   $("#" + EDIT_MARKER_ID).on("click", function (e) {
     e.preventDefault();
     if (waypoints && !waypoints.isHidden) {
-      ga('send', 'event', 'edit', 'marker');
+      WU.wtEvent('edit', 'marker');
       setEditMode(EDIT_MARKER);
     } else {
       showWarning("Cannot edit hidden waypoints",
@@ -3476,7 +3481,7 @@ $(function () {
       // current track is empty, just use it
       return;
     }
-    ga('send', 'event', 'edit', 'new-segment');
+    WU.wtEvent('edit', 'new-segment');
     setEditMode(EDIT_NONE);
     setStatus("New segment", { timeout: 2 });
     newSegment();
@@ -3489,7 +3494,7 @@ $(function () {
       !confirm("Delete current segment?")) {
       return;
     }
-    ga('send', 'event', 'edit', 'delete-segment');
+    WU.wtEvent('edit', 'delete-segment');
     deleteSegment(track);
     saveState();
   });
@@ -3532,7 +3537,7 @@ $(function () {
 
   function toolElevate(e, cleanup) {
     if (e) {
-      ga('send', 'event', 'tool', 'elevate', undefined, getTrackLength());
+      WU.wtEvent('tool', 'elevate', undefined, getTrackLength());
     }
 
     setStatus("Elevating...", { spinner: true });
@@ -3605,7 +3610,7 @@ $(function () {
     var count = toolCleanup(toclean);
     if (count) {
       alert("Cleaned-up " + count + " points");
-      ga('send', 'event', 'tool', 'cleanup', toclean.toString(), count);
+      WU.wtEvent('tool', 'cleanup', toclean.toString(), count);
       saveState();
     } else {
       setStatus("No data updated", { timeout: 3 });
@@ -3716,7 +3721,7 @@ $(function () {
     const count = toolFillup(toFill);
     if (count) {
       alert("Updated " + count + " points data");
-      ga('send', 'event', 'tool', 'fillup', toFill.toString(), count);
+      WU.wtEvent('tool', 'fillup', toFill.toString(), count);
       saveState();
     } else {
       setStatus("No data updated", { timeout: 3 });
@@ -3745,7 +3750,7 @@ $(function () {
     });
 
     if (count) {
-      ga('send', 'event', 'tool', 'revert', undefined, count);
+      WU.wtEvent('tool', 'revert', undefined, count);
       saveState();
     }
 
@@ -3766,7 +3771,7 @@ $(function () {
         exitDragMode();
       }
       if (!noGaEvent) {
-        ga('send', 'event', 'edit', 'switch-segment');
+        WU.wtEvent('edit', 'switch-segment');
       }
       if (track) {
         if (getTrackLength() == 0) {
@@ -3917,7 +3922,7 @@ $(function () {
     setExtremityVisibility(extMarkers);
     const addedLayers = editLayer.getLayers().length - initLayers;
     if (addedLayers) {
-      ga('send', 'event', 'file', 'load-segment', undefined, addedLayers);
+      WU.wtEvent('file', 'load-segment', undefined, addedLayers);
     }
     return editLayer;
   }
@@ -3973,13 +3978,13 @@ $(function () {
           const pwd = deckey.substring(24);
           //console.log("iv  : " + iv);
           //console.log("pwd : " + pwd);
-          ga('send', 'event', 'file', 'decrypt', undefined, Math.round(data.length / 1000));
+          WU.wtEvent('file', 'decrypt', undefined, Math.round(data.length / 1000));
           CRY.aesGcmDecrypt(data, iv, pwd)
             .then(function (gpx) {
               fileloader.loadData(gpx, url, options.ext);
             })
             .catch(function (err) {
-              ga('send', 'event', 'error', 'crypto-decrypt', err);
+              WU.wtEvent('error', 'crypto-decrypt', err);
               setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
             });
         } else {
@@ -4015,7 +4020,7 @@ $(function () {
       $("#track-get-url").focus();
       return;
     }
-    ga('send', 'event', 'file', 'load-url');
+    WU.wtEvent('file', 'load-url');
     setEditMode(EDIT_NONE);
     var noproxy = WU.isChecked("#noproxy");
     loadFromUrl(url, {
@@ -4036,7 +4041,7 @@ $(function () {
   $("#track-upload").on("change", function () {
     var files = $("#track-upload")[0].files;
     if (files[0]) {
-      ga('send', 'event', 'file', 'load-file');
+      WU.wtEvent('file', 'load-file');
       setEditMode(EDIT_NONE);
       setStatus("Loading...", { spinner: true });
       loadCount = 0;
@@ -4054,7 +4059,7 @@ $(function () {
     // Required. Called when a user selects an item in the Chooser.
     success: function (files) {
       $("#menu").hide();
-      ga('send', 'event', 'file', 'load-dropbox');
+      WU.wtEvent('file', 'load-dropbox');
       loadFromUrl(files[0].link, {
         ext: getLoadExt(),
         noproxy: true
@@ -4093,7 +4098,7 @@ $(function () {
     } catch (err) {
       setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
       alert("Dropbox popup could not open. Make sure you did not forbid popups.");
-      ga('send', 'event', 'error', 'Dropbox.choose error', err);
+      WU.wtEvent('error', 'Dropbox.choose error', err);
     }
   });
 
@@ -4147,7 +4152,7 @@ $(function () {
       Dropbox.save(dropboxSaveOptions);
     } catch (err) {
       setStatus("Failed: " + err, { timeout: 5, class: "status-error" });
-      ga('send', 'event', 'error', 'Dropbox.save error', err);
+      WU.wtEvent('error', 'Dropbox.save error', err);
     }
   }
   $("#dbs-ok").on("click", dropboxSaver);
@@ -4164,7 +4169,7 @@ $(function () {
     }
     var name = getConfirmedTrackName().replace(/[\\/:*?"<>|]/g, "_"); // remove forbidden path chars
     var gpx = getTrackGPX(false);
-    ga('send', 'event', 'file', 'save-dropbox', undefined, Math.round(gpx.length / 1000));
+    WU.wtEvent('file', 'save-dropbox', undefined, Math.round(gpx.length / 1000));
     dropboxTempShare.upload(
       name, gpx,
       function (gpxurl, rawgpxurl, passcode) {
@@ -4218,7 +4223,7 @@ $(function () {
     var nwpts = route ? route.getWaypoints().length : 0;
     if (nwpts > MAX_ROUTE_WPTS) {
       console.error("route-pts-overlimit");
-      ga('send', 'event', 'error', 'route-pts-overlimit', location.toString(), nwpts);
+      WU.wtEvent('error', 'route-pts-overlimit', location.toString(), nwpts);
     }
 
     if (i === 0) {
@@ -4242,7 +4247,7 @@ $(function () {
     var ename = routerFactory == createOrsRouter ?
       "ors.routing" : (routerFactory == createGraphHopperRouter ?
         "gh.routing" : "unknownrouter");
-    ga('send', 'event', 'api', ename + '.ok');
+    WU.wtEvent('api', ename + '.ok');
 
     addUndo(UndoRoute, { fromPt: routeStart });
 
@@ -4335,7 +4340,7 @@ $(function () {
       // setting changed
       lengthUnit = $("input[name=unitopt]:checked").val();
       WC.saveValOpt("wt.lengthUnit", lengthUnit);
-      ga('send', 'event', 'setting', 'lengthUnit', undefined, parseFloat(lengthUnit));
+      WU.wtEvent('setting', 'lengthUnit', undefined, parseFloat(lengthUnit));
       showStats();
     } else {
       // init
@@ -4686,12 +4691,12 @@ $(function () {
     if ((e.status >= 400) || (e.remaining === 0)) {
       if (e.status >= 500) {
         message = "GraphHopper error";
-        ga('send', 'event', 'api', 'gh.routing.ko', e.statusText);
+        WU.wtEvent('api', 'gh.routing.ko', e.statusText);
       } else if (e.status == 401) {
         message = "Invalid GraphHopper API key, please fix in Settings";
-        ga('send', 'event', 'api', 'gh.routing.ko', 'invalid-key');
+        WU.wtEvent('api', 'gh.routing.ko', 'invalid-key');
       } else {
-        ga('send', 'event', 'api', 'gh.routing.ko', 'no-credit');
+        WU.wtEvent('api', 'gh.routing.ko', 'no-credit');
         message = "You consumed all your GraphHopper daily quota";
       }
     }
@@ -4707,7 +4712,7 @@ $(function () {
   // not triggered by gh, only ors
   function routingError(err) {
     console.log("Routing failed " + err.error.message);
-    ga('send', 'event', 'api', 'ors.routing.ko', err.error.message);
+    WU.wtEvent('api', 'ors.routing.ko', err.error.message);
     setEditMode(EDIT_NONE);
     showRoutingError("OpenRouting failed, check API key and account status");
   }
@@ -4715,7 +4720,7 @@ $(function () {
   function newMarker(e) {
 
     if (editMode == EDIT_MARKER) {
-      ga('send', 'event', 'edit', 'new-marker');
+      WU.wtEvent('edit', 'new-marker');
       var marker = newWaypoint(e.latlng, { name: "New waypoint" }, waypoints);
       elevatePoint("newMarker", e.latlng, false);
       marker.enableEdit();
@@ -4756,7 +4761,7 @@ $(function () {
             restartRoute();
             map.fireEvent("click", { latlng: e.latlng });
           } catch (err) {
-            ga('send', 'event', 'error', 'merge-route-failed', err.toString() +
+            WU.wtEvent('error', 'merge-route-failed', err.toString() +
               ", " + navigator.userAgent, wpts.length);
           }
         } else {
@@ -4781,7 +4786,7 @@ $(function () {
       event.preventDefault();
     }
     function splitSegment(event) {
-      ga('send', 'event', 'edit', 'split-segment');
+      WU.wtEvent('edit', 'split-segment');
       setEditMode(EDIT_NONE);
       var i = latlng.i;
       var seg1 = track.getLatLngs().slice(0, i),
@@ -4937,13 +4942,13 @@ $(function () {
     if (event) {
       event.preventDefault();
     }
-    ga('send', 'event', 'menu', item);
+    WU.wtEvent('menu', item);
   }
   $(".tablinks").on("click", function (event) {
     menu(event.currentTarget.id.replace("tab", ""), event);
   });
   $(".donatebtn").on("click", function (event) {
-    ga('send', 'event', 'menu', 'donate', event.target.id);
+    WU.wtEvent('menu', 'donate', event.target.id);
   });
 
   if (WU.getValStorage()) {
@@ -4989,16 +4994,16 @@ $(function () {
 
   // map parameter
   if (requestedMap) {
-    ga('send', 'event', 'file', 'load-mapparam');
+    WU.wtEvent('file', 'load-mapparam');
     changeBaseLayer(requestedMap);
   }
 
   const url = WU.getParameterByName("url");
   if (url) {
-    ga('send', 'event', 'file', 'load-urlparam');
+    WU.wtEvent('file', 'load-urlparam');
     const qr = WU.getParameterByName("qr");
     if (qr === "1") {
-      ga('send', 'event', 'file', 'load-qrcode');
+      WU.wtEvent('file', 'load-qrcode');
     }
     showLocation = LOC_NONE;
     loadFromUrl(url, {
@@ -5135,6 +5140,7 @@ $(function () {
     launchQueue.setConsumer((launchParams) => {
       // Nothing to do when the queue is empty.
       if (!launchParams.files.length) {
+        console.info("queue is empty");
         return;
       }
       // Handle the files
