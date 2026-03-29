@@ -5133,18 +5133,15 @@ $(function () {
   // handling GPX file handler
   // https://github.com/WICG/file-handling/blob/main/explainer.md
   // https://web.dev/file-handling/
-  console.debug("launchQueue: " + window.launchQueue);
-  console.debug("launchParams: " + window.launchParams);
   if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
-    console.info("We've got a launch file!!!");
     launchQueue.setConsumer((launchParams) => {
       // Nothing to do when the queue is empty.
       if (!launchParams.files.length) {
-        console.info("queue is empty");
         return;
       }
       // Handle the files
-      fileloader.loadMultiple(launchParams.files);
+      console.info("We've got launch files: " + launchParams.files.map(f => f.name).join(", "));
+      fileloader.loadMultiple(launchParams.files, "gpx");
     });
   }
 
