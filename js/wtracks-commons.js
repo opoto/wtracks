@@ -15,7 +15,7 @@ if ((window.location.host !== 'opoto.github.io') ||
   (localStorage.getItem("goatcounter.ALL") === "false")) {
   window.goatcounter.no_onload = true;
 }
-document.head.append(`
+$("head").append(`
   <script data-goatcounter="https://wtracks.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 `);
 
