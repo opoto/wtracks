@@ -1963,7 +1963,7 @@ $(function () {
     share = PasteLibs.get();
   }
   // fileio automatically deletes paste after download, perfect for dropbox use case
-  var dropboxTempShare = PasteLibs.get("dpaste1d");
+  var dropboxTempShare = PasteLibs.get("DPaste (1 day)");
 
   //---------------------------------------------------
 

@@ -10,6 +10,7 @@ class PasteLib {
   static get maxTime() { throw PasteLib.MISSING; }
   static get maxDownloads() { throw PasteLib.MISSING; }
   // private
+  static _CORS_PROXY = "https://opoto-cors-proxy.vercel.app/proxy/?target=";
   static get _pingUrl() { return 2; }
 
   static upload(name, gpx, onDone, onFail) { }
@@ -51,9 +52,9 @@ export default class PasteLibs {
     }
     return clazz;
   }
-  static register(name, clazz) {
-    this.libs[name] = clazz;
-    this.libNames.push(name);
+  static register(clazz) {
+    this.libs[clazz.name] = clazz;
+    this.libNames.push(clazz.name);
   }
 }
 
@@ -62,7 +63,7 @@ export default class PasteLibs {
 // ------------------------------------------------------------------
 
 class DPaste extends PasteLib {
-  static get name() { return "DPaste"; }
+  static get name() { return "DPaste (2 month)"; }
   static get enabled() { return true; }
   static get web() { return "https://dpaste.com/"; }
   static get maxSize() { return "250KB"; }
@@ -87,10 +88,11 @@ class DPaste extends PasteLib {
       }).fail(onFail);
   }
 }
-PasteLibs.register("dpaste", DPaste);
+PasteLibs.register(DPaste);
 
 // DPaste with 1d retention (for dropbox upload)
 class DPaste1D extends DPaste {
+  static get name() { return "DPaste (1 day)"; }
   static get maxTime() { return "1 day"; }
   static get _config() {
     return {
@@ -98,7 +100,7 @@ class DPaste1D extends DPaste {
     };
   }
 }
-PasteLibs.register("dpaste1d", DPaste1D);
+PasteLibs.register(DPaste1D);
 
 // ------------------------------------------------------------------
 // HTPut
@@ -107,7 +109,7 @@ PasteLibs.register("dpaste1d", DPaste1D);
 // SEPT 2025: DNS not found
 class HTPut extends PasteLib {
   static get name() { return "HTPut"; }
-  static get enabled() { return false; } // CORS?
+  static get enabled() { return false; } // Down? CORS?
   static get web() { return "https://htput.com/"; }
   static get maxSize() { return "1MB per day"; }
   static get maxTime() { return "Unknown"; }
@@ -152,7 +154,7 @@ class HTPut extends PasteLib {
     }).fail(onFail);
   }
 }
-PasteLibs.register("htput", HTPut);
+PasteLibs.register(HTPut);
 
 
 // ------------------------------------------------------------------
@@ -190,17 +192,16 @@ class FriendPaste extends PasteLib {
     }).fail(onFail);
   }
 }
-PasteLibs.register("friendpaste", FriendPaste);
+PasteLibs.register(FriendPaste);
 
 // ------------------------------------------------------------------
 // TmpFile
 // ------------------------------------------------------------------
 
-
-// 15s startup
+// Looking for new hosting service.
 class TmpFile extends PasteLib {
   static get name() { return "TmpFile"; }
-  static get enabled() { return true; }
+  static get enabled() { return false; }
   static get web() { return "https://glitch.com/edit/#!/tmpfile?path=README.md%3A1%3A0"; }
   static get maxSize() { return "200KB"; }
   static get maxTime() { return "1 month after unused"; }
@@ -226,7 +227,7 @@ class TmpFile extends PasteLib {
       .fail(onFail);
   }
 }
-PasteLibs.register("tmpfile", TmpFile);
+PasteLibs.register(TmpFile);
 
 // ------------------------------------------------------------------
 // file.io
@@ -285,7 +286,7 @@ class FileIO extends PasteLib {
     $.get(rawUrl).done(onDone); // read file to delete it, ignore it was already read & deleted
   }
 }
-PasteLibs.register("fileio", FileIO);
+PasteLibs.register(FileIO);
 
 // ------------------------------------------------------------------
 // transfer.sh
@@ -322,7 +323,7 @@ class TransferSH extends PasteLib {
     }).fail(onFail);
   }
 }
-PasteLibs.register("transfer.sh", TransferSH);
+PasteLibs.register(TransferSH);
 
 // ------------------------------------------------------------------
 // gofile.io
@@ -377,4 +378,168 @@ class GoFileIO extends PasteLib {
     }).fail(onFail);
   }
 }
-PasteLibs.register("gofile.io", GoFileIO);
+PasteLibs.register(GoFileIO);
+
+// ------------------------------------------------------------------
+// 0x0.st
+// ------------------------------------------------------------------
+
+class ZeroXZeroSt1m extends PasteLib {
+  static get name() { return "0x0.st (30 days)"; }
+  static get enabled() { return false; } // no CORS?
+  static get web() { return "https://0x0.st"; }
+  static get maxSize() { return "512MB"; }
+  static get maxTime() { return "30 days"; }
+  static get maxDownloads() { return "Unlimited"; }
+  static get _pingUrl() { return ZeroXZeroSt1m._ServiceURL; }
+  static get _expireDays() { return 30; } // 1 month
+  static get _ServiceURL() { return PasteLib._CORS_PROXY + ZeroXZeroSt1m.web; }
+
+  static upload(name, gpx, onDone, onFail) {
+    try {
+      const formData = new FormData();
+      const blob = new Blob([gpx], { type: "text/xml" });
+      // Using a generic name as the service doesn't use it directly for the URL.
+      formData.append("file", blob, "wtracks-share.gpx");
+      formData.append("secret", "dummy");
+      const expires = new Date();
+      expires.setDate(expires.getDate() + this._expiresDays);
+      formData.append("expires", expires.getTime());
+
+      $.ajax({
+        url: ZeroXZeroSt1m._ServiceURL,
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+      }).done(function (resp) {
+        // The response body is the direct URL to the raw content
+        if (!resp || !resp.startsWith("http")) {
+          return onFail("0x0.st upload failed: Invalid response");
+        }
+        // The deletion URL is in the x-delete-url header
+        const mgtToken = this.getResponseHeader('x-token');
+        onDone(resp, resp, mgtToken);
+      }).fail(function (jqXHR, textStatus, errorThrown) {
+        let errorMsg = "0x0.st upload failed: ";
+        if (jqXHR.status === 413) {
+          errorMsg += "File too large.";
+        } else {
+          errorMsg += errorThrown || textStatus;
+        }
+        onFail(errorMsg);
+      });
+    } catch (err) {
+      onFail("0x0.st upload failed: " + (err.message || "FormData not supported"));
+    }
+  }
+
+  static delete(url, rawUrl, mgtToken, onDone, onFail) {
+    if (!mgtToken) {
+      if (onFail) onFail("Deletion key is missing for 0x0.st.");
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append("delete", "dummy");
+      formData.append("token", mgtToken);
+      $.ajax({
+        url: PasteLib._CORS_PROXY + url,
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+      }).done(onDone).fail(onFail);
+    } catch (err) {
+      onFail("0x0.st delete failed: " + (err.message || "FormData not supported"));
+    }
+  }
+}
+
+PasteLibs.register(ZeroXZeroSt1m);
+
+
+class ZeroXZeroSt1y extends ZeroXZeroSt1m {
+  static get name() { return "0x0.st (1 year)"; }
+  static get maxTime() { return "1 year"; }
+  static get _expireDays() { return 365; } // 1 year
+}
+PasteLibs.register(ZeroXZeroSt1y);
+
+// ------------------------------------------------------------------
+// paste.gg
+// ------------------------------------------------------------------
+
+class PasteGg extends PasteLib {
+  static get name() { return "paste.gg"; }
+  static get enabled() { return false; } // Down?
+  static get web() { return "https://paste.gg"; }
+  static get maxSize() { return "15MB"; }
+  static get maxTime() { return "Anonymous: Never"; }
+  static get maxDownloads() { return "Unlimited"; }
+  static get _pingUrl() { return "https://paste.gg/ping"; }
+
+  static upload(name, gpx, onDone, onFail) {
+    try {
+      const expires = new Date();
+      expires.setDate(expires.getDate() + 30); // 30-day expiration
+
+      const payload = {
+        description: name,
+        expires: expires.toISOString(),
+        files: [
+          {
+            name: name + ".gpx",
+            content: {
+              format: "text",
+              value: gpx
+            }
+          }
+        ]
+      };
+
+      $.ajax({
+        url: "https://api.paste.gg/v1/pastes",
+        type: "POST",
+        data: JSON.stringify(payload),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json"
+      }).done(function (resp) {
+        if (resp.status === "success" && resp.result) {
+          const result = resp.result;
+          const displayUrl = `https://paste.gg/${result.id}`;
+          const rawUrl = `https://api.paste.gg/v1/pastes/${result.id}/files/${result.files[0].id}/raw`;
+          onDone(displayUrl, rawUrl, result.deletion_key);
+        } else {
+          onFail("paste.gg upload failed: " + (resp.error || "Invalid response"));
+        }
+      }).fail(function (jqXHR, textStatus, errorThrown) {
+        let errorMsg = "paste.gg upload failed: " + (jqXHR.responseJSON ? jqXHR.responseJSON.message : errorThrown);
+        onFail(errorMsg);
+      });
+    } catch (err) {
+      onFail("paste.gg upload failed: " + (err.message || "JSON not supported"));
+    }
+  }
+
+  static delete(url, rawUrl, passcode, onDone, onFail) {
+    if (!passcode) {
+      if (onFail) onFail("Deletion key is missing.");
+      return;
+    }
+
+    const urlParts = url.split('/');
+    const pasteId = urlParts[urlParts.length - 1];
+
+    $.ajax({
+      url: `https://api.paste.gg/v1/pastes/${pasteId}`,
+      type: 'DELETE',
+      headers: {
+        "Authorization": `Key ${passcode}`
+      }
+    }).done(function () {
+      if (onDone) onDone();
+    }).fail(onFail);
+  }
+}
+PasteLibs.register(PasteGg);
