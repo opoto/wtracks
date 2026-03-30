@@ -257,7 +257,7 @@ export function storedValuesForEach(fn) {
 /* ---------------------- event reporting ------------------------- */
 
 export function wtEvent(name, category/*, action, label, value*/) {
-  if (window.goatcounter && !window.goatcounter.no_onload) {
+  if (window.goatcounter && !window.goatcounter.no_onload && window.goatcounter.count) {
     window.goatcounter.count({
       path: `${name}${category ? `: ${category}` : ""}`,
       title: "-",
