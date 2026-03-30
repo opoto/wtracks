@@ -394,7 +394,7 @@ $(function () {
   $("#activity").on("change", function () {
     let selectedActivity = getCurrentActivityName();
     let currentActivityName = currentActivity.name;
-    WU.wtEvent('activity', 'change', selectedActivity, undefined, Object.keys(activities).length);
+    WU.wtEvent('activity/change', selectedActivity, undefined, Object.keys(activities).length);
     WC.saveValOpt("wt.activity", selectedActivity);
     if (selectedActivity != ACTIVITY_RECORDED) {
       if (selectedActivity != currentActivityName) {
@@ -1902,7 +1902,7 @@ $(function () {
   }
 
   function shareGpx(gpx, params, cryptoMode) {
-    WU.wtEvent('file', 'share', share.name + ', ' + cryptoMode, Math.round(gpx.length / 1000));
+    WU.wtEvent('file/share', share.name + ', ' + cryptoMode, Math.round(gpx.length / 1000));
     share.upload(
       getTrackName(), gpx,
       function (gpxurl, rawgpxurl) {
@@ -2759,11 +2759,11 @@ $(function () {
     if (layerInit) {
       // deffer to make sure GA is initialized
       setTimeout(function () {
-        WU.wtEvent('map', 'init', baseLayer);
+        WU.wtEvent('map/init', baseLayer);
       }, 2000);
       layerInit = false;
     } else {
-      WU.wtEvent('map', 'change', baseLayer);
+      WU.wtEvent('map/change', baseLayer);
     }
     WC.saveValOpt("wt.baseLayer", baseLayer);
     if (mapsCloseOnClick) {
@@ -2850,7 +2850,7 @@ $(function () {
   }
 
   map.on("overlayadd", function (e) {
-    WU.wtEvent('map', 'overlay', e.name);
+    WU.wtEvent('map/overlay', e.name);
     setOverlay(e.name, true, true);
     setTimeout(function () {
       addOpacityControl(e.name, overlays[e.name]);

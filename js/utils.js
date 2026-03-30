@@ -260,6 +260,7 @@ export function wtEvent(name, category/*, action, label, value*/) {
   if (window.goatcounter && !window.goatcounter.no_onload) {
     window.goatcounter.count({
       path: `${name}${category ? `: ${category}` : ""}`,
+      title: "",
       event: true,
     });
   }

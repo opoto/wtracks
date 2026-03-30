@@ -5,7 +5,9 @@ import * as WU from './utils.js';
 
 /* globals $, L */
 
-// privacy-friendly usage stats
+/*************************************
+ * privacy-friendly usage stats
+ **/
 window.goatcounter = {
   path: function(p) { return location.host + p } // add domain name
 }
@@ -15,9 +17,12 @@ if ((window.location.host !== 'opoto.github.io') ||
   (localStorage.getItem("goatcounter.ALL") === "false")) {
   window.goatcounter.no_onload = true;
 }
-$("head").append(`
-  <script data-goatcounter="https://wtracks.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-`);
+let goatElement = document.createElement('script');
+goatElement.async = true;
+goatElement.src = "//gc.zgo.at/count.js";
+goatElement.setAttribute("data-goatcounter", "https://wtracks.goatcounter.com/count");
+document.head.appendChild(goatElement);
+/*************************************/
 
 if (config.email && config.email.selector) {
   WU.setEmailListener(config.email.selector, config.email.name,
