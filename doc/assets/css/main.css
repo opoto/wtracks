@@ -1568,7 +1568,7 @@
 		font-size: 19pt;
 		font-weight: 300;
 		line-height: 1.75em;
-		color: #888;
+		color: #202020;
 	}
 
 		body.is-loading * {
@@ -1587,12 +1587,12 @@
 		font-size: 19pt;
 		font-weight: 300;
 		line-height: 1.75em;
-		color: #888;
+		color: #212121;
 	}
 
 	h1, h2, h3, h4, h5, h6 {
 		font-weight: 300;
-		color: #666;
+		color: #404040;
 		line-height: 1.5em;
 	}
 
@@ -1602,7 +1602,7 @@
 	}
 
 		h1 a strong, h2 a strong, h3 a strong, h4 a strong, h5 a strong, h6 a strong {
-			color: #333;
+			color: #111;
 		}
 
 	h2 {
@@ -1611,11 +1611,11 @@
 	}
 
 		h2.alt {
-			color: #888;
+			color: #202020;
 		}
 
 			h2.alt strong {
-				color: #666;
+				color: #404040;
 			}
 
 	h3 {
@@ -1636,7 +1636,7 @@
 
 	strong, b {
 		font-weight: 500;
-		color: #666;
+		color: #404040;
 	}
 
 	em, i {

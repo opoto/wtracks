@@ -53,7 +53,7 @@ button, select, option, input[type=datetime-local] {
 
 .title {
   font-weight: bold;
-  display: inline-block;
+  display: inline;
   white-space: normal;
   word-wrap: break-word;
   overflow: hidden;
