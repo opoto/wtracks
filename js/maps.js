@@ -615,8 +615,6 @@ $(function () {
 
   WU.noTranslate();
   WU.noTranslate("label");
-  WC.consentCookies();
-
   showMapsList();
   // ----- drag & drop list -----
   $("#mymaps-list").sortable({

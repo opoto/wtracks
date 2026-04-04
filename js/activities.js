@@ -516,8 +516,6 @@ $(function () {
   }
   wtReady = true;
 
-  WC.consentCookies();
-
   // -------- ACTIVITIES
   activities = WU.getJsonVal("wt.activities");
   // initialize activities on first use

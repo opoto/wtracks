@@ -5,24 +5,7 @@ import * as WU from './utils.js';
 
 /* globals $, L */
 
-/*-------------------------------------
- * privacy-friendly usage stats
- */
-window.goatcounter = {
-  path: function(p) { return location.host + p } // add domain name
-}
-// Only load on production environment, manually opt-out
-if ((window.location.host !== 'opoto.github.io') ||
-  (localStorage.getItem("goatcounter." + location.host) === "false") ||
-  (localStorage.getItem("goatcounter.ALL") === "false")) {
-  window.goatcounter.no_onload = true;
-}
-let goatElement = document.createElement('script');
-goatElement.async = true;
-goatElement.src = "//gc.zgo.at/count.js";
-goatElement.setAttribute("data-goatcounter", "https://wtracks.goatcounter.com/count");
-document.head.appendChild(goatElement);
-/*-------------------------------------*/
+WU.goatCounter.install();
 
 if (config.email && config.email.selector) {
   WU.setEmailListener(config.email.selector, config.email.name,
@@ -107,26 +90,6 @@ export function setSaveState(saveCfg) {
   if (isStateSaved() != saveCfg) {
     WU.wtEvent('setting', saveCfg ? 'save-on' : 'save-off');
     WU.storeVal("wt.saveState", saveCfg ? "true" : "false");
-  }
-}
-
-export function consentCookies() {
-  if (!WU.getValStorage()) return; // skip if cookies are blocked
-  var now = new Date();
-  var EXPIRATION = Math.round(1000 * 60 * 60 * 24 * 30.5 * 18); // 18 months in ms
-  var cookies = WU.getVal("wt.cookies");
-  if ((!cookies) || (now.getTime() > new Date(cookies).getTime() + EXPIRATION)) {
-    $('body').prepend(`
-    <div id='cookies-banner' style='display: none;'>
-      <button id='cookies-accept'>Got it!</button>
-      <div>This website uses cookies and browser's local storage to restore your status and settings on your next visits.
-      <a href='doc/#privacy' id='cookies-more'>Read more</a></div>
-    </div>`);
-    $("#cookies-banner").show();
-    $("#cookies-accept").click(function () {
-      $("#cookies-banner").hide();
-    });
-    WU.storeVal("wt.cookies", now.toISOString());
   }
 }
 

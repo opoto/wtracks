@@ -254,16 +254,45 @@ export function storedValuesForEach(fn) {
   }
 }
 
-/* ---------------------- event reporting ------------------------- */
+/* ---------------- privacy-friendly usage stats -------------------- */
+
+export class goatCounter {
+
+  static #LIVE_HOST = "opoto.github.io";
+  static #SITE_ID = "wtracks";
+
+  static install(options) {
+    window.goatcounter = {};
+    if (options?.addHostToPath) {
+      window.goatcounter.path = function (p) { return location.host + p; } // add domain name
+    }
+    // Only load on production environment, manually opt-out
+    if ((window.location.host !== goatCounter.#LIVE_HOST) ||
+      (localStorage.getItem("goatcounter." + location.host) === "false") ||
+      (localStorage.getItem("goatcounter.ALL") === "false")) {
+      window.goatcounter.no_onload = true;
+    }
+    let goatElement = document.createElement('script');
+    goatElement.async = true;
+    goatElement.src = "//gc.zgo.at/count.js";
+    goatElement.setAttribute("data-goatcounter", `https:// ${goatCounter.#SITE_ID}.goatcounter.com/count`);
+    document.head.appendChild(goatElement);
+  }
+
+  static event(name, category, title) {
+    if (window.goatcounter && !window.goatcounter.no_onload && window.goatcounter.count) {
+      window.goatcounter.count({
+        path: `${name}${category ? `: ${category}` : ""}`,
+        title: title || "-",
+        event: true,
+      });
+    }
+  }
+
+}
 
 export function wtEvent(name, category/*, action, label, value*/) {
-  if (window.goatcounter && !window.goatcounter.no_onload && window.goatcounter.count) {
-    window.goatcounter.count({
-      path: `${name}${category ? `: ${category}` : ""}`,
-      title: "-",
-      event: true,
-    });
-  }
+  goatCounter.event(name, category);
 }
 
 /* ---------------------- EMAIL ------------------------- */

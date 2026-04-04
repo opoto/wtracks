@@ -77,8 +77,6 @@ $(function () {
   }
   wtReady = true;
 
-  WC.consentCookies();
-
   /* folding settings */
   function toggleElement(e) {
     $("." + e.target.id.slice(0, -1) + "-toggle").toggle();
