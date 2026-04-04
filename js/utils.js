@@ -275,7 +275,7 @@ export class goatCounter {
     let goatElement = document.createElement('script');
     goatElement.async = true;
     goatElement.src = "//gc.zgo.at/count.js";
-    goatElement.setAttribute("data-goatcounter", `https:// ${goatCounter.#SITE_ID}.goatcounter.com/count`);
+    goatElement.setAttribute("data-goatcounter", `https://${goatCounter.#SITE_ID}.goatcounter.com/count`);
     document.head.appendChild(goatElement);
   }
 
