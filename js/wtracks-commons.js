@@ -5,7 +5,7 @@ import * as WU from './utils.js';
 
 /* globals $, L */
 
-WU.goatCounter.install({addHostToPath: true});
+WU.goatCounter.install();
 
 if (config.email && config.email.selector) {
   WU.setEmailListener(config.email.selector, config.email.name,
