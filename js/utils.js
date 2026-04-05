@@ -263,7 +263,7 @@ export class goatCounter {
 
   static install(options) {
     window.goatcounter = {};
-    if (!options?.addHostToPath === false) {
+    if (!(options?.addHostToPath === false)) {
       window.goatcounter.path = function (p) { return location.host + p; } // add domain name
     }
     // Only load on production environment, manually opt-out
