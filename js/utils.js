@@ -324,7 +324,7 @@ export function setEmailListener(selector, name, domain, subject) {
 /* ------------------------------ CORS URL  --------------------------------- */
 // /!\ Some set a cookie, which fails with Safari when 'prevent cross site tracking' is activated
 let CORS_PROXY = "https://api.codetabs.com/v1/proxy?quest="; // https://codetabs.com/cors-proxy/cors-proxy.html
-CORS_PROXY = "http://localhost:3000/proxy/?target="
+// CORS_PROXY = "http://localhost:3000/proxy/?target="
 // https://uploads.naturkartan-cdn.se/uploads/content_pdf/file/307/a7afecef68b1bf043639dd959acad686.gpx
 
 /*
