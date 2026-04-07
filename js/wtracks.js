@@ -5129,7 +5129,7 @@ $(function () {
   // Remove potential query parameters from URL
   WU.clearUrlQuery();
 
-  // handling GPX file handler
+  // handling KML/GeoJSON/GPX file handler
   // https://github.com/WICG/file-handling/blob/main/explainer.md
   // https://web.dev/file-handling/
   if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
@@ -5138,6 +5138,8 @@ $(function () {
       if (!launchParams.files.length) {
         return;
       }
+      // Start with a clean state
+      newTrack();
       // Handle the files
       console.info("We've got launch files: " + launchParams.files.map(f => f.name).join(", "));
       const files = await Promise.all(launchParams.files.map(handle => handle.getFile()));

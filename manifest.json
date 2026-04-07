@@ -1,4 +1,6 @@
 {
+  "manifest_version": 2,
+  "version": "2026.4.3",
   "short_name": "WTracks",
   "name": "WTracks - online track editor for outdoor activities",
   "icons": [
@@ -18,7 +20,7 @@
       "sizes": "192x192"
     }
   ],
-  "start_url": ".",
+  "start_url": "./",
   "display": "standalone",
   "lang": "en-US",
   "shortcuts" : [
@@ -35,28 +37,35 @@
   ],
   "file_handlers": [
     {
-      "action": ".",
-      "name": "GPX file",
+      "action": "./",
+      "name": "View and edit file",
       "accept": {
-        "application/gpx+xml": [ ".gpx" ]
-      },
-      "launch_type": "single-client"
-    },
-    {
-      "action": ".",
-      "name": "KML file",
-      "accept": {
-        "application/gpx+xml": [ ".kml" ]
-      },
-      "launch_type": "single-client"
-    },
-    {
-      "action": ".",
-      "name": "GeoJson file",
-      "accept": {
-        "application/gpx+xml": [ ".geojson" ]
+        "application/gpx+xml": [ ".gpx" ],
+        "application/vnd.google-earth.kml+xml": [ ".kml" ],
+        "application/geo+json": [ ".geojson" ]
       },
       "launch_type": "single-client"
     }
-  ]
+  ],
+   "share_target": {
+    "action": "/",
+    "method": "GET",
+    "params": {
+      "url": "url",
+      "files": [
+        {
+          "name": "GPX files",
+          "accept": ["application/gpx+xml", ".gpx"]
+        },
+        {
+          "name": "Google Earth KML files",
+          "accept": ["application/vnd.google-earth.kml+xml", ".kml"]
+        },
+        {
+          "name": "GeoJSON files",
+          "accept": ["application/geo+json", ".geojson"]
+        }
+      ]
+    }
+  }
 }
