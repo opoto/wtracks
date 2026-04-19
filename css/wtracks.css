@@ -132,6 +132,11 @@ button, select, option, input[type=datetime-local] {
 #menu td:first-child button {
   width: 100%
 }
+
+#trim, #trim-type {
+  width: 45% !important;
+}
+
 #menu td:nth-child(2) {
   padding-right: 10px;
 }
@@ -908,6 +913,7 @@ button,
   width: 82%;
   text-align: center;
 }
+
 button:hover,
 #track-upload-label:hover,
 #state-load-label:hover {

@@ -964,9 +964,11 @@ $(function () {
   let polytrim;
 
   function prepareTrim() {
-    const trimMax = Math.round(getTrackLength() / 2);
+    if (polytrim) {
+      cancelTrim();
+    }
     $("#trim-txt").text("0/" + getTrackLength());
-    $("#trim-range").attr("max", trimMax);
+    $("#trim-range").attr("max", getTrackLength());
     $("#trim-range").val(0);
     $('.no-trim:not([class*="isdisabled"])').prop('disabled', false);
     const trimType = $("#trim-type")[0].selectedIndex;
@@ -975,10 +977,15 @@ $(function () {
 
   function trimTrack() {
     const n = parseInt($("#trim-range").val());
-    console.log("trimming " + n);
+    (n > 0) && console.log("trimming " + n);
     $("#trim-txt").text(n + "/" + polytrim.getPolySize());
     $('.no-trim:not([class*="isdisabled"])').prop('disabled', (n !== 0));
     polytrim.trim(n);
+  }
+
+  function cancelTrim() {
+    $("#trim-range").val(0);
+    trimTrack();
   }
 
   function finishTrim() {
@@ -996,11 +1003,13 @@ $(function () {
       saveState();
       polytrim = undefined;
       $("#trim-range").val(0);
+      prepareTrim();
     }
   }
 
   $("#trim-range").on("change", trimTrack);
   $("#trim-type").on("change", prepareTrim);
+  $("#trim").on("click", finishTrim);
 
   /* --------------------------------------*/
   // Track display settings
@@ -1209,7 +1218,7 @@ $(function () {
   function closeMenu() {
     if (!$("#menu").is(":hidden")) {
       $("#menu").hide();
-      finishTrim();
+      cancelTrim();
     }
   }
 
@@ -4942,6 +4951,7 @@ $(function () {
       event.preventDefault();
     }
     WU.wtEvent('menu', item);
+    cancelTrim();
   }
   $(".tablinks").on("click", function (event) {
     menu(event.currentTarget.id.replace("tab", ""), event);
