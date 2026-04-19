@@ -986,6 +986,7 @@ $(function () {
   function cancelTrim() {
     $("#trim-range").val(0);
     trimTrack();
+    polytrim = undefined;
   }
 
   function finishTrim() {
