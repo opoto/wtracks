@@ -984,9 +984,11 @@ $(function () {
   }
 
   function cancelTrim() {
-    $("#trim-range").val(0);
-    trimTrack();
-    polytrim = undefined;
+    if (polytrim) {
+      $("#trim-range").val(0);
+      trimTrack();
+      polytrim = undefined;
+    }
   }
 
   function finishTrim() {
@@ -1004,13 +1006,15 @@ $(function () {
       saveState();
       polytrim = undefined;
       $("#trim-range").val(0);
-      prepareTrim();
     }
   }
 
   $("#trim-range").on("change", trimTrack);
   $("#trim-type").on("change", prepareTrim);
-  $("#trim").on("click", finishTrim);
+  $("#trim").on("click", () => {
+    finishTrim();
+    prepareTrim();
+  });
 
   /* --------------------------------------*/
   // Track display settings
@@ -1234,7 +1238,6 @@ $(function () {
     WU.setChecked("#extMarkers", extMarkers);
     WU.setChecked("#autoGrayBaseLayer", autoGrayBaseLayer);
     WU.setChecked("#noMixOverlays", noMixOverlays);
-    prepareTrim();
     $("#prune-dist").val(pruneDist);
     $("#prune-max-dist").val(pruneMaxDist);
     $("#prune-max-time").val(pruneMaxTime);
@@ -4951,8 +4954,12 @@ $(function () {
     if (event) {
       event.preventDefault();
     }
+    if (item == "tools") {
+      prepareTrim();
+    } else {
+      cancelTrim();
+    }
     WU.wtEvent('menu', item);
-    cancelTrim();
   }
   $(".tablinks").on("click", function (event) {
     menu(event.currentTarget.id.replace("tab", ""), event);
