@@ -962,6 +962,7 @@ $(function () {
   /* ------------------------ TRIMMING ---------------------------------- */
 
   let polytrim;
+  let lastTrim;
 
   function prepareTrim() {
     if (polytrim) {
@@ -970,6 +971,7 @@ $(function () {
     $("#trim-txt").text("0/" + getTrackLength());
     $("#trim-range").attr("max", getTrackLength());
     $("#trim-range").val(0);
+    lastTrim = 0;
     $('.no-trim:not([class*="isdisabled"])').prop('disabled', false);
     const trimType = $("#trim-type")[0].selectedIndex;
     polytrim = L.polyTrim(track, trimType);
@@ -977,10 +979,12 @@ $(function () {
 
   function trimTrack() {
     const n = parseInt($("#trim-range").val());
-    (n > 0) && console.log("trimming " + n);
-    $("#trim-txt").text(n + "/" + polytrim.getPolySize());
-    $('.no-trim:not([class*="isdisabled"])').prop('disabled', (n !== 0));
-    polytrim.trim(n);
+    if (n === lastTrim) return;
+    lastTrim = n;
+    (lastTrim > 0) && console.log("trimming " + lastTrim);
+    $("#trim-txt").text(lastTrim);
+    $('.no-trim:not([class*="isdisabled"])').prop('disabled', (lastTrim !== 0));
+    polytrim.trim(lastTrim);
   }
 
   function cancelTrim() {
@@ -1010,6 +1014,17 @@ $(function () {
   }
 
   $("#trim-range").on("change", trimTrack);
+
+  $("#trim-range").on("mousedown", ()=>{
+    $("#trim-range").on("mousemove", ()=>{
+      trimTrack();
+    });
+  });
+
+  $("#trim-range").on("mouseup", ()=>{
+    $("#trim-range").off("mousemove");
+  });
+
   $("#trim-type").on("change", prepareTrim);
   $("#trim").on("click", () => {
     finishTrim();
