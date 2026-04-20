@@ -982,7 +982,7 @@ $(function () {
     if (n === lastTrim) return;
     lastTrim = n;
     (lastTrim > 0) && console.log("trimming " + lastTrim);
-    $("#trim-txt").text(lastTrim);
+    $("#trim-txt").text(lastTrim+ "/" + polytrim.getPolySize());
     $('.no-trim:not([class*="isdisabled"])').prop('disabled', (lastTrim !== 0));
     polytrim.trim(lastTrim);
   }
@@ -1015,14 +1015,14 @@ $(function () {
 
   $("#trim-range").on("change", trimTrack);
 
-  $("#trim-range").on("mousedown", ()=>{
-    $("#trim-range").on("mousemove", ()=>{
+  $("#trim-range").on("pointerdown", ()=>{
+    $("#trim-range").on("pointermove", ()=>{
       trimTrack();
     });
   });
 
-  $("#trim-range").on("mouseup", ()=>{
-    $("#trim-range").off("mousemove");
+  $("#trim-range").on("pointerup", ()=>{
+    $("#trim-range").off("pointermove");
   });
 
   $("#trim-type").on("change", prepareTrim);
