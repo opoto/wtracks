@@ -466,7 +466,7 @@ $(function () {
     }
   }
   function checkToolsAllSegments() {
-    WU.enableInput(!WU.isChecked("#allsegments"), "#trim-type, #trim-range");
+    WU.enableInput(!WU.isChecked("#allsegments"), "#trim-type, #trim-range, #trim");
   }
   $("#allsegments").on("change", checkToolsAllSegments);
 
