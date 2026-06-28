@@ -323,22 +323,20 @@ export function setEmailListener(selector, name, domain, subject) {
 
 /* ------------------------------ CORS URL  --------------------------------- */
 // /!\ Some set a cookie, which fails with Safari when 'prevent cross site tracking' is activated
-let CORS_PROXY = "https://api.codetabs.com/v1/proxy?quest="; // https://codetabs.com/cors-proxy/cors-proxy.html
-// CORS_PROXY = "http://localhost:3000/proxy/?target="
-// https://uploads.naturkartan-cdn.se/uploads/content_pdf/file/307/a7afecef68b1bf043639dd959acad686.gpx
+let CORS_PROXY = "https://proxy.cors.sh/";
 
 /*
-"https://proxy.cors.sh/"
+"https://proxy.cors.sh/" // API key?
 "https://api.codetabs.com/v1/proxy/?quest=" // cookie
 "https://api.allorigins.win/raw?url="// cookie
-"https://cors-nowhere.glitch.me/"
-"https://yacdn.org/proxy/"
-"https://thingproxy.freeboard.io/fetch/"
-"http://cors-proxy.htmldriven.com/get?url="
-"http://www.whateverorigin.org/get?url="
-"https://cors-anywhere.herokuapp.com/"
+"https://yacdn.org/proxy/" // closed
+"https://thingproxy.freeboard.io/fetch/" // closed
+"https://cors-proxy.htmldriven.com/get?url=" // 404
+"https://www.whateverorigin.org/get?url=" // JSONP
+"https://cors-anywhere.herokuapp.com/" // Demo
   // see https://github.com/Rob--W/cors-anywhere/issues/434
-"https://crossorigin.me/"
+"https://crossorigin.me/" // Closed?
+"https://api.codetabs.com/v1/proxy?quest=" // To be closed
   */
 export function corsUrl(url) {
   return CORS_PROXY + url;
