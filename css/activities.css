@@ -1,119 +1,126 @@
-html, body{
+/* ============================================================
+   WTracks Activities – Modern UI
+   ============================================================ */
+
+:root {
+  --primary:        #3b82f6;
+  --primary-hover:  #2563eb;
+  --surface:        #ffffff;
+  --bg:             #f1f5f9;
+  --border:         #e2e8f0;
+  --border-dark:    #cbd5e1;
+  --text:           #0f172a;
+  --text-muted:     #64748b;
+  --text-link:      #2563eb;
+  --menubar-bg:     #1e293b;
+  --error:          #ef4444;
+  --shadow-md:      0 4px 12px rgba(0,0,0,.10);
+  --shadow-lg:      0 10px 30px rgba(0,0,0,.14);
+  --radius-xs:      4px;
+  --radius-sm:      8px;
+  --radius-md:      12px;
+  --font:           -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --transition:     0.18s ease;
+}
+
+html, body {
   margin: 0;
   padding: 0;
-  font-family: "Helvetica", sans-serif;
+  font-family: var(--font);
+  font-size: 14px;
+  color: var(--text);
   text-align: left;
-  background-color: #FFF;
+  background: var(--bg);
 }
-.container{
-  margin: 10px;
-}
+.container { margin: 12px; }
 
 h2 {
-  background-color: grey;
-  color: white;
-  padding-left: 5px;
+  background: var(--menubar-bg);
+  color: #f1f5f9;
+  padding: 8px 12px;
+  margin: 0 0 12px 0;
+  border-radius: var(--radius-xs);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
-.material-icons {
-  vertical-align: middle;
-}
-.symbol {
-  font-size: inherit;
-}
+.material-icons { vertical-align: middle; }
+.symbol { font-size: inherit; }
+.status-error { color: var(--error); }
 
-.status-error {
-  color: red;
-}
-
-/* The Modal (background) */
+/* Modal */
 .modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.2); /* Black w/ opacity */
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  overflow: auto;
+  background: rgba(15,23,42,.35);
+  backdrop-filter: blur(2px);
 }
-/* Modal Content/Box */
 .prompt-content {
-  background-color: #fefefe;
-  margin: 15% auto; /* 15% from the top and centered */
-  padding: 20px;
-  border: 2px solid #333;
-  width: 80%; /* Could be more or less, depending on screen size */
-  border-radius: 10px;
-  box-shadow: 0px 0px 10px 10px rgba(237,237,237,1);
+  background: var(--surface);
+  margin: 12% auto;
+  padding: 24px;
+  border: 1px solid var(--border);
+  width: 80%;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
   max-width: 500px;
 }
 #prompt-close {
   float: right;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 20px;
 }
-#prompt-val {
-  width: 96%;
-}
-#prompt-ok {
-  padding: 5px 30px;
-  margin-top: 10px;
-}
+#prompt-val { width: 96%; }
+#prompt-ok  { padding: 7px 30px; margin-top: 12px; }
 
-
-table.form {
-  border-collapse: collapse;
-}
+/* Form table */
+table.form { border-collapse: collapse; }
 table.form tr {
-  border: solid 1px black;
-  border-bottom: solid 1px black;
+  border: 1px solid var(--border);
 }
-table.form td {
-  padding: 5px;
-}
+table.form td { padding: 6px 10px; }
 table.form tr td:first-child {
-  background-color: #EEE;
+  background: var(--bg);
+  color: var(--text-muted);
+  font-weight: 500;
   text-align: right;
+  font-size: 13px;
 }
 
-.text {
-  max-width: 50%;
-}
+.text { max-width: 50%; }
+
 #editordiv span {
   display: block;
   padding: 5px 0;
   margin-left: 5px;
 }
-#editordiv span button {
-  margin-right: 5px;
-}
+#editordiv span button { margin-right: 5px; }
+
 #spformula {
   margin: 10px;
-  font-style: italic;;
-  background-color: #EFEFEF;
+  font-style: italic;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   width: auto;
   display: inline-block;
   padding: 10px;
 }
-#spformula > div {
-  display: inline-block;
-}
-
-#spformula input {
-  width: 8em;
-}
-
+#spformula > div { display: inline-block; }
+#spformula input { width: 8em; }
 #spformula table {
   text-align: left;
   width: auto;
   table-layout: fixed;
-  background-color: #EEE;
+  background: var(--surface);
 }
-#spformula table thead {
-  width: 250px;
-  display: inherit;
-}
+#spformula table thead { width: 250px; display: inherit; }
 #spformula table tbody {
   display: block;
   max-height: 150px;
@@ -121,126 +128,87 @@ table.form tr td:first-child {
   text-align: left;
 }
 
-.pow {
-  vertical-align: super;
-  display: inline !important;
-  font-size: 80%;
-}
+.pow { vertical-align: super; display: inline !important; font-size: 80%; }
 
 .btn-link {
   padding: 4px 7px 0 0;
   border: none;
   width: 18px;
   height: 14px;
-  font: 16px/14px Tahoma, Verdana, sans-serif;
-  color: #c3c3c3;
+  font: 16px/14px var(--font);
+  color: var(--text-muted);
   text-decoration: none;
   font-weight: bold;
   background: transparent;
   text-align: left;
+  cursor: pointer;
 }
-.btn-link:hover {
-  color: #999;
-}
+.btn-link:hover { color: var(--primary); }
 
-.movea {
-  padding: 0;
-}
+.movea { padding: 0; }
 
-.graphdiv{
+.graphdiv {
   position: fixed;
   width: 400px;
   height: 320px;
   right: 2px;
   top: 2px;
-  padding: 20px 0px 0 20px;
-  background: white;
-  border-radius: 10px;
-  border: solid 1px black;
-  box-shadow: -5px 5px 5px 0px rgba(187,187,187,1);
+  padding: 20px 0 0 20px;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
 }
-.graph {
-  width: 360px;
-  height: 280px;
-}
+.graph { width: 360px; height: 280px; }
 
 .help-b {
-  margin-left: 10px;
-  font-size: 20px;
+  margin-left: 8px;
+  font-size: 18px;
   vertical-align: middle;
-  color: #575757;
+  color: var(--text-muted);
+  cursor: help;
 }
-.help-p {
-  display: none;
-}
+.help-b:hover { color: var(--primary); }
+.help-p { display: none; }
 
-#footer {
-  margin-top: 2em;
-}
+#footer { margin-top: 2em; }
+#activities-btns, #editor-btns { display: inline-block; }
 
-#activities-btns, #editor-btns {
-  display: inline-block;
-}
-
+/* Cookies */
 #cookies-banner {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: black;
-  color: white;
-  padding: 15px;
+  left: 0; right: 0; bottom: 0;
+  background: var(--menubar-bg);
+  color: #f1f5f9;
+  padding: 14px 20px;
   z-index: 20000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
 }
-#cookies-banner div {
-  padding: 10px 0;
-}
+#cookies-banner div { padding: 0; }
 #cookies-accept {
-  background: yellow;
-  color: black;
-  padding: 10px 20px;
-  width: 33%;
-  margin-left: 10px;
-  float: right;
-  max-width: 120px;
-  border: 0;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-xs);
+  padding: 8px 18px;
+  width: auto;
+  cursor: pointer;
+  font-weight: 600;
 }
-#cookies-more {
-  text-decoration: none;
-  color: #1992ca;
-}
+#cookies-accept:hover { background: var(--primary-hover); }
+#cookies-more { text-decoration: none; color: #93c5fd; }
 
-/* for 680px or less */
 @media screen and (max-width: 680px) {
-  #cookies-banner div, cookies-accept {
-    padding: 0;
-    font-size: 80%;
-  }
+  #cookies-banner { font-size: 80%; }
 }
-
-/* for 480px or less */
 @media screen and (max-width: 800px) {
-  #activities-btns {
-    display: block;
-    margin-top: 15px;
-  }
-  #activities-btns .help-b {
-    margin-left: 15px;
-  }
-  .movea {
-    margin-left: 20px;
-  }
-  .graphdiv {
-    position: relative;
-    width: 350px;
-    height: 290px;
-    padding: 0;
-  }
-  .graph {
-    width: 320px;
-    height: 270px;
-  }
-  .text {
-    max-width: 100%;
-  }
+  #activities-btns { display: block; margin-top: 15px; }
+  #activities-btns .help-b { margin-left: 15px; }
+  .movea { margin-left: 20px; }
+  .graphdiv { position: relative; width: 350px; height: 290px; padding: 0; }
+  .graph { width: 320px; height: 270px; }
+  .text { max-width: 100%; }
 }
