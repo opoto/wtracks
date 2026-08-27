@@ -3,26 +3,26 @@
    ============================================================ */
 
 :root {
-  --primary:        #3b82f6;
-  --primary-hover:  #2563eb;
-  --primary-active: #1d4ed8;
+  --primary:        #034EA2;
+  --primary-hover:  #0F2239;
+  --primary-active: #10335B;
   --primary-light:  #dbeafe;
   --surface:        #ffffff;
-  --bg:             #f1f5f9;
+  --bg:             #E6EDF5;
   --border:         #e2e8f0;
   --border-dark:    #cbd5e1;
-  --text:           #0f172a;
-  --text-muted:     #64748b;
-  --text-link:      #2563eb;
-  --menubar-bg:     #1e293b;
+  --text:           #0F2239;
+  --text-muted:     #10335B;
+  --text-link:      #034EA2;
+  --menubar-bg:     #0F2239;
   --menubar-text:   #f1f5f9;
-  --tab-active-bg:  #3b82f6;
+  --tab-active-bg:  #034EA2;
   --tab-active-txt: #ffffff;
   --btn-bg:         #f1f5f9;
-  --btn-border:     #cbd5e1;
-  --btn-hover:      #dbeafe;
-  --btn-active:     #bfdbfe;
-  --th-bg:          #e2e8f0;
+  --btn-border:     #C3DEFE;
+  --btn-hover:      #E1EEFE;
+  --btn-active:     #C3DEFE;
+  --th-bg:          #E6EDF5;
   --error:          #ef4444;
   --success:        #22c55e;
   --highlight-from: #fef9c3;
@@ -34,8 +34,26 @@
   --radius-sm:      8px;
   --radius-md:      12px;
   --radius-lg:      18px;
-  --font:           -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font:           'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --transition:     0.18s ease;
+
+  /* Design system token aliases */
+  --primary-dark-1:        #0F2239;
+  --primary-dark-2:        #10335B;
+  --primary-dark-3:        #004EAD;
+  --primary-light-1:       #C3DEFE;
+  --primary-light-2:       #E1EEFE;
+  --primary-light-3:       #E6EDF5;
+  --white:                 #ffffff;
+  --text-strong:           var(--text);
+  --text-body:             var(--text-muted);
+  --surface-subtle:        var(--bg);
+  --surface-accent-subtle: #EFF6FF;
+  --button-radius:         var(--radius-sm);
+  --font-sans:             var(--font);
+  --weight-regular:        400;
+  --weight-medium:         500;
+  --weight-bold:           700;
 }
 
 /* ── Reset & Base ─────────────────────────────────────────── */
@@ -53,7 +71,7 @@ body {
   overflow-x: hidden;
   background: var(--bg);
 }
-button, select, option, input[type=datetime-local] {
+button, option {
   color: var(--text);
   font-family: var(--font);
 }
@@ -153,42 +171,7 @@ button, select, option, input[type=datetime-local] {
 }
 
 /* Tables inside panel */
-#menu table {
-  margin: 0 0 12px 0;
-  width: 100%;
-  border-collapse: collapse;
-  border-bottom: 1px solid var(--border);
-}
-#menu tr {
-  border: 1px solid var(--border);
-}
-#menu tr.nobottomborder { border-bottom: none; }
-#menu tr.notopborder    { border-top: none; }
-#menu th {
-  background: var(--th-bg);
-  cursor: pointer;
-  font-weight: 600;
-  color: var(--text-muted);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 6px 8px;
-}
-#menu td {
-  padding: 6px 8px;
-  max-width: 550px;
-}
-#menu td label {
-  display: inline-block;
-}
-#menu tx:first-child { border-top: 0; }
-#menu td:first-child { vertical-align: top; }
-#menufile td:first-child {
-  min-width: 80px;
-  max-width: 140px;
-}
-#menu td:first-child button { width: 100% }
-#menu td:nth-child(2) { padding-right: 10px; }
+/* (panel table rules moved to bottom layout block) */
 
 /* ── Tab Navigation ───────────────────────────────────────── */
 ul.menutab {
@@ -279,14 +262,18 @@ button:active,
   border-color: var(--primary-active);
 }
 button:active, button:focus,
-input:active, input:focus,
-select:active, select:focus,
-textarea:focus,
 #track-upload-label:active,
 #state-load-label:active {
-  outline: 2px solid var(--primary-light);
+  outline: 2px solid var(--primary-light-1);
   outline-offset: 1px;
-  box-shadow: 0 0 0 3px rgba(59,130,246,.2);
+  box-shadow: 0 0 0 3px rgba(3,78,162,.15);
+}
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(3,78,162,.15);
 }
 button:disabled,
 button:disabled:active,
@@ -381,6 +368,51 @@ a.button {
 }
 
 /* ── Form inputs ──────────────────────────────────────────── */
+
+/* Base style for all text-like inputs and selects */
+input[type=text],
+input[type=number],
+input[type=url],
+input[type=email],
+input[type=password],
+input[type=datetime-local],
+select,
+textarea {
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--text);
+  background: var(--white);
+  border: 1px solid var(--primary-light-1);
+  border-radius: var(--radius-xs);
+  padding: 5px 8px;
+  height: 30px;
+  box-sizing: border-box;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  appearance: none;
+  -webkit-appearance: none;
+}
+textarea {
+  height: auto;
+  resize: vertical;
+}
+/* Custom select arrow */
+select {
+  padding-right: 24px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23034EA2' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 7px center;
+  cursor: pointer;
+}
+input[type=text]:hover,
+input[type=number]:hover,
+input[type=url]:hover,
+input[type=email]:hover,
+input[type=datetime-local]:hover,
+select:hover,
+textarea:hover {
+  border-color: var(--primary);
+}
+
 #menu input[type=number] {
   width: 4em;
   margin-right: 3px;
@@ -417,25 +449,7 @@ input.invalid:focus {
 .setting-value { margin-left: 5px; width: 100px; }
 .setting-input { margin-left: 5px; width: 180px; }
 
-/* ── Help paragraphs ──────────────────────────────────────── */
-.help-p {
-  display: none;
-  font-style: italic;
-  margin: 2px 0 5px 0;
-  font-size: 12px;
-  color: var(--text-muted);
-  max-width: 500px;
-  line-height: 1.5;
-}
-.help-b {
-  margin-left: 8px;
-  font-size: 16px;
-  color: var(--text-muted);
-  cursor: help;
-  vertical-align: middle;
-  transition: color var(--transition);
-}
-.help-b:hover { color: var(--primary); }
+/* (help-p and help-b rules moved to bottom layout block) */
 #mymap-box .help-b { margin-left: 0; }
 .mymap-name { font-style: italic; }
 
@@ -447,7 +461,7 @@ input.invalid:focus {
 .text a:link, .text a:visited,
 .help-p a:link, .help-p a:visited {
   text-decoration: none;
-  color: var(--text-link);
+  color: var(--primary-light-1);
   font-weight: 500;
 }
 #wtshare-map-name { font-style: italic; }
@@ -814,7 +828,7 @@ div.trumbowyg-editor { padding: 5px; }
   position: relative;
 }
 
-#about-logo { margin: 15px 5px; }
+#about-logo { margin: 15px 5px; max-width: 100px;}
 #menuabout tr:first-child td:first-child { text-align: center; }
 #github-logo {
   margin-left: 5px;
@@ -980,4 +994,455 @@ div.trumbowyg-editor { padding: 5px; }
 .leaflet-control-container .leaflet-routing-container-hide,
 .leaflet-control-filelayer {
   display: none;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NEW LAYOUT — persistent sidebar design
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── App shell ────────────────────────────────────────────────── */
+html, body { overflow: hidden; }
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ── Top header bar ───────────────────────────────────────────── */
+#app-header {
+  height: 60px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  background: var(--white);
+  border-bottom: 1px solid var(--primary-light-1);
+  z-index: 500;
+  overflow: hidden;
+}
+
+#app-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+#app-logo img {
+  height: 30px;
+  width: auto;
+  mix-blend-mode: multiply;
+}
+#app-logo .appname {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--primary);
+  letter-spacing: 0.02em;
+}
+
+.app-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--primary-light-1);
+  flex: none;
+}
+
+/* Track name in header */
+#app-header #track-name-edit {
+  position: static;
+  width: auto;
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+#app-header .title {
+  color: var(--text);
+  max-height: none;
+}
+#app-header #track-name-edit .material-icons {
+  color: var(--text-muted);
+  opacity: 0.7;
+  font-size: 15px;
+  flex: none;
+}
+
+/* Status in header */
+#app-header #status {
+  float: none;
+  position: static;
+  background: transparent;
+  color: var(--text-muted);
+  height: auto;
+  padding-left: 0;
+  display: flex;
+  align-items: center;
+  flex: none;
+}
+#app-header #status .status-info  { color: var(--text-muted); }
+#app-header #status .status-error { color: var(--error); }
+
+/* Mode group */
+.app-mode-group {
+  display: inline-flex;
+  border: 1px solid var(--primary-light-1);
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+  flex: none;
+}
+.app-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border: 0;
+  border-left: 1px solid var(--primary-light-1);
+  background: transparent;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  font-family: var(--font);
+  transition: background var(--transition), color var(--transition);
+  white-space: nowrap;
+}
+.app-mode-btn:first-child { border-left: 0; }
+.app-mode-btn:hover  { background: var(--surface-accent-subtle); color: var(--primary); }
+.app-mode-btn.mode-active { background: var(--primary); color: var(--white); }
+.app-mode-btn:focus  { outline: none; box-shadow: none; }
+
+/* Header action buttons */
+.header-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 12px;
+  border: 1px solid var(--primary-light-1);
+  border-radius: var(--radius-xs);
+  background: transparent;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  font-family: var(--font);
+  width: auto;
+  flex: none;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+  margin: 0;
+}
+.header-btn:hover { background: var(--surface-accent-subtle); color: var(--primary); border-color: var(--primary-light-1); }
+.header-btn:focus { outline: none; box-shadow: none; }
+.header-btn .material-icons { font-size: 16px; }
+.header-btn-primary {
+  background: var(--primary);
+  color: var(--white);
+  border-color: var(--primary);
+}
+.header-btn-primary:hover { background: var(--primary-dark-2); border-color: var(--primary-dark-2); color: var(--white); }
+
+/* ── App body ─────────────────────────────────────────────────── */
+#app-body {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  min-height: 0;
+  overflow: hidden;  /* constrains children to this height so panel can scroll */
+}
+
+/* ── Navigation rail ──────────────────────────────────────────── */
+#rail {
+  width: 64px;
+  flex: none;
+  border-right: 1px solid var(--primary-light-1);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  background: var(--white);
+  z-index: 400;
+  overflow: hidden;
+}
+.rail-spacer { flex: 1; }
+.rail-btn {
+  height: 64px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  font-family: var(--font);
+  position: relative;
+  transition: background var(--transition), color var(--transition);
+  padding: 0;
+  width: 100%;
+}
+.rail-btn:hover  { background: var(--surface-subtle); color: var(--primary); }
+.rail-btn:focus  { outline: none; box-shadow: none; }
+.rail-btn.rail-active { background: var(--surface-accent-subtle); color: var(--primary); }
+.rail-btn.rail-active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--primary);
+}
+
+/* ── Panel (was overlay, now sidebar) ────────────────────────── */
+#menu {
+  /* Override the old floating-overlay rules */
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  width: 500px;
+  max-width: none !important;
+  max-height: none !important;
+  flex: none;
+  /* No display: flex — jQuery .show()/.hide() sets display: block/none */
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--white);
+  border-right: 1px solid var(--primary-light-1);
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  z-index: 300;
+}
+/* Hide the legacy close button and tab list visually */
+#menu .box-header { display: none; }
+#menu ul.menutab  { display: none; }
+
+/* Panel content tables */
+#menu table {
+  margin: 0;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* All panel rows */
+#menu tr {
+  border-top: 1px solid var(--primary-light-1);
+}
+#menu tr:first-child { border-top: none; }
+#menu tr.nobottomborder { border-bottom: none; }
+#menu tr.notopborder    { border-top: none; }
+
+/* Regular cell padding */
+#menu td {
+  padding: 8px 14px;
+  vertical-align: middle;
+  font-size: 13px;
+  color: var(--text);
+  position: relative; /* anchor for help tooltip */
+}
+#menu td:first-child { vertical-align: top; padding-top: 10px; }
+#menu td:first-child button { width: 100%; }
+#menufile td:first-child { min-width: 90px; max-width: 150px; }
+#menu td:nth-child(2) { padding-right: 14px; max-width: 200px; word-wrap: break-word; }
+#menu td label { display: inline-block; }
+
+/* Fold / section header rows */
+#menu tr.nobottomborder > td[colspan="2"] {
+  background: var(--surface-accent-subtle);
+  padding: 9px 14px 8px;
+  border-bottom: none;
+}
+/* Label text only — NOT the icon spans */
+#menu tr.nobottomborder > td[colspan="2"] .fold-link {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--primary);
+  vertical-align: middle;
+}
+/* Arrow icons — preserve Material Icons rendering */
+#menu tr.nobottomborder > td[colspan="2"] .material-icons {
+  font-size: 16px;
+  vertical-align: middle;
+  color: var(--primary);
+  opacity: 0.6;
+}
+
+/* Checkboxes and radios */
+input[type=checkbox],
+input[type=radio] {
+  accent-color: var(--primary);
+  width: 14px;
+  height: 14px;
+  vertical-align: middle;
+  margin-right: 3px;
+  cursor: pointer;
+}
+
+/* Help icon */
+.help-b {
+  font-size: 15px !important;
+  color: var(--primary-light-1);
+  cursor: help;
+  vertical-align: middle;
+  margin-left: 4px;
+  transition: color var(--transition);
+}
+.help-b:hover { color: var(--primary); }
+
+/* Help tooltip — hidden by default, shown on hover of .help-b */
+.help-p {
+  display: none;
+  position: absolute;
+  z-index: 1500;
+  left: 0;
+  right: 0;
+  top: calc(100% - 4px);
+  background: var(--primary-dark-1);
+  color: #dce8f8;
+  font-size: 12px;
+  font-style: normal;
+  line-height: 1.5;
+  padding: 8px 12px;
+  border-radius: var(--radius-xs);
+  box-shadow: var(--shadow-md);
+  pointer-events: none; /* don't interfere with clicks below */
+  margin: 0;
+  max-width: none;
+}
+.help-b:hover + .help-p,
+.help-b:focus + .help-p {
+  display: block;
+}
+
+/* ── Map ──────────────────────────────────────────────────────── */
+#map {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* ── Bottom statistics bar ────────────────────────────────────── */
+#stats-bar {
+  height: 54px;
+  flex: none;
+  display: flex;
+  align-items: stretch;
+  border-top: 1px solid var(--primary-light-1);
+  background: var(--white);
+  overflow: hidden;
+}
+/* Remove old .statistics table styling that would conflict */
+#stats-bar th, #stats-bar td { display: none; }
+
+.stats-cell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  border-right: 1px solid var(--primary-light-1);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.stats-cell:hover { background: var(--surface-accent-subtle); }
+.stats-cell .stats-label {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  margin-right: 2px;
+}
+.stats-cell .stats-sep { color: var(--border-dark); }
+
+/* Elevation profile toggle button */
+#toggle-elevation-profile {
+  flex: none;
+  width: 160px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--primary);
+  font-family: var(--font);
+  transition: background var(--transition);
+}
+#toggle-elevation-profile:hover { background: var(--surface-accent-subtle); }
+#toggle-elevation-profile:focus { outline: none; box-shadow: none; }
+#toggle-elevation-profile .material-icons { font-size: 18px; }
+
+/* Legacy #menu-bar — hidden (replaced by #app-header) */
+#menu-bar { display: none !important; }
+
+/* ── Responsive: mobile ───────────────────────────────────────── */
+@media (max-width: 680px) {
+  #app-header { gap: 6px; padding: 0 8px; height: 52px; }
+  .app-mode-group { display: none; }
+  .app-divider { display: none; }
+
+  #app-body { flex-direction: column; position: relative; }
+
+  /* Rail becomes bottom tab bar */
+  #rail {
+    width: 100%;
+    height: 60px;
+    flex-direction: row;
+    border-right: 0;
+    border-top: 1px solid var(--primary-light-1);
+    order: 3;
+    z-index: 600;
+    flex: none;
+  }
+  .rail-spacer { display: none; }
+  .rail-btn {
+    height: 60px;
+    flex: 1;
+    font-size: 10px;
+  }
+  .rail-btn.rail-active::before {
+    top: 0; left: 0; right: 0; bottom: auto;
+    width: auto;
+    height: 3px;
+  }
+
+  /* Panel becomes a bottom sheet */
+  #menu {
+    width: 100% !important;
+    max-height: 65vh !important;
+    position: fixed !important;
+    bottom: 60px;
+    left: 0;
+    right: 0;
+    top: auto !important;
+    z-index: 5000 !important;
+    border-right: 0;
+    border-top: 1px solid var(--primary-light-1);
+    box-shadow: 0 -4px 20px rgba(0,0,0,.14) !important;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
+    order: 2;
+    display: none !important;  /* hidden by default on mobile */
+  }
+  #menu.panel-mobile-open { display: flex !important; }
+
+  #map { order: 1; flex: 1; }
+
+  #stats-bar { height: 48px; order: 4; }
+  .stats-cell { padding: 0 8px; gap: 4px; }
+  #toggle-elevation-profile { width: 48px; padding: 0 8px; }
+  #toggle-elevation-profile span:not(.material-icons) { display: none; }
 }

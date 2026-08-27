@@ -77,759 +77,6 @@
 </head>
 
 <body>
-  <div id="menu" class="overlay">
-    <div class="box-header"><a id="menu-close" href="#" class="close-button">×</a></div>
-    <ul class="menutab">
-      <li><a href="#" class="tablinks" id="tabfile">File</a></li>
-      <li><a href="#" class="tablinks" id="tabsegments">Segments</a></li>
-      <li><a href="#" class="tablinks" id="tabtools">Tools</a></li>
-      <li><a href="#" class="tablinks small-menu-link" id="tabsettings">
-        <span class="hide-on-small-screen">Settings</span>
-        <i class="material-icons show-on-small-screen">settings</i>
-      </a></li>
-      <li><a href="#" class="tablinks small-menu-link" id="tababout">
-        <span class="hide-on-small-screen">About</span>
-        <i class="material-icons show-on-small-screen">question_mark</i>
-      </a></li>
-    </ul>
-
-    <!-- FILE -->
-    <table id="menufile">
-      <tr class="nobottomborder">
-        <td colspan="2">
-          <div>
-            <span class="fold fold-file-closed material-icons" id="file-newtrk-closed">keyboard_arrow_right</span>
-            <span class="fold-file newtrk material-icons">keyboard_arrow_down</span>
-            <span  class="fold fold-link fold-file" id="file-newtrk">New</span>
-          </div>
-        </td>
-      </tr>
-      <tr class="notopborder fold-file newtrk">
-        <td>
-          <button id="track-new" title="Start a new track from scratch">New Track</button>
-        </td>
-        <td>
-          Discard current editor content and start a new track
-        </td>
-      </tr>
-      <tr class="nobottomborder">
-        <td colspan="2">
-          <div>
-            <span class="fold fold-file-closed material-icons" id="file-load-closed">keyboard_arrow_right</span>
-            <span class="fold-file load material-icons">keyboard_arrow_down</span>
-            <span  class="fold fold-link fold-file" id="file-load">Load</span>
-          </div>
-        </td>
-      </tr>
-      <tr class="notopborder nobottomborder fold-file load">
-        <td>
-          <span>Options</span>
-        </td>
-        <td>
-          <label><input type="checkbox" id="merge">Merge</label>
-          <span id="mergetxt" class="help-b material-icons" title="Help">help_outline</span>
-          <p id="mergetxt-help" class="help-p">
-            Current edited track will not be discarded, it will be extended with the loaded one.
-          </p>
-          <br>
-          <label><input type="checkbox" id="joinonload">Join segments</label>
-          <span id="joinonloadtxt" class="help-b material-icons" title="Help">help_outline</span>
-          <p id="joinonloadtxt-help" class="help-p">
-            If loaded track contains multiple segments, they will automatically be joined.
-          </p>
-        </td>
-      </tr>
-      <tr class="nobottomborder notopborder fold-file load">
-        <td>
-        </td>
-        <td>
-          File type:
-          <select id="track-ext">
-            <option value="auto">Auto</option>
-            <option value="gpx">GPX</option>
-            <option value="kml">KML</option>
-            <option value="geojson">GeoJson</option>
-          </select>
-          <span id="filetypetxt" class="help-b material-icons" title="Help">help_outline</span>
-          <p id="filetypetxt-help" class="help-p">
-            If "Auto" is selected, the type of the file is selected based on the file extension.
-          </p>
-        </td>
-      </tr>
-      <tr class="nobottomborder notopborder fold-file load">
-        <td>
-          <label id="track-upload-label">
-            <input type="file" name="track" id="track-upload" multiple="multiple" accept=".gpx,.kml,.geojson">
-            <span>File</span>
-          </label>
-        </td>
-        <td>
-          Open a file from your device<br>
-        </td>
-      </tr>
-      <tr class="nobottomborder notopborder fold-file load">
-        <td>
-          <button id="track-get" title="Load a file from the internet">
-            Get from:
-          </button>
-        </td>
-        <td>
-          <input id="track-get-url" placeholder="https://... (track URL)" type="url"><br>
-          <label><input id="noproxy" type="checkbox"> No proxy </label>
-          <span id="noproxytxt" class="help-b material-icons" title="Help">help_outline</span>
-          <p id="noproxytxt-help" class="help-p">
-            Load without going through a CORS proxy. Check if target server accepts cross-origin requests, and if you want to use your browser session to fetch the file.
-          </p>
-        </td>
-      </tr>
-      <tr class="notopborder fold-file load">
-        <td>
-          <button id="dropbox-chooser" title="Load a track from your Dropbox">
-            <span class="dropbox-logo"></span>
-              Dropbox
-          </button>
-        </td>
-        <td>
-          Load from your Dropbox
-        </td>
-      </tr>
-      <tr class="nobottomborder">
-        <td colspan="2">
-          <div>
-            <span class="fold fold-file-closed material-icons" id="file-save-closed">keyboard_arrow_right</span>
-            <span class="fold-file save material-icons">keyboard_arrow_down</span>
-            <span  class="fold fold-link fold-file" id="file-save">Save</span>
-          </div>
-        </td>
-      </tr>
-      <tr class="notopborder nobottomborder fold-file save">
-        <td>
-          <button id="track-download" title="Download as a GPX file">
-            As File
-          </button>
-          <br>
-          <button id="dropbox-saver" title="Save track in your Dropbox">
-            <span class="dropbox-logo"></span>
-              Dropbox
-          </button>
-        </td>
-        <td>
-          Download as a GPX file<br>
-          <label><input type="checkbox" id="as-route">As route</label>
-          <span id="routetxt" class="help-b material-icons" title="Help">help_outline</span>
-          <p id="routetxt-help" class="help-p">
-            Check to save the track as a GPX route, instead of a GPX track segment.
-          </p>
-          <br>
-          <!-- Don't know what this is useful for...
-          <label><input type="checkbox" id="nometadata">Without metadata</label>
-          <span id="nometadatatxt" class="help-b material-icons" title="Help">help_outline</span>
-          <p id="nometadatatxt-help" class="help-p">
-            Check to save without GPX metadata.
-          </p>
-          <br>
-          -->
-        </td>
-      </tr>
-      <tr class="nobottomborder">
-        <td colspan="2">
-          <div>
-            <span class="fold fold-file-closed material-icons" id="file-share-closed">keyboard_arrow_right</span>
-            <span class="fold-file share material-icons">keyboard_arrow_down</span>
-            <span class="fold fold-link fold-file" id="file-share">Share</span>
-          </div>
-        </td>
-      </tr>
-      <tr class="notopborder nobottomborder fold-file share">
-        <td>
-          <button id="track-share" title="Share through a link">
-            Share...
-          </button>
-        </td>
-        <td>
-          track using
-          <select id="share-libs"></select>
-          <span id="sharetxt" class="help-b material-icons" title="Help">help_outline</span>
-          <br>
-          <span>Service is <span id="share-status"></span></span>
-        </td>
-      </tr>
-      <tr class="notopborder nobottomborder fold-file share share-props">
-        <td class="help-p sharetxt-help">Hosted by:</td>
-        <td class="help-p sharetxt-help" id="share-web"></td>
-      </tr>
-      <tr class="notopborder nobottomborder fold-file share share-props">
-        <td class="help-p sharetxt-help">Max file size:</td>
-        <td class="help-p sharetxt-help" id="share-max-size"></td>
-      </tr>
-      <tr class="notopborder nobottomborder fold-file share share-props">
-        <td class="help-p sharetxt-help">Max storage time:</td>
-        <td class="help-p sharetxt-help" id="share-max-time"></td>
-      </tr>
-      <tr class="notopborder fold-file share share-props">
-        <td class="help-p sharetxt-help">Max downloads:</td>
-        <td class="help-p sharetxt-help" id="share-max-downloads"></td>
-      </tr>
-    </table>
-
-    <!-- SEGMENTS -->
-    <table id="menusegments">
-      <tr class="nobottomborder">
-        <td>
-          <span class="if-segments">Edit your track's segments</span>
-          <span class="no-segments">You did not create any segment yet</span>
-          <span id="segsedittxt" class="help-b material-icons" title="Help">help_outline</span>
-          <p id="segsedittxt-help" class="help-p">
-            Drag and drop to reorder segments. Click on name to rename. Click on color to set color. Click on trash to delete.
-          </p>
-        </td>
-      </tr>
-      <tr class="notopborder">
-        <td id="seg-editor-list">
-        </td>
-      </tr>
-    </table>
-
-    <!-- TOOLS -->
-    <table id="menutools">
-
-      <tr>
-        <td colspan="2">
-          <input type="checkbox" id="allsegments" class="no-trim">
-          <label for="allsegments">Apply (*) to all track segments</label>
-          <span id="allsegmentstxt" class="help-b material-icons" title="Help">help_outline</span><br>
-          <p id="allsegmentstxt-help" class="help-p">
-            Check to apply the tools below to all track segments instead of just the active one. Ignore if your track only has one segment.
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <button id="compress" class="no-trim">Compress*</button>
-        </td>
-        <td>
-          Discard track points within a <input id="prune-dist" type="number" min="0" required>
-          <span class="distUnit"></span>s band<br>
-          Keep points if separated by more than
-          <span id="compresstxt" class="help-b material-icons" title="Help">help_outline</span>
-          <br>
-          <input id="prune-time-opt" type="checkbox"><input id="prune-max-time" type="number" min="0"><label for="prune-time-opt">seconds</label>
-          <input id="prune-dist-opt" type="checkbox"><input id="prune-max-dist" type="number" min="0"><label for="prune-dist-opt"><span class="distUnit"></span>s</label>
-          <br>
-          <p id="compresstxt-help" class="help-p">
-            Reduces track size by discarding points which do not significantly change the track shape.
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <button id="smooth" class="no-trim isdisabled">Smooth*</button>
-        </td>
-        <td>
-          Smooth altitude data<br>
-          <label>Intensity: <input id="smooth-level" type="range" step="5" min="1" max="61"></label>
-          <span id="smoothtxt" class="help-b material-icons" title="Help">help_outline</span>
-          <p id="smoothtxt-help" class="help-p">
-            Update track's altitude data to remove noise.
-            Smoothing intensity defines the number of rounding iterations.
-            The higher the level, the more computation time is needed.
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <button id="elevate" class="no-trim isdisabled">Elevate*</button>
-        </td>
-        <td>
-          Add altitude information
-          <span id="elevatetxt" class="help-b material-icons" title="Help">help_outline</span>
-          <p id="elevatetxt-help" class="help-p">
-            Uses external web service to get elevation of track points.
-            <span id="elevatetxt-help-enable"></span>
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <button id="save-time" class="no-trim">Save Time*</button>
-        </td>
-        <td>
-          From
-          <span id="savetimingtxt" class="help-b material-icons" title="Help">help_outline</span>
-          <input id="save-time-from" type="datetime-local" size="16" step="1"><br>
-          <select id="save-time-profile"></select>
-          <input id="save-time-to" type="datetime-local" size="16" step="1">
-          <p id="savetimingtxt-help" class="help-p">
-            Check to save in the GPX the timings computed by WTracks.
-            It will override any previous GPX timing.
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <button id="shift-time" class="no-trim">Shift Time*</button>
-        </td>
-        <td>
-          By
-          <input id="shift-time-by" type="number">
-          <select id="shift-time-unit">
-            <option value="day">Day(s)</option>
-            <option value="hour">Hour(s)</option>
-            <option value="minute">Minute(s)</option>
-            <option value="second">Second(s)</option>
-          </select>
-          <span id="shifttimingtxt" class="help-b material-icons" title="Help">help_outline</span>
-          <p id="shifttimingtxt-help" class="help-p">
-            Shifts all track points' recorded time.
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <button id="cleanup" class="no-trim">Clean up*</button>
-          <button id="fillup" class="no-trim">Fill up*</button>
-        </td>
-        <td>
-          Delete or interpolate track data:
-          <span id="cleanuptxt" class="help-b material-icons" title="Help">help_outline</span>
-          <br>
-          <label><input id="cleanupalt" type="checkbox"> Altitude</label>
-          <label><input id="cleanuptime" type="checkbox"> Time</label>
-          <p id="cleanuptxt-help" class="help-p">
-            Clean up: Deletes elevation and/or GPS-recorded time data on each track point.<br>
-            Fill up: Adds interpolated elevation and/or time on track points where this data is missing.
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <button id="revert" class="no-trim">Revert*</button>
-        </td>
-        <td>
-          Revert track direction
-          <span id="reverttxt" class="help-b material-icons" title="Help">help_outline</span>
-          <p id="reverttxt-help" class="help-p">
-            Inverts all track points so that start of the track becomes the end.
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <button id="trim">Trim</button>
-          <select id="trim-type">
-            <option>start</option>
-            <option>end</option>
-          </select>
-        </td>
-        <td>
-          <input type="range" id="trim-range" min="0" step="1" value="0">&nbsp;<span id="trim-txt"></span>
-          <span id="trimtxt" class="help-b material-icons" title="Help">help_outline</span>
-          <p id="trimtxt-help" class="help-p">
-            Move cursor to delete points from the start or the end of the track.
-          </p>
-        </td>
-      </tr>
-    </table>
-
-    <!-- SETTINGS -->
-    <table id="menusettings">
-      <tr class="nobottomborder">
-        <td colspan="2">
-          <div>
-            <span class="fold fold-settings-closed material-icons" id="settings-savstg-closed">keyboard_arrow_right</span>
-            <span class="fold-settings savstg material-icons">keyboard_arrow_down</span>
-            <span  class="fold fold-link fold-settings" id="settings-savstg">Remember me</span>
-            <span id="cfgsavetxt" class="help-b material-icons" title="Help">help_outline</span>
-            <p id="cfgsavetxt-help" class="help-p">
-              Your WTracks editor status will be saved continuously in your browser local storage,
-              so that when you close and reopen it later it will restore the same content and settings.
-            </p>
-          </div>
-        </td>
-      </tr>
-      <tr class="notopborder fold-settings savstg">
-        <td>
-        </td>
-        <td>
-          <label>
-            <input id="cfgsave" class="no-trim" type="checkbox">
-            Locally save editor's state between sessions
-          </label>
-          <br>
-          Privacy warning: state is shared with all users of this browser profile
-          <br>
-          You can also export/import settings to/from files:
-          <br>
-          <button id="save-state-file" class="state-file">Export</button>
-          <label id="state-load-label" class="state-file">
-            <input type="file" name="track" id="load-state-file" class="state-file">
-            <span>Import</span>
-          </label>
-        </td>
-      </tr>
-      <tr class="nobottomborder">
-        <td colspan="2">
-          <div>
-            <span class="fold fold-settings-closed material-icons" id="settings-trkstg-closed">keyboard_arrow_right</span>
-            <span class="fold-settings trkstg material-icons">keyboard_arrow_down</span>
-            <span  class="fold fold-link fold-settings" id="settings-trkstg">Display options</span>
-            <span id="trkopts" class="help-b material-icons" title="Help">help_outline</span>
-            <p id="trkopts-help" class="help-p">
-              Configure track colors and other display options.
-            </p>
-          </div>
-        </td>
-      </tr>
-      <tr class="notopborder nobottomborder fold-settings trkstg">
-        <td>
-        </td>
-        <td>
-          <div>
-            <span class="setting-name">Segment Type:</span>
-            <label><input name="track-type" type="radio" value="trk" checked="checked"> Edited</label>
-            <label><input name="track-type" type="radio" value="ovl"> Others</label>
-          </div>
-          <div>
-            <span class="setting-name">Default color:</span>
-            <button id="track-color-picker" class='material-icons symbol setting-value jscolor {"valueElement":"track-color", "hash":true, "zIndex":10001}'>
-              colorize
-            </button>
-            <input id="track-color" class="hidden">
-          </div>
-          <div>
-            <span class="setting-name">Width:</span>
-            <input type="range" min="0" max="10" id="track-weight" class="setting-value">
-            <span id="track-weight-v" class="setting-value"></span>
-          </div>
-          <div>
-            <span class="setting-name hide-on-small-screen">&nbsp;</span>
-            <button id="track-resetcolorweight" class="setting-value">Reset</button>
-          </div>
-      </tr>
-      <tr class="notopborder nobottomborder fold-settings trkstg">
-        <td>
-        </td>
-        <td>
-          <input id="fwdGuide" class="no-trim" type="checkbox">
-          <label for="fwdGuide">Show forward line guide</label>
-          <span id="fwdGuidehlp" class="help-b material-icons" title="Help">help_outline</span>
-          <p id="fwdGuidehlp-help" class="help-p">
-            When checked, a dashed line is displayed in edit mode to guide forward track extension.
-          </p>
-        </td>
-      </tr>
-      <tr class="notopborder nobottomborder fold-settings trkstg">
-        <td>
-        </td>
-        <td>
-          <input id="hideWpt" class="no-trim" type="checkbox">
-          <label for="hideWpt">Hide waypoints markers</label>
-          <span id="hideWpthlp" class="help-b material-icons" title="Help">help_outline</span>
-          <p id="hideWpthlp-help" class="help-p">
-            When checked, waypoints markers are not displayed on the map.
-          </p>
-        </td>
-      </tr>
-      <tr class="notopborder nobottomborder fold-settings trkstg">
-        <td>
-        </td>
-        <td>
-          <input id="wptLabel" class="no-trim" type="checkbox">
-          <label for="wptLabel">Always display waypoint labels</label>
-          <span id="wptLabelhlp" class="help-b material-icons" title="Help">help_outline</span>
-          <p id="wptLabelhlp-help" class="help-p">
-            When unchecked, waypoint title is only displayed when
-            the mouse is over the waypoint.
-          </p>
-        </td>
-      </tr>
-      <tr class="notopborder nobottomborder fold-settings trkstg">
-        <td>
-        </td>
-        <td>
-          <input id="extMarkers" class="no-trim" type="checkbox">
-          <label for="extMarkers">Show start/end markers</label>
-          <span id="extMarkershlp" class="help-b material-icons" title="Help">help_outline</span>
-          <p id="extMarkershlp-help" class="help-p">
-            When checked, a marker will be shown at start and end of current track segment.
-          </p>
-        </td>
-      </tr>
-      <tr class="notopborder nobottomborder fold-settings trkstg">
-        <td>
-        </td>
-        <td>
-          <input id="autoGrayBaseLayer" class="no-trim" type="checkbox">
-          <label for="autoGrayBaseLayer">Grayscale base-layer map</label>
-          <span id="autoGrayBaseLayerhlp" class="help-b material-icons" title="Help">help_outline</span>
-          <p id="autoGrayBaseLayerhlp-help" class="help-p">
-            When checked and an overlay is enabled, base layer is displayed in gray. This is useful with slope overlays.
-          </p>
-        </td>
-      </tr>
-      <tr class="notopborder fold-settings trkstg">
-        <td>
-        </td>
-        <td>
-          <input id="noMixOverlays" class="no-trim" type="checkbox">
-          <label for="noMixOverlays">Do not mix overlays</label>
-          <span id="noMixOverlayshlp" class="help-b material-icons" title="Help">help_outline</span>
-          <p id="noMixOverlayshlp-help" class="help-p">
-            By default, when multiple overlays are active, they are mixed to make sure they are all visible. When this option is checked, overlays are drawn independently on top of each other. Bottom overlays may then be hidden by upper overlays, unless you reduce their opacity.
-          </p>
-        </td>
-      </tr>
-      <tr class="nobottomborder">
-        <td colspan="2">
-          <div>
-            <span class="fold fold-settings-closed material-icons" id="settings-apistg-closed">keyboard_arrow_right</span>
-            <span class="fold-settings apistg material-icons" id="apistg2">keyboard_arrow_down</span>
-            <span  class="fold fold-link fold-settings" id="settings-apistg">API keys</span>
-            <span id="keystxt" class="help-b material-icons" title="Help">help_outline</span>
-            <p id="keystxt-help" class="help-p">
-              To use elevation and routing services, you must set your own API keys.
-              Current config is using:<br>
-              Elevation: <span id="elevation-srv"></span>.<br>
-              Routing: <span id="routing-srv"></span>.
-            </p>
-          </div>
-        </td>
-      </tr>
-      <tr class="notopborder fold-settings apistg">
-        <td>
-        </td>
-        <td>
-          <div>
-            <span class="setting-name">OpenRoute:</span>
-            <input id="orskey-chk" class="no-trim key-chk" type="checkbox">
-            <input id="orskey-value" placeholder="Your OpenRouteService key" class="setting-input key-value">
-            <span id="orskeytxt" class="help-b material-icons" title="Help">help_outline</span>
-            <p id="orskeytxt-help" class="help-p">
-              This key is used for the (i) computing point and track elevation, and (ii) routing feature, which draws tracks along map roads.
-              Get your free API key/token from <a target="_blank" href="https://openrouteservice.org/">OpenRoute Service</a>.
-            </p>
-          </div>
-          <div>
-            <span class="setting-name">GraphHopper:</span>
-            <input id="ghkey-chk" class="no-trim key-chk" type="checkbox">
-            <input id="ghkey-value" placeholder="Your GraphHopper key" class="setting-input key-value">
-            <span id="ghkeytxt" class="help-b material-icons" title="Help">help_outline</span>
-            <p id="ghkeytxt-help" class="help-p">
-              This key is used for the routing feature, which draws tracks along map roads.
-              Get your API key from <a target="_blank" href="https://graphhopper.com/">GraphHopper</a>.
-            </p>
-          </div>
-          <div>
-            <span class="setting-name">Google:</span>
-            <input id="ggkey-chk" class="no-trim key-chk" type="checkbox">
-            <input id="ggkey-value" placeholder="Your Google API key" class="setting-input key-value">
-            <span id="ggkeytxt" class="help-b material-icons" title="Help">help_outline</span>
-            <p id="ggkeytxt-help" class="help-p">
-              This key is used for the Google Elevation service, which gets the elevation of each track point.
-              Get your "Maps Elevation API" key from <a target="_blank" href="https://console.developers.google.com/apis">Google Developers Console</a>.
-            </p>
-          </div>
-          <div>
-            <span class="setting-name hide-on-small-screen">&nbsp;</span>
-            <button id="keys-reset" class="setting-value">Reset</button>
-          </div>
-          <div>
-            <span class="setting-name hide-on-small-screen">&nbsp;</span>
-            <label><input id="apikeys-warn" type="checkbox"> Warn if no API keys</label>
-            <span id="apikeys-warntxt" class="help-b material-icons" title="Help">help_outline</span>
-            <p id="apikeys-warntxt-help" class="help-p">
-              If checked an info box will pop up when elevation or routing services are not configured.
-            </p>
-          </div>
-        </td>
-      </tr>
-      <tr class="nobottomborder">
-        <td colspan="2">
-          <div>
-            <span class="fold fold-settings-closed material-icons" id="settings-unitstg-closed">keyboard_arrow_right</span>
-            <span class="fold-settings unitstg material-icons" id="unitstg2">keyboard_arrow_down</span>
-            <span  class="fold fold-link fold-settings" id="settings-unitstg">Other</span>
-          </div>
-        </td>
-      </tr>
-      <tr class="notopborder fold-settings unitstg">
-        <td>
-        </td>
-        <td>
-          <div>
-            <span class="setting-name">Unit of length:</span>
-            <label>
-              <input type="radio" value="0" name="unitopt">
-              Metric
-            </label>
-            <label>
-              <input type="radio" value="1" name="unitopt">
-              Imperial
-            </label>
-            <span id="unittxt" class="help-b material-icons" title="Help">help_outline</span>
-            <p id="unittxt-help" class="help-p">
-              Choose between imperial and metric unit of length.
-            </p>
-          </div>
-        </td>
-      </tr>
-      <tr class="notopborder fold-settings unitstg">
-        <td>
-        </td>
-        <td>
-          <div>
-            <span class="setting-name">Offline cache:</span>
-            <label>
-              <input type="checkbox" id="use-service-worker">
-              (experimental)
-            </label>
-            <span id="swtxt" class="help-b material-icons" title="Help">help_outline</span>
-            <p id="swtxt-help" class="help-p">
-              Activate service worker to use offline cache.
-            </p>
-          </div>
-        </td>
-      </tr>
-      <tr class="notopborder fold-settings unitstg">
-        <td>
-        </td>
-        <td>
-          <div>
-            <span class="setting-name">Round coords.:</span>
-            <input type="checkbox" id="rounding-on">
-            <label id="rounding-decimals-label">
-              <select id="rounding-decimals">
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-              </select>
-              decimals
-            </label>
-            <span id="rounding-txt" class="help-b material-icons" title="Help">help_outline</span>
-            <p id="rounding-txt-help" class="help-p">
-              Maximum number of decimals to keep in location coordinates.
-            </p>
-          </div>
-        </td>
-      </tr>
-    </table>
-
-    <!-- ABOUT -->
-    <table id="menuabout">
-      <tr>
-        <td>
-          <img id="about-logo" src="img/wtracks-icon-1x.png" alt="WTracks logo">
-        </td>
-        <td>
-          <div><span class="appname">WTracks</span> by <a id="email" href="#">Olivier Potonniée</a></div>
-          <div>
-            Open source project on
-            <a href="https://github.com/opoto/wtracks" target="_blank" title="WTracks project on Github" id="github-logo">
-              <svg height="24" viewBox="0 0 16 16" version="1.1" width="24"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>
-            </a>
-          </div>
-        </td>
-      </tr>
-
-      <!-- Donate -->
-      <tr class="nobottomborder">
-        <td colspan="2">
-          <div>
-            <span class="fold fold-about-closed material-icons" id="about-donate-closed">keyboard_arrow_right</span>
-            <span class="fold-about donate material-icons">keyboard_arrow_down</span>
-            <span  class="fold fold-link fold-about" id="about-donate">Donate</span>
-          </div>
-        </td>
-      </tr>
-      <tr class="notopborder fold-about donate">
-        <td colspan="2">
-          <p>WTracks is free to use <i class="material-icons">mood</i></p>
-          <p>You can however donate to help maintaining this service:</p>
-          <p>
-            <a href="https://paypal.me/wtracks/2" target="_blank" class="donatebtn" title="Donate with PayPal">
-              <img id="donate-paypal" src="img/donate-paypal.png" alt="Donate with PayPal">
-            </a>
-          </p>
-          <p><i class="material-icons">warning</i> Do not check any 'goods and services' option in PayPal, you would pay useless fees.</p>
-        </td>
-      </tr>
-
-      <!-- Documentation -->
-      <tr class="nobottomborder">
-        <td colspan="2">
-          <div>
-            <span class="fold fold-about-closed material-icons" id="about-docs-closed">keyboard_arrow_right</span>
-            <span class="fold-about docs material-icons">keyboard_arrow_down</span>
-            <span  class="fold fold-link fold-about" id="about-docs">Documentation and shortcuts</span>
-          </div>
-        </td>
-      </tr>
-      <tr class="notopborder fold-about docs">
-        <td colspan="2">
-          <p>Check <a href="doc/" target="_blank">documentation</a> for application features and details. You can also join the <a target="_blank" href="https://groups.google.com/forum/#!forum/wtracks">online forum</a> to share questions and hints with other WTracks users</p>
-          <p><b>Keyboard shortcuts:</b></p>
-        </td>
-      </tr>
-      <tr class="notopborder fold-about docs">
-        <td class="key">ESC</td><td>Open/close menu. Exit edits</td>
-      </tr>
-      <tr class="notopborder fold-about docs">
-        <td class="key">F2</td><td>Edit track name and description</td>
-      </tr>
-      <tr class="notopborder fold-about docs">
-        <td class="key">N</td><td>New track</td>
-      </tr>
-      <tr class="notopborder fold-about docs">
-        <td class="key">O</td><td>Open file</td>
-      </tr>
-      <tr class="notopborder fold-about docs">
-        <td class="key">S</td><td>Save</td>
-      </tr>
-      <tr class="notopborder fold-about docs">
-        <td class="key">e</td><td>Edit track in manual mode</td>
-      </tr>
-      <tr class="notopborder fold-about docs">
-        <td class="key">a</td><td>Edit track in auto mode</td>
-      </tr>
-      <tr class="notopborder fold-about docs">
-        <td class="key">.</td><td>Add new segment</td>
-      </tr>
-      <tr class="notopborder fold-about docs">
-        <td class="key">x</td><td>Delete active segment</td>
-      </tr>
-      <tr class="notopborder fold-about docs">
-        <td class="key">m</td><td>Move track</td>
-      </tr>
-      <tr class="notopborder fold-about docs">
-        <td class="key">w</td><td>Edit waypoints</td>
-      </tr>
-      <tr class="notopborder fold-about docs">
-        <td class="key">z</td><td>Undo last edit</td>
-      </tr>
-      <tr class="notopborder fold-about docs">
-        <td class="key">f</td><td>Find address</td>
-      </tr>
-      <tr class="notopborder fold-about docs">
-        <td class="key">l</td><td>Locate current position</td>
-      </tr>
-      <tr class="notopborder fold-about docs">
-        <td class="key">t</td><td>Tools</td>
-      </tr>
-      <tr class="notopborder fold-about docs">
-        <td class="key">s</td><td>Segments editor</td>
-      </tr>
-      <tr class="notopborder fold-about docs">
-        <td class="key">*</td><td>Settings</td>
-      </tr>
-      <tr class="notopborder fold-about docs">
-        <td class="key">?</td><td>About / Documentation</td>
-      </tr>
-    </table>
-
-  </div>
 
   <!-- Warning popup -->
   <div id="warning-box" class="prompt-content">
@@ -837,7 +84,6 @@
 
   <!-- Prompt box -->
   <div id="prompt" class="modal overlay">
-    <!-- Modal content -->
     <div class="prompt-content">
       <table>
         <tr>
@@ -862,9 +108,8 @@
     </div>
   </div>
 
-  <!-- Prompt box -->
+  <!-- Confirm Dropbox -->
   <div id="confirm-dropbox" class="modal overlay">
-    <!-- Modal content -->
     <div class="prompt-content">
       <p>Ready to upload to your Dropbox account. Please confirm to proceed.</p>
       <button id="dbs-ok" class="ok-btn">Ok</button>
@@ -872,9 +117,8 @@
     </div>
   </div>
 
-  <!-- Share track box box -->
-  <div id="wtshare-box" class= "modal overlay">
-    <!-- Modal content -->
+  <!-- Share track box -->
+  <div id="wtshare-box" class="modal overlay">
     <div class="prompt-content">
       <div class="box-header"><a id="wtshare-box-close" href="#" class="close-button">×</a></div>
       <div id="wtshare-ask">
@@ -966,65 +210,894 @@
     </div>
   </div>
 
-  <table id="tdisplay">
-    <tr id="menu-bar">
-      <td colspan="7">
-        <a href="#" id="menu-button" title="menu (m)" class="button"><span class="material-icons">menu</span></a>
-        <span id="track-name-edit" class="link">
-          <span class="title" id="track-name"></span>
-          <span class="material-icons symbol" title="Edit track details (F2)">edit</span>
-        </span>
-        <div id="status">
-          <div id="spinner" class="spinner">
-            <div class="bounce1"></div>
-            <div class="bounce2"></div>
-            <div class="bounce3"></div>
-          </div>
-          <span id="status-msg"></span>
+  <!-- ═══════════════════════════════════════════════════════════
+       App shell
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="app">
+
+    <!-- Top header bar -->
+    <header id="app-header">
+      <div id="app-logo">
+        <img src="img/wtracks-logo.png" alt="WTracks">
+        <span class="appname">WTracks</span>
+      </div>
+
+      <div class="app-divider"></div>
+
+      <span id="track-name-edit" class="link">
+        <span class="title" id="track-name"></span>
+        <span class="material-icons symbol" title="Edit track details (F2)">edit</span>
+      </span>
+
+      <div id="status">
+        <div id="spinner" class="spinner">
+          <div class="bounce1"></div>
+          <div class="bounce2"></div>
+          <div class="bounce3"></div>
         </div>
-      </td>
-    </tr>
-    <tr id="map-row">
-      <td id="map" colspan="7"></td>
-    </tr>
-    <tr class="statistics" title="Click to see elevation profile">
-      <th><span class="hide-medium">Distance</span><span class="material-icons show-medium">straighten</span></th>
-      <td title='One Way'>
-        <span class="material-icons symbol">trending_flat</span> <span id="distow"></span>
-      </td>
-      <td title='Round Trip'>
-        <span class="material-icons symbol">sync_alt</span> <span id="distrt"></span>
-      </td>
-      <th><span class="hide-medium">Alt. Max</span><span class="material-icons show-medium">vertical_align_top</span></th>
-      <td>
-        &#9650; <span id="altmax"></span>
-      </td>
-      <th class="hide-medium">Climbing</th>
-      <td id="climbing"></td>
-    </tr>
-    <tr class="statistics" title="Click to see elevation profile">
-      <th>
-        <span class="hide-medium" title="Estimated time for this activity">Time</span><span class="show-medium material-icons">timelapse</span>
+        <span id="status-msg"></span>
+      </div>
+
+      <div class="app-mode-group" id="edit-mode-bar">
+        <button class="app-mode-btn" id="mode-draw" title="Draw track manually (e)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 20 9 6l6 12 6-14"></path></svg>
+          Draw
+        </button>
+        <button class="app-mode-btn" id="mode-route" title="Auto-route (a)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19h4a4 4 0 0 0 4-4V9a4 4 0 0 1 4-4h4"></path></svg>
+          Route
+        </button>
+        <button class="app-mode-btn" id="mode-move" title="Move track (m)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"></path></svg>
+          Move
+        </button>
+        <button class="app-mode-btn" id="mode-point" title="Add waypoint (w)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21s7-6.4 7-11a7 7 0 1 0-14 0c0 4.6 7 11 7 11Z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
+          Point
+        </button>
+      </div>
+
+      <div class="app-divider"></div>
+
+      <button id="header-undo" class="header-btn" title="Undo last edit (z)">
+        <span class="material-icons">undo</span>
+        <span class="hide-on-small-screen">Undo</span>
+      </button>
+      <button id="header-share" class="header-btn" title="Share track">
+        <span class="material-icons">share</span>
+        <span class="hide-on-small-screen">Share</span>
+      </button>
+      <button id="header-save" class="header-btn header-btn-primary" title="Download as a GPX file">
+        <span class="material-icons">download</span>
+        <span class="hide-on-small-screen">Save GPX</span>
+      </button>
+    </header>
+
+    <!-- Body: rail + panel + map -->
+    <div id="app-body">
+
+      <!-- Navigation rail -->
+      <nav id="rail">
+        <button class="rail-btn rail-active" id="rail-file" data-panel="file" title="File (O / S)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h11l5 5v11H4z"></path><path d="M8 4v6h7"></path></svg>
+          <span>File</span>
+        </button>
+        <button class="rail-btn" id="rail-segments" data-panel="segments" title="Segments (s)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+          <span>Segs</span>
+        </button>
+        <button class="rail-btn" id="rail-tools" data-panel="tools" title="Tools (t)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 8h10M18 8h2M4 16h4M12 16h8"></path><path d="M16 5v6M8 13v6"></path></svg>
+          <span>Tools</span>
+        </button>
+        <button class="rail-btn" id="rail-settings" data-panel="settings" title="Preferences (*)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"></circle><path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2"></path></svg>
+          <span>Prefs</span>
+        </button>
+        <div class="rail-spacer"></div>
+        <button class="rail-btn" id="rail-about" data-panel="about" title="About / Help (?)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"></circle><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 1-1 1.7M12 17h.01"></path></svg>
+          <span>Help</span>
+        </button>
+      </nav>
+
+      <!-- Side panel (formerly the floating overlay menu) -->
+      <div id="menu">
+        <!-- Tab links kept for JS compatibility, hidden visually -->
+        <ul class="menutab">
+          <li><a href="#" class="tablinks" id="tabfile">File</a></li>
+          <li><a href="#" class="tablinks" id="tabsegments">Segments</a></li>
+          <li><a href="#" class="tablinks" id="tabtools">Tools</a></li>
+          <li><a href="#" class="tablinks small-menu-link" id="tabsettings">Settings</a></li>
+          <li><a href="#" class="tablinks small-menu-link" id="tababout">About</a></li>
+        </ul>
+
+        <!-- FILE -->
+        <table id="menufile">
+          <tr class="nobottomborder">
+            <td colspan="2">
+              <div>
+                <span class="fold fold-file-closed material-icons" id="file-newtrk-closed">keyboard_arrow_right</span>
+                <span class="fold-file newtrk material-icons">keyboard_arrow_down</span>
+                <span  class="fold fold-link fold-file" id="file-newtrk">New</span>
+              </div>
+            </td>
+          </tr>
+          <tr class="notopborder fold-file newtrk">
+            <td>
+              <button id="track-new" title="Start a new track from scratch">New Track</button>
+            </td>
+            <td>
+              Discard current editor content and start a new track
+            </td>
+          </tr>
+          <tr class="nobottomborder">
+            <td colspan="2">
+              <div>
+                <span class="fold fold-file-closed material-icons" id="file-load-closed">keyboard_arrow_right</span>
+                <span class="fold-file load material-icons">keyboard_arrow_down</span>
+                <span  class="fold fold-link fold-file" id="file-load">Load</span>
+              </div>
+            </td>
+          </tr>
+          <tr class="notopborder nobottomborder fold-file load">
+            <td>
+              <span>Options</span>
+            </td>
+            <td>
+              <label><input type="checkbox" id="merge">Merge</label>
+              <span id="mergetxt" class="help-b material-icons" title="Help">help_outline</span>
+              <p id="mergetxt-help" class="help-p">
+                Current edited track will not be discarded, it will be extended with the loaded one.
+              </p>
+              <br>
+              <label><input type="checkbox" id="joinonload">Join segments</label>
+              <span id="joinonloadtxt" class="help-b material-icons" title="Help">help_outline</span>
+              <p id="joinonloadtxt-help" class="help-p">
+                If loaded track contains multiple segments, they will automatically be joined.
+              </p>
+            </td>
+          </tr>
+          <tr class="nobottomborder notopborder fold-file load">
+            <td>
+            </td>
+            <td>
+              File type:
+              <select id="track-ext">
+                <option value="auto">Auto</option>
+                <option value="gpx">GPX</option>
+                <option value="kml">KML</option>
+                <option value="geojson">GeoJson</option>
+              </select>
+              <span id="filetypetxt" class="help-b material-icons" title="Help">help_outline</span>
+              <p id="filetypetxt-help" class="help-p">
+                If "Auto" is selected, the type of the file is selected based on the file extension.
+              </p>
+            </td>
+          </tr>
+          <tr class="nobottomborder notopborder fold-file load">
+            <td>
+              <label id="track-upload-label">
+                <input type="file" name="track" id="track-upload" multiple="multiple" accept=".gpx,.kml,.geojson">
+                <span>File</span>
+              </label>
+            </td>
+            <td>
+              Open a file from your device<br>
+            </td>
+          </tr>
+          <tr class="nobottomborder notopborder fold-file load">
+            <td>
+              <button id="track-get" title="Load a file from the internet">
+                Get from:
+              </button>
+            </td>
+            <td>
+              <input id="track-get-url" placeholder="https://... (track URL)" type="url"><br>
+              <label><input id="noproxy" type="checkbox"> No proxy </label>
+              <span id="noproxytxt" class="help-b material-icons" title="Help">help_outline</span>
+              <p id="noproxytxt-help" class="help-p">
+                Load without going through a CORS proxy. Check if target server accepts cross-origin requests, and if you want to use your browser session to fetch the file.
+              </p>
+            </td>
+          </tr>
+          <tr class="notopborder fold-file load">
+            <td>
+              <button id="dropbox-chooser" title="Load a track from your Dropbox">
+                <span class="dropbox-logo"></span>
+                  Dropbox
+              </button>
+            </td>
+            <td>
+              Load from your Dropbox
+            </td>
+          </tr>
+          <tr class="nobottomborder">
+            <td colspan="2">
+              <div>
+                <span class="fold fold-file-closed material-icons" id="file-save-closed">keyboard_arrow_right</span>
+                <span class="fold-file save material-icons">keyboard_arrow_down</span>
+                <span  class="fold fold-link fold-file" id="file-save">Save</span>
+              </div>
+            </td>
+          </tr>
+          <tr class="notopborder nobottomborder fold-file save">
+            <td>
+              <button id="track-download" title="Download as a GPX file">
+                As File
+              </button>
+              <br>
+              <button id="dropbox-saver" title="Save track in your Dropbox">
+                <span class="dropbox-logo"></span>
+                  Dropbox
+              </button>
+            </td>
+            <td>
+              Download as a GPX file<br>
+              <label><input type="checkbox" id="as-route">As route</label>
+              <span id="routetxt" class="help-b material-icons" title="Help">help_outline</span>
+              <p id="routetxt-help" class="help-p">
+                Check to save the track as a GPX route, instead of a GPX track segment.
+              </p>
+              <br>
+            </td>
+          </tr>
+          <tr class="nobottomborder">
+            <td colspan="2">
+              <div>
+                <span class="fold fold-file-closed material-icons" id="file-share-closed">keyboard_arrow_right</span>
+                <span class="fold-file share material-icons">keyboard_arrow_down</span>
+                <span class="fold fold-link fold-file" id="file-share">Share</span>
+              </div>
+            </td>
+          </tr>
+          <tr class="notopborder nobottomborder fold-file share">
+            <td>
+              <button id="track-share" title="Share through a link">
+                Share...
+              </button>
+            </td>
+            <td>
+              track using
+              <select id="share-libs"></select>
+              <span id="sharetxt" class="help-b material-icons" title="Help">help_outline</span>
+              <br>
+              <span>Service is <span id="share-status"></span></span>
+            </td>
+          </tr>
+          <tr class="notopborder nobottomborder fold-file share share-props">
+            <td class="help-p sharetxt-help">Hosted by:</td>
+            <td class="help-p sharetxt-help" id="share-web"></td>
+          </tr>
+          <tr class="notopborder nobottomborder fold-file share share-props">
+            <td class="help-p sharetxt-help">Max file size:</td>
+            <td class="help-p sharetxt-help" id="share-max-size"></td>
+          </tr>
+          <tr class="notopborder nobottomborder fold-file share share-props">
+            <td class="help-p sharetxt-help">Max storage time:</td>
+            <td class="help-p sharetxt-help" id="share-max-time"></td>
+          </tr>
+          <tr class="notopborder fold-file share share-props">
+            <td class="help-p sharetxt-help">Max downloads:</td>
+            <td class="help-p sharetxt-help" id="share-max-downloads"></td>
+          </tr>
+        </table>
+
+        <!-- SEGMENTS -->
+        <table id="menusegments">
+          <tr class="nobottomborder">
+            <td>
+              <span class="if-segments">Edit your track's segments</span>
+              <span class="no-segments">You did not create any segment yet</span>
+              <span id="segsedittxt" class="help-b material-icons" title="Help">help_outline</span>
+              <p id="segsedittxt-help" class="help-p">
+                Drag and drop to reorder segments. Click on name to rename. Click on color to set color. Click on trash to delete.
+              </p>
+            </td>
+          </tr>
+          <tr class="notopborder">
+            <td id="seg-editor-list">
+            </td>
+          </tr>
+        </table>
+
+        <!-- TOOLS -->
+        <table id="menutools">
+
+          <tr>
+            <td colspan="2">
+              <input type="checkbox" id="allsegments" class="no-trim">
+              <label for="allsegments">Apply (*) to all track segments</label>
+              <span id="allsegmentstxt" class="help-b material-icons" title="Help">help_outline</span><br>
+              <p id="allsegmentstxt-help" class="help-p">
+                Check to apply the tools below to all track segments instead of just the active one. Ignore if your track only has one segment.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button id="compress" class="no-trim">Compress*</button>
+            </td>
+            <td>
+              Discard track points within a <input id="prune-dist" type="number" min="0" required>
+              <span class="distUnit"></span>s band<br>
+              Keep points if separated by more than
+              <span id="compresstxt" class="help-b material-icons" title="Help">help_outline</span>
+              <br>
+              <input id="prune-time-opt" type="checkbox"><input id="prune-max-time" type="number" min="0"><label for="prune-time-opt">seconds</label>
+              <input id="prune-dist-opt" type="checkbox"><input id="prune-max-dist" type="number" min="0"><label for="prune-dist-opt"><span class="distUnit"></span>s</label>
+              <br>
+              <p id="compresstxt-help" class="help-p">
+                Reduces track size by discarding points which do not significantly change the track shape.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button id="smooth" class="no-trim isdisabled">Smooth*</button>
+            </td>
+            <td>
+              Smooth altitude data<br>
+              <label>Intensity: <input id="smooth-level" type="range" step="5" min="1" max="61"></label>
+              <span id="smoothtxt" class="help-b material-icons" title="Help">help_outline</span>
+              <p id="smoothtxt-help" class="help-p">
+                Update track's altitude data to remove noise.
+                Smoothing intensity defines the number of rounding iterations.
+                The higher the level, the more computation time is needed.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button id="elevate" class="no-trim isdisabled">Elevate*</button>
+            </td>
+            <td>
+              Add altitude information
+              <span id="elevatetxt" class="help-b material-icons" title="Help">help_outline</span>
+              <p id="elevatetxt-help" class="help-p">
+                Uses external web service to get elevation of track points.
+                <span id="elevatetxt-help-enable"></span>
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button id="save-time" class="no-trim">Save Time*</button>
+            </td>
+            <td>
+              From
+              <span id="savetimingtxt" class="help-b material-icons" title="Help">help_outline</span>
+              <input id="save-time-from" type="datetime-local" size="16" step="1"><br>
+              <select id="save-time-profile"></select>
+              <input id="save-time-to" type="datetime-local" size="16" step="1">
+              <p id="savetimingtxt-help" class="help-p">
+                Check to save in the GPX the timings computed by WTracks.
+                It will override any previous GPX timing.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button id="shift-time" class="no-trim">Shift Time*</button>
+            </td>
+            <td>
+              By
+              <input id="shift-time-by" type="number">
+              <select id="shift-time-unit">
+                <option value="day">Day(s)</option>
+                <option value="hour">Hour(s)</option>
+                <option value="minute">Minute(s)</option>
+                <option value="second">Second(s)</option>
+              </select>
+              <span id="shifttimingtxt" class="help-b material-icons" title="Help">help_outline</span>
+              <p id="shifttimingtxt-help" class="help-p">
+                Shifts all track points' recorded time.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button id="cleanup" class="no-trim">Clean up*</button>
+              <button id="fillup" class="no-trim">Fill up*</button>
+            </td>
+            <td>
+              Delete or interpolate track data:
+              <span id="cleanuptxt" class="help-b material-icons" title="Help">help_outline</span>
+              <br>
+              <label><input id="cleanupalt" type="checkbox"> Altitude</label>
+              <label><input id="cleanuptime" type="checkbox"> Time</label>
+              <p id="cleanuptxt-help" class="help-p">
+                Clean up: Deletes elevation and/or GPS-recorded time data on each track point.<br>
+                Fill up: Adds interpolated elevation and/or time on track points where this data is missing.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button id="revert" class="no-trim">Revert*</button>
+            </td>
+            <td>
+              Revert track direction
+              <span id="reverttxt" class="help-b material-icons" title="Help">help_outline</span>
+              <p id="reverttxt-help" class="help-p">
+                Inverts all track points so that start of the track becomes the end.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button id="trim">Trim</button>
+              <select id="trim-type">
+                <option>start</option>
+                <option>end</option>
+              </select>
+            </td>
+            <td>
+              <input type="range" id="trim-range" min="0" step="1" value="0">&nbsp;<span id="trim-txt"></span>
+              <span id="trimtxt" class="help-b material-icons" title="Help">help_outline</span>
+              <p id="trimtxt-help" class="help-p">
+                Move cursor to delete points from the start or the end of the track.
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- SETTINGS -->
+        <table id="menusettings">
+          <tr class="nobottomborder">
+            <td colspan="2">
+              <div>
+                <span class="fold fold-settings-closed material-icons" id="settings-savstg-closed">keyboard_arrow_right</span>
+                <span class="fold-settings savstg material-icons">keyboard_arrow_down</span>
+                <span  class="fold fold-link fold-settings" id="settings-savstg">Remember me</span>
+                <span id="cfgsavetxt" class="help-b material-icons" title="Help">help_outline</span>
+                <p id="cfgsavetxt-help" class="help-p">
+                  Your WTracks editor status will be saved continuously in your browser local storage,
+                  so that when you close and reopen it later it will restore the same content and settings.
+                </p>
+              </div>
+            </td>
+          </tr>
+          <tr class="notopborder fold-settings savstg">
+            <td>
+            </td>
+            <td>
+              <label>
+                <input id="cfgsave" class="no-trim" type="checkbox">
+                Locally save editor's state between sessions
+              </label>
+              <br>
+              Privacy warning: state is shared with all users of this browser profile
+              <br>
+              You can also export/import settings to/from files:
+              <br>
+              <button id="save-state-file" class="state-file">Export</button>
+              <label id="state-load-label" class="state-file">
+                <input type="file" name="track" id="load-state-file" class="state-file">
+                <span>Import</span>
+              </label>
+            </td>
+          </tr>
+          <tr class="nobottomborder">
+            <td colspan="2">
+              <div>
+                <span class="fold fold-settings-closed material-icons" id="settings-trkstg-closed">keyboard_arrow_right</span>
+                <span class="fold-settings trkstg material-icons">keyboard_arrow_down</span>
+                <span  class="fold fold-link fold-settings" id="settings-trkstg">Display options</span>
+                <span id="trkopts" class="help-b material-icons" title="Help">help_outline</span>
+                <p id="trkopts-help" class="help-p">
+                  Configure track colors and other display options.
+                </p>
+              </div>
+            </td>
+          </tr>
+          <tr class="notopborder nobottomborder fold-settings trkstg">
+            <td>
+            </td>
+            <td>
+              <div>
+                <span class="setting-name">Segment Type:</span>
+                <label><input name="track-type" type="radio" value="trk" checked="checked"> Edited</label>
+                <label><input name="track-type" type="radio" value="ovl"> Others</label>
+              </div>
+              <div>
+                <span class="setting-name">Default color:</span>
+                <button id="track-color-picker" class='material-icons symbol setting-value jscolor {"valueElement":"track-color", "hash":true, "zIndex":10001}'>
+                  colorize
+                </button>
+                <input id="track-color" class="hidden">
+              </div>
+              <div>
+                <span class="setting-name">Width:</span>
+                <input type="range" min="0" max="10" id="track-weight" class="setting-value">
+                <span id="track-weight-v" class="setting-value"></span>
+              </div>
+              <div>
+                <span class="setting-name hide-on-small-screen">&nbsp;</span>
+                <button id="track-resetcolorweight" class="setting-value">Reset</button>
+              </div>
+          </tr>
+          <tr class="notopborder nobottomborder fold-settings trkstg">
+            <td>
+            </td>
+            <td>
+              <input id="fwdGuide" class="no-trim" type="checkbox">
+              <label for="fwdGuide">Show forward line guide</label>
+              <span id="fwdGuidehlp" class="help-b material-icons" title="Help">help_outline</span>
+              <p id="fwdGuidehlp-help" class="help-p">
+                When checked, a dashed line is displayed in edit mode to guide forward track extension.
+              </p>
+            </td>
+          </tr>
+          <tr class="notopborder nobottomborder fold-settings trkstg">
+            <td>
+            </td>
+            <td>
+              <input id="hideWpt" class="no-trim" type="checkbox">
+              <label for="hideWpt">Hide waypoints markers</label>
+              <span id="hideWpthlp" class="help-b material-icons" title="Help">help_outline</span>
+              <p id="hideWpthlp-help" class="help-p">
+                When checked, waypoints markers are not displayed on the map.
+              </p>
+            </td>
+          </tr>
+          <tr class="notopborder nobottomborder fold-settings trkstg">
+            <td>
+            </td>
+            <td>
+              <input id="wptLabel" class="no-trim" type="checkbox">
+              <label for="wptLabel">Always display waypoint labels</label>
+              <span id="wptLabelhlp" class="help-b material-icons" title="Help">help_outline</span>
+              <p id="wptLabelhlp-help" class="help-p">
+                When unchecked, waypoint title is only displayed when
+                the mouse is over the waypoint.
+              </p>
+            </td>
+          </tr>
+          <tr class="notopborder nobottomborder fold-settings trkstg">
+            <td>
+            </td>
+            <td>
+              <input id="extMarkers" class="no-trim" type="checkbox">
+              <label for="extMarkers">Show start/end markers</label>
+              <span id="extMarkershlp" class="help-b material-icons" title="Help">help_outline</span>
+              <p id="extMarkershlp-help" class="help-p">
+                When checked, a marker will be shown at start and end of current track segment.
+              </p>
+            </td>
+          </tr>
+          <tr class="notopborder nobottomborder fold-settings trkstg">
+            <td>
+            </td>
+            <td>
+              <input id="autoGrayBaseLayer" class="no-trim" type="checkbox">
+              <label for="autoGrayBaseLayer">Grayscale base-layer map</label>
+              <span id="autoGrayBaseLayerhlp" class="help-b material-icons" title="Help">help_outline</span>
+              <p id="autoGrayBaseLayerhlp-help" class="help-p">
+                When checked and an overlay is enabled, base layer is displayed in gray. This is useful with slope overlays.
+              </p>
+            </td>
+          </tr>
+          <tr class="notopborder fold-settings trkstg">
+            <td>
+            </td>
+            <td>
+              <input id="noMixOverlays" class="no-trim" type="checkbox">
+              <label for="noMixOverlays">Do not mix overlays</label>
+              <span id="noMixOverlayshlp" class="help-b material-icons" title="Help">help_outline</span>
+              <p id="noMixOverlayshlp-help" class="help-p">
+                By default, when multiple overlays are active, they are mixed to make sure they are all visible. When this option is checked, overlays are drawn independently on top of each other. Bottom overlays may then be hidden by upper overlays, unless you reduce their opacity.
+              </p>
+            </td>
+          </tr>
+          <tr class="nobottomborder">
+            <td colspan="2">
+              <div>
+                <span class="fold fold-settings-closed material-icons" id="settings-apistg-closed">keyboard_arrow_right</span>
+                <span class="fold-settings apistg material-icons" id="apistg2">keyboard_arrow_down</span>
+                <span  class="fold fold-link fold-settings" id="settings-apistg">API keys</span>
+                <span id="keystxt" class="help-b material-icons" title="Help">help_outline</span>
+                <p id="keystxt-help" class="help-p">
+                  To use elevation and routing services, you must set your own API keys.
+                  Current config is using:<br>
+                  Elevation: <span id="elevation-srv"></span>.<br>
+                  Routing: <span id="routing-srv"></span>.
+                </p>
+              </div>
+            </td>
+          </tr>
+          <tr class="notopborder fold-settings apistg">
+            <td>
+            </td>
+            <td>
+              <div>
+                <span class="setting-name">OpenRoute:</span>
+                <input id="orskey-chk" class="no-trim key-chk" type="checkbox">
+                <input id="orskey-value" placeholder="Your OpenRouteService key" class="setting-input key-value">
+                <span id="orskeytxt" class="help-b material-icons" title="Help">help_outline</span>
+                <p id="orskeytxt-help" class="help-p">
+                  This key is used for the (i) computing point and track elevation, and (ii) routing feature, which draws tracks along map roads.
+                  Get your free API key/token from <a target="_blank" href="https://openrouteservice.org/">OpenRoute Service</a>.
+                </p>
+              </div>
+              <div>
+                <span class="setting-name">GraphHopper:</span>
+                <input id="ghkey-chk" class="no-trim key-chk" type="checkbox">
+                <input id="ghkey-value" placeholder="Your GraphHopper key" class="setting-input key-value">
+                <span id="ghkeytxt" class="help-b material-icons" title="Help">help_outline</span>
+                <p id="ghkeytxt-help" class="help-p">
+                  This key is used for the routing feature, which draws tracks along map roads.
+                  Get your API key from <a target="_blank" href="https://graphhopper.com/">GraphHopper</a>.
+                </p>
+              </div>
+              <div>
+                <span class="setting-name">Google:</span>
+                <input id="ggkey-chk" class="no-trim key-chk" type="checkbox">
+                <input id="ggkey-value" placeholder="Your Google API key" class="setting-input key-value">
+                <span id="ggkeytxt" class="help-b material-icons" title="Help">help_outline</span>
+                <p id="ggkeytxt-help" class="help-p">
+                  This key is used for the Google Elevation service, which gets the elevation of each track point.
+                  Get your "Maps Elevation API" key from <a target="_blank" href="https://console.developers.google.com/apis">Google Developers Console</a>.
+                </p>
+              </div>
+              <div>
+                <span class="setting-name hide-on-small-screen">&nbsp;</span>
+                <button id="keys-reset" class="setting-value">Reset</button>
+              </div>
+              <div>
+                <span class="setting-name hide-on-small-screen">&nbsp;</span>
+                <label><input id="apikeys-warn" type="checkbox"> Warn if no API keys</label>
+                <span id="apikeys-warntxt" class="help-b material-icons" title="Help">help_outline</span>
+                <p id="apikeys-warntxt-help" class="help-p">
+                  If checked an info box will pop up when elevation or routing services are not configured.
+                </p>
+              </div>
+            </td>
+          </tr>
+          <tr class="nobottomborder">
+            <td colspan="2">
+              <div>
+                <span class="fold fold-settings-closed material-icons" id="settings-unitstg-closed">keyboard_arrow_right</span>
+                <span class="fold-settings unitstg material-icons" id="unitstg2">keyboard_arrow_down</span>
+                <span  class="fold fold-link fold-settings" id="settings-unitstg">Other</span>
+              </div>
+            </td>
+          </tr>
+          <tr class="notopborder fold-settings unitstg">
+            <td>
+            </td>
+            <td>
+              <div>
+                <span class="setting-name">Unit of length:</span>
+                <label>
+                  <input type="radio" value="0" name="unitopt">
+                  Metric
+                </label>
+                <label>
+                  <input type="radio" value="1" name="unitopt">
+                  Imperial
+                </label>
+                <span id="unittxt" class="help-b material-icons" title="Help">help_outline</span>
+                <p id="unittxt-help" class="help-p">
+                  Choose between imperial and metric unit of length.
+                </p>
+              </div>
+            </td>
+          </tr>
+          <tr class="notopborder fold-settings unitstg">
+            <td>
+            </td>
+            <td>
+              <div>
+                <span class="setting-name">Offline cache:</span>
+                <label>
+                  <input type="checkbox" id="use-service-worker">
+                  (experimental)
+                </label>
+                <span id="swtxt" class="help-b material-icons" title="Help">help_outline</span>
+                <p id="swtxt-help" class="help-p">
+                  Activate service worker to use offline cache.
+                </p>
+              </div>
+            </td>
+          </tr>
+          <tr class="notopborder fold-settings unitstg">
+            <td>
+            </td>
+            <td>
+              <div>
+                <span class="setting-name">Round coords.:</span>
+                <input type="checkbox" id="rounding-on">
+                <label id="rounding-decimals-label">
+                  <select id="rounding-decimals">
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                  </select>
+                  decimals
+                </label>
+                <span id="rounding-txt" class="help-b material-icons" title="Help">help_outline</span>
+                <p id="rounding-txt-help" class="help-p">
+                  Maximum number of decimals to keep in location coordinates.
+                </p>
+              </div>
+            </td>
+          </tr>
+        </table>
+
+        <!-- ABOUT -->
+        <table id="menuabout">
+          <tr>
+            <td>
+              <img id="about-logo" src="img/wtracks-logo.png" alt="WTracks logo">
+            </td>
+            <td>
+              <div><span class="appname">WTracks</span> by <a id="email" href="#">Olivier Potonniée</a></div>
+              <div>
+                Open source project on
+                <a href="https://github.com/opoto/wtracks" target="_blank" title="WTracks project on Github" id="github-logo">
+                  <svg height="24" viewBox="0 0 16 16" version="1.1" width="24"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>
+                </a>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Donate -->
+          <tr class="nobottomborder">
+            <td colspan="2">
+              <div>
+                <span class="fold fold-about-closed material-icons" id="about-donate-closed">keyboard_arrow_right</span>
+                <span class="fold-about donate material-icons">keyboard_arrow_down</span>
+                <span  class="fold fold-link fold-about" id="about-donate">Donate</span>
+              </div>
+            </td>
+          </tr>
+          <tr class="notopborder fold-about donate">
+            <td colspan="2">
+              <p>WTracks is free to use <i class="material-icons">mood</i></p>
+              <p>You can however donate to help maintaining this service:</p>
+              <p>
+                <a href="https://paypal.me/wtracks/2" target="_blank" class="donatebtn" title="Donate with PayPal">
+                  <img id="donate-paypal" src="img/donate-paypal.png" alt="Donate with PayPal">
+                </a>
+              </p>
+              <p><i class="material-icons">warning</i> Do not check any 'goods and services' option in PayPal, you would pay useless fees.</p>
+            </td>
+          </tr>
+
+          <!-- Documentation -->
+          <tr class="nobottomborder">
+            <td colspan="2">
+              <div>
+                <span class="fold fold-about-closed material-icons" id="about-docs-closed">keyboard_arrow_right</span>
+                <span class="fold-about docs material-icons">keyboard_arrow_down</span>
+                <span  class="fold fold-link fold-about" id="about-docs">Documentation and shortcuts</span>
+              </div>
+            </td>
+          </tr>
+          <tr class="notopborder fold-about docs">
+            <td colspan="2">
+              <p>Check <a href="doc/" target="_blank">documentation</a> for application features and details. You can also join the <a target="_blank" href="https://groups.google.com/forum/#!forum/wtracks">online forum</a> to share questions and hints with other WTracks users</p>
+              <p><b>Keyboard shortcuts:</b></p>
+            </td>
+          </tr>
+          <tr class="notopborder fold-about docs">
+            <td class="key">ESC</td><td>Open/close panel. Exit edits</td>
+          </tr>
+          <tr class="notopborder fold-about docs">
+            <td class="key">F2</td><td>Edit track name and description</td>
+          </tr>
+          <tr class="notopborder fold-about docs">
+            <td class="key">N</td><td>New track</td>
+          </tr>
+          <tr class="notopborder fold-about docs">
+            <td class="key">O</td><td>Open file</td>
+          </tr>
+          <tr class="notopborder fold-about docs">
+            <td class="key">S</td><td>Save</td>
+          </tr>
+          <tr class="notopborder fold-about docs">
+            <td class="key">e</td><td>Edit track in manual mode</td>
+          </tr>
+          <tr class="notopborder fold-about docs">
+            <td class="key">a</td><td>Edit track in auto mode</td>
+          </tr>
+          <tr class="notopborder fold-about docs">
+            <td class="key">.</td><td>Add new segment</td>
+          </tr>
+          <tr class="notopborder fold-about docs">
+            <td class="key">x</td><td>Delete active segment</td>
+          </tr>
+          <tr class="notopborder fold-about docs">
+            <td class="key">m</td><td>Move track</td>
+          </tr>
+          <tr class="notopborder fold-about docs">
+            <td class="key">w</td><td>Edit waypoints</td>
+          </tr>
+          <tr class="notopborder fold-about docs">
+            <td class="key">z</td><td>Undo last edit</td>
+          </tr>
+          <tr class="notopborder fold-about docs">
+            <td class="key">f</td><td>Find address</td>
+          </tr>
+          <tr class="notopborder fold-about docs">
+            <td class="key">l</td><td>Locate current position</td>
+          </tr>
+          <tr class="notopborder fold-about docs">
+            <td class="key">t</td><td>Tools</td>
+          </tr>
+          <tr class="notopborder fold-about docs">
+            <td class="key">s</td><td>Segments editor</td>
+          </tr>
+          <tr class="notopborder fold-about docs">
+            <td class="key">*</td><td>Settings</td>
+          </tr>
+          <tr class="notopborder fold-about docs">
+            <td class="key">?</td><td>About / Documentation</td>
+          </tr>
+        </table>
+
+      </div><!-- /#menu -->
+
+      <!-- Map -->
+      <div id="map"></div>
+
+    </div><!-- /#app-body -->
+
+    <!-- Bottom statistics bar -->
+    <footer id="stats-bar" class="statistics">
+      <div class="stats-cell" title="Click to see elevation profile">
+        <span class="stats-label hide-medium">Distance</span>
+        <span class="material-icons show-medium">straighten</span>
+        <span>
+          <span class="material-icons symbol">trending_flat</span>&nbsp;<span id="distow"></span>
+        </span>
+        <span class="stats-sep hide-medium">&nbsp;</span>
+        <span class="hide-medium">
+          <span class="material-icons symbol">sync_alt</span>&nbsp;<span id="distrt"></span>
+        </span>
+      </div>
+      <div class="stats-cell" title="Click to see elevation profile">
+        <span class="stats-label hide-medium" title="Estimated time for this activity">Time</span>
+        <span class="show-medium material-icons">timelapse</span>
         <select id="activity" size="1" title="Select activity type"></select>
         <a href="activities.html" title="Edit activities">
           <span class="material-icons symbol link">edit</span>
         </a>
-      </th>
-      <td title='One Way'>
         <span id="timeow"></span>
-      </td>
-      <td title='Round Trip'>
-        <span id="timert"></span>
-      </td>
-      <th><span class="hide-medium">Alt. Min</span><span class="material-icons show-medium">vertical_align_bottom</span></th>
-      <td>
-        &#9660; <span id="altmin"></span>
-      </td>
-      <th class="hide-medium">Descent</th>
-      <td id="descent">
-      </td>
-    </tr>
-  </table>
+        <span class="stats-sep hide-medium">/</span>
+        <span class="hide-medium" id="timert"></span>
+      </div>
+      <div class="stats-cell hide-medium" title="Click to see elevation profile">
+        <span class="stats-label">Alt. Max</span>
+        &#9650;&nbsp;<span id="altmax"></span>
+      </div>
+      <div class="stats-cell hide-medium" title="Click to see elevation profile">
+        <span class="stats-label">Climbing</span>
+        <span id="climbing"></span>
+      </div>
+      <div class="stats-cell hide-medium" title="Click to see elevation profile">
+        <span class="stats-label">Alt. Min</span>
+        &#9660;&nbsp;<span id="altmin"></span>
+      </div>
+      <div class="stats-cell hide-medium" title="Click to see elevation profile">
+        <span class="stats-label">Descent</span>
+        <span id="descent"></span>
+      </div>
+      <button id="toggle-elevation-profile" title="Toggle elevation profile">
+        <span class="hide-on-small-screen">Elevation profile</span>
+        <span class="material-icons show-on-small-screen">show_chart</span>
+        <span class="material-icons" id="elevation-profile-arrow">expand_less</span>
+      </button>
+    </footer>
+
+  </div><!-- /#app -->
+
+  <!-- Legacy: keep #menu-button for any JS that references it (hidden, noop) -->
+  <a href="#" id="menu-button" style="display:none;" title="menu"></a>
 
 </body>
 </html>
