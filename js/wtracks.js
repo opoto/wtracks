@@ -1236,14 +1236,16 @@ $(function () {
   /* ------------------------ MENU ---------------------------------- */
 
   function closeMenu() {
-    if (!$("#menu").is(":hidden")) {
+    if (window.innerWidth <= 680) {
+      $("#menu").removeClass("panel-mobile-open");
+    } else {
       $("#menu").hide();
-      cancelTrim();
     }
+    $(".rail-btn").removeClass("rail-active");
+    cancelTrim();
   }
 
   function openMenu(tab) {
-    if (isMenuVisible()) return;
     setEditMode(EDIT_NONE);
     WU.setChecked("#merge", false);
     WU.setChecked("#apikeys-warn", !apikeyNoMore);
@@ -1271,6 +1273,9 @@ $(function () {
     initServiceWorkerSetting();
   }
   function isMenuVisible() {
+    if (window.innerWidth <= 680) {
+      return $("#menu").hasClass("panel-mobile-open");
+    }
     return $("#menu").is(":visible");
   }
 
@@ -2212,6 +2217,12 @@ $(function () {
     editMode = mode;
     saveEditMode();
     $("#edit-tools").toggle(editMode > EDIT_RECORDING);
+    // Sync header mode buttons
+    $(".app-mode-btn").removeClass("mode-active");
+    if (mode === EDIT_MANUAL_TRACK) $("#mode-draw").addClass("mode-active");
+    else if (mode === EDIT_AUTO_TRACK) $("#mode-route").addClass("mode-active");
+    else if (mode === EDIT_DRAG)        $("#mode-move").addClass("mode-active");
+    else if (mode === EDIT_MARKER)      $("#mode-point").addClass("mode-active");
   }
   $("#prune-dist-opt, #prune-time-opt").on("change", (event) => {
     if (!WU.isChecked($(event.target))) {
@@ -3385,9 +3396,13 @@ $(function () {
     // ignore if an overlay is open
     if ((nOverlays > 0) || isUserInputOngoing()) return;
     switch (event.key) {
-      case "Escape": // escape - exit edit tool
+      case "Escape": // escape - toggle panel or exit edit tool
         if (editMode == EDIT_NONE) {
-          openMenu();
+          if (isMenuVisible()) {
+            closeMenu();
+          } else {
+            openMenu();
+          }
         } else {
           setEditMode(EDIT_NONE);
         }
@@ -4961,11 +4976,19 @@ $(function () {
   WU.noTranslate("#share-libs");
 
   function menu(item, event) {
-    $("#menu").show();
+    // On mobile, toggle the panel sheet open
+    if (window.innerWidth <= 680) {
+      $("#menu").addClass("panel-mobile-open");
+    } else {
+      $("#menu").show();
+    }
     $("#menu>table").hide();
     $(".tablinks").removeClass("active");
     $("#tab" + item).addClass("active");
     $("#menu #menu" + item).show();
+    // Sync rail active state
+    $(".rail-btn").removeClass("rail-active");
+    $("#rail-" + item).addClass("rail-active");
     if (event) {
       event.preventDefault();
     }
@@ -4978,6 +5001,16 @@ $(function () {
   }
   $(".tablinks").on("click", function (event) {
     menu(event.currentTarget.id.replace("tab", ""), event);
+  });
+  // Rail buttons switch panels; clicking the active one toggles the panel closed
+  $(".rail-btn").on("click", function () {
+    const panelId = $(this).data("panel");
+    if (!panelId) return;
+    if ($(this).hasClass("rail-active") && isMenuVisible()) {
+      closeMenu();
+    } else {
+      menu(panelId);
+    }
   });
   $(".donatebtn").on("click", function (event) {
     WU.wtEvent('menu', 'donate', event.target.id);
@@ -5158,6 +5191,39 @@ $(function () {
     }
     return false;
   });
+
+  // Header action buttons
+  $("#header-undo").on("click", function () {
+    // Simulate 'z' key for undo
+    $("body").trigger($.Event("keydown", { key: "z", which: 90 }));
+  });
+  $("#header-share").on("click", function () {
+    openMenu("file");
+    $("#file-share").click();
+    $("#track-share").click();
+  });
+  $("#header-save").on("click", function () {
+    $("#track-download").click();
+  });
+
+  // Mode buttons in header
+  $("#mode-draw").on("click", function () {
+    setEditMode(EDIT_MANUAL_TRACK);
+  });
+  $("#mode-route").on("click", function () {
+    setEditMode(EDIT_AUTO_TRACK);
+  });
+  $("#mode-move").on("click", function () {
+    setEditMode(EDIT_DRAG);
+  });
+  $("#mode-point").on("click", function () {
+    setEditMode(EDIT_MARKER);
+  });
+
+  // Show the panel sidebar on desktop on startup
+  if (window.innerWidth > 680) {
+    menu("file");
+  }
 
   // Remove potential query parameters from URL
   WU.clearUrlQuery();
