@@ -2062,7 +2062,7 @@ $(function () {
   function showRoutingCredit() {
     var credit = (routerFactory == createGraphHopperRouter) ?
       "<a href='https://graphhopper.com'>GraphHopper</a> " :
-      "<a href='https://openrouteservice.org'>OpenRoute Service</a>";
+      "<a href='https://heigit.org/smart-mobility/#openrouteservice'>OpenRoute Service</a>";
     $("#map").append("<span class='routing-credit'>Powered by " + credit + "</span>");
   }
 
@@ -3044,8 +3044,6 @@ $(function () {
       });
   }
 
-
-  // https://openrouteservice.org/dev/#/api-docs/elevation/line/post
   function orsElevationService(locations, points, inc, cleanup, done, fail) {
     let i, len,
       polyline = [];
