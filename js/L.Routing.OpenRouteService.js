@@ -10,7 +10,7 @@
 
   L.Routing.OpenRouteService = L.Class.extend({
     options: {
-      serviceUrl: 'https://api.openrouteservice.org/v2/directions',
+      serviceUrl: 'https://api.heigit.org/v2/directions',
       timeout: 30 * 1000,
       profile: "foot-hike",
       parameters: {}
