@@ -3053,7 +3053,7 @@ $(function () {
     if (locations.length == 1) {
       // single point
       $.ajax({
-        url: "https://api.openrouteservice.org/elevation/point",
+        url: "https://api.heigit.org/openelevationservice/v0/point",
         headers: {
           "Authorization": getApiKey(apikeys.orskey)
         },
@@ -3068,7 +3068,7 @@ $(function () {
       })
         /*
         $.get({
-          url: "https://api.openrouteservice.org/elevation/point?" +
+          url: "https://api.heigit.org/openelevationservice/v0/point?" +
             "api_key=" + getApiKey(apikeys.orskey) +
             "&geometry=" + locations[0].lng + "," + locations[0].lat,
           dataType: "json"
@@ -3104,7 +3104,7 @@ $(function () {
       polyline.push([locations[i].lng, locations[i].lat]);
     }
     $.ajax({
-      url: "https://api.openrouteservice.org/elevation/line",
+      url: "https://api.heigit.org/openelevationservice/v0/line",
       headers: {
         "Authorization": getApiKey(apikeys.orskey)
       },
